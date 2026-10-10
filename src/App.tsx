@@ -1,20 +1,90 @@
-import { Button } from "@/components/ui/button"
+ import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { AuthProvider } from "@/contexts/AuthContext"
+import { AppLayout } from "@/components/layout/AppLayout"
+import { ProtectedRoute } from "@/components/layout/ProtectedRoute"
+import { LandingPage } from "@/pages/landing/LandingPage"
+import { LoginPage } from "@/pages/auth/LoginPage"
+import { ProfilePage } from "@/pages/profile/ProfilePage"
+import { BookingStubPage } from "@/pages/stubs/BookingStubPage"
+import { BillingStubPage } from "@/pages/stubs/BillingStubPage"
+import { MaintenanceStubPage } from "@/pages/stubs/MaintenanceStubPage"
+import { CurfewStubPage } from "@/pages/stubs/CurfewStubPage"
+import { ManagerDashboardStubPage } from "@/pages/stubs/ManagerDashboardStubPage"
+import { QATestPlanPage } from "@/pages/stubs/QATestPlanPage"
+import { UnauthorizedPage } from "@/pages/errors/UnauthorizedPage"
+import { NotFoundPage } from "@/pages/errors/NotFoundPage"
 
 export function App() {
   return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <p>We&apos;ve already added the button component for you.</p>
-          <Button className="mt-2">Button</Button>
-        </div>
-        <div className="font-mono text-xs text-muted-foreground">
-          (Press <kbd>d</kbd> to toggle dark mode)
-        </div>
-      </div>
-    </div>
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route element={<AppLayout />}>
+            <Route path="/" element={<LandingPage />} />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/booking"
+              element={
+                <ProtectedRoute>
+                  <BookingStubPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/billing"
+              element={
+                <ProtectedRoute>
+                  <BillingStubPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/maintenance"
+              element={
+                <ProtectedRoute>
+                  <MaintenanceStubPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/curfew"
+              element={
+                <ProtectedRoute>
+                  <CurfewStubPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/manager"
+              element={
+                <ProtectedRoute allowedRoles={["manager", "admin"]}>
+                  <ManagerDashboardStubPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/qa"
+              element={
+                <ProtectedRoute>
+                  <QATestPlanPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/unauthorized" element={<UnauthorizedPage />} />
+          </Route>
+
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   )
 }
 
