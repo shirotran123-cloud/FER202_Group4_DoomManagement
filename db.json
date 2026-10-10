@@ -1,0 +1,4459 @@
+{
+  "users": [
+    {
+      "id": "u1",
+      "mssv": "SE123456",
+      "email": "student1@fpt.edu.vn",
+      "name": "Nguyễn Văn A",
+      "gender": "MALE",
+      "role": "STUDENT",
+      "status": "ACTIVE",
+      "previousDebt": 0,
+      "isSuspended": false
+    },
+    {
+      "id": "u2",
+      "mssv": "SE123457",
+      "email": "student2@fpt.edu.vn",
+      "name": "Lê Văn B",
+      "gender": "MALE",
+      "role": "STUDENT",
+      "status": "ACTIVE",
+      "previousDebt": 500000,
+      "isSuspended": false
+    },
+    {
+      "id": "u3",
+      "mssv": "SE123458",
+      "email": "student3@fpt.edu.vn",
+      "name": "Trần Văn C",
+      "gender": "MALE",
+      "role": "STUDENT",
+      "status": "ACTIVE",
+      "previousDebt": 0,
+      "isSuspended": true
+    },
+    {
+      "id": "a1",
+      "email": "admin@fe.edu.vn",
+      "name": "Quản trị viên",
+      "role": "ADMIN"
+    }
+  ],
+  "buildings": [
+    {
+      "id": "b1",
+      "name": "Tòa A",
+      "genderType": "MALE",
+      "totalFloors": 5
+    }
+  ],
+  "floors": [
+    {
+      "id": "f1",
+      "buildingId": "b1",
+      "level": 1
+    },
+    {
+      "id": "f2",
+      "buildingId": "b1",
+      "level": 2
+    },
+    {
+      "id": "f3",
+      "buildingId": "b1",
+      "level": 3
+    },
+    {
+      "id": "f4",
+      "buildingId": "b1",
+      "level": 4
+    },
+    {
+      "id": "f5",
+      "buildingId": "b1",
+      "level": 5
+    }
+  ],
+  "rooms": [
+    {
+      "id": "r1",
+      "floorId": "f1",
+      "name": "A101",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "r2",
+      "floorId": "f1",
+      "name": "A102",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "r3",
+      "floorId": "f1",
+      "name": "A103",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "r4",
+      "floorId": "f1",
+      "name": "A104",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "r5",
+      "floorId": "f2",
+      "name": "A201",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "r6",
+      "floorId": "f2",
+      "name": "A202",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "r7",
+      "floorId": "f2",
+      "name": "A203",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "r8",
+      "floorId": "f2",
+      "name": "A204",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "r9",
+      "floorId": "f3",
+      "name": "A301",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "r10",
+      "floorId": "f3",
+      "name": "A302",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "r11",
+      "floorId": "f3",
+      "name": "A303",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "r12",
+      "floorId": "f3",
+      "name": "A304",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "r13",
+      "floorId": "f4",
+      "name": "A401",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "r14",
+      "floorId": "f4",
+      "name": "A402",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "r15",
+      "floorId": "f4",
+      "name": "A403",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "r16",
+      "floorId": "f4",
+      "name": "A404",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "r17",
+      "floorId": "f5",
+      "name": "A501",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "r18",
+      "floorId": "f5",
+      "name": "A502",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "r19",
+      "floorId": "f5",
+      "name": "A503",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "r20",
+      "floorId": "f5",
+      "name": "A504",
+      "status": "ACTIVE"
+    }
+  ],
+  "compartments": [
+    {
+      "id": "c1",
+      "roomId": "r1",
+      "name": "A"
+    },
+    {
+      "id": "c2",
+      "roomId": "r1",
+      "name": "B"
+    },
+    {
+      "id": "c3",
+      "roomId": "r1",
+      "name": "C"
+    },
+    {
+      "id": "c4",
+      "roomId": "r1",
+      "name": "D"
+    },
+    {
+      "id": "c5",
+      "roomId": "r2",
+      "name": "A"
+    },
+    {
+      "id": "c6",
+      "roomId": "r2",
+      "name": "B"
+    },
+    {
+      "id": "c7",
+      "roomId": "r2",
+      "name": "C"
+    },
+    {
+      "id": "c8",
+      "roomId": "r2",
+      "name": "D"
+    },
+    {
+      "id": "c9",
+      "roomId": "r3",
+      "name": "A"
+    },
+    {
+      "id": "c10",
+      "roomId": "r3",
+      "name": "B"
+    },
+    {
+      "id": "c11",
+      "roomId": "r3",
+      "name": "C"
+    },
+    {
+      "id": "c12",
+      "roomId": "r3",
+      "name": "D"
+    },
+    {
+      "id": "c13",
+      "roomId": "r4",
+      "name": "A"
+    },
+    {
+      "id": "c14",
+      "roomId": "r4",
+      "name": "B"
+    },
+    {
+      "id": "c15",
+      "roomId": "r4",
+      "name": "C"
+    },
+    {
+      "id": "c16",
+      "roomId": "r4",
+      "name": "D"
+    },
+    {
+      "id": "c17",
+      "roomId": "r5",
+      "name": "A"
+    },
+    {
+      "id": "c18",
+      "roomId": "r5",
+      "name": "B"
+    },
+    {
+      "id": "c19",
+      "roomId": "r5",
+      "name": "C"
+    },
+    {
+      "id": "c20",
+      "roomId": "r5",
+      "name": "D"
+    },
+    {
+      "id": "c21",
+      "roomId": "r6",
+      "name": "A"
+    },
+    {
+      "id": "c22",
+      "roomId": "r6",
+      "name": "B"
+    },
+    {
+      "id": "c23",
+      "roomId": "r6",
+      "name": "C"
+    },
+    {
+      "id": "c24",
+      "roomId": "r6",
+      "name": "D"
+    },
+    {
+      "id": "c25",
+      "roomId": "r7",
+      "name": "A"
+    },
+    {
+      "id": "c26",
+      "roomId": "r7",
+      "name": "B"
+    },
+    {
+      "id": "c27",
+      "roomId": "r7",
+      "name": "C"
+    },
+    {
+      "id": "c28",
+      "roomId": "r7",
+      "name": "D"
+    },
+    {
+      "id": "c29",
+      "roomId": "r8",
+      "name": "A"
+    },
+    {
+      "id": "c30",
+      "roomId": "r8",
+      "name": "B"
+    },
+    {
+      "id": "c31",
+      "roomId": "r8",
+      "name": "C"
+    },
+    {
+      "id": "c32",
+      "roomId": "r8",
+      "name": "D"
+    },
+    {
+      "id": "c33",
+      "roomId": "r9",
+      "name": "A"
+    },
+    {
+      "id": "c34",
+      "roomId": "r9",
+      "name": "B"
+    },
+    {
+      "id": "c35",
+      "roomId": "r9",
+      "name": "C"
+    },
+    {
+      "id": "c36",
+      "roomId": "r9",
+      "name": "D"
+    },
+    {
+      "id": "c37",
+      "roomId": "r10",
+      "name": "A"
+    },
+    {
+      "id": "c38",
+      "roomId": "r10",
+      "name": "B"
+    },
+    {
+      "id": "c39",
+      "roomId": "r10",
+      "name": "C"
+    },
+    {
+      "id": "c40",
+      "roomId": "r10",
+      "name": "D"
+    },
+    {
+      "id": "c41",
+      "roomId": "r11",
+      "name": "A"
+    },
+    {
+      "id": "c42",
+      "roomId": "r11",
+      "name": "B"
+    },
+    {
+      "id": "c43",
+      "roomId": "r11",
+      "name": "C"
+    },
+    {
+      "id": "c44",
+      "roomId": "r11",
+      "name": "D"
+    },
+    {
+      "id": "c45",
+      "roomId": "r12",
+      "name": "A"
+    },
+    {
+      "id": "c46",
+      "roomId": "r12",
+      "name": "B"
+    },
+    {
+      "id": "c47",
+      "roomId": "r12",
+      "name": "C"
+    },
+    {
+      "id": "c48",
+      "roomId": "r12",
+      "name": "D"
+    },
+    {
+      "id": "c49",
+      "roomId": "r13",
+      "name": "A"
+    },
+    {
+      "id": "c50",
+      "roomId": "r13",
+      "name": "B"
+    },
+    {
+      "id": "c51",
+      "roomId": "r13",
+      "name": "C"
+    },
+    {
+      "id": "c52",
+      "roomId": "r13",
+      "name": "D"
+    },
+    {
+      "id": "c53",
+      "roomId": "r14",
+      "name": "A"
+    },
+    {
+      "id": "c54",
+      "roomId": "r14",
+      "name": "B"
+    },
+    {
+      "id": "c55",
+      "roomId": "r14",
+      "name": "C"
+    },
+    {
+      "id": "c56",
+      "roomId": "r14",
+      "name": "D"
+    },
+    {
+      "id": "c57",
+      "roomId": "r15",
+      "name": "A"
+    },
+    {
+      "id": "c58",
+      "roomId": "r15",
+      "name": "B"
+    },
+    {
+      "id": "c59",
+      "roomId": "r15",
+      "name": "C"
+    },
+    {
+      "id": "c60",
+      "roomId": "r15",
+      "name": "D"
+    },
+    {
+      "id": "c61",
+      "roomId": "r16",
+      "name": "A"
+    },
+    {
+      "id": "c62",
+      "roomId": "r16",
+      "name": "B"
+    },
+    {
+      "id": "c63",
+      "roomId": "r16",
+      "name": "C"
+    },
+    {
+      "id": "c64",
+      "roomId": "r16",
+      "name": "D"
+    },
+    {
+      "id": "c65",
+      "roomId": "r17",
+      "name": "A"
+    },
+    {
+      "id": "c66",
+      "roomId": "r17",
+      "name": "B"
+    },
+    {
+      "id": "c67",
+      "roomId": "r17",
+      "name": "C"
+    },
+    {
+      "id": "c68",
+      "roomId": "r17",
+      "name": "D"
+    },
+    {
+      "id": "c69",
+      "roomId": "r18",
+      "name": "A"
+    },
+    {
+      "id": "c70",
+      "roomId": "r18",
+      "name": "B"
+    },
+    {
+      "id": "c71",
+      "roomId": "r18",
+      "name": "C"
+    },
+    {
+      "id": "c72",
+      "roomId": "r18",
+      "name": "D"
+    },
+    {
+      "id": "c73",
+      "roomId": "r19",
+      "name": "A"
+    },
+    {
+      "id": "c74",
+      "roomId": "r19",
+      "name": "B"
+    },
+    {
+      "id": "c75",
+      "roomId": "r19",
+      "name": "C"
+    },
+    {
+      "id": "c76",
+      "roomId": "r19",
+      "name": "D"
+    },
+    {
+      "id": "c77",
+      "roomId": "r20",
+      "name": "A"
+    },
+    {
+      "id": "c78",
+      "roomId": "r20",
+      "name": "B"
+    },
+    {
+      "id": "c79",
+      "roomId": "r20",
+      "name": "C"
+    },
+    {
+      "id": "c80",
+      "roomId": "r20",
+      "name": "D"
+    }
+  ],
+  "beds": [
+    {
+      "id": "bed1",
+      "compartmentId": "c1",
+      "name": "G01",
+      "fullCode": "A101-A-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed2",
+      "compartmentId": "c1",
+      "name": "G02",
+      "fullCode": "A101-A-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed3",
+      "compartmentId": "c1",
+      "name": "G03",
+      "fullCode": "A101-A-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed4",
+      "compartmentId": "c1",
+      "name": "G04",
+      "fullCode": "A101-A-G04",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed5",
+      "compartmentId": "c1",
+      "name": "G05",
+      "fullCode": "A101-A-G05",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed6",
+      "compartmentId": "c1",
+      "name": "G06",
+      "fullCode": "A101-A-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed7",
+      "compartmentId": "c2",
+      "name": "G01",
+      "fullCode": "A101-B-G01",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed8",
+      "compartmentId": "c2",
+      "name": "G02",
+      "fullCode": "A101-B-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed9",
+      "compartmentId": "c2",
+      "name": "G03",
+      "fullCode": "A101-B-G03",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed10",
+      "compartmentId": "c2",
+      "name": "G04",
+      "fullCode": "A101-B-G04",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed11",
+      "compartmentId": "c2",
+      "name": "G05",
+      "fullCode": "A101-B-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed12",
+      "compartmentId": "c2",
+      "name": "G06",
+      "fullCode": "A101-B-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed13",
+      "compartmentId": "c3",
+      "name": "G01",
+      "fullCode": "A101-C-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed14",
+      "compartmentId": "c3",
+      "name": "G02",
+      "fullCode": "A101-C-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed15",
+      "compartmentId": "c3",
+      "name": "G03",
+      "fullCode": "A101-C-G03",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed16",
+      "compartmentId": "c3",
+      "name": "G04",
+      "fullCode": "A101-C-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed17",
+      "compartmentId": "c3",
+      "name": "G05",
+      "fullCode": "A101-C-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed18",
+      "compartmentId": "c3",
+      "name": "G06",
+      "fullCode": "A101-C-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed19",
+      "compartmentId": "c4",
+      "name": "G01",
+      "fullCode": "A101-D-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed20",
+      "compartmentId": "c4",
+      "name": "G02",
+      "fullCode": "A101-D-G02",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed21",
+      "compartmentId": "c4",
+      "name": "G03",
+      "fullCode": "A101-D-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed22",
+      "compartmentId": "c4",
+      "name": "G04",
+      "fullCode": "A101-D-G04",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed23",
+      "compartmentId": "c4",
+      "name": "G05",
+      "fullCode": "A101-D-G05",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed24",
+      "compartmentId": "c4",
+      "name": "G06",
+      "fullCode": "A101-D-G06",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed25",
+      "compartmentId": "c5",
+      "name": "G01",
+      "fullCode": "A102-A-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed26",
+      "compartmentId": "c5",
+      "name": "G02",
+      "fullCode": "A102-A-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed27",
+      "compartmentId": "c5",
+      "name": "G03",
+      "fullCode": "A102-A-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed28",
+      "compartmentId": "c5",
+      "name": "G04",
+      "fullCode": "A102-A-G04",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed29",
+      "compartmentId": "c5",
+      "name": "G05",
+      "fullCode": "A102-A-G05",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed30",
+      "compartmentId": "c5",
+      "name": "G06",
+      "fullCode": "A102-A-G06",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed31",
+      "compartmentId": "c6",
+      "name": "G01",
+      "fullCode": "A102-B-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed32",
+      "compartmentId": "c6",
+      "name": "G02",
+      "fullCode": "A102-B-G02",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed33",
+      "compartmentId": "c6",
+      "name": "G03",
+      "fullCode": "A102-B-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed34",
+      "compartmentId": "c6",
+      "name": "G04",
+      "fullCode": "A102-B-G04",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed35",
+      "compartmentId": "c6",
+      "name": "G05",
+      "fullCode": "A102-B-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed36",
+      "compartmentId": "c6",
+      "name": "G06",
+      "fullCode": "A102-B-G06",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed37",
+      "compartmentId": "c7",
+      "name": "G01",
+      "fullCode": "A102-C-G01",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed38",
+      "compartmentId": "c7",
+      "name": "G02",
+      "fullCode": "A102-C-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed39",
+      "compartmentId": "c7",
+      "name": "G03",
+      "fullCode": "A102-C-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed40",
+      "compartmentId": "c7",
+      "name": "G04",
+      "fullCode": "A102-C-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed41",
+      "compartmentId": "c7",
+      "name": "G05",
+      "fullCode": "A102-C-G05",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed42",
+      "compartmentId": "c7",
+      "name": "G06",
+      "fullCode": "A102-C-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed43",
+      "compartmentId": "c8",
+      "name": "G01",
+      "fullCode": "A102-D-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed44",
+      "compartmentId": "c8",
+      "name": "G02",
+      "fullCode": "A102-D-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed45",
+      "compartmentId": "c8",
+      "name": "G03",
+      "fullCode": "A102-D-G03",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed46",
+      "compartmentId": "c8",
+      "name": "G04",
+      "fullCode": "A102-D-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed47",
+      "compartmentId": "c8",
+      "name": "G05",
+      "fullCode": "A102-D-G05",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed48",
+      "compartmentId": "c8",
+      "name": "G06",
+      "fullCode": "A102-D-G06",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed49",
+      "compartmentId": "c9",
+      "name": "G01",
+      "fullCode": "A103-A-G01",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed50",
+      "compartmentId": "c9",
+      "name": "G02",
+      "fullCode": "A103-A-G02",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed51",
+      "compartmentId": "c9",
+      "name": "G03",
+      "fullCode": "A103-A-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed52",
+      "compartmentId": "c9",
+      "name": "G04",
+      "fullCode": "A103-A-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed53",
+      "compartmentId": "c9",
+      "name": "G05",
+      "fullCode": "A103-A-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed54",
+      "compartmentId": "c9",
+      "name": "G06",
+      "fullCode": "A103-A-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed55",
+      "compartmentId": "c10",
+      "name": "G01",
+      "fullCode": "A103-B-G01",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed56",
+      "compartmentId": "c10",
+      "name": "G02",
+      "fullCode": "A103-B-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed57",
+      "compartmentId": "c10",
+      "name": "G03",
+      "fullCode": "A103-B-G03",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed58",
+      "compartmentId": "c10",
+      "name": "G04",
+      "fullCode": "A103-B-G04",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed59",
+      "compartmentId": "c10",
+      "name": "G05",
+      "fullCode": "A103-B-G05",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed60",
+      "compartmentId": "c10",
+      "name": "G06",
+      "fullCode": "A103-B-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed61",
+      "compartmentId": "c11",
+      "name": "G01",
+      "fullCode": "A103-C-G01",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed62",
+      "compartmentId": "c11",
+      "name": "G02",
+      "fullCode": "A103-C-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed63",
+      "compartmentId": "c11",
+      "name": "G03",
+      "fullCode": "A103-C-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed64",
+      "compartmentId": "c11",
+      "name": "G04",
+      "fullCode": "A103-C-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed65",
+      "compartmentId": "c11",
+      "name": "G05",
+      "fullCode": "A103-C-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed66",
+      "compartmentId": "c11",
+      "name": "G06",
+      "fullCode": "A103-C-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed67",
+      "compartmentId": "c12",
+      "name": "G01",
+      "fullCode": "A103-D-G01",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed68",
+      "compartmentId": "c12",
+      "name": "G02",
+      "fullCode": "A103-D-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed69",
+      "compartmentId": "c12",
+      "name": "G03",
+      "fullCode": "A103-D-G03",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed70",
+      "compartmentId": "c12",
+      "name": "G04",
+      "fullCode": "A103-D-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed71",
+      "compartmentId": "c12",
+      "name": "G05",
+      "fullCode": "A103-D-G05",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed72",
+      "compartmentId": "c12",
+      "name": "G06",
+      "fullCode": "A103-D-G06",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed73",
+      "compartmentId": "c13",
+      "name": "G01",
+      "fullCode": "A104-A-G01",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed74",
+      "compartmentId": "c13",
+      "name": "G02",
+      "fullCode": "A104-A-G02",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed75",
+      "compartmentId": "c13",
+      "name": "G03",
+      "fullCode": "A104-A-G03",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed76",
+      "compartmentId": "c13",
+      "name": "G04",
+      "fullCode": "A104-A-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed77",
+      "compartmentId": "c13",
+      "name": "G05",
+      "fullCode": "A104-A-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed78",
+      "compartmentId": "c13",
+      "name": "G06",
+      "fullCode": "A104-A-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed79",
+      "compartmentId": "c14",
+      "name": "G01",
+      "fullCode": "A104-B-G01",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed80",
+      "compartmentId": "c14",
+      "name": "G02",
+      "fullCode": "A104-B-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed81",
+      "compartmentId": "c14",
+      "name": "G03",
+      "fullCode": "A104-B-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed82",
+      "compartmentId": "c14",
+      "name": "G04",
+      "fullCode": "A104-B-G04",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed83",
+      "compartmentId": "c14",
+      "name": "G05",
+      "fullCode": "A104-B-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed84",
+      "compartmentId": "c14",
+      "name": "G06",
+      "fullCode": "A104-B-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed85",
+      "compartmentId": "c15",
+      "name": "G01",
+      "fullCode": "A104-C-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed86",
+      "compartmentId": "c15",
+      "name": "G02",
+      "fullCode": "A104-C-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed87",
+      "compartmentId": "c15",
+      "name": "G03",
+      "fullCode": "A104-C-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed88",
+      "compartmentId": "c15",
+      "name": "G04",
+      "fullCode": "A104-C-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed89",
+      "compartmentId": "c15",
+      "name": "G05",
+      "fullCode": "A104-C-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed90",
+      "compartmentId": "c15",
+      "name": "G06",
+      "fullCode": "A104-C-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed91",
+      "compartmentId": "c16",
+      "name": "G01",
+      "fullCode": "A104-D-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed92",
+      "compartmentId": "c16",
+      "name": "G02",
+      "fullCode": "A104-D-G02",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed93",
+      "compartmentId": "c16",
+      "name": "G03",
+      "fullCode": "A104-D-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed94",
+      "compartmentId": "c16",
+      "name": "G04",
+      "fullCode": "A104-D-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed95",
+      "compartmentId": "c16",
+      "name": "G05",
+      "fullCode": "A104-D-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed96",
+      "compartmentId": "c16",
+      "name": "G06",
+      "fullCode": "A104-D-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed97",
+      "compartmentId": "c17",
+      "name": "G01",
+      "fullCode": "A201-A-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed98",
+      "compartmentId": "c17",
+      "name": "G02",
+      "fullCode": "A201-A-G02",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed99",
+      "compartmentId": "c17",
+      "name": "G03",
+      "fullCode": "A201-A-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed100",
+      "compartmentId": "c17",
+      "name": "G04",
+      "fullCode": "A201-A-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed101",
+      "compartmentId": "c17",
+      "name": "G05",
+      "fullCode": "A201-A-G05",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed102",
+      "compartmentId": "c17",
+      "name": "G06",
+      "fullCode": "A201-A-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed103",
+      "compartmentId": "c18",
+      "name": "G01",
+      "fullCode": "A201-B-G01",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed104",
+      "compartmentId": "c18",
+      "name": "G02",
+      "fullCode": "A201-B-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed105",
+      "compartmentId": "c18",
+      "name": "G03",
+      "fullCode": "A201-B-G03",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed106",
+      "compartmentId": "c18",
+      "name": "G04",
+      "fullCode": "A201-B-G04",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed107",
+      "compartmentId": "c18",
+      "name": "G05",
+      "fullCode": "A201-B-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed108",
+      "compartmentId": "c18",
+      "name": "G06",
+      "fullCode": "A201-B-G06",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed109",
+      "compartmentId": "c19",
+      "name": "G01",
+      "fullCode": "A201-C-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed110",
+      "compartmentId": "c19",
+      "name": "G02",
+      "fullCode": "A201-C-G02",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed111",
+      "compartmentId": "c19",
+      "name": "G03",
+      "fullCode": "A201-C-G03",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed112",
+      "compartmentId": "c19",
+      "name": "G04",
+      "fullCode": "A201-C-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed113",
+      "compartmentId": "c19",
+      "name": "G05",
+      "fullCode": "A201-C-G05",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed114",
+      "compartmentId": "c19",
+      "name": "G06",
+      "fullCode": "A201-C-G06",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed115",
+      "compartmentId": "c20",
+      "name": "G01",
+      "fullCode": "A201-D-G01",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed116",
+      "compartmentId": "c20",
+      "name": "G02",
+      "fullCode": "A201-D-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed117",
+      "compartmentId": "c20",
+      "name": "G03",
+      "fullCode": "A201-D-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed118",
+      "compartmentId": "c20",
+      "name": "G04",
+      "fullCode": "A201-D-G04",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed119",
+      "compartmentId": "c20",
+      "name": "G05",
+      "fullCode": "A201-D-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed120",
+      "compartmentId": "c20",
+      "name": "G06",
+      "fullCode": "A201-D-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed121",
+      "compartmentId": "c21",
+      "name": "G01",
+      "fullCode": "A202-A-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed122",
+      "compartmentId": "c21",
+      "name": "G02",
+      "fullCode": "A202-A-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed123",
+      "compartmentId": "c21",
+      "name": "G03",
+      "fullCode": "A202-A-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed124",
+      "compartmentId": "c21",
+      "name": "G04",
+      "fullCode": "A202-A-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed125",
+      "compartmentId": "c21",
+      "name": "G05",
+      "fullCode": "A202-A-G05",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed126",
+      "compartmentId": "c21",
+      "name": "G06",
+      "fullCode": "A202-A-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed127",
+      "compartmentId": "c22",
+      "name": "G01",
+      "fullCode": "A202-B-G01",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed128",
+      "compartmentId": "c22",
+      "name": "G02",
+      "fullCode": "A202-B-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed129",
+      "compartmentId": "c22",
+      "name": "G03",
+      "fullCode": "A202-B-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed130",
+      "compartmentId": "c22",
+      "name": "G04",
+      "fullCode": "A202-B-G04",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed131",
+      "compartmentId": "c22",
+      "name": "G05",
+      "fullCode": "A202-B-G05",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed132",
+      "compartmentId": "c22",
+      "name": "G06",
+      "fullCode": "A202-B-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed133",
+      "compartmentId": "c23",
+      "name": "G01",
+      "fullCode": "A202-C-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed134",
+      "compartmentId": "c23",
+      "name": "G02",
+      "fullCode": "A202-C-G02",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed135",
+      "compartmentId": "c23",
+      "name": "G03",
+      "fullCode": "A202-C-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed136",
+      "compartmentId": "c23",
+      "name": "G04",
+      "fullCode": "A202-C-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed137",
+      "compartmentId": "c23",
+      "name": "G05",
+      "fullCode": "A202-C-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed138",
+      "compartmentId": "c23",
+      "name": "G06",
+      "fullCode": "A202-C-G06",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed139",
+      "compartmentId": "c24",
+      "name": "G01",
+      "fullCode": "A202-D-G01",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed140",
+      "compartmentId": "c24",
+      "name": "G02",
+      "fullCode": "A202-D-G02",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed141",
+      "compartmentId": "c24",
+      "name": "G03",
+      "fullCode": "A202-D-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed142",
+      "compartmentId": "c24",
+      "name": "G04",
+      "fullCode": "A202-D-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed143",
+      "compartmentId": "c24",
+      "name": "G05",
+      "fullCode": "A202-D-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed144",
+      "compartmentId": "c24",
+      "name": "G06",
+      "fullCode": "A202-D-G06",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed145",
+      "compartmentId": "c25",
+      "name": "G01",
+      "fullCode": "A203-A-G01",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed146",
+      "compartmentId": "c25",
+      "name": "G02",
+      "fullCode": "A203-A-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed147",
+      "compartmentId": "c25",
+      "name": "G03",
+      "fullCode": "A203-A-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed148",
+      "compartmentId": "c25",
+      "name": "G04",
+      "fullCode": "A203-A-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed149",
+      "compartmentId": "c25",
+      "name": "G05",
+      "fullCode": "A203-A-G05",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed150",
+      "compartmentId": "c25",
+      "name": "G06",
+      "fullCode": "A203-A-G06",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed151",
+      "compartmentId": "c26",
+      "name": "G01",
+      "fullCode": "A203-B-G01",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed152",
+      "compartmentId": "c26",
+      "name": "G02",
+      "fullCode": "A203-B-G02",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed153",
+      "compartmentId": "c26",
+      "name": "G03",
+      "fullCode": "A203-B-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed154",
+      "compartmentId": "c26",
+      "name": "G04",
+      "fullCode": "A203-B-G04",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed155",
+      "compartmentId": "c26",
+      "name": "G05",
+      "fullCode": "A203-B-G05",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed156",
+      "compartmentId": "c26",
+      "name": "G06",
+      "fullCode": "A203-B-G06",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed157",
+      "compartmentId": "c27",
+      "name": "G01",
+      "fullCode": "A203-C-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed158",
+      "compartmentId": "c27",
+      "name": "G02",
+      "fullCode": "A203-C-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed159",
+      "compartmentId": "c27",
+      "name": "G03",
+      "fullCode": "A203-C-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed160",
+      "compartmentId": "c27",
+      "name": "G04",
+      "fullCode": "A203-C-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed161",
+      "compartmentId": "c27",
+      "name": "G05",
+      "fullCode": "A203-C-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed162",
+      "compartmentId": "c27",
+      "name": "G06",
+      "fullCode": "A203-C-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed163",
+      "compartmentId": "c28",
+      "name": "G01",
+      "fullCode": "A203-D-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed164",
+      "compartmentId": "c28",
+      "name": "G02",
+      "fullCode": "A203-D-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed165",
+      "compartmentId": "c28",
+      "name": "G03",
+      "fullCode": "A203-D-G03",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed166",
+      "compartmentId": "c28",
+      "name": "G04",
+      "fullCode": "A203-D-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed167",
+      "compartmentId": "c28",
+      "name": "G05",
+      "fullCode": "A203-D-G05",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed168",
+      "compartmentId": "c28",
+      "name": "G06",
+      "fullCode": "A203-D-G06",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed169",
+      "compartmentId": "c29",
+      "name": "G01",
+      "fullCode": "A204-A-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed170",
+      "compartmentId": "c29",
+      "name": "G02",
+      "fullCode": "A204-A-G02",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed171",
+      "compartmentId": "c29",
+      "name": "G03",
+      "fullCode": "A204-A-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed172",
+      "compartmentId": "c29",
+      "name": "G04",
+      "fullCode": "A204-A-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed173",
+      "compartmentId": "c29",
+      "name": "G05",
+      "fullCode": "A204-A-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed174",
+      "compartmentId": "c29",
+      "name": "G06",
+      "fullCode": "A204-A-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed175",
+      "compartmentId": "c30",
+      "name": "G01",
+      "fullCode": "A204-B-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed176",
+      "compartmentId": "c30",
+      "name": "G02",
+      "fullCode": "A204-B-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed177",
+      "compartmentId": "c30",
+      "name": "G03",
+      "fullCode": "A204-B-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed178",
+      "compartmentId": "c30",
+      "name": "G04",
+      "fullCode": "A204-B-G04",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed179",
+      "compartmentId": "c30",
+      "name": "G05",
+      "fullCode": "A204-B-G05",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed180",
+      "compartmentId": "c30",
+      "name": "G06",
+      "fullCode": "A204-B-G06",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed181",
+      "compartmentId": "c31",
+      "name": "G01",
+      "fullCode": "A204-C-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed182",
+      "compartmentId": "c31",
+      "name": "G02",
+      "fullCode": "A204-C-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed183",
+      "compartmentId": "c31",
+      "name": "G03",
+      "fullCode": "A204-C-G03",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed184",
+      "compartmentId": "c31",
+      "name": "G04",
+      "fullCode": "A204-C-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed185",
+      "compartmentId": "c31",
+      "name": "G05",
+      "fullCode": "A204-C-G05",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed186",
+      "compartmentId": "c31",
+      "name": "G06",
+      "fullCode": "A204-C-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed187",
+      "compartmentId": "c32",
+      "name": "G01",
+      "fullCode": "A204-D-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed188",
+      "compartmentId": "c32",
+      "name": "G02",
+      "fullCode": "A204-D-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed189",
+      "compartmentId": "c32",
+      "name": "G03",
+      "fullCode": "A204-D-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed190",
+      "compartmentId": "c32",
+      "name": "G04",
+      "fullCode": "A204-D-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed191",
+      "compartmentId": "c32",
+      "name": "G05",
+      "fullCode": "A204-D-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed192",
+      "compartmentId": "c32",
+      "name": "G06",
+      "fullCode": "A204-D-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed193",
+      "compartmentId": "c33",
+      "name": "G01",
+      "fullCode": "A301-A-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed194",
+      "compartmentId": "c33",
+      "name": "G02",
+      "fullCode": "A301-A-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed195",
+      "compartmentId": "c33",
+      "name": "G03",
+      "fullCode": "A301-A-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed196",
+      "compartmentId": "c33",
+      "name": "G04",
+      "fullCode": "A301-A-G04",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed197",
+      "compartmentId": "c33",
+      "name": "G05",
+      "fullCode": "A301-A-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed198",
+      "compartmentId": "c33",
+      "name": "G06",
+      "fullCode": "A301-A-G06",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed199",
+      "compartmentId": "c34",
+      "name": "G01",
+      "fullCode": "A301-B-G01",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed200",
+      "compartmentId": "c34",
+      "name": "G02",
+      "fullCode": "A301-B-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed201",
+      "compartmentId": "c34",
+      "name": "G03",
+      "fullCode": "A301-B-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed202",
+      "compartmentId": "c34",
+      "name": "G04",
+      "fullCode": "A301-B-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed203",
+      "compartmentId": "c34",
+      "name": "G05",
+      "fullCode": "A301-B-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed204",
+      "compartmentId": "c34",
+      "name": "G06",
+      "fullCode": "A301-B-G06",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed205",
+      "compartmentId": "c35",
+      "name": "G01",
+      "fullCode": "A301-C-G01",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed206",
+      "compartmentId": "c35",
+      "name": "G02",
+      "fullCode": "A301-C-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed207",
+      "compartmentId": "c35",
+      "name": "G03",
+      "fullCode": "A301-C-G03",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed208",
+      "compartmentId": "c35",
+      "name": "G04",
+      "fullCode": "A301-C-G04",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed209",
+      "compartmentId": "c35",
+      "name": "G05",
+      "fullCode": "A301-C-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed210",
+      "compartmentId": "c35",
+      "name": "G06",
+      "fullCode": "A301-C-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed211",
+      "compartmentId": "c36",
+      "name": "G01",
+      "fullCode": "A301-D-G01",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed212",
+      "compartmentId": "c36",
+      "name": "G02",
+      "fullCode": "A301-D-G02",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed213",
+      "compartmentId": "c36",
+      "name": "G03",
+      "fullCode": "A301-D-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed214",
+      "compartmentId": "c36",
+      "name": "G04",
+      "fullCode": "A301-D-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed215",
+      "compartmentId": "c36",
+      "name": "G05",
+      "fullCode": "A301-D-G05",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed216",
+      "compartmentId": "c36",
+      "name": "G06",
+      "fullCode": "A301-D-G06",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed217",
+      "compartmentId": "c37",
+      "name": "G01",
+      "fullCode": "A302-A-G01",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed218",
+      "compartmentId": "c37",
+      "name": "G02",
+      "fullCode": "A302-A-G02",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed219",
+      "compartmentId": "c37",
+      "name": "G03",
+      "fullCode": "A302-A-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed220",
+      "compartmentId": "c37",
+      "name": "G04",
+      "fullCode": "A302-A-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed221",
+      "compartmentId": "c37",
+      "name": "G05",
+      "fullCode": "A302-A-G05",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed222",
+      "compartmentId": "c37",
+      "name": "G06",
+      "fullCode": "A302-A-G06",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed223",
+      "compartmentId": "c38",
+      "name": "G01",
+      "fullCode": "A302-B-G01",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed224",
+      "compartmentId": "c38",
+      "name": "G02",
+      "fullCode": "A302-B-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed225",
+      "compartmentId": "c38",
+      "name": "G03",
+      "fullCode": "A302-B-G03",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed226",
+      "compartmentId": "c38",
+      "name": "G04",
+      "fullCode": "A302-B-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed227",
+      "compartmentId": "c38",
+      "name": "G05",
+      "fullCode": "A302-B-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed228",
+      "compartmentId": "c38",
+      "name": "G06",
+      "fullCode": "A302-B-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed229",
+      "compartmentId": "c39",
+      "name": "G01",
+      "fullCode": "A302-C-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed230",
+      "compartmentId": "c39",
+      "name": "G02",
+      "fullCode": "A302-C-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed231",
+      "compartmentId": "c39",
+      "name": "G03",
+      "fullCode": "A302-C-G03",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed232",
+      "compartmentId": "c39",
+      "name": "G04",
+      "fullCode": "A302-C-G04",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed233",
+      "compartmentId": "c39",
+      "name": "G05",
+      "fullCode": "A302-C-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed234",
+      "compartmentId": "c39",
+      "name": "G06",
+      "fullCode": "A302-C-G06",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed235",
+      "compartmentId": "c40",
+      "name": "G01",
+      "fullCode": "A302-D-G01",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed236",
+      "compartmentId": "c40",
+      "name": "G02",
+      "fullCode": "A302-D-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed237",
+      "compartmentId": "c40",
+      "name": "G03",
+      "fullCode": "A302-D-G03",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed238",
+      "compartmentId": "c40",
+      "name": "G04",
+      "fullCode": "A302-D-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed239",
+      "compartmentId": "c40",
+      "name": "G05",
+      "fullCode": "A302-D-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed240",
+      "compartmentId": "c40",
+      "name": "G06",
+      "fullCode": "A302-D-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed241",
+      "compartmentId": "c41",
+      "name": "G01",
+      "fullCode": "A303-A-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed242",
+      "compartmentId": "c41",
+      "name": "G02",
+      "fullCode": "A303-A-G02",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed243",
+      "compartmentId": "c41",
+      "name": "G03",
+      "fullCode": "A303-A-G03",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed244",
+      "compartmentId": "c41",
+      "name": "G04",
+      "fullCode": "A303-A-G04",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed245",
+      "compartmentId": "c41",
+      "name": "G05",
+      "fullCode": "A303-A-G05",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed246",
+      "compartmentId": "c41",
+      "name": "G06",
+      "fullCode": "A303-A-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed247",
+      "compartmentId": "c42",
+      "name": "G01",
+      "fullCode": "A303-B-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed248",
+      "compartmentId": "c42",
+      "name": "G02",
+      "fullCode": "A303-B-G02",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed249",
+      "compartmentId": "c42",
+      "name": "G03",
+      "fullCode": "A303-B-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed250",
+      "compartmentId": "c42",
+      "name": "G04",
+      "fullCode": "A303-B-G04",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed251",
+      "compartmentId": "c42",
+      "name": "G05",
+      "fullCode": "A303-B-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed252",
+      "compartmentId": "c42",
+      "name": "G06",
+      "fullCode": "A303-B-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed253",
+      "compartmentId": "c43",
+      "name": "G01",
+      "fullCode": "A303-C-G01",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed254",
+      "compartmentId": "c43",
+      "name": "G02",
+      "fullCode": "A303-C-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed255",
+      "compartmentId": "c43",
+      "name": "G03",
+      "fullCode": "A303-C-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed256",
+      "compartmentId": "c43",
+      "name": "G04",
+      "fullCode": "A303-C-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed257",
+      "compartmentId": "c43",
+      "name": "G05",
+      "fullCode": "A303-C-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed258",
+      "compartmentId": "c43",
+      "name": "G06",
+      "fullCode": "A303-C-G06",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed259",
+      "compartmentId": "c44",
+      "name": "G01",
+      "fullCode": "A303-D-G01",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed260",
+      "compartmentId": "c44",
+      "name": "G02",
+      "fullCode": "A303-D-G02",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed261",
+      "compartmentId": "c44",
+      "name": "G03",
+      "fullCode": "A303-D-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed262",
+      "compartmentId": "c44",
+      "name": "G04",
+      "fullCode": "A303-D-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed263",
+      "compartmentId": "c44",
+      "name": "G05",
+      "fullCode": "A303-D-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed264",
+      "compartmentId": "c44",
+      "name": "G06",
+      "fullCode": "A303-D-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed265",
+      "compartmentId": "c45",
+      "name": "G01",
+      "fullCode": "A304-A-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed266",
+      "compartmentId": "c45",
+      "name": "G02",
+      "fullCode": "A304-A-G02",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed267",
+      "compartmentId": "c45",
+      "name": "G03",
+      "fullCode": "A304-A-G03",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed268",
+      "compartmentId": "c45",
+      "name": "G04",
+      "fullCode": "A304-A-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed269",
+      "compartmentId": "c45",
+      "name": "G05",
+      "fullCode": "A304-A-G05",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed270",
+      "compartmentId": "c45",
+      "name": "G06",
+      "fullCode": "A304-A-G06",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed271",
+      "compartmentId": "c46",
+      "name": "G01",
+      "fullCode": "A304-B-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed272",
+      "compartmentId": "c46",
+      "name": "G02",
+      "fullCode": "A304-B-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed273",
+      "compartmentId": "c46",
+      "name": "G03",
+      "fullCode": "A304-B-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed274",
+      "compartmentId": "c46",
+      "name": "G04",
+      "fullCode": "A304-B-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed275",
+      "compartmentId": "c46",
+      "name": "G05",
+      "fullCode": "A304-B-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed276",
+      "compartmentId": "c46",
+      "name": "G06",
+      "fullCode": "A304-B-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed277",
+      "compartmentId": "c47",
+      "name": "G01",
+      "fullCode": "A304-C-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed278",
+      "compartmentId": "c47",
+      "name": "G02",
+      "fullCode": "A304-C-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed279",
+      "compartmentId": "c47",
+      "name": "G03",
+      "fullCode": "A304-C-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed280",
+      "compartmentId": "c47",
+      "name": "G04",
+      "fullCode": "A304-C-G04",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed281",
+      "compartmentId": "c47",
+      "name": "G05",
+      "fullCode": "A304-C-G05",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed282",
+      "compartmentId": "c47",
+      "name": "G06",
+      "fullCode": "A304-C-G06",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed283",
+      "compartmentId": "c48",
+      "name": "G01",
+      "fullCode": "A304-D-G01",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed284",
+      "compartmentId": "c48",
+      "name": "G02",
+      "fullCode": "A304-D-G02",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed285",
+      "compartmentId": "c48",
+      "name": "G03",
+      "fullCode": "A304-D-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed286",
+      "compartmentId": "c48",
+      "name": "G04",
+      "fullCode": "A304-D-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed287",
+      "compartmentId": "c48",
+      "name": "G05",
+      "fullCode": "A304-D-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed288",
+      "compartmentId": "c48",
+      "name": "G06",
+      "fullCode": "A304-D-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed289",
+      "compartmentId": "c49",
+      "name": "G01",
+      "fullCode": "A401-A-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed290",
+      "compartmentId": "c49",
+      "name": "G02",
+      "fullCode": "A401-A-G02",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed291",
+      "compartmentId": "c49",
+      "name": "G03",
+      "fullCode": "A401-A-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed292",
+      "compartmentId": "c49",
+      "name": "G04",
+      "fullCode": "A401-A-G04",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed293",
+      "compartmentId": "c49",
+      "name": "G05",
+      "fullCode": "A401-A-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed294",
+      "compartmentId": "c49",
+      "name": "G06",
+      "fullCode": "A401-A-G06",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed295",
+      "compartmentId": "c50",
+      "name": "G01",
+      "fullCode": "A401-B-G01",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed296",
+      "compartmentId": "c50",
+      "name": "G02",
+      "fullCode": "A401-B-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed297",
+      "compartmentId": "c50",
+      "name": "G03",
+      "fullCode": "A401-B-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed298",
+      "compartmentId": "c50",
+      "name": "G04",
+      "fullCode": "A401-B-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed299",
+      "compartmentId": "c50",
+      "name": "G05",
+      "fullCode": "A401-B-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed300",
+      "compartmentId": "c50",
+      "name": "G06",
+      "fullCode": "A401-B-G06",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed301",
+      "compartmentId": "c51",
+      "name": "G01",
+      "fullCode": "A401-C-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed302",
+      "compartmentId": "c51",
+      "name": "G02",
+      "fullCode": "A401-C-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed303",
+      "compartmentId": "c51",
+      "name": "G03",
+      "fullCode": "A401-C-G03",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed304",
+      "compartmentId": "c51",
+      "name": "G04",
+      "fullCode": "A401-C-G04",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed305",
+      "compartmentId": "c51",
+      "name": "G05",
+      "fullCode": "A401-C-G05",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed306",
+      "compartmentId": "c51",
+      "name": "G06",
+      "fullCode": "A401-C-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed307",
+      "compartmentId": "c52",
+      "name": "G01",
+      "fullCode": "A401-D-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed308",
+      "compartmentId": "c52",
+      "name": "G02",
+      "fullCode": "A401-D-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed309",
+      "compartmentId": "c52",
+      "name": "G03",
+      "fullCode": "A401-D-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed310",
+      "compartmentId": "c52",
+      "name": "G04",
+      "fullCode": "A401-D-G04",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed311",
+      "compartmentId": "c52",
+      "name": "G05",
+      "fullCode": "A401-D-G05",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed312",
+      "compartmentId": "c52",
+      "name": "G06",
+      "fullCode": "A401-D-G06",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed313",
+      "compartmentId": "c53",
+      "name": "G01",
+      "fullCode": "A402-A-G01",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed314",
+      "compartmentId": "c53",
+      "name": "G02",
+      "fullCode": "A402-A-G02",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed315",
+      "compartmentId": "c53",
+      "name": "G03",
+      "fullCode": "A402-A-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed316",
+      "compartmentId": "c53",
+      "name": "G04",
+      "fullCode": "A402-A-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed317",
+      "compartmentId": "c53",
+      "name": "G05",
+      "fullCode": "A402-A-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed318",
+      "compartmentId": "c53",
+      "name": "G06",
+      "fullCode": "A402-A-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed319",
+      "compartmentId": "c54",
+      "name": "G01",
+      "fullCode": "A402-B-G01",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed320",
+      "compartmentId": "c54",
+      "name": "G02",
+      "fullCode": "A402-B-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed321",
+      "compartmentId": "c54",
+      "name": "G03",
+      "fullCode": "A402-B-G03",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed322",
+      "compartmentId": "c54",
+      "name": "G04",
+      "fullCode": "A402-B-G04",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed323",
+      "compartmentId": "c54",
+      "name": "G05",
+      "fullCode": "A402-B-G05",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed324",
+      "compartmentId": "c54",
+      "name": "G06",
+      "fullCode": "A402-B-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed325",
+      "compartmentId": "c55",
+      "name": "G01",
+      "fullCode": "A402-C-G01",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed326",
+      "compartmentId": "c55",
+      "name": "G02",
+      "fullCode": "A402-C-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed327",
+      "compartmentId": "c55",
+      "name": "G03",
+      "fullCode": "A402-C-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed328",
+      "compartmentId": "c55",
+      "name": "G04",
+      "fullCode": "A402-C-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed329",
+      "compartmentId": "c55",
+      "name": "G05",
+      "fullCode": "A402-C-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed330",
+      "compartmentId": "c55",
+      "name": "G06",
+      "fullCode": "A402-C-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed331",
+      "compartmentId": "c56",
+      "name": "G01",
+      "fullCode": "A402-D-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed332",
+      "compartmentId": "c56",
+      "name": "G02",
+      "fullCode": "A402-D-G02",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed333",
+      "compartmentId": "c56",
+      "name": "G03",
+      "fullCode": "A402-D-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed334",
+      "compartmentId": "c56",
+      "name": "G04",
+      "fullCode": "A402-D-G04",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed335",
+      "compartmentId": "c56",
+      "name": "G05",
+      "fullCode": "A402-D-G05",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed336",
+      "compartmentId": "c56",
+      "name": "G06",
+      "fullCode": "A402-D-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed337",
+      "compartmentId": "c57",
+      "name": "G01",
+      "fullCode": "A403-A-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed338",
+      "compartmentId": "c57",
+      "name": "G02",
+      "fullCode": "A403-A-G02",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed339",
+      "compartmentId": "c57",
+      "name": "G03",
+      "fullCode": "A403-A-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed340",
+      "compartmentId": "c57",
+      "name": "G04",
+      "fullCode": "A403-A-G04",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed341",
+      "compartmentId": "c57",
+      "name": "G05",
+      "fullCode": "A403-A-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed342",
+      "compartmentId": "c57",
+      "name": "G06",
+      "fullCode": "A403-A-G06",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed343",
+      "compartmentId": "c58",
+      "name": "G01",
+      "fullCode": "A403-B-G01",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed344",
+      "compartmentId": "c58",
+      "name": "G02",
+      "fullCode": "A403-B-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed345",
+      "compartmentId": "c58",
+      "name": "G03",
+      "fullCode": "A403-B-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed346",
+      "compartmentId": "c58",
+      "name": "G04",
+      "fullCode": "A403-B-G04",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed347",
+      "compartmentId": "c58",
+      "name": "G05",
+      "fullCode": "A403-B-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed348",
+      "compartmentId": "c58",
+      "name": "G06",
+      "fullCode": "A403-B-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed349",
+      "compartmentId": "c59",
+      "name": "G01",
+      "fullCode": "A403-C-G01",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed350",
+      "compartmentId": "c59",
+      "name": "G02",
+      "fullCode": "A403-C-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed351",
+      "compartmentId": "c59",
+      "name": "G03",
+      "fullCode": "A403-C-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed352",
+      "compartmentId": "c59",
+      "name": "G04",
+      "fullCode": "A403-C-G04",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed353",
+      "compartmentId": "c59",
+      "name": "G05",
+      "fullCode": "A403-C-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed354",
+      "compartmentId": "c59",
+      "name": "G06",
+      "fullCode": "A403-C-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed355",
+      "compartmentId": "c60",
+      "name": "G01",
+      "fullCode": "A403-D-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed356",
+      "compartmentId": "c60",
+      "name": "G02",
+      "fullCode": "A403-D-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed357",
+      "compartmentId": "c60",
+      "name": "G03",
+      "fullCode": "A403-D-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed358",
+      "compartmentId": "c60",
+      "name": "G04",
+      "fullCode": "A403-D-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed359",
+      "compartmentId": "c60",
+      "name": "G05",
+      "fullCode": "A403-D-G05",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed360",
+      "compartmentId": "c60",
+      "name": "G06",
+      "fullCode": "A403-D-G06",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed361",
+      "compartmentId": "c61",
+      "name": "G01",
+      "fullCode": "A404-A-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed362",
+      "compartmentId": "c61",
+      "name": "G02",
+      "fullCode": "A404-A-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed363",
+      "compartmentId": "c61",
+      "name": "G03",
+      "fullCode": "A404-A-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed364",
+      "compartmentId": "c61",
+      "name": "G04",
+      "fullCode": "A404-A-G04",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed365",
+      "compartmentId": "c61",
+      "name": "G05",
+      "fullCode": "A404-A-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed366",
+      "compartmentId": "c61",
+      "name": "G06",
+      "fullCode": "A404-A-G06",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed367",
+      "compartmentId": "c62",
+      "name": "G01",
+      "fullCode": "A404-B-G01",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed368",
+      "compartmentId": "c62",
+      "name": "G02",
+      "fullCode": "A404-B-G02",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed369",
+      "compartmentId": "c62",
+      "name": "G03",
+      "fullCode": "A404-B-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed370",
+      "compartmentId": "c62",
+      "name": "G04",
+      "fullCode": "A404-B-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed371",
+      "compartmentId": "c62",
+      "name": "G05",
+      "fullCode": "A404-B-G05",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed372",
+      "compartmentId": "c62",
+      "name": "G06",
+      "fullCode": "A404-B-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed373",
+      "compartmentId": "c63",
+      "name": "G01",
+      "fullCode": "A404-C-G01",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed374",
+      "compartmentId": "c63",
+      "name": "G02",
+      "fullCode": "A404-C-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed375",
+      "compartmentId": "c63",
+      "name": "G03",
+      "fullCode": "A404-C-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed376",
+      "compartmentId": "c63",
+      "name": "G04",
+      "fullCode": "A404-C-G04",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed377",
+      "compartmentId": "c63",
+      "name": "G05",
+      "fullCode": "A404-C-G05",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed378",
+      "compartmentId": "c63",
+      "name": "G06",
+      "fullCode": "A404-C-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed379",
+      "compartmentId": "c64",
+      "name": "G01",
+      "fullCode": "A404-D-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed380",
+      "compartmentId": "c64",
+      "name": "G02",
+      "fullCode": "A404-D-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed381",
+      "compartmentId": "c64",
+      "name": "G03",
+      "fullCode": "A404-D-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed382",
+      "compartmentId": "c64",
+      "name": "G04",
+      "fullCode": "A404-D-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed383",
+      "compartmentId": "c64",
+      "name": "G05",
+      "fullCode": "A404-D-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed384",
+      "compartmentId": "c64",
+      "name": "G06",
+      "fullCode": "A404-D-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed385",
+      "compartmentId": "c65",
+      "name": "G01",
+      "fullCode": "A501-A-G01",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed386",
+      "compartmentId": "c65",
+      "name": "G02",
+      "fullCode": "A501-A-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed387",
+      "compartmentId": "c65",
+      "name": "G03",
+      "fullCode": "A501-A-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed388",
+      "compartmentId": "c65",
+      "name": "G04",
+      "fullCode": "A501-A-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed389",
+      "compartmentId": "c65",
+      "name": "G05",
+      "fullCode": "A501-A-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed390",
+      "compartmentId": "c65",
+      "name": "G06",
+      "fullCode": "A501-A-G06",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed391",
+      "compartmentId": "c66",
+      "name": "G01",
+      "fullCode": "A501-B-G01",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed392",
+      "compartmentId": "c66",
+      "name": "G02",
+      "fullCode": "A501-B-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed393",
+      "compartmentId": "c66",
+      "name": "G03",
+      "fullCode": "A501-B-G03",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed394",
+      "compartmentId": "c66",
+      "name": "G04",
+      "fullCode": "A501-B-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed395",
+      "compartmentId": "c66",
+      "name": "G05",
+      "fullCode": "A501-B-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed396",
+      "compartmentId": "c66",
+      "name": "G06",
+      "fullCode": "A501-B-G06",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed397",
+      "compartmentId": "c67",
+      "name": "G01",
+      "fullCode": "A501-C-G01",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed398",
+      "compartmentId": "c67",
+      "name": "G02",
+      "fullCode": "A501-C-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed399",
+      "compartmentId": "c67",
+      "name": "G03",
+      "fullCode": "A501-C-G03",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed400",
+      "compartmentId": "c67",
+      "name": "G04",
+      "fullCode": "A501-C-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed401",
+      "compartmentId": "c67",
+      "name": "G05",
+      "fullCode": "A501-C-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed402",
+      "compartmentId": "c67",
+      "name": "G06",
+      "fullCode": "A501-C-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed403",
+      "compartmentId": "c68",
+      "name": "G01",
+      "fullCode": "A501-D-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed404",
+      "compartmentId": "c68",
+      "name": "G02",
+      "fullCode": "A501-D-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed405",
+      "compartmentId": "c68",
+      "name": "G03",
+      "fullCode": "A501-D-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed406",
+      "compartmentId": "c68",
+      "name": "G04",
+      "fullCode": "A501-D-G04",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed407",
+      "compartmentId": "c68",
+      "name": "G05",
+      "fullCode": "A501-D-G05",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed408",
+      "compartmentId": "c68",
+      "name": "G06",
+      "fullCode": "A501-D-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed409",
+      "compartmentId": "c69",
+      "name": "G01",
+      "fullCode": "A502-A-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed410",
+      "compartmentId": "c69",
+      "name": "G02",
+      "fullCode": "A502-A-G02",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed411",
+      "compartmentId": "c69",
+      "name": "G03",
+      "fullCode": "A502-A-G03",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed412",
+      "compartmentId": "c69",
+      "name": "G04",
+      "fullCode": "A502-A-G04",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed413",
+      "compartmentId": "c69",
+      "name": "G05",
+      "fullCode": "A502-A-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed414",
+      "compartmentId": "c69",
+      "name": "G06",
+      "fullCode": "A502-A-G06",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed415",
+      "compartmentId": "c70",
+      "name": "G01",
+      "fullCode": "A502-B-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed416",
+      "compartmentId": "c70",
+      "name": "G02",
+      "fullCode": "A502-B-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed417",
+      "compartmentId": "c70",
+      "name": "G03",
+      "fullCode": "A502-B-G03",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed418",
+      "compartmentId": "c70",
+      "name": "G04",
+      "fullCode": "A502-B-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed419",
+      "compartmentId": "c70",
+      "name": "G05",
+      "fullCode": "A502-B-G05",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed420",
+      "compartmentId": "c70",
+      "name": "G06",
+      "fullCode": "A502-B-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed421",
+      "compartmentId": "c71",
+      "name": "G01",
+      "fullCode": "A502-C-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed422",
+      "compartmentId": "c71",
+      "name": "G02",
+      "fullCode": "A502-C-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed423",
+      "compartmentId": "c71",
+      "name": "G03",
+      "fullCode": "A502-C-G03",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed424",
+      "compartmentId": "c71",
+      "name": "G04",
+      "fullCode": "A502-C-G04",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed425",
+      "compartmentId": "c71",
+      "name": "G05",
+      "fullCode": "A502-C-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed426",
+      "compartmentId": "c71",
+      "name": "G06",
+      "fullCode": "A502-C-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed427",
+      "compartmentId": "c72",
+      "name": "G01",
+      "fullCode": "A502-D-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed428",
+      "compartmentId": "c72",
+      "name": "G02",
+      "fullCode": "A502-D-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed429",
+      "compartmentId": "c72",
+      "name": "G03",
+      "fullCode": "A502-D-G03",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed430",
+      "compartmentId": "c72",
+      "name": "G04",
+      "fullCode": "A502-D-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed431",
+      "compartmentId": "c72",
+      "name": "G05",
+      "fullCode": "A502-D-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed432",
+      "compartmentId": "c72",
+      "name": "G06",
+      "fullCode": "A502-D-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed433",
+      "compartmentId": "c73",
+      "name": "G01",
+      "fullCode": "A503-A-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed434",
+      "compartmentId": "c73",
+      "name": "G02",
+      "fullCode": "A503-A-G02",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed435",
+      "compartmentId": "c73",
+      "name": "G03",
+      "fullCode": "A503-A-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed436",
+      "compartmentId": "c73",
+      "name": "G04",
+      "fullCode": "A503-A-G04",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed437",
+      "compartmentId": "c73",
+      "name": "G05",
+      "fullCode": "A503-A-G05",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed438",
+      "compartmentId": "c73",
+      "name": "G06",
+      "fullCode": "A503-A-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed439",
+      "compartmentId": "c74",
+      "name": "G01",
+      "fullCode": "A503-B-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed440",
+      "compartmentId": "c74",
+      "name": "G02",
+      "fullCode": "A503-B-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed441",
+      "compartmentId": "c74",
+      "name": "G03",
+      "fullCode": "A503-B-G03",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed442",
+      "compartmentId": "c74",
+      "name": "G04",
+      "fullCode": "A503-B-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed443",
+      "compartmentId": "c74",
+      "name": "G05",
+      "fullCode": "A503-B-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed444",
+      "compartmentId": "c74",
+      "name": "G06",
+      "fullCode": "A503-B-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed445",
+      "compartmentId": "c75",
+      "name": "G01",
+      "fullCode": "A503-C-G01",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed446",
+      "compartmentId": "c75",
+      "name": "G02",
+      "fullCode": "A503-C-G02",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed447",
+      "compartmentId": "c75",
+      "name": "G03",
+      "fullCode": "A503-C-G03",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed448",
+      "compartmentId": "c75",
+      "name": "G04",
+      "fullCode": "A503-C-G04",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed449",
+      "compartmentId": "c75",
+      "name": "G05",
+      "fullCode": "A503-C-G05",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed450",
+      "compartmentId": "c75",
+      "name": "G06",
+      "fullCode": "A503-C-G06",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed451",
+      "compartmentId": "c76",
+      "name": "G01",
+      "fullCode": "A503-D-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed452",
+      "compartmentId": "c76",
+      "name": "G02",
+      "fullCode": "A503-D-G02",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed453",
+      "compartmentId": "c76",
+      "name": "G03",
+      "fullCode": "A503-D-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed454",
+      "compartmentId": "c76",
+      "name": "G04",
+      "fullCode": "A503-D-G04",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed455",
+      "compartmentId": "c76",
+      "name": "G05",
+      "fullCode": "A503-D-G05",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed456",
+      "compartmentId": "c76",
+      "name": "G06",
+      "fullCode": "A503-D-G06",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed457",
+      "compartmentId": "c77",
+      "name": "G01",
+      "fullCode": "A504-A-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed458",
+      "compartmentId": "c77",
+      "name": "G02",
+      "fullCode": "A504-A-G02",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed459",
+      "compartmentId": "c77",
+      "name": "G03",
+      "fullCode": "A504-A-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed460",
+      "compartmentId": "c77",
+      "name": "G04",
+      "fullCode": "A504-A-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed461",
+      "compartmentId": "c77",
+      "name": "G05",
+      "fullCode": "A504-A-G05",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed462",
+      "compartmentId": "c77",
+      "name": "G06",
+      "fullCode": "A504-A-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed463",
+      "compartmentId": "c78",
+      "name": "G01",
+      "fullCode": "A504-B-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed464",
+      "compartmentId": "c78",
+      "name": "G02",
+      "fullCode": "A504-B-G02",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed465",
+      "compartmentId": "c78",
+      "name": "G03",
+      "fullCode": "A504-B-G03",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed466",
+      "compartmentId": "c78",
+      "name": "G04",
+      "fullCode": "A504-B-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed467",
+      "compartmentId": "c78",
+      "name": "G05",
+      "fullCode": "A504-B-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed468",
+      "compartmentId": "c78",
+      "name": "G06",
+      "fullCode": "A504-B-G06",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed469",
+      "compartmentId": "c79",
+      "name": "G01",
+      "fullCode": "A504-C-G01",
+      "status": "MAINTENANCE",
+      "studentId": null
+    },
+    {
+      "id": "bed470",
+      "compartmentId": "c79",
+      "name": "G02",
+      "fullCode": "A504-C-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed471",
+      "compartmentId": "c79",
+      "name": "G03",
+      "fullCode": "A504-C-G03",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed472",
+      "compartmentId": "c79",
+      "name": "G04",
+      "fullCode": "A504-C-G04",
+      "status": "HOLDING",
+      "studentId": null
+    },
+    {
+      "id": "bed473",
+      "compartmentId": "c79",
+      "name": "G05",
+      "fullCode": "A504-C-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed474",
+      "compartmentId": "c79",
+      "name": "G06",
+      "fullCode": "A504-C-G06",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed475",
+      "compartmentId": "c80",
+      "name": "G01",
+      "fullCode": "A504-D-G01",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed476",
+      "compartmentId": "c80",
+      "name": "G02",
+      "fullCode": "A504-D-G02",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed477",
+      "compartmentId": "c80",
+      "name": "G03",
+      "fullCode": "A504-D-G03",
+      "status": "OCCUPIED",
+      "studentId": null
+    },
+    {
+      "id": "bed478",
+      "compartmentId": "c80",
+      "name": "G04",
+      "fullCode": "A504-D-G04",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed479",
+      "compartmentId": "c80",
+      "name": "G05",
+      "fullCode": "A504-D-G05",
+      "status": "AVAILABLE",
+      "studentId": null
+    },
+    {
+      "id": "bed480",
+      "compartmentId": "c80",
+      "name": "G06",
+      "fullCode": "A504-D-G06",
+      "status": "MAINTENANCE",
+      "studentId": null
+    }
+  ],
+  "configs": [
+    {
+      "id": "c1",
+      "type": "PRICING",
+      "roomPrice": 1200000,
+      "electricityPrice": 3500,
+      "waterPrice": 15000,
+      "vat": 0.08
+    }
+  ],
+  "bookings": [],
+  "contracts": [],
+  "utilityRecords": [],
+  "invoices": [],
+  "tickets": []
+}
