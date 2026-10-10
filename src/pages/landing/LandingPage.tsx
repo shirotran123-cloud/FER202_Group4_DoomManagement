@@ -1,4 +1,4 @@
- import React from "react"
+import React from "react"
 import { Link } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
 import {
@@ -25,67 +25,67 @@ export const LandingPage: React.FC = () => {
   const highlights = [
     {
       icon: BedDouble,
-      title: "MÃ´ hÃ¬nh Buá»“ng riÃªng 1:4:6",
-      desc: "Cáº¥u trÃºc tiÃªu chuáº©n: 1 PhÃ²ng = 4 Buá»“ng riÃªng biá»‡t (A, B, C, D) = 24 GiÆ°á»ng. Má»—i sinh viÃªn sá»Ÿ há»¯u rÃ¨m che riÃªng tÆ°, á»• Ä‘iá»‡n, Ä‘Ã¨n há»c vÃ  tá»§ locker mÃ£ sá»‘.",
+      title: "Mô hình Buồng riêng 1:4:6",
+      desc: "Cấu trúc tiêu chuẩn: 1 Phòng = 4 Buồng riêng biệt (A, B, C, D) = 24 Giường. Mỗi sinh viên sở hữu rèm che riêng tư, ổ điện, đèn học và tủ locker mã số.",
       tag: "Signature Topology",
     },
     {
       icon: Zap,
-      title: "Auto-Approval 0-Cháº¡m",
-      desc: "Engine tá»± Ä‘á»™ng Ä‘á»‘i soÃ¡t giá»›i tÃ­nh, thÃ´ng tin tuyá»ƒn sinh, tÃ¬nh tráº¡ng cÃ´ng ná»£ vÃ  thanh toÃ¡n cá»c trong 3 giÃ¢y. Cáº¥p ngay e-Contract PDF há»£p lá»‡.",
+      title: "Auto-Approval 0-Chạm",
+      desc: "Engine tự động đối soát giới tính, thông tin tuyển sinh, tình trạng công nợ và thanh toán cọc trong 3 giây. Cấp ngay e-Contract PDF hợp lệ.",
       tag: "Zero-Touch",
     },
     {
       icon: Clock,
-      title: "KhÃ³a giá»¯ chá»— 15 PhÃºt",
-      desc: "CÆ¡ cháº¿ khÃ³a concurrency lock thá»i gian thá»±c vá»›i Ä‘á»“ng há»“ Ä‘áº¿m ngÆ°á»£c 900s. TrÃ¡nh trÃ¹ng láº·p giÆ°á»ng khi hÃ ng trÄƒm tÃ¢n sinh viÃªn cÃ¹ng chá»n.",
+      title: "Khóa giữ chỗ 15 Phút",
+      desc: "Cơ chế khóa concurrency lock thời gian thực với đồng hồ đếm ngược 900s. Tránh trùng lặp giường khi hàng trăm tân sinh viên cùng chọn.",
       tag: "Realtime Lock",
     },
     {
       icon: Receipt,
-      title: "Minh báº¡ch Äiá»‡n NÆ°á»›c (Total / N)",
-      desc: "Chá»¥p áº£nh cÃ´ng tÆ¡ Ä‘iá»‡n nÆ°á»›c phÃ²ng ngÃ y 25-28 hÃ ng thÃ¡ng. Tá»± Ä‘á»™ng tÃ­nh thuáº¿ VAT vÃ  chia Ä‘á»u chÃ­nh xÃ¡c cho N sinh viÃªn Ä‘ang á»Ÿ kÃ¨m mÃ£ VietQR.",
+      title: "Minh bạch Điện Nước (Total / N)",
+      desc: "Chụp ảnh công tơ điện nước phòng ngày 25-28 hàng tháng. Tự động tính thuế VAT và chia đều chính xác cho N sinh viên đang ở kèm mã VietQR.",
       tag: "Pro-Rata Split",
     },
     {
       icon: ShieldCheck,
-      title: "An ninh 24/7 & Giá»›i nghiÃªm 23:00",
-      desc: "Cá»•ng kiá»ƒm soÃ¡t quÃ©t tháº» thÃ´ng minh. ÄÆ¡n xin vá» muá»™n ngoÃ i giá» ná»™p online trÆ°á»›c 21:00. Quáº£n lÃ½ Ä‘iá»ƒm rÃ¨n luyá»‡n KTX minh báº¡ch.",
+      title: "An ninh 24/7 & Giới nghiêm 23:00",
+      desc: "Cổng kiểm soát quét thẻ thông minh. Đơn xin về muộn ngoài giờ nộp online trước 21:00. Quản lý điểm rèn luyện KTX minh bạch.",
       tag: "Smart Gate",
     },
     {
       icon: FileCheck,
-      title: "BiÃªn báº£n BÃ n giao Sá»‘ hÃ³a",
-      desc: "Checklist Ä‘iá»‡n tá»­ khi Check-in vÃ  Check-out vá»›i áº£nh hiá»‡n tráº¡ng thiáº¿t bá»‹, tá»± Ä‘á»™ng quyáº¿t toÃ¡n vÃ  hoÃ n cá»c khÃ´ng thá»§ tá»¥c rÆ°á»m rÃ .",
+      title: "Biên bản Bàn giao Số hóa",
+      desc: "Checklist điện tử khi Check-in và Check-out với ảnh hiện trạng thiết bị, tự động quyết toán và hoàn cọc không thủ tục rườm rà.",
       tag: "Digital Handover",
     },
   ]
 
   const feeTable = [
-    { item: "Tiá»n thuÃª giÆ°á»ng buá»“ng riÃªng", price: "900.000 VNÄ", unit: "thÃ¡ng / sinh viÃªn", note: "Thu theo ká»³ 4 thÃ¡ng (3.600.000 VNÄ)" },
-    { item: "Tiá»n kÃ½ quá»¹ Ä‘áº·t cá»c tÃ i sáº£n", price: "1.000.000 VNÄ", unit: "láº§n Ä‘áº§u / hoÃ n láº¡i khi tráº£ phÃ²ng", note: "Quyáº¿t toÃ¡n sau khi trá»« hÆ° háº¡i náº¿u cÃ³" },
-    { item: "ÄÆ¡n giÃ¡ Ä‘iá»‡n phÃ²ng", price: "2.500 VNÄ", unit: "kWh (chÆ°a VAT 8%)", note: "TÃ­nh theo chá»‰ sá»‘ cÃ´ng tÆ¡ phÃ²ng thá»±c táº¿" },
-    { item: "ÄÆ¡n giÃ¡ nÆ°á»›c sinh hoáº¡t", price: "12.000 VNÄ", unit: "mÂ³ (chÆ°a VAT 5%)", note: "Chia Ä‘á»u cho sá»‘ thÃ nh viÃªn trong phÃ²ng" },
-    { item: "PhÃ­ dá»‹ch vá»¥ & vá»‡ sinh hÃ nh lang", price: "30.000 VNÄ", unit: "thÃ¡ng / sinh viÃªn", note: "Bao gá»“m thu gom rÃ¡c, vá»‡ sinh khu chung" },
-    { item: "Internet Wi-Fi tá»‘c Ä‘á»™ cao", price: "Miá»…n phÃ­", unit: "phá»§ sÃ³ng toÃ n tÃ²a nhÃ ", note: "TÃ­ch há»£p tÃ i khoáº£n sinh viÃªn FPT" },
+    { item: "Tiền thuê giường buồng riêng", price: "900.000 VNĐ", unit: "tháng / sinh viên", note: "Thu theo kỳ 4 tháng (3.600.000 VNĐ)" },
+    { item: "Tiền ký quỹ đặt cọc tài sản", price: "1.000.000 VNĐ", unit: "lần đầu / hoàn lại khi trả phòng", note: "Quyết toán sau khi trừ hư hại nếu có" },
+    { item: "Đơn giá điện phòng", price: "2.500 VNĐ", unit: "kWh (chưa VAT 8%)", note: "Tính theo chỉ số công tơ phòng thực tế" },
+    { item: "Đơn giá nước sinh hoạt", price: "12.000 VNĐ", unit: "m³ (chưa VAT 5%)", note: "Chia đều cho số thành viên trong phòng" },
+    { item: "Phí dịch vụ & vệ sinh hành lang", price: "30.000 VNĐ", unit: "tháng / sinh viên", note: "Bao gồm thu gom rác, vệ sinh khu chung" },
+    { item: "Internet Wi-Fi tốc độ cao", price: "Miễn phí", unit: "phủ sóng toàn tòa nhà", note: "Tích hợp tài khoản sinh viên FPT" },
   ]
 
   const rules = [
     {
-      title: "1. Khung giá» Giá»›i nghiÃªm 23:00",
-      content: "Cá»•ng kÃ½ tÃºc xÃ¡ Ä‘Ã³ng lÃºc 23:00 vÃ  má»Ÿ lÃºc 05:30 sÃ¡ng hÃ´m sau. Sinh viÃªn vá» muá»™n do lá»‹ch há»c/cÃ´ng viá»‡c cáº§n ná»™p Ä‘Æ¡n trá»±c tuyáº¿n trÃªn há»‡ thá»‘ng trÆ°á»›c 21:00.",
+      title: "1. Khung giờ Giới nghiêm 23:00",
+      content: "Cổng ký túc xá đóng lúc 23:00 và mở lúc 05:30 sáng hôm sau. Sinh viên về muộn do lịch học/công việc cần nộp đơn trực tuyến trên hệ thống trước 21:00.",
     },
     {
-      title: "2. An toÃ n PhÃ²ng chÃ¡y & Thiáº¿t bá»‹ Ä‘iá»‡n",
-      content: "NghiÃªm cáº¥m náº¥u Äƒn báº±ng báº¿p gas, báº¿p tá»«, ná»“i chiÃªn trong phÃ²ng ngá»§. Chá»‰ sá»­ dá»¥ng khu vá»±c báº¿p chung táº¡i Táº§ng 1. Tuyá»‡t Ä‘á»‘i khÃ´ng tá»± Ã½ cÃ¢u mÃ³c dÃ¢y Ä‘iá»‡n.",
+      title: "2. An toàn Phòng cháy & Thiết bị điện",
+      content: "Nghiêm cấm nấu ăn bằng bếp gas, bếp từ, nồi chiên trong phòng ngủ. Chỉ sử dụng khu vực bếp chung tại Tầng 1. Tuyệt đối không tự ý câu móc dây điện.",
     },
     {
-      title: "3. Quáº£n lÃ½ Äiá»ƒm rÃ¨n luyá»‡n KTX (100 Äiá»ƒm)",
-      content: "Má»—i sinh viÃªn báº¯t Ä‘áº§u vá»›i 100 Ä‘iá»ƒm. Vi pháº¡m giá» giá»›i nghiÃªm trá»« 5 Ä‘iá»ƒm/láº§n; gÃ¢y máº¥t tráº­t tá»± sau 23:00 trá»« 10 Ä‘iá»ƒm. Bá»‹ trá»« quÃ¡ 30 Ä‘iá»ƒm sáº½ Ä‘Ã¬nh chá»‰ lÆ°u trÃº ká»³ tiáº¿p theo.",
+      title: "3. Quản lý Điểm rèn luyện KTX (100 Điểm)",
+      content: "Mỗi sinh viên bắt đầu với 100 điểm. Vi phạm giờ giới nghiêm trừ 5-10 điểm/lần; gây mất trật tự sau 22:30 trừ 10 điểm. Bị trừ quá 30 điểm sẽ đình chỉ lưu trú kỳ tiếp theo.",
     },
     {
-      title: "4. Quyá»n riÃªng tÆ° & Báº£o vá»‡ Buá»“ng cÃ¡ nhÃ¢n",
-      content: "KhÃ´ng dáº«n ngÆ°á»i láº¡ hoáº·c ngÆ°á»i khÃ¡c giá»›i vÃ o buá»“ng ngá»§. Giá»¯ gÃ¬n chÃ¬a khÃ³a/tháº» tá»« cÃ¡ nhÃ¢n, khÃ³a tá»§ báº£o máº­t khi rá»i khá»i phÃ²ng.",
+      title: "4. Quyền riêng tư & Bảo vệ Buồng cá nhân",
+      content: "Không dẫn người lạ hoặc người khác giới vào buồng ngủ. Giữ gìn chìa khóa/thẻ từ cá nhân, khóa tủ bảo mật khi rời khỏi phòng.",
     },
   ]
 
@@ -95,18 +95,18 @@ export const LandingPage: React.FC = () => {
         <div className="relative z-10 max-w-3xl space-y-6">
           <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-3.5 py-1 text-xs font-semibold text-orange-600 dark:text-orange-400">
             <Sparkles className="h-3.5 w-3.5" />
-            <span>FPT University Dormitory Management System â€¢ Ká»³ Fall 2026</span>
+            <span>FPT University Dormitory Management System • Kỳ Fall 2026</span>
           </div>
 
           <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl leading-[1.15]">
-            KhÃ´ng Gian Sá»‘ng Chuáº©n Má»±c,{" "}
+            Không Gian Sống Chuẩn Mực,{" "}
             <span className="bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-500 bg-clip-text text-transparent">
-              Tráº£i Nghiá»‡m Äáº¡i Há»c Trá»n Váº¹n
+              Trải Nghiệm Đại Học Trọn Vẹn
             </span>
           </h1>
 
           <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
-            Há»‡ thá»‘ng Ä‘áº·t giÆ°á»ng vÃ  quáº£n lÃ½ KÃ½ tÃºc xÃ¡ trá»±c tuyáº¿n thÃ´ng minh. Tráº£i nghiá»‡m mÃ´ hÃ¬nh buá»“ng riÃªng <strong>1:4:6</strong> tiá»‡n nghi, cÆ¡ cháº¿ giá»¯ chá»— 15 phÃºt khÃ´ng xung Ä‘á»™t, vÃ  hÃ³a Ä‘Æ¡n Ä‘iá»‡n nÆ°á»›c minh báº¡ch chia theo thá»i gian thá»±c.
+            Hệ thống đặt giường và quản lý Ký túc xá trực tuyến thông minh. Trải nghiệm mô hình buồng riêng <strong>1:4:6</strong> tiện nghi, cơ chế giữ chỗ 15 phút không xung đột, và hóa đơn điện nước minh bạch chia theo thời gian thực.
           </p>
 
           <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -115,7 +115,7 @@ export const LandingPage: React.FC = () => {
               className="inline-flex items-center gap-2 rounded-xl bg-orange-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-orange-600/25 transition-all hover:bg-orange-700 hover:shadow-orange-600/40"
             >
               <BedDouble className="h-4 w-4" />
-              <span>Xem Báº£n Äá»“ & Äáº·t GiÆ°á»ng (UC-09)</span>
+              <span>Xem Bản Đồ & Đặt Giường (UC-09)</span>
               <ArrowRight className="h-4 w-4" />
             </Link>
 
@@ -124,14 +124,14 @@ export const LandingPage: React.FC = () => {
                 to="/login"
                 className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3.5 text-sm font-semibold text-foreground shadow-xs transition-colors hover:bg-muted"
               >
-                <span>ÄÄƒng Nháº­p Google SSO (UC-02)</span>
+                <span>Đăng Nhập Google SSO (UC-02)</span>
               </Link>
             ) : (
               <Link
                 to="/profile"
                 className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3.5 text-sm font-semibold text-foreground shadow-xs transition-colors hover:bg-muted"
               >
-                <span>Há»“ SÆ¡ Cá»§a Báº¡n (UC-04)</span>
+                <span>Hồ Sơ Của Bạn (UC-04)</span>
               </Link>
             )}
           </div>
@@ -139,19 +139,19 @@ export const LandingPage: React.FC = () => {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-border/60">
             <div>
               <p className="text-2xl font-black text-foreground">500+</p>
-              <p className="text-xs text-muted-foreground">GiÆ°á»ng tiÃªu chuáº©n hiá»‡n Ä‘áº¡i</p>
+              <p className="text-xs text-muted-foreground">Giường tiêu chuẩn hiện đại</p>
             </div>
             <div>
-              <p className="text-2xl font-black text-orange-600">15 PhÃºt</p>
-              <p className="text-xs text-muted-foreground">KhÃ³a giá»¯ chá»— thanh toÃ¡n</p>
+              <p className="text-2xl font-black text-orange-600">15 Phút</p>
+              <p className="text-xs text-muted-foreground">Khóa giữ chỗ thanh toán</p>
             </div>
             <div>
               <p className="text-2xl font-black text-emerald-600">100%</p>
-              <p className="text-xs text-muted-foreground">Tá»± Ä‘á»™ng xÃ©t duyá»‡t 0-cháº¡m</p>
+              <p className="text-xs text-muted-foreground">Tự động xét duyệt 0-chạm</p>
             </div>
             <div>
               <p className="text-2xl font-black text-foreground">24/7</p>
-              <p className="text-xs text-muted-foreground">An ninh báº£o vá»‡ & Ká»¹ thuáº­t</p>
+              <p className="text-xs text-muted-foreground">An ninh bảo vệ & Kỹ thuật</p>
             </div>
           </div>
         </div>
@@ -162,13 +162,13 @@ export const LandingPage: React.FC = () => {
       <section className="space-y-6">
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <span className="text-xs font-bold uppercase tracking-wider text-orange-600">
-            Ná»n táº£ng cÃ´ng nghá»‡
+            Nền tảng công nghệ
           </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
-            TÃ­nh NÄƒng Ná»•i Báº­t Chuáº©n IEEE 830
+            Tính Năng Nổi Bật Chuẩn IEEE 830
           </h2>
           <p className="text-sm text-muted-foreground">
-            ÄÆ°á»£c phÃ¡t triá»ƒn Ä‘á»“ng bá»™ bÃ¡m sÃ¡t 28 Use Cases Ä‘áº·c táº£ trong tÃ i liá»‡u SRS KÃ½ tÃºc xÃ¡ FPT.
+            Được phát triển đồng bộ bám sát 28 Use Cases đặc tả trong tài liệu SRS Ký túc xá FPT.
           </p>
         </div>
 
@@ -200,20 +200,20 @@ export const LandingPage: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-orange-600">
-              Chi phÃ­ cÃ´ng khai
+              Chi phí công khai
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
-              Biá»ƒu PhÃ­ LÆ°u TrÃº & Dá»‹ch Vá»¥
+              Biểu Phí Lưu Trú & Dịch Vụ
             </h2>
             <p className="text-sm text-muted-foreground">
-              Ãp dá»¥ng thá»‘ng nháº¥t cho TÃ²a nhÃ  A (Nam) vÃ  TÃ²a nhÃ  B (Ná»¯) nÄƒm há»c 2026-2027.
+              Áp dụng thống nhất cho Tòa nhà A (Nam) và Tòa nhà B (Nữ) năm học 2026-2027.
             </p>
           </div>
           <Link
             to="/billing"
             className="inline-flex items-center gap-1.5 text-xs font-bold text-orange-600 hover:text-orange-700"
           >
-            <span>Tra cá»©u chi tiáº¿t hÃ³a Ä‘Æ¡n máº«u (Module 4)</span>
+            <span>Tra cứu chi tiết hóa đơn mẫu (Module 4)</span>
             <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
@@ -222,10 +222,10 @@ export const LandingPage: React.FC = () => {
           <table className="w-full text-left text-xs sm:text-sm">
             <thead className="bg-muted/50 text-muted-foreground text-xs uppercase border-b border-border font-bold">
               <tr>
-                <th className="px-5 py-3.5">Háº¡ng má»¥c dá»‹ch vá»¥</th>
-                <th className="px-5 py-3.5">ÄÆ¡n giÃ¡ quy Ä‘á»‹nh</th>
-                <th className="px-5 py-3.5">ÄÆ¡n vá»‹ tÃ­nh</th>
-                <th className="px-5 py-3.5 hidden md:table-cell">Ghi chÃº & ChÃ­nh sÃ¡ch</th>
+                <th className="px-5 py-3.5">Hạng mục dịch vụ</th>
+                <th className="px-5 py-3.5">Đơn giá quy định</th>
+                <th className="px-5 py-3.5">Đơn vị tính</th>
+                <th className="px-5 py-3.5 hidden md:table-cell">Ghi chú & Chính sách</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -252,13 +252,13 @@ export const LandingPage: React.FC = () => {
       <section className="space-y-6">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-orange-600">
-            Ná»™i quy báº¯t buá»™c
+            Nội quy bắt buộc
           </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
-            Quy Äá»‹nh Chung & Ká»· Luáº­t LÆ°u TrÃº
+            Quy Định Chung & Kỷ Luật Lưu Trú
           </h2>
           <p className="text-sm text-muted-foreground">
-            Sinh viÃªn cam káº¿t thá»±c hiá»‡n nghiÃªm tÃºc khi kÃ½ há»£p Ä‘á»“ng lÆ°u trÃº Ä‘iá»‡n tá»­.
+            Sinh viên cam kết thực hiện nghiêm túc khi ký hợp đồng lưu trú điện tử.
           </p>
         </div>
 
@@ -278,33 +278,33 @@ export const LandingPage: React.FC = () => {
       <section className="rounded-3xl border border-border bg-muted/20 p-8 sm:p-10 space-y-6">
         <div className="text-center max-w-xl mx-auto space-y-2">
           <h2 className="text-xl sm:text-2xl font-extrabold text-foreground">
-            Tiá»‡n Ãch & KhÃ´ng Gian Chung Hiá»‡n Äáº¡i
+            Tiện Ích & Không Gian Chung Hiện Đại
           </h2>
           <p className="text-xs text-muted-foreground">
-            MÃ´i trÆ°á»ng sinh hoáº¡t an toÃ n, tiá»‡n nghi giÃºp sinh viÃªn táº­p trung tá»‘i Ä‘a cho viá»‡c há»c.
+            Môi trường sinh hoạt an toàn, tiện nghi giúp sinh viên tập trung tối đa cho việc học.
           </p>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div className="rounded-xl border border-border bg-card p-4 text-center space-y-2">
             <Wifi className="h-6 w-6 text-orange-600 mx-auto" />
-            <h4 className="text-xs font-bold text-foreground">Wi-Fi 6 BÄƒng ThÃ´ng Rá»™ng</h4>
-            <p className="text-[11px] text-muted-foreground">Phá»§ sÃ³ng toÃ n bá»™ phÃ²ng ngá»§ & sáº£nh</p>
+            <h4 className="text-xs font-bold text-foreground">Wi-Fi 6 Băng Thông Rộng</h4>
+            <p className="text-[11px] text-muted-foreground">Phủ sóng toàn bộ phòng ngủ & sảnh</p>
           </div>
           <div className="rounded-xl border border-border bg-card p-4 text-center space-y-2">
             <Coffee className="h-6 w-6 text-orange-600 mx-auto" />
-            <h4 className="text-xs font-bold text-foreground">PhÃ²ng Tá»± Há»c 24/7</h4>
-            <p className="text-[11px] text-muted-foreground">MÃ¡y láº¡nh, bÃ n há»c nhÃ³m yÃªn tÄ©nh</p>
+            <h4 className="text-xs font-bold text-foreground">Phòng Tự Học 24/7</h4>
+            <p className="text-[11px] text-muted-foreground">Máy lạnh, bàn học nhóm yên tĩnh</p>
           </div>
           <div className="rounded-xl border border-border bg-card p-4 text-center space-y-2">
             <Flame className="h-6 w-6 text-orange-600 mx-auto" />
-            <h4 className="text-xs font-bold text-foreground">Báº¿p Ä‚n Chung Táº§ng 1</h4>
-            <p className="text-[11px] text-muted-foreground">Khu vá»±c náº¥u nÆ°á»›ng an toÃ n PCCC</p>
+            <h4 className="text-xs font-bold text-foreground">Bếp Ăn Chung Tầng 1</h4>
+            <p className="text-[11px] text-muted-foreground">Khu vực nấu nướng an toàn PCCC</p>
           </div>
           <div className="rounded-xl border border-border bg-card p-4 text-center space-y-2">
             <ShieldCheck className="h-6 w-6 text-orange-600 mx-auto" />
-            <h4 className="text-xs font-bold text-foreground">Báº£o Vá»‡ & Camera AI 24/7</h4>
-            <p className="text-[11px] text-muted-foreground">Kiá»ƒm soÃ¡t ra vÃ o thÃ´ng minh</p>
+            <h4 className="text-xs font-bold text-foreground">Bảo Vệ & Camera AI 24/7</h4>
+            <p className="text-[11px] text-muted-foreground">Kiểm soát ra vào thông minh</p>
           </div>
         </div>
       </section>
@@ -313,7 +313,7 @@ export const LandingPage: React.FC = () => {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Building2 className="h-4 w-4 text-orange-600" />
-            <span className="font-bold text-foreground">Ban Quáº£n LÃ½ KÃ½ TÃºc XÃ¡ â€¢ Äáº¡i Há»c FPT</span>
+            <span className="font-bold text-foreground">Ban Quản Lý Ký Túc Xá • Đại Học FPT</span>
           </div>
           <div className="flex flex-wrap items-center gap-4">
             <span className="flex items-center gap-1">
@@ -322,12 +322,12 @@ export const LandingPage: React.FC = () => {
             </span>
             <span className="flex items-center gap-1">
               <MapPin className="h-3.5 w-3.5 text-primary" />
-              <span>Khu ÄÃ´ thá»‹ FPT City, ÄÃ  Náºµng</span>
+              <span>Khu Đô thị FPT City, Đà Nẵng</span>
             </span>
           </div>
         </div>
         <div className="text-center text-[11px]">
-          Â© 2026 FER202_Group4 â€¢ Äá»“ Ã¡n mÃ´n há»c FER202 Front-End Web Development with React.
+          © 2026 FER202_Group4 • Đồ án môn học FER202 Front-End Web Development with React.
         </div>
       </footer>
     </div>

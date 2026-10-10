@@ -1,4 +1,4 @@
- import React, { useState } from "react"
+import React, { useState } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
 import type { UserRole } from "@/types/auth"
@@ -38,7 +38,7 @@ export const LoginPage: React.FC = () => {
     setErrorMessage(null)
 
     if (!customEmail) {
-      setErrorMessage("Vui lÃ²ng nháº­p Ä‘á»‹a chá»‰ email Google cá»§a báº¡n.")
+      setErrorMessage("Vui lòng nhập địa chỉ email Google của bạn.")
       return
     }
 
@@ -48,7 +48,7 @@ export const LoginPage: React.FC = () => {
     if (result.success) {
       navigate(from, { replace: true })
     } else {
-      setErrorMessage(result.message || "ÄÄƒng nháº­p khÃ´ng thÃ nh cÃ´ng.")
+      setErrorMessage(result.message || "Đăng nhập không thành công.")
     }
   }
 
@@ -66,9 +66,9 @@ export const LoginPage: React.FC = () => {
             <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-md shadow-inner mb-1">
               <Building2 className="h-6 w-6 text-white" />
             </div>
-            <h1 className="text-2xl font-black tracking-tight">Cá»•ng XÃ¡c Thá»±c Google SSO</h1>
+            <h1 className="text-2xl font-black tracking-tight">Cổng Xác Thực Google SSO</h1>
             <p className="text-xs text-white/90 max-w-md mx-auto">
-              Há»‡ thá»‘ng Quáº£n lÃ½ KÃ½ tÃºc xÃ¡ FPT University (DMS) â€¢ PhÃ¢n luá»“ng Ä‘Äƒng nháº­p chuáº©n UC-02
+              Hệ thống Quản lý Ký túc xá FPT University (DMS) • Phân luồng đăng nhập chuẩn UC-02
             </p>
           </div>
 
@@ -88,7 +88,7 @@ export const LoginPage: React.FC = () => {
                 }`}
               >
                 <GraduationCap className="h-4 w-4 text-emerald-600" />
-                <span>Sinh ViÃªn LÆ°u TrÃº</span>
+                <span>Sinh Viên Lưu Trú</span>
               </button>
 
               <button
@@ -105,7 +105,7 @@ export const LoginPage: React.FC = () => {
                 }`}
               >
                 <ShieldCheck className="h-4 w-4 text-orange-600" />
-                <span>CÃ¡n Bá»™ / Ká»¹ Thuáº­t</span>
+                <span>Cán Bộ / Kỹ Thuật</span>
               </button>
             </div>
 
@@ -113,7 +113,7 @@ export const LoginPage: React.FC = () => {
               <div className="flex items-start gap-3 rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-xs text-red-700 dark:text-red-400">
                 <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <p className="font-bold">Quy táº¯c xÃ¡c thá»±c khÃ´ng thá»a mÃ£n:</p>
+                  <p className="font-bold">Quy tắc xác thực không thỏa mãn:</p>
                   <p className="mt-0.5 leading-relaxed">{errorMessage}</p>
                 </div>
               </div>
@@ -124,16 +124,16 @@ export const LoginPage: React.FC = () => {
                 <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-xs space-y-1.5">
                   <div className="flex items-center gap-2 font-bold text-emerald-700 dark:text-emerald-400">
                     <CheckCircle2 className="h-4 w-4" />
-                    <span>Quy Ä‘á»‹nh tÃ i khoáº£n Sinh viÃªn:</span>
+                    <span>Quy định tài khoản Sinh viên:</span>
                   </div>
                   <p className="text-muted-foreground leading-relaxed">
-                    Sinh viÃªn sá»­ dá»¥ng <strong>Gmail cÃ¡ nhÃ¢n (@gmail.com)</strong> Ä‘Ã£ Ä‘Äƒng kÃ½ trong há»“ sÆ¡ tuyá»ƒn sinh vá»›i nhÃ  trÆ°á»ng. Há»‡ thá»‘ng sáº½ tá»± Ä‘á»™ng map há»“ sÆ¡ nháº­p há»c Ä‘á»ƒ xÃ©t duyá»‡t giÆ°á»ng 0-cháº¡m.
+                    Sinh viên sử dụng <strong>Gmail cá nhân (@gmail.com)</strong> đã đăng ký trong hồ sơ tuyển sinh với nhà trường. Hệ thống sẽ tự động map hồ sơ nhập học để xét duyệt giường 0-chạm.
                   </p>
                 </div>
 
                 <div className="space-y-2">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                    TÃ i khoáº£n Demo dÃ nh cho Giáº£ng viÃªn / ÄÃ¡nh giÃ¡ Ä‘á»“ Ã¡n:
+                    Tài khoản Demo dành cho Giảng viên / Đánh giá đồ án:
                   </span>
                   <button
                     type="button"
@@ -147,15 +147,15 @@ export const LoginPage: React.FC = () => {
                       </div>
                       <div>
                         <p className="text-xs font-bold text-foreground">
-                          Nguyá»…n HoÃ ng Vinh (Sinh viÃªn K19)
+                          Nguyễn Hoàng Vinh (Sinh viên K19)
                         </p>
                         <p className="text-[11px] font-mono text-muted-foreground">
-                          hoangvinh.student@gmail.com â€¢ SE182049
+                          hoangvinh.student@gmail.com • SE182049
                         </p>
                       </div>
                     </div>
                     <span className="rounded-md bg-emerald-600 px-2.5 py-1 text-[10px] font-bold text-white shadow-xs">
-                      ÄÄƒng nháº­p nhanh
+                      Đăng nhập nhanh
                     </span>
                   </button>
                 </div>
@@ -167,16 +167,16 @@ export const LoginPage: React.FC = () => {
                 <div className="rounded-xl border border-orange-500/20 bg-orange-500/5 p-4 text-xs space-y-1.5">
                   <div className="flex items-center gap-2 font-bold text-orange-700 dark:text-orange-400">
                     <Lock className="h-4 w-4" />
-                    <span>Quy Ä‘á»‹nh xÃ¡c thá»±c NghiÃªm ngáº·t:</span>
+                    <span>Quy định xác thực Nghiêm ngặt:</span>
                   </div>
                   <p className="text-muted-foreground leading-relaxed">
-                    CÃ¡n bá»™ Quáº£n lÃ½ KTX, Ká»¹ thuáº­t viÃªn báº£o trÃ¬ vÃ  Äá»™i ngÅ© An ninh báº£o vá»‡ báº¯t buá»™c pháº£i sá»­ dá»¥ng email tá»• chá»©c mang tÃªn miá»n <strong>@fpt.edu.vn</strong> hoáº·c <strong>@fe.edu.vn</strong>.
+                    Cán bộ Quản lý KTX, Kỹ thuật viên bảo trì và Đội ngũ An ninh bảo vệ bắt buộc phải sử dụng email tổ chức mang tên miền <strong>@fpt.edu.vn</strong> hoặc <strong>@fe.edu.vn</strong>.
                   </p>
                 </div>
 
                 <div className="space-y-2">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                    Chá»n vai trÃ² cÃ¡n bá»™ Ä‘á»ƒ kiá»ƒm thá»­:
+                    Chọn vai trò cán bộ để kiểm thử:
                   </span>
 
                   <div className="space-y-2">
@@ -192,15 +192,15 @@ export const LoginPage: React.FC = () => {
                         </div>
                         <div>
                           <p className="text-xs font-bold text-foreground">
-                            Tháº§y VÅ© ThÃ nh Nam (Quáº£n lÃ½ KTX)
+                            Thầy Vũ Thành Nam (Quản lý KTX)
                           </p>
                           <p className="text-[10px] font-mono text-muted-foreground">
-                            namvt@fpt.edu.vn â€¢ MGR-004
+                            namvt@fpt.edu.vn • MGR-004
                           </p>
                         </div>
                       </div>
                       <span className="rounded-md bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white">
-                        VÃ o quyá»n Quáº£n lÃ½
+                        Vào quyền Quản lý
                       </span>
                     </button>
 
@@ -216,15 +216,15 @@ export const LoginPage: React.FC = () => {
                         </div>
                         <div>
                           <p className="text-xs font-bold text-foreground">
-                            ChÃº Äá»— Máº¡nh HÃ¹ng (An ninh / Ká»¹ thuáº­t)
+                            Chú Đỗ Mạnh Hùng (An ninh / Kỹ thuật)
                           </p>
                           <p className="text-[10px] font-mono text-muted-foreground">
-                            hungbv.guard@fe.edu.vn â€¢ SEC-012
+                            hungbv.guard@fe.edu.vn • SEC-012
                           </p>
                         </div>
                       </div>
                       <span className="rounded-md bg-amber-600 px-2 py-0.5 text-[10px] font-bold text-white">
-                        VÃ o quyá»n An ninh/KT
+                        Vào quyền An ninh/KT
                       </span>
                     </button>
 
@@ -240,15 +240,15 @@ export const LoginPage: React.FC = () => {
                         </div>
                         <div>
                           <p className="text-xs font-bold text-foreground">
-                            Quáº£n trá»‹ viÃªn Há»‡ thá»‘ng (System Admin)
+                            Quản trị viên Hệ thống (System Admin)
                           </p>
                           <p className="text-[10px] font-mono text-muted-foreground">
-                            admin.dms@fpt.edu.vn â€¢ ADM-001
+                            admin.dms@fpt.edu.vn • ADM-001
                           </p>
                         </div>
                       </div>
                       <span className="rounded-md bg-purple-600 px-2 py-0.5 text-[10px] font-bold text-white">
-                        VÃ o quyá»n Admin
+                        Vào quyền Admin
                       </span>
                     </button>
                   </div>
@@ -263,18 +263,18 @@ export const LoginPage: React.FC = () => {
                   onClick={() => setIsCustomMode(true)}
                   className="w-full text-center text-xs text-muted-foreground hover:text-foreground font-medium underline underline-offset-4"
                 >
-                  Hoáº·c thá»­ nghiá»‡m nháº­p Ä‘á»‹a chá»‰ email Google khÃ¡c (Kiá»ƒm thá»­ logic miá»n)
+                  Hoặc thử nghiệm nhập địa chỉ email Google khác (Kiểm thử logic miền)
                 </button>
               ) : (
                 <form onSubmit={handleCustomLogin} className="space-y-3">
                   <div className="flex items-center justify-between text-xs font-semibold">
-                    <label className="text-foreground">Nháº­p email Google Ä‘á»ƒ kiá»ƒm thá»­:</label>
+                    <label className="text-foreground">Nhập email Google để kiểm thử:</label>
                     <button
                       type="button"
                       onClick={() => setIsCustomMode(false)}
                       className="text-muted-foreground hover:text-foreground text-[11px]"
                     >
-                      ÄÃ³ng
+                      Đóng
                     </button>
                   </div>
 
@@ -295,7 +295,7 @@ export const LoginPage: React.FC = () => {
 
                   {activeTab === "staff" && (
                     <div className="flex gap-3 text-xs">
-                      <span className="text-muted-foreground text-[11px]">Chá»n vai trÃ² cÃ¡n bá»™:</span>
+                      <span className="text-muted-foreground text-[11px]">Chọn vai trò cán bộ:</span>
                       <label className="flex items-center gap-1 cursor-pointer">
                         <input
                           type="radio"
@@ -303,7 +303,7 @@ export const LoginPage: React.FC = () => {
                           checked={selectedStaffRole === "manager"}
                           onChange={() => setSelectedStaffRole("manager")}
                         />
-                        <span>Quáº£n lÃ½</span>
+                        <span>Quản lý</span>
                       </label>
                       <label className="flex items-center gap-1 cursor-pointer">
                         <input
@@ -331,7 +331,7 @@ export const LoginPage: React.FC = () => {
                     disabled={isLoading}
                     className="flex w-full items-center justify-center gap-2 rounded-xl bg-orange-600 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-orange-700 transition-colors disabled:opacity-50"
                   >
-                    {isLoading ? "Äang xÃ¡c thá»±c Google OAuth..." : "XÃ¡c thá»±c & ÄÄƒng nháº­p"}
+                    {isLoading ? "Đang xác thực Google OAuth..." : "Xác thực & Đăng nhập"}
                   </button>
                 </form>
               )}
@@ -340,7 +340,7 @@ export const LoginPage: React.FC = () => {
             <div className="rounded-xl bg-muted/40 p-3 text-[11px] text-muted-foreground flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-orange-600 shrink-0" />
               <span>
-                CÆ¡ cháº¿ báº£o máº­t sá»­ dá»¥ng JWT Access Token (15 phÃºt) tá»± Ä‘á»™ng cáº¥p má»›i qua HttpOnly Refresh Token chuáº©n UC-03.
+                Cơ chế bảo mật sử dụng JWT Access Token (15 phút) tự động cấp mới qua HttpOnly Refresh Token chuẩn UC-03.
               </span>
             </div>
           </div>

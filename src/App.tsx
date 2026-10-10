@@ -1,4 +1,4 @@
- import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { AuthProvider } from "@/contexts/AuthContext"
 import { AppLayout } from "@/components/layout/AppLayout"
 import { ProtectedRoute } from "@/components/layout/ProtectedRoute"
@@ -7,9 +7,9 @@ import { LoginPage } from "@/pages/auth/LoginPage"
 import { ProfilePage } from "@/pages/profile/ProfilePage"
 import { BookingStubPage } from "@/pages/stubs/BookingStubPage"
 import { BillingStubPage } from "@/pages/stubs/BillingStubPage"
-import { MaintenanceStubPage } from "@/pages/stubs/MaintenanceStubPage"
-import { CurfewStubPage } from "@/pages/stubs/CurfewStubPage"
-import { ManagerDashboardStubPage } from "@/pages/stubs/ManagerDashboardStubPage"
+import { MaintenancePage } from "@/pages/maintenance/MaintenancePage"
+import { CurfewPage } from "@/pages/curfew/CurfewPage"
+import { ManagerDashboardPage } from "@/pages/manager/ManagerDashboardPage"
 import { QATestPlanPage } from "@/pages/stubs/QATestPlanPage"
 import { UnauthorizedPage } from "@/pages/errors/UnauthorizedPage"
 import { NotFoundPage } from "@/pages/errors/NotFoundPage"
@@ -49,7 +49,7 @@ export function App() {
               path="/maintenance"
               element={
                 <ProtectedRoute>
-                  <MaintenanceStubPage />
+                  <MaintenancePage />
                 </ProtectedRoute>
               }
             />
@@ -57,7 +57,7 @@ export function App() {
               path="/curfew"
               element={
                 <ProtectedRoute>
-                  <CurfewStubPage />
+                  <CurfewPage />
                 </ProtectedRoute>
               }
             />
@@ -65,7 +65,7 @@ export function App() {
               path="/manager"
               element={
                 <ProtectedRoute allowedRoles={["manager", "admin"]}>
-                  <ManagerDashboardStubPage />
+                  <ManagerDashboardPage />
                 </ProtectedRoute>
               }
             />

@@ -15,8 +15,8 @@
 | STT | Họ và Tên | Vai trò chính (Role) | Module phụ trách | Use Cases chính |
 | :-: | :--- | :--- | :--- | :--- |
 | **1** | **Nguyễn Hoàng Vinh** | Project Manager & Full-Stack Lead | Module 1 (Auth), Architecture, Repo Setup | `UC-01`, `UC-02`, `UC-03`, `UC-04` |
-| **2** | **Trần Thanh Nguyên** | Frontend Lead & UI/UX Designer | Module 2 & 3 (Interactive Bed Picker, 1:4:6 Map) | `UC-09`, `UC-10` |
-| **3** | **Trần Công Tiến** | Backend Engineer & Database Architect | Database Schema, Mock APIs, Auto-Approval | `UC-05`, `UC-06`, `UC-07`, `UC-08`, `UC-11`, `UC-12`, `UC-13` |
+| **2** | **Trần Công Tiến** | Frontend Lead & UI/UX Designer | Module 2 & 3 (Interactive Bed Picker, 1:4:6 Map) | `UC-09`, `UC-10` |
+| **3** | **Trần Thanh Nguyên** | Backend Engineer & Database Architect | Database Schema, Mock APIs, Auto-Approval | `UC-05`, `UC-06`, `UC-07`, `UC-08`, `UC-11`, `UC-12`, `UC-13` |
 | **4** | **Văn Thái Trung** | Frontend Developer & Integration Specialist | Module 4 (Utility & Split Billing), Handover | `UC-14`, `UC-15`, `UC-16`, `UC-17`, `UC-18`, `UC-19` |
 | **5** | **Đinh Thanh Trung** | Backend Developer & Security Analyst | Module 5 (Maintenance), Module 6 (Curfew), Module 7 (Dashboard) | `UC-20`, `UC-21`, `UC-22`, `UC-23`, `UC-24`, `UC-25`, `UC-26`, `UC-27`, `UC-28` |
 | **6** | **Huỳnh Gia Kim** | Quality Assurance (QA) & Test Engineer | Test Cases, QA Testing, Slide & Demo Script | Toàn bộ 28 Use Cases & NFR |
@@ -42,7 +42,7 @@
 
 ---
 
-### 2. 🎨 Trần Thanh Nguyên — `Frontend Lead & UI/UX Designer`
+### 2. 🎨 Trần Công Tiến — `Frontend Lead & UI/UX Designer`
 * **Mục tiêu:** Xây dựng Design System đồng bộ và thực hiện **tính năng trọng tâm (Signature Feature)**: Bản đồ chọn giường trực quan theo mô hình 1:4:6.
 * **Các Use Case phụ trách:**
   - `UC-09`: Giao diện trực quan chọn giường (`Tòa nhà ➔ Tầng ➔ Phòng ➔ Buồng (A, B, C, D) ➔ Giường (G01 - G06)`).
@@ -61,7 +61,7 @@
 
 ---
 
-### 3. 💾 Trần Công Tiến — `Backend Engineer & Database Architect`
+### 3. 💾 Trần Thanh Nguyên — `Backend Engineer & Database Architect`
 * **Mục tiêu:** Thiết kế cơ sở dữ liệu chuẩn 3NF, chuẩn bị dữ liệu mẫu và code luồng Tự động xét duyệt (Auto-Approval) không cần duyệt tay.
 * **Các Use Case phụ trách:**
   - `UC-05`: Quản lý danh mục Tòa nhà, Tầng lầu và loại tòa (Nam / Nữ).
@@ -193,9 +193,9 @@ Tuần 1: Setup & Nền tảng ──► Tuần 2: Core Đặt Giường ──�
 - [ ] **Kim:** Kiểm thử logic tính tiền điện nước, kiểm tra làm tròn số và chia tiền pro-rata.
 
 ### 🔹 Tuần 4: Vận hành Cơ sở vật chất & Quản trị (Operations & Analytics)
-- [ ] **Thanh Trung:** Hoàn thành hệ thống Ticket báo hỏng thiết bị phòng và buồng cá nhân.
-- [ ] **Thanh Trung:** Code giao diện Bảo vệ trực cổng: quét thẻ đối chiếu đơn về muộn và ghi nhận vi phạm sau 23:00.
-- [ ] **Thanh Trung:** Code trang Dashboard quản lý tỷ lệ lấp đầy phòng và tính năng xuất file Excel.
+- [x] **Thanh Trung:** Hoàn thành hệ thống Ticket báo hỏng thiết bị phòng và buồng cá nhân (UC-20, UC-21, UC-22, UC-23).
+- [x] **Thanh Trung:** Code giao diện Bảo vệ trực cổng: quét thẻ đối chiếu đơn về muộn và ghi nhận vi phạm sau 23:00, hệ thống 100đ kỷ luật (UC-24, UC-25, UC-26).
+- [x] **Thanh Trung:** Code trang Dashboard quản lý tỷ lệ lấp đầy phòng và tính năng xuất file Excel danh sách tạm trú & công nợ (UC-27, UC-28).
 - [ ] **Vinh:** Rà soát toàn bộ kết nối API, tối ưu hóa hiệu năng tải trang.
 
 ### 🔹 Tuần 5: Kiểm thử Toàn diện & Chuẩn bị Báo cáo (Final Polish & Defense)

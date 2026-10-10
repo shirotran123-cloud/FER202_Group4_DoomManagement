@@ -1,4 +1,4 @@
- import React from "react"
+import React from "react"
 import { Receipt, Camera, Calculator, QrCode } from "lucide-react"
 
 export const BillingStubPage: React.FC = () => {
@@ -12,41 +12,41 @@ export const BillingStubPage: React.FC = () => {
             </div>
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-blue-600">
-                Module 4 â€¢ Use Case UC-14 - UC-19
+                Module 4 • Use Case UC-14 - UC-19
               </span>
               <h1 className="text-2xl font-black text-foreground">
-                Quáº£n LÃ½ Chá»‰ Sá»‘ Äiá»‡n NÆ°á»›c PhÃ²ng & HÃ³a ÄÆ¡n Chia Äá»u (Total / N)
+                Quản Lý Chỉ Số Điện Nước Phòng & Hóa Đơn Chia Đều (Total / N)
               </h1>
             </div>
           </div>
           <div className="rounded-xl border border-border bg-card px-3 py-2 text-right">
-            <p className="text-[10px] text-muted-foreground uppercase font-bold">ThÃ nh viÃªn phá»¥ trÃ¡ch:</p>
-            <p className="text-xs font-bold text-foreground">âš¡ VÄƒn ThÃ¡i Trung</p>
+            <p className="text-[10px] text-muted-foreground uppercase font-bold">Thành viên phụ trách:</p>
+            <p className="text-xs font-bold text-foreground">⚡ Văn Thái Trung</p>
           </div>
         </div>
 
         <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
           <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
             <Camera className="h-5 w-5 text-blue-600" />
-            <h3 className="font-bold text-foreground">1. Nháº­p Sá»‘ CÃ´ng TÆ¡ KÃ¨m áº¢nh (UC-16)</h3>
+            <h3 className="font-bold text-foreground">1. Nhập Số Công Tơ Kèm Ảnh (UC-16)</h3>
             <p className="text-muted-foreground leading-relaxed">
-              Quáº£n lÃ½ chá»¥p áº£nh Ä‘á»“ng há»“ Ä‘iá»‡n nÆ°á»›c ngÃ y 25-28 hÃ ng thÃ¡ng, nháº­p kWh vÃ  mÂ³ vá»›i cÆ¡ cháº¿ cáº£nh bÃ¡o náº¿u tiÃªu thá»¥ tÄƒng Ä‘á»™t biáº¿n 200%.
+              Quản lý chụp ảnh đồng hồ điện nước ngày 25-28 hàng tháng, nhập kWh và m³ với cơ chế cảnh báo nếu tiêu thụ tăng đột biến 200%.
             </p>
           </div>
 
           <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
             <Calculator className="h-5 w-5 text-emerald-600" />
-            <h3 className="font-bold text-foreground">2. Thuáº­t ToÃ¡n Chia Tiá»n PhÃ²ng (UC-17)</h3>
+            <h3 className="font-bold text-foreground">2. Thuật Toán Chia Tiền Phòng (UC-17)</h3>
             <p className="text-muted-foreground leading-relaxed">
-              Tá»± Ä‘á»™ng cá»™ng thuáº¿ VAT (Äiá»‡n 8%, NÆ°á»›c 5%) vÃ  chia Ä‘á»u cho N sinh viÃªn Ä‘ang cÆ° trÃº thá»±c táº¿ theo tá»· lá»‡ sá»‘ ngÃ y á»Ÿ (Pro-rata).
+              Tự động cộng thuế VAT (Điện 8%, Nước 5%) và chia đều cho N sinh viên đang cư trú thực tế theo tỷ lệ số ngày ở (Pro-rata).
             </p>
           </div>
 
           <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
             <QrCode className="h-5 w-5 text-purple-600" />
-            <h3 className="font-bold text-foreground">3. Thanh ToÃ¡n VietQR CÃ¡ NhÃ¢n (UC-18)</h3>
+            <h3 className="font-bold text-foreground">3. Thanh Toán VietQR Cá Nhân (UC-18)</h3>
             <p className="text-muted-foreground leading-relaxed">
-              Má»—i sinh viÃªn sá»Ÿ há»¯u mÃ£ VietQR riÃªng cÃ³ cÃº phÃ¡p chuáº©n `DMS [MÃ£HÄ] [MSSV]`, tá»± Ä‘á»™ng gáº¡ch ná»£ sau khi chuyá»ƒn khoáº£n.
+              Mỗi sinh viên sở hữu mã VietQR riêng có cú pháp chuẩn `DMS [MãHĐ] [MSSV]`, tự động gạch nợ sau khi chuyển khoản.
             </p>
           </div>
         </div>
@@ -54,28 +54,28 @@ export const BillingStubPage: React.FC = () => {
 
       <div className="rounded-3xl border border-border bg-card p-6 shadow-xs space-y-4">
         <h2 className="font-bold text-sm text-foreground">
-          Báº£ng Thá»‘ng KÃª Giáº£ Äá»‹nh PhÃ²ng A205 (ThÃ¡ng 09/2026)
+          Bảng Thống Kê Giả Định Phòng A205 (Tháng 09/2026)
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
           <div className="p-4 rounded-2xl bg-muted/30 border border-border space-y-1">
-            <p className="text-muted-foreground text-[11px]">TiÃªu thá»¥ Ä‘iá»‡n</p>
+            <p className="text-muted-foreground text-[11px]">Tiêu thụ điện</p>
             <p className="text-lg font-bold text-foreground">185 kWh</p>
-            <p className="text-[10px] text-muted-foreground">ÄÆ¡n giÃ¡: 2.500 Ä‘ + 8% VAT</p>
+            <p className="text-[10px] text-muted-foreground">Đơn giá: 2.500 đ + 8% VAT</p>
           </div>
           <div className="p-4 rounded-2xl bg-muted/30 border border-border space-y-1">
-            <p className="text-muted-foreground text-[11px]">TiÃªu thá»¥ nÆ°á»›c</p>
-            <p className="text-lg font-bold text-foreground">28 mÂ³</p>
-            <p className="text-[10px] text-muted-foreground">ÄÆ¡n giÃ¡: 12.000 Ä‘ + 5% VAT</p>
+            <p className="text-muted-foreground text-[11px]">Tiêu thụ nước</p>
+            <p className="text-lg font-bold text-foreground">28 m³</p>
+            <p className="text-[10px] text-muted-foreground">Đơn giá: 12.000 đ + 5% VAT</p>
           </div>
           <div className="p-4 rounded-2xl bg-muted/30 border border-border space-y-1">
-            <p className="text-muted-foreground text-[11px]">Sá»‘ thÃ nh viÃªn (N)</p>
-            <p className="text-lg font-bold text-foreground">6 Sinh viÃªn</p>
-            <p className="text-[10px] text-muted-foreground">Buá»“ng B1 & B2</p>
+            <p className="text-muted-foreground text-[11px]">Số thành viên (N)</p>
+            <p className="text-lg font-bold text-foreground">6 Sinh viên</p>
+            <p className="text-[10px] text-muted-foreground">Buồng B1 & B2</p>
           </div>
           <div className="p-4 rounded-2xl bg-orange-500/10 border border-orange-500/30 space-y-1">
-            <p className="text-orange-600 dark:text-orange-400 text-[11px] font-bold">Má»—i ngÆ°á»i Ä‘Ã³ng (Total / N)</p>
-            <p className="text-lg font-bold text-orange-600 dark:text-orange-400">142.500 VNÄ</p>
-            <p className="text-[10px] text-muted-foreground">Bao gá»“m 30k phÃ­ vá»‡ sinh</p>
+            <p className="text-orange-600 dark:text-orange-400 text-[11px] font-bold">Mỗi người đóng (Total / N)</p>
+            <p className="text-lg font-bold text-orange-600 dark:text-orange-400">142.500 VNĐ</p>
+            <p className="text-[10px] text-muted-foreground">Bao gồm 30k phí vệ sinh</p>
           </div>
         </div>
       </div>

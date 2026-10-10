@@ -1,4 +1,4 @@
- import React from "react"
+import React from "react"
 import { CheckSquare } from "lucide-react"
 
 export const QATestPlanPage: React.FC = () => {
@@ -12,16 +12,16 @@ export const QATestPlanPage: React.FC = () => {
             </div>
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-emerald-600">
-                Quality Assurance â€¢ Deliverables Tuáº§n 1 - 5
+                Quality Assurance • Deliverables Tuần 1 - 5
               </span>
               <h1 className="text-2xl font-black text-foreground">
-                Ma Tráº­n Kiá»ƒm Thá»­ 28 Use Cases & Ká»‹ch Báº£n Demo Báº£o Vá»‡ Äá»“ Ãn
+                Ma Trận Kiểm Thử 28 Use Cases & Kịch Bản Demo Bảo Vệ Đồ Án
               </h1>
             </div>
           </div>
           <div className="rounded-xl border border-border bg-card px-3 py-2 text-right">
-            <p className="text-[10px] text-muted-foreground uppercase font-bold">ThÃ nh viÃªn phá»¥ trÃ¡ch:</p>
-            <p className="text-xs font-bold text-foreground">ðŸ§ª Huá»³nh Gia Kim (QA Lead)</p>
+            <p className="text-[10px] text-muted-foreground uppercase font-bold">Thành viên phụ trách:</p>
+            <p className="text-xs font-bold text-foreground">🧪 Huỳnh Gia Kim (QA Lead)</p>
           </div>
         </div>
 
@@ -29,19 +29,37 @@ export const QATestPlanPage: React.FC = () => {
           <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
             <h3 className="font-bold text-foreground">Case 1: Concurrency Race Condition</h3>
             <p className="text-muted-foreground leading-relaxed">
-              Hai sinh viÃªn cÃ¹ng chá»n 1 giÆ°á»ng trong 1 tÃ­ch táº¯c âž” Há»‡ thá»‘ng khÃ³a Ä‘Ãºng 1 ngÆ°á»i, hiá»ƒn thá»‹ thÃ´ng bÃ¡o giÆ°á»ng Ä‘ang giá»¯ cho ngÆ°á»i cÃ²n láº¡i.
+              Hai sinh viên cùng chọn 1 giường trong 1 tích tắc ➔ Hệ thống khóa đúng 1 người, hiển thị thông báo giường đang giữ cho người còn lại.
             </p>
           </div>
           <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
             <h3 className="font-bold text-foreground">Case 2: 15-Minute Timeout Rollback</h3>
             <p className="text-muted-foreground leading-relaxed">
-              Sau 15:00 khÃ´ng quÃ©t mÃ£ QR thanh toÃ¡n âž” GiÆ°á»ng tá»± Ä‘á»™ng giáº£i phÃ³ng vá» tráº¡ng thÃ¡i xanh lÃ¡ (AVAILABLE).
+              Sau 15:00 không quét mã QR thanh toán ➔ Giường tự động giải phóng về trạng thái xanh lá (AVAILABLE).
             </p>
           </div>
           <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
             <h3 className="font-bold text-foreground">Case 3: Pro-Rata Utility Split</h3>
             <p className="text-muted-foreground leading-relaxed">
-              Tá»•ng tiá»n chia cho cÃ¡c cÃ¡ nhÃ¢n trong phÃ²ng khá»›p 100% vá»›i hÃ³a Ä‘Æ¡n phÃ²ng (lá»‡ch tá»‘i Ä‘a 1 VNÄ lÃ m trÃ²n).
+              Tổng tiền chia cho các cá nhân trong phòng khớp 100% với hóa đơn phòng (lệch tối đa 1 VNĐ làm tròn).
+            </p>
+          </div>
+          <div className="rounded-2xl border border-red-500/30 bg-red-500/5 p-5 space-y-2">
+            <h3 className="font-bold text-red-600">Case 4: Curfew Violation 23:00 (UC-25, 26)</h3>
+            <p className="text-muted-foreground leading-relaxed">
+              Quét thẻ sinh viên sau 23:00 không có đơn xin phép ➔ Tự động gắn cờ vi phạm màu đỏ, trừ 10 điểm rèn luyện và lập biên bản.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-5 space-y-2">
+            <h3 className="font-bold text-amber-600">Case 5: Maintenance 2h & 1-5 Star (UC-20 - 23)</h3>
+            <p className="text-muted-foreground leading-relaxed">
+              Phiếu báo hỏng khẩn cấp có đồng hồ ETA 2h, kỹ thuật viên cập nhật linh kiện thay thế, sinh viên nghiệm thu đánh giá 1-5 sao đóng phiếu.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-purple-500/30 bg-purple-500/5 p-5 space-y-2">
+            <h3 className="font-bold text-purple-600">Case 6: Excel .xlsx Export & Donut (UC-27, 28)</h3>
+            <p className="text-muted-foreground leading-relaxed">
+              Xuất file Excel danh sách tạm trú công an & công nợ quá hạn có định dạng bảng chuẩn, biểu đồ tỷ lệ lấp đầy trực quan.
             </p>
           </div>
         </div>
