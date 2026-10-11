@@ -3,30 +3,27 @@ import type { AuthTokens, UserProfile, UserRole } from "@/types/auth"
 import { AuthContext } from "./auth-context-def"
 import { MOCK_USERS } from "@/data/mockUsers"
 
-const STORAGE_KEY_USER = "dms_auth_user"
-const STORAGE_KEY_TOKENS = "dms_auth_tokens"
+const STORAGE_KEY_USER = "dms_auth_user_session"
+const STORAGE_KEY_TOKENS = "dms_auth_tokens_session"
 const SESSION_DURATION_SECONDS = 15 * 60 // 15 minutes JWT access token validity
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserProfile | null>(() => {
     try {
+      // Clean up legacy mock auto-saved keys from previous versions
+      localStorage.removeItem("dms_auth_user")
+      localStorage.removeItem("dms_auth_tokens")
       const saved = localStorage.getItem(STORAGE_KEY_USER)
-      return saved ? JSON.parse(saved) : MOCK_USERS.student
+      return saved ? JSON.parse(saved) : null
     } catch {
-      return MOCK_USERS.student
+      return null
     }
   })
 
   const [tokens, setTokens] = useState<AuthTokens | null>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY_TOKENS)
-      return saved
-        ? JSON.parse(saved)
-        : {
-            accessToken: "simulated_jwt_token_" + Math.random().toString(36).substring(2),
-            refreshToken: "simulated_refresh_token_" + Math.random().toString(36).substring(2),
-            expiresAt: Date.now() + SESSION_DURATION_SECONDS * 1000,
-          }
+      return saved ? JSON.parse(saved) : null
     } catch {
       return null
     }

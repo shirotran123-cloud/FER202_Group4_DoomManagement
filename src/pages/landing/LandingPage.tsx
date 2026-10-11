@@ -20,7 +20,7 @@ import {
 } from "lucide-react"
 
 export const LandingPage: React.FC = () => {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
 
   const highlights = [
     {
@@ -112,27 +112,47 @@ export const LandingPage: React.FC = () => {
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <Link
               to="/booking"
-              className="inline-flex items-center gap-2 rounded-xl bg-orange-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-orange-600/25 transition-all hover:bg-orange-700 hover:shadow-orange-600/40"
+              className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:bg-[#3a505b]"
             >
               <BedDouble className="h-4 w-4" />
-              <span>Xem Bản Đồ & Đặt Giường (UC-09)</span>
+              <span>Xem Bản Đồ & Đặt Giường 1:4:6</span>
               <ArrowRight className="h-4 w-4" />
+            </Link>
+
+            <Link
+              to="/billing"
+              className="inline-flex items-center gap-2 rounded-xl border border-border bg-white dark:bg-[#161e23] px-5 py-3.5 text-sm font-semibold text-foreground shadow-xs transition-colors hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c]"
+            >
+              <Receipt className="h-4 w-4 text-primary" />
+              <span>Hóa Đơn Điện Nước VietQR</span>
             </Link>
 
             {!isAuthenticated ? (
               <Link
                 to="/login"
-                className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3.5 text-sm font-semibold text-foreground shadow-xs transition-colors hover:bg-muted"
+                className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-3.5 text-sm font-semibold text-foreground shadow-xs transition-colors hover:bg-muted"
               >
-                <span>Đăng Nhập Google SSO (UC-02)</span>
+                <span>Đăng Nhập Google (UC-02)</span>
               </Link>
             ) : (
-              <Link
-                to="/profile"
-                className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3.5 text-sm font-semibold text-foreground shadow-xs transition-colors hover:bg-muted"
-              >
-                <span>Hồ Sơ Của Bạn (UC-04)</span>
-              </Link>
+              <div className="flex flex-wrap items-center gap-2.5">
+                <Link
+                  to={user?.role === "student" ? "/overview" : user?.role === "manager" ? "/manager" : user?.role === "technician" ? "/maintenance" : "/overview"}
+                  className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-3.5 text-sm font-bold text-white shadow-md shadow-emerald-600/20 transition-all hover:bg-emerald-700"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  <span>Vào Bảng Điều Khiển ({user?.roleTitle})</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+                {user?.role === "student" && (
+                  <Link
+                    to="/my-room"
+                    className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-3.5 text-sm font-semibold text-foreground shadow-xs transition-colors hover:bg-muted"
+                  >
+                    <span>Phòng Của Tôi (A205)</span>
+                  </Link>
+                )}
+              </div>
             )}
           </div>
 
@@ -159,7 +179,7 @@ export const LandingPage: React.FC = () => {
         <div className="absolute top-0 right-0 -mr-20 -mt-20 h-96 w-96 rounded-full bg-orange-500/10 blur-3xl pointer-events-none" />
       </section>
 
-      <section className="space-y-6">
+      <section id="mo-hinh" className="space-y-6">
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <span className="text-xs font-bold uppercase tracking-wider text-orange-600">
             Nền tảng công nghệ
@@ -196,7 +216,7 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      <section className="space-y-6">
+      <section id="bieu-phi" className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-orange-600">
@@ -249,7 +269,7 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      <section className="space-y-6">
+      <section id="noi-quy" className="space-y-6">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-orange-600">
             Nội quy bắt buộc
@@ -275,7 +295,7 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      <section className="rounded-3xl border border-border bg-muted/20 p-8 sm:p-10 space-y-6">
+      <section id="tien-ich" className="rounded-3xl border border-border bg-muted/20 p-8 sm:p-10 space-y-6">
         <div className="text-center max-w-xl mx-auto space-y-2">
           <h2 className="text-xl sm:text-2xl font-extrabold text-foreground">
             Tiện Ích & Không Gian Chung Hiện Đại
@@ -305,6 +325,63 @@ export const LandingPage: React.FC = () => {
             <ShieldCheck className="h-6 w-6 text-orange-600 mx-auto" />
             <h4 className="text-xs font-bold text-foreground">Bảo Vệ & Camera AI 24/7</h4>
             <p className="text-[11px] text-muted-foreground">Kiểm soát ra vào thông minh</p>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ & Giải Đáp Thắc Mắc (Q&A Section) */}
+      <section id="faq" className="space-y-6">
+        <div className="text-center max-w-2xl mx-auto space-y-2">
+          <span className="text-xs font-bold uppercase tracking-wider text-orange-600">
+            Hỗ trợ giải đáp
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
+            Câu Hỏi Thường Gặp (FAQ)
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Giải đáp mọi thắc mắc của tân sinh viên và phụ huynh về quy chế sinh hoạt tại KTX FPT.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
+            <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+              <span className="w-5 h-5 rounded-full bg-orange-500/10 text-orange-600 flex items-center justify-center text-xs font-bold">1</span>
+              <span>Mô hình buồng riêng 1:4:6 là gì? Tôi có được riêng tư không?</span>
+            </h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Mỗi căn phòng lớn tiêu chuẩn có 4 buồng riêng biệt (A, B, C, D) với 6 giường/buồng (tổng 24 giường). Mỗi giường có rèm che chống nhìn xuyên thấu, đèn bàn LED, ổ cắm đôi và tủ cá nhân khóa số riêng biệt.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
+            <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+              <span className="w-5 h-5 rounded-full bg-orange-500/10 text-orange-600 flex items-center justify-center text-xs font-bold">2</span>
+              <span>Tiền điện nước được tính và chia như thế nào?</span>
+            </h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Công tơ điện và đồng hồ nước được chụp ảnh nghiệm thu từ ngày 25-28 hàng tháng. Hệ thống tự động áp công thức chia đều (Total ÷ N) cho số lượng sinh viên đang thực tế lưu trú trong phòng kèm mã VietQR tự động.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
+            <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+              <span className="w-5 h-5 rounded-full bg-orange-500/10 text-orange-600 flex items-center justify-center text-xs font-bold">3</span>
+              <span>Nếu tôi đi làm thêm hoặc học nhóm về muộn sau 23:00 thì sao?</span>
+            </h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Sinh viên chỉ cần gửi Đơn xin về muộn trực tuyến trên hệ thống trước 21:00 cùng ngày. BQL duyệt tự động và cấp mã QR mở cổng trục xoay an ninh ban đêm mà không bị trừ điểm rèn luyện.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
+            <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+              <span className="w-5 h-5 rounded-full bg-orange-500/10 text-orange-600 flex items-center justify-center text-xs font-bold">4</span>
+              <span>Quy trình thanh toán và nhận cọc diễn ra như thế nào?</span>
+            </h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Sau khi giữ chỗ 15 phút, bạn quét mã VietQR để thanh toán. Tiền đặt cọc an ninh 1.000.000 VNĐ sẽ được hoàn trả 100% về tài khoản ngân hàng của sinh viên ngay sau khi hoàn tất Biên bản bàn giao số hóa (UC-15).
+            </p>
           </div>
         </div>
       </section>

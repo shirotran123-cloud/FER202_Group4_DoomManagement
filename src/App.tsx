@@ -1,12 +1,15 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { AuthProvider } from "@/contexts/AuthContext"
 import { AppLayout } from "@/components/layout/AppLayout"
+import { LandingLayout } from "@/components/layout/LandingLayout"
 import { ProtectedRoute } from "@/components/layout/ProtectedRoute"
 import { LandingPage } from "@/pages/landing/LandingPage"
+import { StudentOverviewPage } from "@/pages/overview/StudentOverviewPage"
 import { LoginPage } from "@/pages/auth/LoginPage"
 import { ProfilePage } from "@/pages/profile/ProfilePage"
-import { BookingStubPage } from "@/pages/stubs/BookingStubPage"
-import { BillingStubPage } from "@/pages/stubs/BillingStubPage"
+import { BookingPage } from "@/pages/booking/BookingPage"
+import { BillingPage } from "@/pages/billing/BillingPage"
+import { MyRoomPage } from "@/pages/room/MyRoomPage"
 import { MaintenancePage } from "@/pages/maintenance/MaintenancePage"
 import { CurfewPage } from "@/pages/curfew/CurfewPage"
 import { ManagerDashboardPage } from "@/pages/manager/ManagerDashboardPage"
@@ -19,8 +22,29 @@ export function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
+          {/* Trang chủ KTX: Không có Sidebar, trang đầu tiên khi truy cập localhost:5173 */}
+          <Route
+            path="/"
+            element={
+              <LandingLayout>
+                <LandingPage />
+              </LandingLayout>
+            }
+          />
+
+          {/* Các phân hệ tác vụ có Sidebar Stitch: /overview, /my-room, /booking, etc. */}
           <Route element={<AppLayout />}>
-            <Route path="/" element={<LandingPage />} />
+
+            {/* Bảng điều khiển sinh viên (Overview): Sau khi đăng nhập */}
+            <Route
+              path="/overview"
+              element={
+                <ProtectedRoute allowedRoles={["student", "admin"]}>
+                  <StudentOverviewPage />
+                </ProtectedRoute>
+              }
+            />
+
             <Route
               path="/profile"
               element={
@@ -29,22 +53,34 @@ export function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
-              path="/booking"
+              path="/my-room"
               element={
-                <ProtectedRoute>
-                  <BookingStubPage />
+                <ProtectedRoute allowedRoles={["student", "admin"]}>
+                  <MyRoomPage />
                 </ProtectedRoute>
               }
             />
+
+            <Route
+              path="/booking"
+              element={
+                <ProtectedRoute allowedRoles={["student", "admin"]}>
+                  <BookingPage />
+                </ProtectedRoute>
+              }
+            />
+
             <Route
               path="/billing"
               element={
                 <ProtectedRoute>
-                  <BillingStubPage />
+                  <BillingPage />
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/maintenance"
               element={
@@ -53,6 +89,7 @@ export function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/curfew"
               element={
@@ -61,6 +98,7 @@ export function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/manager"
               element={
@@ -69,14 +107,16 @@ export function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/qa"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={["admin"]}>
                   <QATestPlanPage />
                 </ProtectedRoute>
               }
             />
+
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
           </Route>
 
