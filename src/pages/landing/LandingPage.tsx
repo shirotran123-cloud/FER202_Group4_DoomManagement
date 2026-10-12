@@ -1,6 +1,7 @@
 import React from "react"
 import { Link } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
+import { DormitoryGallerySlider } from "@/components/landing/DormitoryGallerySlider"
 import {
   Building2,
   BedDouble,
@@ -179,7 +180,12 @@ export const LandingPage: React.FC = () => {
         <div className="absolute top-0 right-0 -mr-20 -mt-20 h-96 w-96 rounded-full bg-orange-500/10 blur-3xl pointer-events-none" />
       </section>
 
-      <section id="mo-hinh" className="space-y-6">
+      {/* Slide giới thiệu không gian KTX chuẩn mô hình 1-4-6 */}
+      <section className="space-y-4">
+        <DormitoryGallerySlider />
+      </section>
+
+      <section id="mo-hinh" className="space-y-6 scroll-mt-24">
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <span className="text-xs font-bold uppercase tracking-wider text-orange-600">
             Nền tảng công nghệ
@@ -216,7 +222,7 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      <section id="bieu-phi" className="space-y-6">
+      <section id="bieu-phi" className="space-y-6 scroll-mt-24">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-orange-600">
@@ -269,7 +275,7 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      <section id="noi-quy" className="space-y-6">
+      <section id="noi-quy" className="space-y-6 scroll-mt-24">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-orange-600">
             Nội quy bắt buộc
@@ -330,7 +336,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* FAQ & Giải Đáp Thắc Mắc (Q&A Section) */}
-      <section id="faq" className="space-y-6">
+      <section id="faq" className="space-y-6 scroll-mt-24">
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <span className="text-xs font-bold uppercase tracking-wider text-orange-600">
             Hỗ trợ giải đáp

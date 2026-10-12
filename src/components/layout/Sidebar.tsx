@@ -99,7 +99,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       {
         groupTitle: "Quản Trị Toàn Quyền (Admin)",
         items: [
-          { title: "Tổng quan Sinh viên", to: "/overview", icon: "dashboard" },
+          { title: "Tổng quan Quản trị", to: "/overview", icon: "dashboard" },
           { title: "Bàn làm việc Quản trị", to: "/manager", icon: "admin_panel_settings" },
           { title: "Quản lý Điện nước", to: "/billing", icon: "electric_meter" },
           { title: "Quản lý Bảo trì", to: "/maintenance", icon: "build" },

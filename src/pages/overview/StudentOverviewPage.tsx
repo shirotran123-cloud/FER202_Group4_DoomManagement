@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
+import { AdminOverviewView } from "./AdminOverviewView"
 
 export const StudentOverviewPage: React.FC = () => {
   const { user } = useAuth()
+
+  // Nếu là Quản trị viên (Admin) hoặc Quản lý (Manager), hiển thị trang Overview Quản trị:
+  // Không có thông tin phòng riêng hay nộp đơn cho bản thân, mà xem danh sách sinh viên và các yêu cầu/đơn từ
+  if (user?.role === "admin" || user?.role === "manager") {
+    return <AdminOverviewView />
+  }
   const [qrCountdown, setQrCountdown] = useState(15)
   const [showGateQrModal, setShowGateQrModal] = useState(false)
 

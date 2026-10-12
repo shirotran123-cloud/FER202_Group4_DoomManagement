@@ -86,8 +86,10 @@ export const CurfewPage: React.FC = () => {
     localStorage.setItem(STORAGE_KEY_DEMERITS, JSON.stringify(demerits))
   }, [requests, gateLogs, violations, demerits])
 
-  // Sub-tabs
-  const [activeTab, setActiveTab] = useState<"GATE_SCAN" | "REQUESTS" | "DISCIPLINE">("GATE_SCAN")
+  // Sub-tabs: Sinh viên mặc định vào REQUESTS và không thể xem console quét thẻ của BQL
+  const [activeTab, setActiveTab] = useState<"GATE_SCAN" | "REQUESTS" | "DISCIPLINE">(() =>
+    isGuardOrManager ? "GATE_SCAN" : "REQUESTS"
+  )
   const [toastMessage, setToastMessage] = useState<string | null>(null)
 
   const showToast = (msg: string) => {
@@ -550,17 +552,19 @@ export const CurfewPage: React.FC = () => {
 
       {/* Navigation Sub-Tabs */}
       <div className="flex rounded-2xl bg-muted/60 p-1 border border-border">
-        <button
-          onClick={() => setActiveTab("GATE_SCAN")}
-          className={`flex-1 flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold transition-all ${
-            activeTab === "GATE_SCAN"
-              ? "bg-card text-foreground shadow-xs"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <Scan className="h-3.5 w-3.5 text-red-500" />
-          <span>Cổng An Ninh & Quét Thẻ 23:00 (UC-25)</span>
-        </button>
+        {isGuardOrManager && (
+          <button
+            onClick={() => setActiveTab("GATE_SCAN")}
+            className={`flex-1 flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold transition-all ${
+              activeTab === "GATE_SCAN"
+                ? "bg-card text-foreground shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Scan className="h-3.5 w-3.5 text-red-500" />
+            <span>Cổng An Ninh & Quét Thẻ 23:00 (UC-25)</span>
+          </button>
+        )}
 
         <button
           onClick={() => setActiveTab("REQUESTS")}
@@ -571,7 +575,7 @@ export const CurfewPage: React.FC = () => {
           }`}
         >
           <FileText className="h-3.5 w-3.5 text-blue-500" />
-          <span>Đơn Xin Vắng Mặt / Về Muộn (UC-24)</span>
+          <span>{isGuardOrManager ? "Duyệt Đơn Vắng Mặt / Về Muộn (UC-24)" : "Nộp & Quản Lý Đơn Của Tôi (UC-24)"}</span>
         </button>
 
         <button
@@ -583,7 +587,7 @@ export const CurfewPage: React.FC = () => {
           }`}
         >
           <Shield className="h-3.5 w-3.5 text-amber-500" />
-          <span>Biên Bản Vi Phạm & Điểm Rèn Luyện (UC-26)</span>
+          <span>{isGuardOrManager ? "Biên Bản Vi Phạm & Điểm Rèn Luyện (UC-26)" : "Điểm Rèn Luyện & Nội Quy (UC-26)"}</span>
         </button>
       </div>
 
@@ -963,15 +967,22 @@ export const CurfewPage: React.FC = () => {
           <div className="lg:col-span-2 rounded-3xl border border-border bg-card p-6 shadow-xs space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h3 className="font-bold text-sm text-foreground">
-                Danh Sách Đơn Xin Ra Vào Ngoài Giờ ({requests.length})
+                {isGuardOrManager
+                  ? `Danh Sách Đơn Cần Phê Duyệt (${requests.length})`
+                  : `Các Đơn Của Tôi Đã Nộp (${requests.filter((r) => r.studentId === (user?.studentId || "SE182049")).length})`}
               </h3>
               <span className="text-[11px] text-muted-foreground">
-                Quản lý & An ninh phê duyệt trực tuyến
+                {isGuardOrManager
+                  ? "Quản lý & An ninh phê duyệt trực tuyến"
+                  : "Chỉ hiển thị các đơn do bạn nộp, trạng thái đang được BQL xử lý"}
               </span>
             </div>
 
             <div className="space-y-3">
-              {requests.map((req) => (
+              {(isGuardOrManager
+                ? requests
+                : requests.filter((r) => r.studentId === (user?.studentId || "SE182049"))
+              ).map((req) => (
                 <div
                   key={req.id}
                   className="p-4 rounded-2xl border border-border bg-muted/20 space-y-2.5 hover:bg-muted/30 transition-colors"
@@ -1025,8 +1036,8 @@ export const CurfewPage: React.FC = () => {
                       <span>Ngày: <strong>{req.date}</strong></span> • <span>Dự kiến về: <strong>{req.expectedReturnTime}</strong></span> • <span>Phụ huynh: {req.parentPhone}</span>
                     </div>
 
-                    {/* Review Actions if Pending */}
-                    {req.status === "PENDING" && (
+                    {/* Review Actions: ONLY FOR BQL/MANAGER/GUARD */}
+                    {isGuardOrManager && req.status === "PENDING" && (
                       <div className="flex gap-1.5 mt-1 sm:mt-0">
                         <button
                           onClick={() => handleReviewRequest(req.id, "APPROVED")}
@@ -1042,9 +1053,26 @@ export const CurfewPage: React.FC = () => {
                         </button>
                       </div>
                     )}
+
+                    {!isGuardOrManager && req.status === "PENDING" && (
+                      <span className="text-[11px] font-semibold text-amber-600 dark:text-amber-400 mt-1 sm:mt-0">
+                        Đang được BQL xem xét
+                      </span>
+                    )}
                   </div>
                 </div>
               ))}
+
+              {(isGuardOrManager
+                ? requests
+                : requests.filter((r) => r.studentId === (user?.studentId || "SE182049"))
+              ).length === 0 && (
+                <div className="p-8 text-center text-muted-foreground text-xs rounded-2xl border border-dashed border-border bg-muted/10">
+                  {isGuardOrManager
+                    ? "Hiện tại không có đơn xin ra vào ngoài giờ nào trong danh sách."
+                    : "Bạn chưa có đơn xin vắng mặt hoặc về muộn nào. Vui lòng điền mẫu bên trái để nộp đơn mới."}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1070,7 +1098,10 @@ export const CurfewPage: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {demerits.map((student) => {
+              {(isGuardOrManager
+                ? demerits
+                : demerits.filter((d) => d.studentId === (user?.studentId || "SE182049"))
+              ).map((student) => {
                 const percent = student.remainingPoints
                 const isWarning = student.status === "WARNING"
                 const isSuspended = student.status === "SUSPENDED"
@@ -1143,15 +1174,16 @@ export const CurfewPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Form to create infraction report */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="rounded-3xl border border-border bg-card p-6 shadow-xs space-y-4">
-              <div className="flex items-center gap-2 border-b border-border pb-3 text-red-600">
-                <AlertTriangle className="h-5 w-5" />
-                <h3 className="font-bold text-sm text-foreground">
-                  Lập Biên Bản Vi Phạm Trực Tuyến (UC-26)
-                </h3>
-              </div>
+          {/* Form to create infraction report: ONLY for Guard / Manager / Admin */}
+          {isGuardOrManager ? (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="rounded-3xl border border-border bg-card p-6 shadow-xs space-y-4">
+                <div className="flex items-center gap-2 border-b border-border pb-3 text-red-600">
+                  <AlertTriangle className="h-5 w-5" />
+                  <h3 className="font-bold text-sm text-foreground">
+                    Lập Biên Bản Vi Phạm Trực Tuyến (UC-26)
+                  </h3>
+                </div>
 
               <form onSubmit={handleCreateDisciplineReport} className="space-y-3.5 text-xs">
                 <div>
@@ -1248,6 +1280,17 @@ export const CurfewPage: React.FC = () => {
               </div>
             </div>
           </div>
+          ) : (
+            <div className="p-6 rounded-3xl border border-emerald-500/20 bg-emerald-500/5 text-xs text-foreground space-y-3">
+              <h4 className="font-bold text-sm text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4" />
+                Quy Chế Khen Thưởng & Kỷ Luật Sinh Viên Nội Trú
+              </h4>
+              <p className="text-muted-foreground leading-relaxed">
+                Mỗi sinh viên bắt đầu học kỳ với 100 điểm rèn luyện. Việc chấp hành đúng giờ giới nghiêm 23:00 và bảo quản tốt trang thiết bị phòng ở sẽ giúp duy trì điểm số tối đa, làm căn cứ ưu tiên xét chọn phòng và giường ở các học kỳ tiếp theo.
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -21,8 +21,62 @@ interface LandingLayoutProps {
 export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
   const { user, isAuthenticated, logout, switchRole } = useAuth()
   const navigate = useNavigate()
+  const [activeNav, setActiveNav] = useState<string>(() => (typeof window !== "undefined" ? window.location.hash : ""))
   const [showRoleDropdown, setShowRoleDropdown] = useState(false)
   const [showUserDropdown, setShowUserDropdown] = useState(false)
+
+  const navItems = [
+    { label: "Mô hình 1:4:6", href: "#mo-hinh" },
+    { label: "Biểu phí & Tiện ích", href: "#bieu-phi" },
+    { label: "Nội quy & Giới nghiêm", href: "#noi-quy" },
+    { label: "Hỏi đáp (FAQ)", href: "#faq" },
+  ]
+
+  React.useEffect(() => {
+    const handleHashChange = () => {
+      setActiveNav(window.location.hash)
+    }
+    window.addEventListener("hashchange", handleHashChange)
+
+    // IntersectionObserver tự động đánh dấu mục đang xem khi cuộn trang
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveNav(`#${entry.target.id}`)
+          }
+        })
+      },
+      { rootMargin: "-80px 0px -60% 0px" }
+    )
+
+    navItems.forEach((item) => {
+      const el = document.querySelector(item.href)
+      if (el) observer.observe(el)
+    })
+
+    return () => {
+      window.removeEventListener("hashchange", handleHashChange)
+      observer.disconnect()
+    }
+  }, [])
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    setActiveNav(href)
+    const targetElement = document.querySelector(href)
+    if (targetElement) {
+      e.preventDefault()
+      const headerOffset = 80
+      const elementPosition = targetElement.getBoundingClientRect().top
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      })
+      window.history.pushState(null, "", href)
+    }
+  }
 
   const getDashboardLink = (role?: UserRole) => {
     if (role === "student") return "/overview"
@@ -57,37 +111,42 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
           </Link>
 
           {/* Quick Anchor Links */}
-          <nav className="hidden lg:flex items-center gap-6 text-xs font-semibold text-[#42474b]">
-            <a href="#mo-hinh" className="hover:text-[#233944] transition-colors">
-              Mô hình 1:4:6
-            </a>
-            <a href="#bieu-phi" className="hover:text-[#233944] transition-colors">
-              Biểu phí & Tiện ích
-            </a>
-            <a href="#noi-quy" className="hover:text-[#233944] transition-colors">
-              Nội quy & Giới nghiêm
-            </a>
-            <a href="#faq" className="hover:text-[#233944] transition-colors">
-              Hỏi đáp (FAQ)
-            </a>
+          <nav className="hidden lg:flex items-center gap-1.5 xl:gap-2 text-xs font-semibold shrink-0 bg-[#efeee8]/60 p-1 rounded-2xl border border-[#efeee8]">
+            {navItems.map((item) => {
+              const isActive = activeNav === item.href
+              return (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={(e) => handleNavClick(e, item.href)}
+                  className={`whitespace-nowrap px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                    isActive
+                      ? "bg-orange-600 text-white font-bold shadow-xs shadow-orange-600/30"
+                      : "text-[#42474b] hover:bg-orange-500/15 hover:text-orange-600"
+                  }`}
+                >
+                  {item.label}
+                </a>
+              )
+            })}
           </nav>
 
           {/* Actions: Login or Dashboard */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 shrink-0">
             {isAuthenticated && user ? (
-              <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
                 {/* Role Switcher Pill */}
-                <div className="relative hidden sm:block">
+                <div className="relative hidden sm:block shrink-0">
                   <button
                     onClick={() => {
                       setShowRoleDropdown(!showRoleDropdown)
                       setShowUserDropdown(false)
                     }}
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[#efeee8] bg-white text-xs font-semibold text-[#233944] hover:bg-[#f4f4ee] transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#efeee8] bg-white text-xs font-semibold text-[#233944] hover:bg-[#f4f4ee] transition-colors whitespace-nowrap shrink-0"
                   >
-                    <span className="text-[11px] text-[#73787b]">Role:</span>
-                    <span>{user.roleTitle}</span>
-                    <ChevronDown className="h-3.5 w-3.5 opacity-70" />
+                    <span className="text-[11px] text-[#73787b] shrink-0">Role:</span>
+                    <span className="whitespace-nowrap">{user.roleTitle}</span>
+                    <ChevronDown className="h-3.5 w-3.5 opacity-70 shrink-0" />
                   </button>
 
                   {showRoleDropdown && (
@@ -108,7 +167,7 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
                               : "text-[#1b1c19] hover:bg-[#f4f4ee]"
                           }`}
                         >
-                          <span>
+                          <span className="whitespace-nowrap">
                             {r === "student"
                               ? "🎓 Sinh viên"
                               : r === "manager"
@@ -117,7 +176,7 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
                               ? "🛡️ An ninh / Kỹ thuật"
                               : "⚡ Quản trị viên"}
                           </span>
-                          {user.role === r && <CheckCircle2 className="h-4 w-4 text-[#233944]" />}
+                          {user.role === r && <CheckCircle2 className="h-4 w-4 text-[#233944] shrink-0" />}
                         </button>
                       ))}
                     </div>
@@ -127,11 +186,11 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
                 {/* Go to Dashboard button */}
                 <Link
                   to={getDashboardLink(user.role)}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-[#233944] px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-[#3a505b] transition-all"
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-[#233944] px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-[#3a505b] transition-all whitespace-nowrap shrink-0"
                 >
-                  <Sparkles className="h-3.5 w-3.5" />
-                  <span>Vào Bảng Điều Khiển</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
+                  <Sparkles className="h-3.5 w-3.5 shrink-0" />
+                  <span className="whitespace-nowrap">Vào Bảng Điều Khiển</span>
+                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
                 </Link>
 
                 {/* User avatar & dropdown */}
@@ -185,22 +244,22 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-2 sm:gap-3">
+              <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                 <Link
                   to="/login?mode=register"
                   id="landing-header-register-btn"
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-[#233944]/30 bg-white px-3.5 sm:px-4 py-2 text-xs font-bold text-[#233944] shadow-xs hover:bg-[#f4f4ee] hover:border-[#233944] transition-all"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-[#233944]/30 bg-white px-3.5 sm:px-4 py-2 text-xs font-bold text-[#233944] shadow-xs hover:bg-[#f4f4ee] hover:border-[#233944] transition-all whitespace-nowrap shrink-0"
                 >
-                  <UserPlus className="h-3.5 w-3.5 text-[#233944]" />
-                  <span>Đăng ký</span>
+                  <UserPlus className="h-3.5 w-3.5 text-[#233944] shrink-0" />
+                  <span className="whitespace-nowrap">Đăng ký</span>
                 </Link>
                 <Link
                   to="/login?mode=login"
                   id="landing-header-login-btn"
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-[#233944] px-3.5 sm:px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-[#3a505b] transition-all"
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-[#233944] px-3.5 sm:px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-[#3a505b] transition-all whitespace-nowrap shrink-0"
                 >
-                  <LogIn className="h-3.5 w-3.5" />
-                  <span>Đăng nhập</span>
+                  <LogIn className="h-3.5 w-3.5 shrink-0" />
+                  <span className="whitespace-nowrap">Đăng nhập</span>
                 </Link>
               </div>
             )}

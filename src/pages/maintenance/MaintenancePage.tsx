@@ -232,8 +232,16 @@ export const MaintenancePage: React.FC = () => {
     showToast(`Cảm ơn bạn đã đánh giá ${ratingStars} sao cho dịch vụ bảo trì! Phiếu ${selectedTicket.id} đã hoàn tất đóng.`)
   }
 
+  // Student visibility filter: Sinh viên chỉ xem các phiếu do chính mình gửi, BQL/KTV xem toàn bộ
+  const isStudent = user?.role === "student"
+  const currentStudentId = user?.studentId || "SE182049"
+
+  const visibleTickets = isStudent
+    ? tickets.filter((t) => t.studentId === currentStudentId)
+    : tickets
+
   // Filtered tickets
-  const filteredTickets = tickets.filter((t) => {
+  const filteredTickets = visibleTickets.filter((t) => {
     const matchesScope = filterScope === "ALL" || t.scope === filterScope
     const matchesStatus = filterStatus === "ALL" || t.status === filterStatus
     const matchesUrgency = filterUrgency === "ALL" || t.urgency === filterUrgency
@@ -247,11 +255,11 @@ export const MaintenancePage: React.FC = () => {
   })
 
   // Statistics
-  const totalCount = tickets.length
-  const pendingCount = tickets.filter((t) => t.status === "PENDING").length
-  const inProgressCount = tickets.filter((t) => t.status === "IN_PROGRESS").length
-  const resolvedCount = tickets.filter((t) => t.status === "RESOLVED").length
-  const emergencyCount = tickets.filter((t) => t.urgency === "EMERGENCY" && t.status !== "CLOSED").length
+  const totalCount = visibleTickets.length
+  const pendingCount = visibleTickets.filter((t) => t.status === "PENDING").length
+  const inProgressCount = visibleTickets.filter((t) => t.status === "IN_PROGRESS").length
+  const resolvedCount = visibleTickets.filter((t) => t.status === "RESOLVED").length
+  const emergencyCount = visibleTickets.filter((t) => t.urgency === "EMERGENCY" && t.status !== "CLOSED").length
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 pb-16">
@@ -354,7 +362,7 @@ export const MaintenancePage: React.FC = () => {
             }`}
           >
             <Wrench className="h-3.5 w-3.5" />
-            <span>Danh sách phiếu sự cố ({filteredTickets.length})</span>
+            <span>{isStudent ? "Phiếu Báo Hỏng Của Tôi" : "Danh Sách Phiếu Sự Cố"} ({filteredTickets.length})</span>
           </button>
           <button
             onClick={() => setActiveTab("create")}
@@ -591,8 +599,8 @@ export const MaintenancePage: React.FC = () => {
 
                     {/* Action Buttons depending on role & status */}
                     <div className="mt-4 pt-3 border-t border-border/80 flex flex-wrap items-center justify-end gap-2">
-                      {/* UC-21: Assign Technician (For Manager/Technician) */}
-                      {isPending && (
+                      {/* UC-21: Assign Technician (For Manager/Technician ONLY, NOT for student) */}
+                      {!isStudent && isPending && (
                         <button
                           onClick={() => {
                             setSelectedTicket(ticket)
@@ -605,8 +613,8 @@ export const MaintenancePage: React.FC = () => {
                         </button>
                       )}
 
-                      {/* UC-22: Complete Repair & Upload Result (For Technician/Manager) */}
-                      {isInProgress && (
+                      {/* UC-22: Complete Repair & Upload Result (For Technician/Manager ONLY, NOT for student) */}
+                      {!isStudent && isInProgress && (
                         <button
                           onClick={() => {
                             setSelectedTicket(ticket)
@@ -617,6 +625,20 @@ export const MaintenancePage: React.FC = () => {
                           <CheckCircle2 className="h-3.5 w-3.5" />
                           <span>Báo xong & Nghiệm thu (UC-22)</span>
                         </button>
+                      )}
+
+                      {/* For student when ticket is pending */}
+                      {isStudent && isPending && (
+                        <span className="text-[11px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-xl">
+                          Đang chờ kỹ thuật viên tiếp nhận
+                        </span>
+                      )}
+
+                      {/* For student when ticket is in progress */}
+                      {isStudent && isInProgress && (
+                        <span className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-xl">
+                          Kỹ thuật viên đang xử lý sự cố
+                        </span>
                       )}
 
                       {/* UC-23: Review & Rate 1-5 Stars (For Student) */}
