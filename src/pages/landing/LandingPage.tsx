@@ -19,6 +19,10 @@ import {
   PhoneCall,
   MapPin,
   ChevronDown,
+  Mail,
+  Globe,
+  ExternalLink,
+  GraduationCap,
 } from "lucide-react"
 
 const FAQ_ITEMS = [
@@ -452,25 +456,138 @@ export const LandingPage: React.FC = () => {
       {/* FAQ Accordion Section */}
       <FaqSection />
 
-      <footer className="border-t border-border pt-8 text-xs text-muted-foreground space-y-4">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Building2 className="h-4 w-4 text-orange-600" />
-            <span className="font-bold text-foreground">Ban Quản Lý Ký Túc Xá • Đại Học FPT</span>
+      {/* ── FOOTER ── */}
+      <footer className="mt-4">
+        {/* Top dark band */}
+        <div className="rounded-3xl bg-[#1a2c38] text-white overflow-hidden">
+          {/* Orange accent stripe */}
+          <div className="h-1 w-full bg-gradient-to-r from-orange-500 via-orange-400 to-orange-600" />
+
+          <div className="px-8 py-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+
+            {/* Col 1 – Brand */}
+            <div className="space-y-4 lg:col-span-1">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center shrink-0">
+                  <Building2 className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <p className="font-extrabold text-sm leading-tight">Ký Túc Xá</p>
+                  <p className="text-[11px] text-orange-300 font-semibold">Đại Học FPT Quy Nhơn</p>
+                </div>
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Hệ thống quản lý KTX thông minh – minh bạch, tiện lợi và an toàn cho toàn thể sinh viên FPT.
+              </p>
+              <div className="flex gap-2 pt-1">
+                
+                <a
+                  href="https://daihocfpt.edu.vn"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-8 h-8 rounded-lg bg-white/10 hover:bg-orange-500 transition-colors flex items-center justify-center"
+                  aria-label="Website FPT"
+                >
+                  <Globe className="h-4 w-4" />
+                </a>
+              </div>
+            </div>
+
+            {/* Col 2 – Quick links */}
+            <div className="space-y-4">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-orange-400">Truy cập nhanh</h4>
+              <ul className="space-y-2">
+                {[
+                  { label: "Trang chủ KTX", href: "/" },
+                  { label: "Đặt phòng / Giữ chỗ", href: "/login?mode=register" },
+                  { label: "Đăng nhập hệ thống", href: "/login" },
+                  { label: "Câu hỏi thường gặp", href: "/#faq" },
+                  { label: "Tiện ích & Không gian", href: "/#tien-ich" },
+                ].map((l) => (
+                  <li key={l.label}>
+                    <Link
+                      to={l.href}
+                      className="text-xs text-slate-300 hover:text-orange-400 transition-colors flex items-center gap-1.5"
+                    >
+                      <ArrowRight className="h-3 w-3 shrink-0" />
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Col 3 – FPT links */}
+            <div className="space-y-4">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-orange-400">Về Đại Học FPT</h4>
+              <ul className="space-y-2">
+                {[
+                  { label: "Trang chủ FPT Quy Nhơn", href: "https://daihocfpt.edu.vn" },
+                  { label: "Cổng sinh viên FAP", href: "https://fap.fpt.edu.vn" },
+                  { label: "Phòng Công tác Sinh viên", href: "https://daihocfpt.edu.vn" },
+                  { label: "Học bổng & Hỗ trợ", href: "https://daihocfpt.edu.vn" },
+                  { label: "Lịch học & Thời khóa biểu", href: "https://fap.fpt.edu.vn" },
+                ].map((l) => (
+                  <li key={l.label}>
+                    <a
+                      href={l.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs text-slate-300 hover:text-orange-400 transition-colors flex items-center gap-1.5"
+                    >
+                      <ExternalLink className="h-3 w-3 shrink-0" />
+                      {l.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Col 4 – Contact */}
+            <div className="space-y-4">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-orange-400">Liên hệ & Hỗ trợ</h4>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2.5">
+                  <MapPin className="h-4 w-4 text-orange-400 shrink-0 mt-0.5" />
+                  <span className="text-xs text-slate-300 leading-relaxed">
+                    Khu Đô thị An Phú Thịnh,<br />
+                    Phường Quy Nhơn Đông, Gia Lai
+                  </span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <PhoneCall className="h-4 w-4 text-orange-400 shrink-0" />
+                  <span className="text-xs text-slate-300">Hotline BQL KTX: <span className="font-bold text-white">0987 807 074</span></span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <Mail className="h-4 w-4 text-orange-400 shrink-0" />
+                  <a href="mailto:ktx.quynhon@fpt.edu.vn" className="text-xs text-slate-300 hover:text-orange-400 transition-colors">
+                    ktx.quynhon@fpt.edu.vn
+                  </a>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <GraduationCap className="h-4 w-4 text-orange-400 shrink-0" />
+                  <span className="text-xs text-slate-300">Hỗ trợ học vụ: <span className="font-bold text-white">1900 6868</span></span>
+                </li>
+              </ul>
+              <div className="pt-2">
+                <Link
+                  to="/login?mode=register"
+                  className="inline-flex items-center gap-2 rounded-xl bg-orange-500 hover:bg-orange-600 transition-colors px-4 py-2 text-xs font-bold text-white"
+                >
+                  Đăng ký lưu trú ngay
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            </div>
           </div>
-          <div className="flex flex-wrap items-center gap-4">
-            <span className="flex items-center gap-1">
-              <PhoneCall className="h-3.5 w-3.5 text-primary" />
-              <span>Hotline: 0236 730 0999</span>
-            </span>
-            <span className="flex items-center gap-1">
-              <MapPin className="h-3.5 w-3.5 text-primary" />
-              <span>Khu Đô thị FPT City, Đà Nẵng</span>
+
+          {/* Bottom bar */}
+          <div className="border-t border-white/10 px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-400">
+            <span>© 2026 Ban Quản Lý Ký Túc Xá – Đại Học FPT Quy Nhơn. Bảo lưu mọi quyền.</span>
+            <span className="text-slate-500">
+              Đồ án FER202 – Group 4 &nbsp;·&nbsp; Front-End Web Development with React
             </span>
           </div>
-        </div>
-        <div className="text-center text-[11px]">
-          © 2026 FER202_Group4 • Đồ án môn học FER202 Front-End Web Development with React.
         </div>
       </footer>
     </div>
