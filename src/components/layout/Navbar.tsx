@@ -15,7 +15,10 @@ import {
   Menu,
   UserPlus,
   LogIn,
+  Sun,
+  Moon,
 } from "lucide-react"
+import { useTheme } from "@/components/theme-provider"
 
 interface NavbarProps {
   onToggleSidebar?: () => void
@@ -23,6 +26,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
   const { user, isAuthenticated, logout, switchRole, sessionSecondsLeft, refreshSession } = useAuth()
+  const { theme, setTheme } = useTheme()
   const navigate = useNavigate()
   const [showRoleDropdown, setShowRoleDropdown] = useState(false)
   const [showUserDropdown, setShowUserDropdown] = useState(false)
@@ -67,7 +71,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
   const currentRoleMeta = user ? roleMeta[user.role] : roleMeta.student
 
   return (
-    <header className="fixed top-0 left-0 lg:left-[260px] right-0 h-[68px] bg-white/95 backdrop-blur-md z-40 px-4 sm:px-8 flex items-center justify-between border-b border-slate-200 shadow-xs">
+    <header className="fixed top-0 left-0 lg:left-[260px] right-0 h-[68px] bg-white/95 dark:bg-[#111827]/95 backdrop-blur-md z-40 px-4 sm:px-8 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 shadow-xs">
       <div className="flex items-center gap-3 sm:gap-4">
         {onToggleSidebar && (
           <button
@@ -166,6 +170,26 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
                 </div>
               )}
             </div>
+
+            {/* Theme Toggle (Light / Dark) */}
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100/80 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200/80 dark:hover:bg-slate-700 transition-colors shadow-2xs"
+              title={theme === "dark" ? "Đang ở Nền Tối - Bấm để chuyển Nền Sáng" : "Đang ở Nền Sáng - Bấm để chuyển Nền Tối"}
+              aria-label="Toggle Theme"
+            >
+              {theme === "dark" ? (
+                <>
+                  <Sun className="h-4 w-4 text-amber-400" />
+                  <span className="text-xs font-bold hidden sm:inline text-amber-300">Nền Tối</span>
+                </>
+              ) : (
+                <>
+                  <Sun className="h-4 w-4 text-amber-500" />
+                  <span className="text-xs font-bold hidden sm:inline text-slate-800">Nền Sáng</span>
+                </>
+              )}
+            </button>
 
             {/* Notification bell */}
             <div className="relative">

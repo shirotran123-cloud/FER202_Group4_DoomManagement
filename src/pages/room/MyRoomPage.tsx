@@ -321,8 +321,9 @@ export const MyRoomPage: React.FC = () => {
             <Button
               onClick={() => setShowHandoverModal(true)}
               variant="outline"
-              className="w-full text-xs font-semibold h-9"
+              className="w-full text-xs font-semibold h-9.5 gap-2 text-slate-800 dark:text-slate-100 hover:text-primary dark:hover:text-primary bg-slate-50/50 dark:bg-slate-800/40 border-border hover:border-primary/50 transition-all shadow-xs"
             >
+              <FileText className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span>Xem Toàn Bộ Biên Bản Nghiệm Thu Kèm Ảnh</span>
             </Button>
           </div>

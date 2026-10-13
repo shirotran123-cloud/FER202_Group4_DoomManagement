@@ -486,7 +486,7 @@ export const BillingPage: React.FC = () => {
                     </div>
                   </div>
 
-                  <p className="text-xs font-bold text-primary mt-2">
+                  <p className="text-xs font-bold text-slate-900 dark:text-sky-300 mt-2">
                     Mở App Ngân Hàng Hoặc Ví Để Quét Mã
                   </p>
                 </div>

@@ -329,7 +329,7 @@ export const BookingPage: React.FC = () => {
               }`}
             >
               <div className="flex items-center justify-between mb-1">
-                <div className="flex items-center gap-1.5 font-bold text-xs">
+                <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
                   <span className="material-symbols-outlined text-sm text-muted-foreground">meeting_room</span>
                   <span>Phòng A201</span>
                 </div>
@@ -350,7 +350,7 @@ export const BookingPage: React.FC = () => {
               }`}
             >
               <div className="flex items-center justify-between mb-1">
-                <div className="flex items-center gap-1.5 font-bold text-xs">
+                <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
                   <span className="material-symbols-outlined text-sm text-muted-foreground">meeting_room</span>
                   <span>Phòng A202</span>
                 </div>
@@ -553,7 +553,7 @@ export const BookingPage: React.FC = () => {
               </div>
 
               {/* Architectural CAD Notation */}
-              <div className="pt-2 flex justify-between items-center text-muted-foreground text-[10px] font-mono border-t border-border">
+              <div className="pt-2 flex justify-between items-center text-slate-500 dark:text-slate-400 text-[10px] font-mono border-t border-border">
                 <span>[CAD-REV: 2026.10-DMS-146]</span>
                 <span>KHU VỆ SINH & KHÔNG GIAN BÀN HỌC BỐ TRÍ CUỐI HÀNH LANG BUỒNG B & D</span>
               </div>
@@ -628,87 +628,107 @@ export const BookingPage: React.FC = () => {
             </div>
 
             {/* Financial Breakdown */}
-            <div className="bg-[#f4f4ee] dark:bg-[#1c262c] p-3 rounded-lg space-y-2 text-xs">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block">
+            <div className="bg-[#f4f4ee] dark:bg-[#1c262c] p-3.5 rounded-xl space-y-2 text-xs border border-border">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-600 dark:text-slate-300 block">
                 Bảng Kê Chi Phí Kỳ 1
               </span>
-              <div className="flex justify-between text-muted-foreground">
+              <div className="flex justify-between text-slate-600 dark:text-slate-300">
                 <span>Tiền phòng tháng đầu:</span>
-                <span className="font-mono text-foreground">₫950,000</span>
+                <span className="font-mono text-slate-900 dark:text-white font-semibold">₫950,000</span>
               </div>
-              <div className="flex justify-between text-muted-foreground">
+              <div className="flex justify-between text-slate-600 dark:text-slate-300">
                 <span>Tiền cọc an ninh (Hoàn lại 100%):</span>
-                <span className="font-mono text-foreground">₫1,000,000</span>
+                <span className="font-mono text-slate-900 dark:text-white font-semibold">₫1,000,000</span>
               </div>
-              <div className="flex justify-between text-muted-foreground">
+              <div className="flex justify-between text-slate-600 dark:text-slate-300">
                 <span>Quỹ tạm ứng điện nước:</span>
-                <span className="font-mono text-foreground">₫200,000</span>
+                <span className="font-mono text-slate-900 dark:text-white font-semibold">₫200,000</span>
               </div>
-              <div className="pt-2 border-t border-border flex justify-between font-bold text-primary dark:text-[#cee6f4] text-sm">
+              <div className="pt-2 border-t border-border flex justify-between font-bold text-slate-900 dark:text-sky-300 text-sm">
                 <span>Tổng nộp hôm nay:</span>
-                <span className="font-mono">₫2,150,000</span>
+                <span className="font-mono text-primary dark:text-sky-400 font-black">₫2,150,000</span>
               </div>
             </div>
 
             {/* Payment Method Radio Options */}
             <div className="space-y-2 pt-1">
-              <label className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block">
+              <label className="text-[11px] uppercase font-bold tracking-wider text-slate-600 dark:text-slate-300 block">
                 Phương Thức Thanh Toán
               </label>
 
+              {/* VietQR Option */}
               <div
                 onClick={() => setPaymentMethod("vietqr")}
-                className={`flex items-center justify-between p-2.5 rounded-lg border cursor-pointer text-xs transition-colors ${
+                className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer text-xs transition-all ${
                   paymentMethod === "vietqr"
-                    ? "border-primary bg-primary/5 font-semibold text-primary"
+                    ? "border-sky-500 bg-sky-500/10 shadow-xs ring-1 ring-sky-500/30 dark:border-sky-400 dark:bg-sky-950/40 dark:ring-sky-400/40"
                     : "border-border hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c]"
                 }`}
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5">
                   <input
                     type="radio"
                     name="pm"
                     checked={paymentMethod === "vietqr"}
                     onChange={() => setPaymentMethod("vietqr")}
-                    className="accent-primary"
+                    className="accent-sky-500 h-4 w-4 cursor-pointer"
                   />
-                  <span>VietQR NAPAS 24/7 (Động)</span>
+                  <div>
+                    <span className="font-bold text-slate-900 dark:text-white block text-xs">
+                      VietQR NAPAS 24/7 (Động)
+                    </span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                      Tự động quét mã QR nhận diện tức thì
+                    </span>
+                  </div>
                 </div>
-                <Badge variant="available">Tức thì</Badge>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-500/20">
+                  Tức thì
+                </span>
               </div>
 
+              {/* VNPay Option */}
               <div
                 onClick={() => setPaymentMethod("vnpay")}
-                className={`flex items-center justify-between p-2.5 rounded-lg border cursor-pointer text-xs transition-colors ${
+                className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer text-xs transition-all ${
                   paymentMethod === "vnpay"
-                    ? "border-primary bg-primary/5 font-semibold text-primary"
+                    ? "border-sky-500 bg-sky-500/10 shadow-xs ring-1 ring-sky-500/30 dark:border-sky-400 dark:bg-sky-950/40 dark:ring-sky-400/40"
                     : "border-border hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c]"
                 }`}
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5">
                   <input
                     type="radio"
                     name="pm"
                     checked={paymentMethod === "vnpay"}
                     onChange={() => setPaymentMethod("vnpay")}
-                    className="accent-primary"
+                    className="accent-sky-500 h-4 w-4 cursor-pointer"
                   />
-                  <span>VNPay QR / Thẻ nội địa</span>
+                  <div>
+                    <span className="font-bold text-slate-900 dark:text-white block text-xs">
+                      VNPay QR / Thẻ nội địa
+                    </span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                      Cổng thanh toán thẻ ATM / Thẻ quốc tế
+                    </span>
+                  </div>
                 </div>
-                <span className="text-[10px] text-muted-foreground">Cổng phụ</span>
+                <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-200/60 dark:bg-slate-800 px-2 py-0.5 rounded-md">
+                  Cổng phụ
+                </span>
               </div>
             </div>
 
             {/* CTA Button */}
             <Button
               onClick={handleStartCheckout}
-              className="w-full h-11 bg-primary hover:bg-[#3a505b] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm rounded-lg"
+              className="w-full h-11 bg-primary hover:bg-[#3a505b] dark:bg-sky-600 dark:hover:bg-sky-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm rounded-lg"
             >
               <QrCode className="h-4 w-4" />
               <span>Tạo VietQR & Xác Nhận Giữ Chỗ</span>
             </Button>
 
-            <p className="text-[10px] text-muted-foreground text-center leading-tight">
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 text-center leading-tight">
               Hệ thống tự động duyệt 0-chạm và cấp Hợp đồng điện tử PDF có mã xác thực tức thì sau khi ngân hàng báo Có.
             </p>
           </div>

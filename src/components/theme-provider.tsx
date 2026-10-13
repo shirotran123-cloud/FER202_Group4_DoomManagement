@@ -32,10 +32,6 @@ function isTheme(value: string | null): value is Theme {
 }
 
 function getSystemTheme(): ResolvedTheme {
-  if (window.matchMedia(COLOR_SCHEME_QUERY).matches) {
-    return "dark"
-  }
-
   return "light"
 }
 
@@ -79,18 +75,17 @@ function isEditableTarget(target: EventTarget | null) {
 
 export function ThemeProvider({
   children,
-  defaultTheme = "system",
-  storageKey = "theme",
+  defaultTheme = "light",
+  storageKey = "dms_theme_v2",
   disableTransitionOnChange = true,
   ...props
 }: ThemeProviderProps) {
   const [theme, setThemeState] = React.useState<Theme>(() => {
     const storedTheme = localStorage.getItem(storageKey)
-    if (isTheme(storedTheme)) {
-      return storedTheme
+    if (storedTheme === "dark") {
+      return "dark"
     }
-
-    return defaultTheme
+    return "light"
   })
 
   const setTheme = React.useCallback(
