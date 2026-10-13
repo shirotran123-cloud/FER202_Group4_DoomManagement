@@ -13,6 +13,7 @@ import {
   UserPlus,
   LogIn,
 } from "lucide-react"
+import { DormAIAssistant } from "@/components/ai/DormAIAssistant"
 
 interface LandingLayoutProps {
   children: React.ReactNode
@@ -86,32 +87,32 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
   }
 
   return (
-    <div className="min-h-screen bg-[#faf9f4] text-[#1b1c19] font-sans antialiased flex flex-col">
-      {/* Top Full-width Landing Navigation Bar (NO SIDEBAR) */}
-      <header className="sticky top-0 z-50 w-full bg-[#faf9f4]/95 backdrop-blur-md border-b border-[#efeee8] shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans antialiased flex flex-col">
+      {/* Top Full-width Landing Navigation Bar */}
+      <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
         <div className="max-w-7xl mx-auto h-[68px] px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
           {/* Logo & Brand */}
           <Link to="/" className="flex items-center gap-3 transition-opacity hover:opacity-90 shrink-0">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#233944] to-[#3a505b] flex items-center justify-center text-white shadow-sm border border-white/10">
+            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-xs">
               <Building2 className="h-5 w-5" />
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
-                <span className="font-extrabold text-base tracking-tight text-[#1b1c19]">
+                <span className="font-extrabold text-base tracking-tight text-slate-900">
                   DOMANAGE
                 </span>
-                <span className="rounded-md bg-[#cee6ef] px-1.5 py-0.5 text-[10px] font-bold text-[#233944] tracking-wider">
+                <span className="rounded-md bg-blue-50 px-1.5 py-0.5 text-[10px] font-bold text-blue-700 border border-blue-200 tracking-wider">
                   DMS Campus
                 </span>
               </div>
-              <span className="text-[11px] text-[#73787b] hidden sm:inline">
+              <span className="text-[11px] text-slate-500 hidden sm:inline">
                 Hệ thống Quản lý Ký túc xá FPT University
               </span>
             </div>
           </Link>
 
           {/* Quick Anchor Links */}
-          <nav className="hidden lg:flex items-center gap-1.5 xl:gap-2 text-xs font-semibold shrink-0 bg-[#efeee8]/60 p-1 rounded-2xl border border-[#efeee8]">
+          <nav className="hidden lg:flex items-center gap-1.5 xl:gap-2 text-xs font-semibold shrink-0 bg-slate-100 p-1 rounded-2xl border border-slate-200">
             {navItems.map((item) => {
               const isActive = activeNav === item.href
               return (
@@ -271,6 +272,9 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {children}
       </main>
+
+      {/* AI Assistant */}
+      <DormAIAssistant />
     </div>
   )
 }

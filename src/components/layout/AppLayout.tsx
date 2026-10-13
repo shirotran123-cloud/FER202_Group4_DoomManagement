@@ -4,6 +4,7 @@ import { Navbar } from "./Navbar"
 import { Sidebar } from "./Sidebar"
 import { useAuth } from "@/contexts/useAuth"
 import { Sparkles } from "lucide-react"
+import { DormAIAssistant } from "@/components/ai/DormAIAssistant"
 
 export const AppLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -11,7 +12,7 @@ export const AppLayout: React.FC = () => {
   const [showDemoBanner, setShowDemoBanner] = useState(true)
 
   return (
-    <div className="min-h-screen bg-[#faf9f4] text-[#1b1c19] font-sans antialiased">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans antialiased">
       {/* Fixed Sidebar */}
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
@@ -21,15 +22,15 @@ export const AppLayout: React.FC = () => {
         <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
         {/* Scrollable Page Body */}
-        <main className="w-full pt-[68px] flex-1 bg-[#faf9f4]">
+        <main className="w-full pt-[68px] flex-1 bg-slate-50">
           <div className="max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 space-y-5">
             {showDemoBanner && user && (
-              <div className="rounded-xl bg-white border border-[#c2c7cb]/40 px-4 py-2 text-xs flex items-center justify-between shadow-xs">
-                <div className="flex items-center gap-2 overflow-x-auto">
-                  <Sparkles className="h-4 w-4 text-[#233944] shrink-0" />
+              <div className="rounded-xl bg-white border border-slate-200 px-4 py-2.5 text-xs flex items-center justify-between shadow-xs">
+                <div className="flex items-center gap-2 overflow-x-auto text-slate-700">
+                  <Sparkles className="h-4 w-4 text-blue-600 shrink-0" />
                   <span>
-                    <strong>Demo Switcher:</strong> Đang đóng vai{" "}
-                    <span className="font-bold text-[#233944]">
+                    <strong className="text-slate-900">Demo Switcher:</strong> Đang đóng vai{" "}
+                    <span className="font-bold text-blue-700">
                       {user.fullName} ({user.roleTitle})
                     </span>
                     . Thử nghiệm vai trò:
@@ -37,40 +38,40 @@ export const AppLayout: React.FC = () => {
                   <div className="inline-flex gap-1.5 ml-2">
                     <button
                       onClick={() => switchRole("student")}
-                      className={`px-2 py-0.5 rounded text-[11px] font-semibold transition-colors ${
+                      className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors ${
                         user.role === "student"
-                          ? "bg-[#233944] text-white shadow-xs"
-                          : "bg-[#efeee8] hover:bg-[#e3e3dd] text-[#42474b]"
+                          ? "bg-slate-900 text-white shadow-xs"
+                          : "bg-slate-100 hover:bg-slate-200 text-slate-700"
                       }`}
                     >
                       Sinh viên
                     </button>
                     <button
                       onClick={() => switchRole("manager")}
-                      className={`px-2 py-0.5 rounded text-[11px] font-semibold transition-colors ${
+                      className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors ${
                         user.role === "manager"
-                          ? "bg-[#233944] text-white shadow-xs"
-                          : "bg-[#efeee8] hover:bg-[#e3e3dd] text-[#42474b]"
+                          ? "bg-slate-900 text-white shadow-xs"
+                          : "bg-slate-100 hover:bg-slate-200 text-slate-700"
                       }`}
                     >
                       Quản lý
                     </button>
                     <button
                       onClick={() => switchRole("technician")}
-                      className={`px-2 py-0.5 rounded text-[11px] font-semibold transition-colors ${
+                      className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors ${
                         user.role === "technician"
-                          ? "bg-[#233944] text-white shadow-xs"
-                          : "bg-[#efeee8] hover:bg-[#e3e3dd] text-[#42474b]"
+                          ? "bg-slate-900 text-white shadow-xs"
+                          : "bg-slate-100 hover:bg-slate-200 text-slate-700"
                       }`}
                     >
                       Kỹ thuật
                     </button>
                     <button
                       onClick={() => switchRole("admin")}
-                      className={`px-2 py-0.5 rounded text-[11px] font-semibold transition-colors ${
+                      className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors ${
                         user.role === "admin"
-                          ? "bg-[#233944] text-white shadow-xs"
-                          : "bg-[#efeee8] hover:bg-[#e3e3dd] text-[#42474b]"
+                          ? "bg-slate-900 text-white shadow-xs"
+                          : "bg-slate-100 hover:bg-slate-200 text-slate-700"
                       }`}
                     >
                       Admin
@@ -79,7 +80,7 @@ export const AppLayout: React.FC = () => {
                 </div>
                 <button
                   onClick={() => setShowDemoBanner(false)}
-                  className="text-[#73787b] hover:text-[#1b1c19] text-xs ml-4"
+                  className="text-slate-400 hover:text-slate-700 text-xs ml-4 font-semibold"
                   title="Đóng thông báo"
                 >
                   ✕
@@ -91,6 +92,9 @@ export const AppLayout: React.FC = () => {
           </div>
         </main>
       </div>
+
+      {/* Interactive AI / LLM Assistant */}
+      <DormAIAssistant />
     </div>
   )
 }

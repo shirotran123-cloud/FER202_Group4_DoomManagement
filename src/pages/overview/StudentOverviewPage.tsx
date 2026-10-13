@@ -32,15 +32,15 @@ export const StudentOverviewPage: React.FC = () => {
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#cee6ef] text-[#52686f] text-xs uppercase tracking-wider font-semibold">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-800 border border-blue-200 text-xs uppercase tracking-wider font-semibold">
                 <span className="material-symbols-outlined text-sm">verified</span>
                 Verified Resident
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#e9e8e3] text-[#1b1c19] text-xs font-semibold">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 text-xs font-semibold">
                 <span className="material-symbols-outlined text-sm">meeting_room</span>
                 Room A205 · Compartment B · Bed G03
               </span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#efeee8] text-[#73787b] text-xs font-mono">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-mono border border-slate-200">
                 RFID: 8492-AX-01
               </span>
             </div>
@@ -85,7 +85,7 @@ export const StudentOverviewPage: React.FC = () => {
               <span className="text-[11px] uppercase tracking-wider text-[#73787b] font-bold">
                 Phòng Hiện Tại
               </span>
-              <div className="w-8 h-8 rounded-lg bg-[#cee6ef]/70 flex items-center justify-center text-[#52686f]">
+              <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-700">
                 <span className="material-symbols-outlined text-base">domain</span>
               </div>
             </div>
@@ -228,7 +228,7 @@ export const StudentOverviewPage: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="w-3 h-3 rounded bg-[#cee6ef] border border-[#b3cad3]" />
-                  <span className="text-[#52686f]">Trống</span>
+                  <span className="text-emerald-700 font-semibold">Trống</span>
                 </div>
               </div>
             </div>
@@ -247,32 +247,32 @@ export const StudentOverviewPage: React.FC = () => {
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                  <div className="p-2 rounded-lg bg-[#e3e3dd] flex flex-col justify-between h-16">
+                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
                     <span className="font-bold text-[#1b1c19]">G01 · Dưới</span>
                     <span className="text-[11px] text-[#42474b] truncate">H. Long</span>
                     <span className="text-[9px] text-[#73787b]">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-[#e3e3dd] flex flex-col justify-between h-16">
+                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
                     <span className="font-bold text-[#1b1c19]">G02 · Trên</span>
                     <span className="text-[11px] text-[#42474b] truncate">T. Tuấn</span>
                     <span className="text-[9px] text-[#73787b]">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-[#cee6ef] text-[#52686f] flex flex-col justify-between h-16 border border-[#b3cad3]">
+                  <div className="p-2 rounded-lg bg-emerald-50 text-emerald-900 flex flex-col justify-between h-16 border border-emerald-200 shadow-2xs">
                     <span className="font-bold text-[11px]">G03 · Dưới</span>
                     <span className="material-symbols-outlined text-sm mx-auto">bed</span>
                     <span className="text-[9px] font-bold text-emerald-700">TRỐNG</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-[#e3e3dd] flex flex-col justify-between h-16">
+                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
                     <span className="font-bold text-[#1b1c19]">G04 · Trên</span>
                     <span className="text-[11px] text-[#42474b] truncate">P. Quang</span>
                     <span className="text-[9px] text-[#73787b]">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-[#e3e3dd] flex flex-col justify-between h-16">
+                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
                     <span className="font-bold text-[#1b1c19]">G05 · Dưới</span>
                     <span className="text-[11px] text-[#42474b] truncate">Đ. Khoa</span>
                     <span className="text-[9px] text-[#73787b]">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-[#e3e3dd] flex flex-col justify-between h-16">
+                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
                     <span className="font-bold text-[#1b1c19]">G06 · Trên</span>
                     <span className="text-[11px] text-[#42474b] truncate">M. Đức</span>
                     <span className="text-[9px] text-[#73787b]">Đã ở</span>
@@ -294,12 +294,12 @@ export const StudentOverviewPage: React.FC = () => {
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-center text-xs relative z-10">
-                  <div className="p-2 rounded-lg bg-[#e3e3dd] flex flex-col justify-between h-16">
+                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
                     <span className="font-bold text-[#1b1c19]">G01 · Dưới</span>
                     <span className="text-[11px] text-[#42474b] truncate">B. Trần</span>
                     <span className="text-[9px] text-[#73787b]">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-[#e3e3dd] flex flex-col justify-between h-16">
+                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
                     <span className="font-bold text-[#1b1c19]">G02 · Trên</span>
                     <span className="text-[11px] text-[#42474b] truncate">L. Nam</span>
                     <span className="text-[9px] text-[#73787b]">Đã ở</span>
@@ -317,17 +317,17 @@ export const StudentOverviewPage: React.FC = () => {
                     </span>
                     <span className="text-[9px] text-[#bac9cd]">Tầng dưới</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-[#e3e3dd] flex flex-col justify-between h-16">
+                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
                     <span className="font-bold text-[#1b1c19]">G04 · Trên</span>
                     <span className="text-[11px] text-[#42474b] truncate">V. Thanh</span>
                     <span className="text-[9px] text-[#73787b]">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-[#e3e3dd] flex flex-col justify-between h-16">
+                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
                     <span className="font-bold text-[#1b1c19]">G05 · Dưới</span>
                     <span className="text-[11px] text-[#42474b] truncate">N. Huy</span>
                     <span className="text-[9px] text-[#73787b]">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-[#cee6ef] text-[#52686f] flex flex-col justify-between h-16 border border-[#b3cad3]">
+                  <div className="p-2 rounded-lg bg-emerald-50 text-emerald-900 flex flex-col justify-between h-16 border border-emerald-200 shadow-2xs">
                     <span className="font-bold text-[11px]">G06 · Trên</span>
                     <span className="material-symbols-outlined text-sm mx-auto">bed</span>
                     <span className="text-[9px] font-bold text-emerald-700">TRỐNG</span>
@@ -347,32 +347,32 @@ export const StudentOverviewPage: React.FC = () => {
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                  <div className="p-2 rounded-lg bg-[#e3e3dd] flex flex-col justify-between h-16">
+                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
                     <span className="font-bold text-[#1b1c19]">G01 · Dưới</span>
                     <span className="text-[11px] text-[#42474b] truncate">K. Minh</span>
                     <span className="text-[9px] text-[#73787b]">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-[#cee6ef] text-[#52686f] flex flex-col justify-between h-16 border border-[#b3cad3]">
+                  <div className="p-2 rounded-lg bg-emerald-50 text-emerald-900 flex flex-col justify-between h-16 border border-emerald-200 shadow-2xs">
                     <span className="font-bold text-[11px]">G02 · Trên</span>
                     <span className="material-symbols-outlined text-sm mx-auto">bed</span>
                     <span className="text-[9px] font-bold text-emerald-700">TRỐNG</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-[#e3e3dd] flex flex-col justify-between h-16">
+                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
                     <span className="font-bold text-[#1b1c19]">G03 · Dưới</span>
                     <span className="text-[11px] text-[#42474b] truncate">P. Linh</span>
                     <span className="text-[9px] text-[#73787b]">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-[#e3e3dd] flex flex-col justify-between h-16">
+                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
                     <span className="font-bold text-[#1b1c19]">G04 · Trên</span>
                     <span className="text-[11px] text-[#42474b] truncate">T. Dung</span>
                     <span className="text-[9px] text-[#73787b]">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-[#cee6ef] text-[#52686f] flex flex-col justify-between h-16 border border-[#b3cad3]">
+                  <div className="p-2 rounded-lg bg-emerald-50 text-emerald-900 flex flex-col justify-between h-16 border border-emerald-200 shadow-2xs">
                     <span className="font-bold text-[11px]">G05 · Dưới</span>
                     <span className="material-symbols-outlined text-sm mx-auto">bed</span>
                     <span className="text-[9px] font-bold text-emerald-700">TRỐNG</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-[#e3e3dd] flex flex-col justify-between h-16">
+                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
                     <span className="font-bold text-[#1b1c19]">G06 · Trên</span>
                     <span className="text-[11px] text-[#42474b] truncate">S. Sơn</span>
                     <span className="text-[9px] text-[#73787b]">Đã ở</span>
@@ -392,32 +392,32 @@ export const StudentOverviewPage: React.FC = () => {
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                  <div className="p-2 rounded-lg bg-[#e3e3dd] flex flex-col justify-between h-16">
+                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
                     <span className="font-bold text-[#1b1c19]">G01 · Dưới</span>
                     <span className="text-[11px] text-[#42474b] truncate">A. Hiền</span>
                     <span className="text-[9px] text-[#73787b]">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-[#e3e3dd] flex flex-col justify-between h-16">
+                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
                     <span className="font-bold text-[#1b1c19]">G02 · Trên</span>
                     <span className="text-[11px] text-[#42474b] truncate">V. Khôi</span>
                     <span className="text-[9px] text-[#73787b]">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-[#cee6ef] text-[#52686f] flex flex-col justify-between h-16 border border-[#b3cad3]">
+                  <div className="p-2 rounded-lg bg-emerald-50 text-emerald-900 flex flex-col justify-between h-16 border border-emerald-200 shadow-2xs">
                     <span className="font-bold text-[11px]">G03 · Dưới</span>
                     <span className="material-symbols-outlined text-sm mx-auto">bed</span>
                     <span className="text-[9px] font-bold text-emerald-700">TRỐNG</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-[#cee6ef] text-[#52686f] flex flex-col justify-between h-16 border border-[#b3cad3]">
+                  <div className="p-2 rounded-lg bg-emerald-50 text-emerald-900 flex flex-col justify-between h-16 border border-emerald-200 shadow-2xs">
                     <span className="font-bold text-[11px]">G04 · Trên</span>
                     <span className="material-symbols-outlined text-sm mx-auto">bed</span>
                     <span className="text-[9px] font-bold text-emerald-700">TRỐNG</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-[#e3e3dd] flex flex-col justify-between h-16">
+                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
                     <span className="font-bold text-[#1b1c19]">G05 · Dưới</span>
                     <span className="text-[11px] text-[#42474b] truncate">H. Phúc</span>
                     <span className="text-[9px] text-[#73787b]">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-[#e3e3dd] flex flex-col justify-between h-16">
+                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
                     <span className="font-bold text-[#1b1c19]">G06 · Trên</span>
                     <span className="text-[11px] text-[#42474b] truncate">Q. Thắng</span>
                     <span className="text-[9px] text-[#73787b]">Đã ở</span>
@@ -588,7 +588,7 @@ export const StudentOverviewPage: React.FC = () => {
                 <h3 className="text-sm font-bold text-[#1b1c19]">Điện Nước Tháng 09</h3>
                 <span className="text-[11px] text-[#73787b]">T09/2026</span>
               </div>
-              <span className="text-[11px] px-2 py-0.5 rounded bg-[#cee6ef] text-[#52686f] font-semibold">
+              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-800 border border-blue-200 font-semibold">
                 Auto-Split Matrix
               </span>
             </div>
