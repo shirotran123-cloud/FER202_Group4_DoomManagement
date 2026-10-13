@@ -179,9 +179,9 @@ export const MyRoomPage: React.FC = () => {
                     : "bg-[#f4f4ee] dark:bg-[#1c262c] border-border"
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs text-foreground">{comp}</span>
-                  <span className="text-[10px] font-semibold text-muted-foreground">
+                <div className="flex items-center justify-between gap-1">
+                  <span className="font-bold text-xs text-foreground whitespace-nowrap truncate">{comp}</span>
+                  <span className="text-[10px] font-semibold text-muted-foreground whitespace-nowrap shrink-0">
                     {idx === 1 ? "4/6 Đang ở" : "6/6 Đầy"}
                   </span>
                 </div>

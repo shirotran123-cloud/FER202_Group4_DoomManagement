@@ -237,12 +237,12 @@ export const StudentOverviewPage: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Compartment A */}
               <div className="p-4 rounded-xl bg-[#f4f4ee]/70 border border-[#efeee8] space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-xs text-[#1b1c19]">Buồng A</span>
-                    <span className="text-[11px] text-[#73787b]">Hướng Ban Công</span>
+                <div className="flex items-center justify-between gap-1.5">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="font-bold text-xs text-[#1b1c19] whitespace-nowrap shrink-0">Buồng A</span>
+                    <span className="text-[11px] text-[#73787b] whitespace-nowrap truncate">Hướng Ban Công</span>
                   </div>
-                  <span className="text-[11px] px-2 py-0.5 rounded bg-[#e9e8e3] text-[#1b1c19] font-semibold">
+                  <span className="text-[11px] px-2 py-0.5 rounded bg-[#e9e8e3] text-[#1b1c19] font-semibold whitespace-nowrap shrink-0">
                     5/6 Giường
                   </span>
                 </div>
@@ -282,14 +282,14 @@ export const StudentOverviewPage: React.FC = () => {
 
               {/* Compartment B (User's Compartment) */}
               <div className="p-4 rounded-xl bg-[#f4f4ee] border-2 border-[#233944]/30 space-y-3 relative overflow-hidden">
-                <div className="flex items-center justify-between relative z-10">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-xs text-[#1b1c19]">Buồng B</span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#233944] text-white font-bold">
+                <div className="flex items-center justify-between gap-1.5 relative z-10">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="font-bold text-xs text-[#1b1c19] whitespace-nowrap shrink-0">Buồng B</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#233944] text-white font-bold whitespace-nowrap shrink-0">
                       BUỒNG CỦA BẠN
                     </span>
                   </div>
-                  <span className="text-[11px] px-2 py-0.5 rounded bg-[#e9e8e3] text-[#1b1c19] font-semibold">
+                  <span className="text-[11px] px-2 py-0.5 rounded bg-[#e9e8e3] text-[#1b1c19] font-semibold whitespace-nowrap shrink-0">
                     5/6 Giường
                   </span>
                 </div>
@@ -337,12 +337,12 @@ export const StudentOverviewPage: React.FC = () => {
 
               {/* Compartment C */}
               <div className="p-4 rounded-xl bg-[#f4f4ee]/70 border border-[#efeee8] space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-xs text-[#1b1c19]">Buồng C</span>
-                    <span className="text-[11px] text-[#73787b]">Góc Tự Học</span>
+                <div className="flex items-center justify-between gap-1.5">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="font-bold text-xs text-[#1b1c19] whitespace-nowrap shrink-0">Buồng C</span>
+                    <span className="text-[11px] text-[#73787b] whitespace-nowrap truncate">Góc Tự Học</span>
                   </div>
-                  <span className="text-[11px] px-2 py-0.5 rounded bg-[#e9e8e3] text-[#1b1c19] font-semibold">
+                  <span className="text-[11px] px-2 py-0.5 rounded bg-[#e9e8e3] text-[#1b1c19] font-semibold whitespace-nowrap shrink-0">
                     4/6 Giường
                   </span>
                 </div>
@@ -382,12 +382,12 @@ export const StudentOverviewPage: React.FC = () => {
 
               {/* Compartment D */}
               <div className="p-4 rounded-xl bg-[#f4f4ee]/70 border border-[#efeee8] space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-xs text-[#1b1c19]">Buồng D</span>
-                    <span className="text-[11px] text-[#73787b]">Cửa Ra Vào & WC</span>
+                <div className="flex items-center justify-between gap-1.5">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="font-bold text-xs text-[#1b1c19] whitespace-nowrap shrink-0">Buồng D</span>
+                    <span className="text-[11px] text-[#73787b] whitespace-nowrap truncate">Cửa Ra Vào & WC</span>
                   </div>
-                  <span className="text-[11px] px-2 py-0.5 rounded bg-[#e9e8e3] text-[#1b1c19] font-semibold">
+                  <span className="text-[11px] px-2 py-0.5 rounded bg-[#e9e8e3] text-[#1b1c19] font-semibold whitespace-nowrap shrink-0">
                     4/6 Giường
                   </span>
                 </div>

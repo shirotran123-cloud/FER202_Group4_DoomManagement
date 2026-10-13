@@ -90,7 +90,7 @@ export const BookingPage: React.FC = () => {
       id: "A",
       name: "Compartment A",
       title: "Window Bay",
-      zone: "Đón nắng ban mai & Giếng trời",
+      zone: "Đón nắng ban mai",
       beds: [
         { id: "A-G01", code: "A205-A-G01", slot: "G01", status: "occupied", price: 950000, tier: "lower" },
         { id: "A-G02", code: "A205-A-G02", slot: "G02", status: "occupied", price: 950000, tier: "upper" },
@@ -104,7 +104,7 @@ export const BookingPage: React.FC = () => {
       id: "B",
       name: "Compartment B",
       title: "Balcony Wing",
-      zone: "Hướng ban công thoáng mát",
+      zone: "Hướng ban công",
       beds: [
         { id: "B-G01", code: "A205-B-G01", slot: "G01", status: "occupied", price: 950000, tier: "lower" },
         { id: "B-G02", code: "A205-B-G02", slot: "G02", status: "holding", price: 950000, tier: "upper", holdingTime: "12m" },
@@ -118,7 +118,7 @@ export const BookingPage: React.FC = () => {
       id: "C",
       name: "Compartment C",
       title: "Study Hub",
-      zone: "Gần góc bàn học tự học",
+      zone: "Góc bàn học",
       beds: [
         { id: "C-G01", code: "A205-C-G01", slot: "G01", status: "available", price: 950000, tier: "lower" },
         { id: "C-G02", code: "A205-C-G02", slot: "G02", status: "available", price: 950000, tier: "upper" },
@@ -132,7 +132,7 @@ export const BookingPage: React.FC = () => {
       id: "D",
       name: "Compartment D",
       title: "Main Hall Door",
-      zone: "Thuận tiện lối ra vào & WC",
+      zone: "Cạnh cửa & WC",
       beds: [
         { id: "D-G01", code: "A205-D-G01", slot: "G01", status: "occupied", price: 950000, tier: "lower" },
         { id: "D-G02", code: "A205-D-G02", slot: "G02", status: "occupied", price: 950000, tier: "upper" },
@@ -463,42 +463,45 @@ export const BookingPage: React.FC = () => {
             </div>
 
             {/* Visual Floor Canvas Matrix */}
-            <div className="p-4 bg-[#f4f4ee] dark:bg-[#141c21] rounded-xl border border-border relative space-y-4">
+            <div className="p-3.5 bg-[#f4f4ee] dark:bg-[#141c21] rounded-xl border border-border relative space-y-3">
               {/* Orientation Indicators */}
               <div className="flex justify-between items-center text-muted-foreground text-[10px] font-mono tracking-wider px-1">
-                <span className="flex items-center gap-1">
-                  <Sun className="h-3 w-3 text-amber-500" /> HƯỚNG ĐÔNG (BAN CÔNG HỨNG SÁNG)
+                <span className="flex items-center gap-1 whitespace-nowrap truncate">
+                  <Sun className="h-3 w-3 text-amber-500 shrink-0" /> HƯỚNG ĐÔNG (BAN CÔNG)
                 </span>
-                <span className="flex items-center gap-1">
-                  <Compass className="h-3 w-3" /> HƯỚNG BẮC (KHUÔN VIÊN TRƯỜNG)
+                <span className="flex items-center gap-1 whitespace-nowrap truncate text-right">
+                  <Compass className="h-3 w-3 shrink-0" /> HƯỚNG BẮC (KHUÔN VIÊN)
                 </span>
               </div>
 
               {/* 4 Quadrants (1:4:6 Layout) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 {compartments.map((comp) => {
                   const isSelectedComp = selectedCompartment === comp.id
                   return (
                     <div
                       key={comp.id}
-                      className={`bg-white dark:bg-[#161e23] p-3.5 rounded-xl border transition-all ${
+                      className={`bg-white dark:bg-[#161e23] p-3 rounded-xl border transition-all ${
                         isSelectedComp
                           ? "ring-2 ring-primary border-primary shadow-sm"
                           : "border-border"
                       }`}
                     >
-                      <div className="flex items-center justify-between mb-2.5 pb-1.5 border-b border-border/60">
-                        <div>
-                          <span className="font-bold text-xs text-foreground flex items-center gap-1">
-                            {comp.name}
+                      {/* Compartment Header */}
+                      <div className="mb-2 pb-1.5 border-b border-border/60">
+                        <div className="flex items-center justify-between gap-1.5">
+                          <span className="font-bold text-xs text-foreground whitespace-nowrap flex items-center gap-1.5 shrink-0">
+                            Compartment {comp.id}
                             {isSelectedComp && (
-                              <span className="w-1.5 h-1.5 rounded-full bg-primary inline-block"></span>
+                              <span className="w-1.5 h-1.5 rounded-full bg-primary inline-block shrink-0"></span>
                             )}
                           </span>
-                          <span className="text-[10px] text-muted-foreground">{comp.title}</span>
+                          <span className="text-[10px] font-semibold text-[#4C6269] dark:text-[#b3cad3] bg-[#cee6ef]/40 dark:bg-[#233944] px-1.5 py-0.5 rounded whitespace-nowrap shrink-0">
+                            {comp.zone}
+                          </span>
                         </div>
-                        <span className="text-[10px] font-semibold text-[#4C6269] dark:text-[#b3cad3] bg-[#cee6ef]/40 dark:bg-[#233944] px-1.5 py-0.5 rounded">
-                          {comp.zone}
+                        <span className="text-[10px] text-muted-foreground whitespace-nowrap block truncate mt-0.5">
+                          Buồng {comp.id} · {comp.title}
                         </span>
                       </div>
 
@@ -526,13 +529,13 @@ export const BookingPage: React.FC = () => {
                                   : "bg-[#F1F5F9] dark:bg-[#1e293b] text-muted-foreground opacity-75 cursor-not-allowed"
                               }`}
                             >
-                              <span className="material-symbols-outlined text-base">
+                              <span className="material-symbols-outlined text-base shrink-0">
                                 {isCurrentPick ? "check_circle" : "single_bed"}
                               </span>
-                              <span className="font-mono font-bold text-[11px] leading-tight">
+                              <span className="font-mono font-bold text-[11px] leading-tight whitespace-nowrap">
                                 {bed.slot}
                               </span>
-                              <span className="text-[9px] mt-0.5 font-medium">
+                              <span className="text-[9px] mt-0.5 font-medium whitespace-nowrap">
                                 {isCurrentPick
                                   ? "Đang chọn"
                                   : isAvailable
