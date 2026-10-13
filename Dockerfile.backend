@@ -1,0 +1,31 @@
+# ==========================================
+# Production Node.js Backend Container
+# ==========================================
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Create non-root system user for security
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# Copy dependencies
+COPY package.json package-lock.json ./
+
+# Install production dependencies
+RUN npm ci --omit=dev
+
+# Copy backend server files & data
+COPY server.js db.json ./
+
+# Change ownership to appuser
+RUN chown -R appuser:appgroup /app
+
+USER appuser
+
+EXPOSE 3001
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+  CMD wget -qO- http://localhost:3001/api/bookings || exit 1
+
+CMD ["node", "server.js"]

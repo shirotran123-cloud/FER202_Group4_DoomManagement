@@ -1,0 +1,46 @@
+{
+  "expo": {
+    "name": "Domanage - DMS Mobile",
+    "slug": "domanage-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0f172a"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "edu.fpt.domanage",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Ứng dụng cần quyền sử dụng máy ảnh để quét mã QR thẻ ra vào cổng KTX và chụp ảnh sự cố thiết bị hư hỏng.",
+        "NSFaceIDUsageDescription": "Sử dụng FaceID để đăng nhập nhanh và xác thực danh tính sinh viên khi qua cổng KTX."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0f172a"
+      },
+      "package": "edu.fpt.domanage",
+      "permissions": [
+        "CAMERA",
+        "USE_BIOMETRIC",
+        "VIBRATE",
+        "RECEIVE_BOOT_COMPLETED"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Cho phép Domanage truy cập máy ảnh để quét mã QR và chụp ảnh báo hỏng."
+        }
+      ],
+      "expo-local-authentication"
+    ]
+  }
+}

@@ -5,23 +5,21 @@ import type {
   MaintenanceScope,
   MaintenanceCategory,
   MaintenanceUrgency,
-  MaintenanceStatus,
   ReplacedMaterial,
 } from "@/types/maintenance"
 import { INITIAL_MAINTENANCE_TICKETS } from "@/data/mockMaintenance"
 import {
   Wrench,
   AlertTriangle,
-  Clock,
   CheckCircle2,
-  PlusCircle,
+  Plus,
   Search,
   Star,
   UserCheck,
-  ChevronRight,
-  Sparkles,
   Info,
-  Package,
+  Edit2,
+  Trash2,
+  X,
 } from "lucide-react"
 
 const STORAGE_KEY_TICKETS = "dms_maintenance_tickets_v1"
@@ -45,20 +43,25 @@ export const MaintenancePage: React.FC = () => {
     localStorage.setItem(STORAGE_KEY_TICKETS, JSON.stringify(tickets))
   }, [tickets])
 
-  // Filters & Tabs
-  const [activeTab, setActiveTab] = useState<"list" | "create">("list")
+  // Filters & Search
   const [searchQuery, setSearchQuery] = useState("")
-  const [filterScope, setFilterScope] = useState<string>("ALL")
   const [filterStatus, setFilterStatus] = useState<string>("ALL")
   const [filterUrgency, setFilterUrgency] = useState<string>("ALL")
+  const [filterScope, setFilterScope] = useState<string>("ALL")
 
-  // Selected Ticket for Modal Actions
-  const [selectedTicket, setSelectedTicket] = useState<MaintenanceTicket | null>(null)
-  const [actionModalType, setActionModalType] = useState<
-    "ASSIGN" | "COMPLETE" | "REVIEW" | "VIEW" | null
-  >(null)
+  // Modals
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false)
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false)
+  const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false)
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
+  const [deleteConfirmTicketId, setDeleteConfirmTicketId] = useState<string | null>(null)
 
-  // UC-20 Form State
+  const [activeTicket, setActiveTicket] = useState<MaintenanceTicket | null>(null)
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
+
+  // Form State (used for Create & Edit)
   const [formTitle, setFormTitle] = useState("")
   const [formScope, setFormScope] = useState<MaintenanceScope>("COMPARTMENT_PRIVATE")
   const [formBuilding, setFormBuilding] = useState("Tòa A (Nam)")
@@ -71,14 +74,13 @@ export const MaintenancePage: React.FC = () => {
   const [formImage, setFormImage] = useState(
     "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=600&q=80"
   )
-  const [toastMessage, setToastMessage] = useState<string | null>(null)
 
-  // UC-21 Assignment Modal State
+  // Assign Modal State
   const [assignTechName, setAssignTechName] = useState("Chú Đỗ Mạnh Hùng")
   const [assignTechPhone, setAssignTechPhone] = useState("0977 112 233")
   const [assignEtaMinutes, setAssignEtaMinutes] = useState(60)
 
-  // UC-22 Completion Modal State
+  // Complete Modal State
   const [completionNotes, setCompletionNotes] = useState("")
   const [completionImage, setCompletionImage] = useState(
     "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80"
@@ -89,26 +91,42 @@ export const MaintenancePage: React.FC = () => {
   const [newMatCost, setNewMatCost] = useState(50000)
   const [newMatPayer, setNewMatPayer] = useState<"DORMITORY" | "STUDENT">("DORMITORY")
 
-  // UC-23 Review Modal State
+  // Review Modal State
   const [ratingStars, setRatingStars] = useState(5)
   const [ratingComment, setRatingComment] = useState("")
 
   const showToast = (msg: string) => {
     setToastMessage(msg)
-    setTimeout(() => setToastMessage(null), 4000)
+    setTimeout(() => setToastMessage(null), 3500)
   }
 
-  // Handle UC-20 Ticket Submission
-  const handleCreateTicket = (e: React.FormEvent) => {
+  // Open Create Modal
+  const handleOpenCreate = () => {
+    setFormTitle("")
+    setFormScope("COMPARTMENT_PRIVATE")
+    setFormBuilding("Tòa A (Nam)")
+    setFormRoom("A205")
+    setFormCompartment("Buồng B1")
+    setFormBedCode("A205-B1-G03")
+    setFormCategory("ELECTRIC")
+    setFormUrgency("NORMAL")
+    setFormDescription("")
+    setFormImage("https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=600&q=80")
+    setIsCreateModalOpen(true)
+  }
+
+  // Handle Create Ticket (C in CRUD)
+  const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!formTitle.trim() || !formDescription.trim()) {
-      showToast("Vui lòng điền đầy đủ tiêu đề và mô tả sự cố!")
+    if (!formTitle.trim()) {
+      showToast("Vui lòng nhập tiêu đề sự cố!")
       return
     }
 
+    const nextId = `TKT-${new Date().getFullYear()}-${String(tickets.length + 1).padStart(3, "0")}`
     const newTicket: MaintenanceTicket = {
-      id: `TKT-2026-${String(tickets.length + 1).padStart(3, "0")}`,
-      title: formTitle,
+      id: nextId,
+      title: formTitle.trim(),
       scope: formScope,
       building: formBuilding,
       room: formRoom,
@@ -116,1200 +134,1170 @@ export const MaintenancePage: React.FC = () => {
       bedCode: formScope === "COMPARTMENT_PRIVATE" ? formBedCode : undefined,
       category: formCategory,
       urgency: formUrgency,
-      description: formDescription,
+      description: formDescription.trim() || "Cần kỹ thuật kiểm tra và khắc phục sự cố.",
       studentId: user?.studentId || "SE182049",
       studentName: user?.fullName || "Nguyễn Hoàng Vinh",
-      studentPhone: user?.phone || "0912 345 678",
+      studentPhone: "0912 345 678",
       evidenceImages: formImage ? [formImage] : [],
       status: "PENDING",
       createdAt: new Date().toISOString().replace("T", " ").substring(0, 16),
     }
 
     setTickets([newTicket, ...tickets])
-    setActiveTab("list")
-    setFormTitle("")
-    setFormDescription("")
-    showToast(`Đã tạo thành công phiếu ${newTicket.id}! Kỹ thuật viên sẽ tiếp nhận trong thời gian sớm nhất.`)
+    setIsCreateModalOpen(false)
+    showToast(`Đã tạo thành công phiếu yêu cầu ${newTicket.id}`)
   }
 
-  // Handle UC-21 Technician Assignment
-  const handleAssignTechnician = () => {
-    if (!selectedTicket) return
-    const updated = tickets.map((t) => {
-      if (t.id === selectedTicket.id) {
-        return {
-          ...t,
-          status: "IN_PROGRESS" as MaintenanceStatus,
-          assignedTechnician: {
-            id: "usr_tech_01",
-            name: assignTechName,
-            phone: assignTechPhone,
-            assignedAt: new Date().toISOString().replace("T", " ").substring(0, 16),
-            etaMinutes: assignEtaMinutes,
-          },
+  // Open Edit Modal (U in CRUD)
+  const handleOpenEdit = (ticket: MaintenanceTicket) => {
+    setActiveTicket(ticket)
+    setFormTitle(ticket.title)
+    setFormScope(ticket.scope)
+    setFormBuilding(ticket.building)
+    setFormRoom(ticket.room)
+    setFormCompartment(ticket.compartment || "Buồng B1")
+    setFormBedCode(ticket.bedCode || "A205-B1-G03")
+    setFormCategory(ticket.category)
+    setFormUrgency(ticket.urgency)
+    setFormDescription(ticket.description)
+    setFormImage(ticket.evidenceImages?.[0] || "")
+    setIsEditModalOpen(true)
+  }
+
+  // Handle Edit Submit
+  const handleEditSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!activeTicket) return
+
+    setTickets(
+      tickets.map((t) => {
+        if (t.id === activeTicket.id) {
+          return {
+            ...t,
+            title: formTitle.trim(),
+            scope: formScope,
+            building: formBuilding,
+            room: formRoom,
+            compartment: formScope === "COMPARTMENT_PRIVATE" ? formCompartment : undefined,
+            bedCode: formScope === "COMPARTMENT_PRIVATE" ? formBedCode : undefined,
+            category: formCategory,
+            urgency: formUrgency,
+            description: formDescription.trim(),
+            evidenceImages: formImage ? [formImage] : t.evidenceImages,
+          }
         }
-      }
-      return t
-    })
-    setTickets(updated)
-    setActionModalType(null)
-    setSelectedTicket(null)
-    showToast(`Đã điều phối kỹ thuật viên ${assignTechName} tiếp nhận phiếu ${selectedTicket.id}!`)
+        return t
+      })
+    )
+
+    setIsEditModalOpen(false)
+    setActiveTicket(null)
+    showToast(`Đã cập nhật thông tin phiếu ${activeTicket.id}`)
   }
 
-  // Add material row in completion modal
+  // Handle Delete Ticket (D in CRUD)
+  const handleDeleteTicket = (ticketId: string) => {
+    setTickets(tickets.filter((t) => t.id !== ticketId))
+    setDeleteConfirmTicketId(null)
+    showToast(`Đã xóa thành công phiếu ${ticketId}`)
+  }
+
+  // Handle Assign Technician
+  const handleAssignSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!activeTicket) return
+
+    setTickets(
+      tickets.map((t) => {
+        if (t.id === activeTicket.id) {
+          return {
+            ...t,
+            status: "IN_PROGRESS",
+            assignedTechnician: {
+              id: `tech_${Date.now()}`,
+              name: assignTechName,
+              phone: assignTechPhone,
+              assignedAt: new Date().toISOString().replace("T", " ").substring(0, 16),
+              etaMinutes: assignEtaMinutes,
+            },
+          }
+        }
+        return t
+      })
+    )
+
+    setIsAssignModalOpen(false)
+    setActiveTicket(null)
+    showToast(`Đã phân công ${assignTechName} xử lý phiếu!`)
+  }
+
+  // Handle Complete Ticket
   const handleAddMaterial = () => {
     if (!newMatName.trim()) return
-    const newMat: ReplacedMaterial = {
-      id: "mat_" + Date.now(),
-      name: newMatName,
-      quantity: newMatQty,
-      unitCost: newMatCost,
+    const item: ReplacedMaterial = {
+      id: `mat_${Date.now()}`,
+      name: newMatName.trim(),
+      quantity: Number(newMatQty),
+      unitCost: Number(newMatCost),
       paidBy: newMatPayer,
     }
-    setMaterials([...materials, newMat])
+    setMaterials([...materials, item])
     setNewMatName("")
-    setNewMatQty(1)
-    setNewMatCost(50000)
   }
 
   const handleRemoveMaterial = (id: string) => {
     setMaterials(materials.filter((m) => m.id !== id))
   }
 
-  // Handle UC-22 Completion
-  const handleCompleteRepair = () => {
-    if (!selectedTicket) return
-    const totalCost = materials.reduce((acc, curr) => acc + curr.quantity * curr.unitCost, 0)
-    const updated = tickets.map((t) => {
-      if (t.id === selectedTicket.id) {
-        return {
-          ...t,
-          status: "RESOLVED" as MaintenanceStatus,
-          resolution: {
-            completedAt: new Date().toISOString().replace("T", " ").substring(0, 16),
-            technicianNotes:
-              completionNotes.trim() ||
-              "Đã hoàn thành kiểm tra và thay thế linh kiện, hệ thống vận hành an toàn.",
-            completionImages: completionImage ? [completionImage] : [],
-            materials: materials,
-            totalMaterialCost: totalCost,
-          },
+  const handleCompleteSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!activeTicket) return
+
+    const totalCost = materials.reduce((acc, cur) => acc + cur.quantity * cur.unitCost, 0)
+
+    setTickets(
+      tickets.map((t) => {
+        if (t.id === activeTicket.id) {
+          return {
+            ...t,
+            status: "RESOLVED",
+            resolution: {
+              completedAt: new Date().toISOString().replace("T", " ").substring(0, 16),
+              technicianNotes: completionNotes || "Đã kiểm tra và xử lý xong sự cố đạt chuẩn an toàn.",
+              completionImages: completionImage ? [completionImage] : [],
+              materials,
+              totalMaterialCost: totalCost,
+            },
+          }
         }
-      }
-      return t
-    })
-    setTickets(updated)
-    setActionModalType(null)
-    setSelectedTicket(null)
-    setMaterials([])
-    setCompletionNotes("")
-    showToast(`Đã cập nhật hoàn tất sửa chữa cho phiếu ${selectedTicket.id}! Đang chờ sinh viên nghiệm thu.`)
+        return t
+      })
+    )
+
+    setIsCompleteModalOpen(false)
+    setActiveTicket(null)
+    showToast("Đã nghiệm thu hoàn tất và gửi cho sinh viên đánh giá!")
   }
 
-  // Handle UC-23 Review
-  const handleReviewTicket = () => {
-    if (!selectedTicket) return
-    const updated = tickets.map((t) => {
-      if (t.id === selectedTicket.id) {
-        return {
-          ...t,
-          status: "CLOSED" as MaintenanceStatus,
-          review: {
-            rating: ratingStars,
-            reviewedAt: new Date().toISOString().replace("T", " ").substring(0, 16),
-            comment: ratingComment.trim() || "Rất hài lòng với chất lượng sửa chữa.",
-            isSatisfied: ratingStars >= 3,
-          },
+  // Handle Student Rating Review
+  const handleReviewSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!activeTicket) return
+
+    setTickets(
+      tickets.map((t) => {
+        if (t.id === activeTicket.id) {
+          return {
+            ...t,
+            status: "CLOSED",
+            review: {
+              rating: ratingStars,
+              comment: ratingComment || "Dịch vụ sửa chữa nhanh chóng và tận tình.",
+              reviewedAt: new Date().toISOString().replace("T", " ").substring(0, 16),
+              isSatisfied: ratingStars >= 4,
+            },
+          }
         }
-      }
-      return t
-    })
-    setTickets(updated)
-    setActionModalType(null)
-    setSelectedTicket(null)
-    setRatingComment("")
-    showToast(`Cảm ơn bạn đã đánh giá ${ratingStars} sao cho dịch vụ bảo trì! Phiếu ${selectedTicket.id} đã hoàn tất đóng.`)
+        return t
+      })
+    )
+
+    setIsReviewModalOpen(false)
+    setActiveTicket(null)
+    showToast(`Cảm ơn bạn! Đã ghi nhận đánh giá ${ratingStars} sao cho phiếu.`)
   }
 
-  // Student visibility filter: Sinh viên chỉ xem các phiếu do chính mình gửi, BQL/KTV xem toàn bộ
-  const isStudent = user?.role === "student"
-  const currentStudentId = user?.studentId || "SE182049"
-
-  const visibleTickets = isStudent
-    ? tickets.filter((t) => t.studentId === currentStudentId)
-    : tickets
-
-  // Filtered tickets
-  const filteredTickets = visibleTickets.filter((t) => {
-    const matchesScope = filterScope === "ALL" || t.scope === filterScope
-    const matchesStatus = filterStatus === "ALL" || t.status === filterStatus
-    const matchesUrgency = filterUrgency === "ALL" || t.urgency === filterUrgency
+  // Filter Logic (R in CRUD)
+  const filteredTickets = tickets.filter((ticket) => {
     const matchesSearch =
-      t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      t.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      t.room.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (t.bedCode && t.bedCode.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      t.studentName.toLowerCase().includes(searchQuery.toLowerCase())
-    return matchesScope && matchesStatus && matchesUrgency && matchesSearch
+      ticket.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ticket.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ticket.room.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ticket.studentName.toLowerCase().includes(searchQuery.toLowerCase())
+
+    const matchesStatus = filterStatus === "ALL" || ticket.status === filterStatus
+    const matchesUrgency = filterUrgency === "ALL" || ticket.urgency === filterUrgency
+    const matchesScope = filterScope === "ALL" || ticket.scope === filterScope
+
+    return matchesSearch && matchesStatus && matchesUrgency && matchesScope
   })
 
-  // Statistics
-  const totalCount = visibleTickets.length
-  const pendingCount = visibleTickets.filter((t) => t.status === "PENDING").length
-  const inProgressCount = visibleTickets.filter((t) => t.status === "IN_PROGRESS").length
-  const resolvedCount = visibleTickets.filter((t) => t.status === "RESOLVED").length
-  const emergencyCount = visibleTickets.filter((t) => t.urgency === "EMERGENCY" && t.status !== "CLOSED").length
+  // Quick statistics
+  const stats = {
+    total: tickets.length,
+    pending: tickets.filter((t) => t.status === "PENDING").length,
+    inProgress: tickets.filter((t) => t.status === "IN_PROGRESS").length,
+    resolved: tickets.filter((t) => t.status === "RESOLVED").length,
+    closed: tickets.filter((t) => t.status === "CLOSED").length,
+    emergency: tickets.filter((t) => t.urgency === "EMERGENCY" && t.status !== "CLOSED").length,
+  }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 pb-16">
-      {/* Toast Alert */}
+    <div className="space-y-6">
+      {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-20 right-6 z-50 flex items-center gap-2 rounded-2xl bg-foreground text-background px-4 py-3 shadow-xl text-xs font-semibold animate-in fade-in slide-in-from-top-4">
-          <Sparkles className="h-4 w-4 text-amber-400 shrink-0" />
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 rounded-xl bg-slate-900 px-4 py-3 text-sm font-medium text-white shadow-xl border border-slate-700 animate-in fade-in slide-in-from-bottom-5">
+          <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Header Banner */}
-      <div className="rounded-3xl border border-amber-500/20 bg-gradient-to-br from-card via-amber-500/5 to-card p-6 sm:p-8 shadow-xs">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border/80 pb-6">
-          <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shadow-xs">
-              <Wrench className="h-7 w-7" />
+      {/* Header & Quick Action */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+        <div>
+          <div className="flex items-center gap-2.5 mb-1">
+            <div className="h-9 w-9 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600">
+              <Wrench className="h-5 w-5" />
             </div>
-            <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 px-3 py-0.5 text-[11px] font-bold text-amber-700 dark:text-amber-400">
-                <span>Module 5</span>
-                <span>•</span>
-                <span>UC-20 ➔ UC-23</span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-black text-foreground mt-1">
-                Hệ Thống Báo Hỏng Cơ Sở Vật Chất & Điều Phối Kỹ Thuật
-              </h1>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Phân định thiết bị Phòng chung vs Buồng cá nhân • Xử lý khẩn cấp 2h • Nghiệm thu đánh giá 1-5 sao
-              </p>
-            </div>
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Quản lý Báo hỏng & Sửa chữa</h1>
           </div>
-          <div className="rounded-2xl border border-border bg-card/90 px-4 py-2.5 text-right shadow-xs shrink-0">
-            <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
-              Phụ trách kỹ thuật & an ninh:
-            </p>
-            <p className="text-xs font-bold text-amber-600 dark:text-amber-400 flex items-center justify-end gap-1 mt-0.5">
-              <span>🛡️ Đinh Thanh Trung</span>
-            </p>
-            {isTechnician && (
-              <p className="text-[10px] text-amber-600 font-bold mt-0.5">
-                Kỹ thuật / Quản lý: {user?.fullName}
-              </p>
-            )}
-            {!isTechnician && isManagerOrAdmin && (
-              <p className="text-[10px] text-blue-600 font-bold mt-0.5">
-                Quản lý: {user?.fullName}
-              </p>
-            )}
-          </div>
+          <p className="text-sm text-slate-600">
+            Theo dõi, điều phối kỹ thuật và nghiệm thu sửa chữa cơ sở vật chất KTX FPT
+          </p>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-6 text-xs">
-          <div className="rounded-2xl border border-border bg-card/60 p-4">
-            <p className="text-muted-foreground text-[11px] font-medium">Tổng số phiếu</p>
-            <p className="text-2xl font-black text-foreground mt-1">{totalCount}</p>
-            <span className="text-[10px] text-muted-foreground">Toàn hệ thống KTX</span>
-          </div>
-          <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4">
-            <p className="text-amber-700 dark:text-amber-400 text-[11px] font-medium flex items-center gap-1">
-              <Clock className="h-3.5 w-3.5" /> Chờ tiếp nhận
-            </p>
-            <p className="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1">{pendingCount}</p>
-            <span className="text-[10px] text-amber-700/80 dark:text-amber-400/80">Cần phân công kỹ thuật</span>
-          </div>
-          <div className="rounded-2xl border border-blue-500/20 bg-blue-500/5 p-4">
-            <p className="text-blue-700 dark:text-blue-400 text-[11px] font-medium flex items-center gap-1">
-              <Wrench className="h-3.5 w-3.5" /> Đang sửa chữa
-            </p>
-            <p className="text-2xl font-black text-blue-600 dark:text-blue-400 mt-1">{inProgressCount}</p>
-            <span className="text-[10px] text-blue-700/80 dark:text-blue-400/80">Kỹ thuật viên đang xử lý</span>
-          </div>
-          <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4">
-            <p className="text-emerald-700 dark:text-emerald-400 text-[11px] font-medium flex items-center gap-1">
-              <CheckCircle2 className="h-3.5 w-3.5" /> Chờ nghiệm thu
-            </p>
-            <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">{resolvedCount}</p>
-            <span className="text-[10px] text-emerald-700/80 dark:text-emerald-400/80">Đã sửa xong, chờ review</span>
-          </div>
-          <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-4">
-            <p className="text-red-700 dark:text-red-400 text-[11px] font-medium flex items-center gap-1">
-              <AlertTriangle className="h-3.5 w-3.5" /> Ca khẩn cấp (&lt;2h)
-            </p>
-            <p className="text-2xl font-black text-red-600 dark:text-red-400 mt-1">{emergencyCount}</p>
-            <span className="text-[10px] text-red-700/80 dark:text-red-400/80">Nguy cơ chập điện/ngập</span>
-          </div>
+        <button
+          onClick={handleOpenCreate}
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-xs transition-colors shrink-0"
+        >
+          <Plus className="h-4 w-4" />
+          <span>Tạo phiếu báo hỏng mới</span>
+        </button>
+      </div>
+
+      {/* Metric Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-4">
+        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Tổng số phiếu</span>
+          <div className="mt-2 text-2xl font-bold text-slate-900">{stats.total}</div>
+          <div className="mt-1 text-xs text-slate-500">Tất cả các thời điểm</div>
+        </div>
+
+        <div className="bg-white p-4 rounded-xl border border-amber-200/80 bg-amber-50/20 shadow-xs">
+          <span className="text-xs font-semibold text-amber-800 uppercase tracking-wider">Chờ tiếp nhận</span>
+          <div className="mt-2 text-2xl font-bold text-amber-600">{stats.pending}</div>
+          <div className="mt-1 text-xs text-amber-700">Cần phân công kỹ thuật</div>
+        </div>
+
+        <div className="bg-white p-4 rounded-xl border border-blue-200/80 bg-blue-50/20 shadow-xs">
+          <span className="text-xs font-semibold text-blue-800 uppercase tracking-wider">Đang xử lý</span>
+          <div className="mt-2 text-2xl font-bold text-blue-600">{stats.inProgress}</div>
+          <div className="mt-1 text-xs text-blue-700">Thợ đang làm việc</div>
+        </div>
+
+        <div className="bg-white p-4 rounded-xl border border-emerald-200/80 bg-emerald-50/20 shadow-xs">
+          <span className="text-xs font-semibold text-emerald-800 uppercase tracking-wider">Chờ nghiệm thu</span>
+          <div className="mt-2 text-2xl font-bold text-emerald-600">{stats.resolved}</div>
+          <div className="mt-1 text-xs text-emerald-700">Chờ sinh viên đánh giá</div>
+        </div>
+
+        <div className="bg-white p-4 rounded-xl border border-rose-200/80 bg-rose-50/20 shadow-xs col-span-2 lg:col-span-1">
+          <span className="text-xs font-semibold text-rose-800 uppercase tracking-wider">Sự cố khẩn cấp</span>
+          <div className="mt-2 text-2xl font-bold text-rose-600">{stats.emergency}</div>
+          <div className="mt-1 text-xs text-rose-700">Cam kết có mặt 2h</div>
         </div>
       </div>
 
-      {/* Tabs & Actions */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        <div className="flex rounded-2xl bg-muted/60 p-1 border border-border">
-          <button
-            onClick={() => setActiveTab("list")}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
-              activeTab === "list"
-                ? "bg-card text-foreground shadow-xs"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Wrench className="h-3.5 w-3.5" />
-            <span>{isStudent ? "Phiếu Báo Hỏng Của Tôi" : "Danh Sách Phiếu Sự Cố"} ({filteredTickets.length})</span>
-          </button>
-          <button
-            onClick={() => setActiveTab("create")}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
-              activeTab === "create"
-                ? "bg-amber-600 text-white shadow-xs"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <PlusCircle className="h-3.5 w-3.5" />
-            <span>Tạo phiếu báo hỏng mới (UC-20)</span>
-          </button>
-        </div>
+      {/* Filters & Search Control Bar */}
+      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+          {/* Search Bar */}
+          <div className="relative flex-1">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Tìm theo mã phiếu, phòng, tên sinh viên hoặc sự cố..."
+              className="w-full pl-10 pr-4 py-2 text-sm rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-blue-500 transition-colors"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
 
-        {activeTab === "list" && (
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Search */}
-            <div className="relative flex-1 sm:w-64">
-              <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Tìm mã vé, phòng, giường..."
-                className="w-full rounded-xl border border-border bg-card pl-9 pr-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-amber-500"
-              />
-            </div>
-            {/* Scope Filter */}
-            <select
-              value={filterScope}
-              onChange={(e) => setFilterScope(e.target.value)}
-              className="rounded-xl border border-border bg-card px-2.5 py-2 text-xs text-foreground focus:outline-hidden"
-            >
-              <option value="ALL">Khu vực: Tất cả</option>
-              <option value="ROOM_SHARED">Phòng chung</option>
-              <option value="COMPARTMENT_PRIVATE">Buồng cá nhân</option>
-            </select>
-            {/* Status Filter */}
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="rounded-xl border border-border bg-card px-2.5 py-2 text-xs text-foreground focus:outline-hidden"
-            >
-              <option value="ALL">Trạng thái: Tất cả</option>
-              <option value="PENDING">Chờ tiếp nhận</option>
-              <option value="IN_PROGRESS">Đang xử lý</option>
-              <option value="RESOLVED">Chờ nghiệm thu</option>
-              <option value="CLOSED">Đã đóng</option>
-            </select>
-            {/* Urgency Filter */}
+          {/* Quick Urgency & Scope Selects */}
+          <div className="flex items-center gap-2">
             <select
               value={filterUrgency}
               onChange={(e) => setFilterUrgency(e.target.value)}
-              className="rounded-xl border border-border bg-card px-2.5 py-2 text-xs text-foreground focus:outline-hidden"
+              className="px-3 py-2 text-xs font-medium rounded-xl border border-slate-200 bg-slate-50 text-slate-700 focus:outline-none focus:bg-white"
             >
               <option value="ALL">Mức độ: Tất cả</option>
-              <option value="EMERGENCY">Khẩn cấp (2h)</option>
               <option value="NORMAL">Bình thường</option>
+              <option value="EMERGENCY">Khẩn cấp (2h)</option>
+            </select>
+
+            <select
+              value={filterScope}
+              onChange={(e) => setFilterScope(e.target.value)}
+              className="px-3 py-2 text-xs font-medium rounded-xl border border-slate-200 bg-slate-50 text-slate-700 focus:outline-none focus:bg-white"
+            >
+              <option value="ALL">Phạm vi: Tất cả</option>
+              <option value="ROOM_SHARED">Phòng chung</option>
+              <option value="COMPARTMENT_PRIVATE">Buồng cá nhân</option>
             </select>
           </div>
-        )}
+        </div>
+
+        {/* Status Filter Tabs */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pt-1 border-t border-slate-100">
+          {[
+            { id: "ALL", label: "Tất cả phiếu" },
+            { id: "PENDING", label: "Chờ tiếp nhận" },
+            { id: "IN_PROGRESS", label: "Đang sửa chữa" },
+            { id: "RESOLVED", label: "Chờ nghiệm thu" },
+            { id: "CLOSED", label: "Đã hoàn thành" },
+          ].map((tab) => {
+            const isActive = filterStatus === tab.id
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setFilterStatus(tab.id)}
+                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap ${
+                  isActive
+                    ? "bg-slate-900 text-white shadow-xs"
+                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                }`}
+              >
+                {tab.label}
+              </button>
+            )
+          })}
+        </div>
       </div>
 
-      {/* TAB 1: LIST OF TICKETS */}
-      {activeTab === "list" && (
-        <div className="space-y-4">
-          {filteredTickets.length === 0 ? (
-            <div className="rounded-3xl border border-border bg-card p-12 text-center text-muted-foreground">
-              <Wrench className="mx-auto h-12 w-12 opacity-30 mb-3" />
-              <p className="text-sm font-semibold">Không tìm thấy phiếu yêu cầu sửa chữa phù hợp</p>
-              <p className="text-xs mt-1">Hãy thử xóa bộ lọc tìm kiếm hoặc tạo một phiếu báo hỏng mới.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filteredTickets.map((ticket) => {
-                const isEmergency = ticket.urgency === "EMERGENCY"
-                const isPending = ticket.status === "PENDING"
-                const isInProgress = ticket.status === "IN_PROGRESS"
-                const isResolved = ticket.status === "RESOLVED"
-                const isClosed = ticket.status === "CLOSED"
+      {/* Tickets List View (R in CRUD) */}
+      {filteredTickets.length === 0 ? (
+        <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
+          <div className="h-12 w-12 rounded-full bg-slate-100 text-slate-400 mx-auto flex items-center justify-center mb-3">
+            <Info className="h-6 w-6" />
+          </div>
+          <h3 className="font-bold text-slate-800 text-base">Không tìm thấy phiếu yêu cầu nào</h3>
+          <p className="text-sm text-slate-500 mt-1">
+            Hãy thử tìm kiếm với từ khóa khác hoặc điều chỉnh bộ lọc trạng thái.
+          </p>
+          <button
+            onClick={() => {
+              setSearchQuery("")
+              setFilterStatus("ALL")
+              setFilterUrgency("ALL")
+              setFilterScope("ALL")
+            }}
+            className="mt-4 px-4 py-2 text-xs font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+          >
+            Đặt lại bộ lọc
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {filteredTickets.map((ticket) => {
+            const isEmergency = ticket.urgency === "EMERGENCY"
+            const isPending = ticket.status === "PENDING"
+            const isInProgress = ticket.status === "IN_PROGRESS"
+            const isResolved = ticket.status === "RESOLVED"
+            const isClosed = ticket.status === "CLOSED"
 
-                return (
-                  <div
-                    key={ticket.id}
-                    className={`rounded-3xl border bg-card p-5 shadow-xs transition-all hover:shadow-md flex flex-col justify-between ${
-                      isEmergency
-                        ? "border-red-500/40 bg-gradient-to-br from-card to-red-500/5"
-                        : "border-border"
-                    }`}
-                  >
-                    <div>
-                      {/* Top Badges */}
-                      <div className="flex items-start justify-between gap-2 mb-3">
-                        <div className="flex flex-wrap items-center gap-1.5">
-                          <span className="font-mono text-[11px] font-bold text-muted-foreground bg-muted px-2 py-0.5 rounded-lg">
-                            {ticket.id}
-                          </span>
+            return (
+              <div
+                key={ticket.id}
+                className={`rounded-2xl border bg-white p-5 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between ${
+                  isEmergency ? "border-rose-300 bg-rose-50/10" : "border-slate-200"
+                }`}
+              >
+                <div>
+                  {/* Card Header: Code, Badges, Status */}
+                  <div className="flex items-start justify-between gap-2 mb-3">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="font-mono text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
+                        {ticket.id}
+                      </span>
 
-                          {/* Scope Badge */}
-                          <span
-                            className={`rounded-lg px-2 py-0.5 text-[10px] font-bold ${
-                              ticket.scope === "ROOM_SHARED"
-                                ? "bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-500/20"
-                                : "bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-500/20"
-                            }`}
-                          >
-                            {ticket.scope === "ROOM_SHARED" ? "Phòng chung" : "Buồng cá nhân"}
-                          </span>
+                      {/* Scope Badge */}
+                      <span
+                        className={`text-[11px] font-semibold px-2 py-0.5 rounded-md border ${
+                          ticket.scope === "ROOM_SHARED"
+                            ? "bg-indigo-50 text-indigo-800 border-indigo-200"
+                            : "bg-teal-50 text-teal-800 border-teal-200"
+                        }`}
+                      >
+                        {ticket.scope === "ROOM_SHARED" ? "Phòng chung" : "Buồng cá nhân"}
+                      </span>
 
-                          {/* Urgency Badge */}
-                          <span
-                            className={`rounded-lg px-2 py-0.5 text-[10px] font-bold flex items-center gap-1 ${
-                              isEmergency
-                                ? "bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30 animate-pulse"
-                                : "bg-muted text-muted-foreground"
-                            }`}
-                          >
-                            {isEmergency ? (
-                              <>
-                                <AlertTriangle className="h-3 w-3" />
-                                <span>KHẨN CẤP (XỬ LÝ TRONG 2H)</span>
-                              </>
-                            ) : (
-                              <span>Bình thường</span>
-                            )}
-                          </span>
-                        </div>
-
-                        {/* Status Badge */}
-                        <span
-                          className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold shrink-0 ${
-                            isPending
-                              ? "bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20"
-                              : isInProgress
-                              ? "bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-500/20"
-                              : isResolved
-                              ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20"
-                              : "bg-gray-500/10 text-gray-700 dark:text-gray-400 border border-gray-500/20"
-                          }`}
-                        >
-                          {isPending && "Chờ tiếp nhận"}
-                          {isInProgress && "Đang sửa chữa"}
-                          {isResolved && "Chờ nghiệm thu"}
-                          {isClosed && "Đã hoàn thành"}
+                      {/* Urgency Badge */}
+                      {isEmergency ? (
+                        <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1">
+                          <AlertTriangle className="h-3 w-3" />
+                          <span>Khẩn cấp (2h)</span>
                         </span>
-                      </div>
-
-                      {/* Title & Description */}
-                      <h3 className="font-bold text-sm text-foreground line-clamp-1">{ticket.title}</h3>
-                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed">
-                        {ticket.description}
-                      </p>
-
-                      {/* Location Information */}
-                      <div className="mt-3 grid grid-cols-2 gap-2 text-[11px] bg-muted/40 p-2.5 rounded-xl border border-border/60">
-                        <div>
-                          <span className="text-muted-foreground">Vị trí: </span>
-                          <strong className="text-foreground">
-                            {ticket.building} - {ticket.room}
-                          </strong>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Chi tiết: </span>
-                          <strong className="text-foreground">
-                            {ticket.bedCode || ticket.compartment || "Khu vực chung"}
-                          </strong>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Người báo: </span>
-                          <strong className="text-foreground">{ticket.studentName}</strong>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Thời gian: </span>
-                          <span className="font-mono text-muted-foreground">{ticket.createdAt}</span>
-                        </div>
-                      </div>
-
-                      {/* Assigned Tech Info if any */}
-                      {ticket.assignedTechnician && (
-                        <div className="mt-2.5 flex items-center justify-between text-[11px] bg-blue-500/5 border border-blue-500/15 p-2 rounded-xl text-blue-700 dark:text-blue-400">
-                          <div className="flex items-center gap-1.5">
-                            <UserCheck className="h-3.5 w-3.5" />
-                            <span>
-                              Kỹ thuật: <strong>{ticket.assignedTechnician.name}</strong> ({ticket.assignedTechnician.phone})
-                            </span>
-                          </div>
-                          <span className="text-[10px] bg-blue-500/10 px-2 py-0.5 rounded-md font-mono">
-                            ETA: {ticket.assignedTechnician.etaMinutes}p
-                          </span>
-                        </div>
-                      )}
-
-                      {/* Completed Resolution Info if any */}
-                      {ticket.resolution && (
-                        <div className="mt-2.5 text-[11px] bg-emerald-500/5 border border-emerald-500/20 p-2.5 rounded-xl space-y-1">
-                          <div className="flex items-center justify-between font-semibold text-emerald-700 dark:text-emerald-400">
-                            <span className="flex items-center gap-1">
-                              <CheckCircle2 className="h-3.5 w-3.5" /> Đã khắc phục xong
-                            </span>
-                            <span className="font-mono text-[10px]">{ticket.resolution.completedAt}</span>
-                          </div>
-                          <p className="text-muted-foreground text-[10px] italic">
-                            "{ticket.resolution.technicianNotes}"
-                          </p>
-                          {ticket.resolution.materials.length > 0 && (
-                            <p className="text-[10px] text-foreground font-medium pt-0.5">
-                              Vật tư thay: {ticket.resolution.materials.map((m) => m.name).join(", ")} (Tổng:{" "}
-                              {ticket.resolution.totalMaterialCost.toLocaleString("vi-VN")} đ)
-                            </p>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Student Review Star Rating if closed */}
-                      {ticket.review && (
-                        <div className="mt-2.5 flex items-center justify-between bg-amber-500/5 border border-amber-500/20 p-2 rounded-xl text-[11px]">
-                          <div className="flex items-center gap-1 text-amber-500">
-                            {Array.from({ length: 5 }).map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`h-3 w-3 ${
-                                  i < ticket.review!.rating ? "fill-amber-400 text-amber-500" : "text-gray-300"
-                                }`}
-                              />
-                            ))}
-                            <span className="font-bold text-foreground ml-1">{ticket.review.rating}/5</span>
-                          </div>
-                          <span className="text-[10px] text-muted-foreground truncate max-w-[180px]">
-                            "{ticket.review.comment}"
-                          </span>
-                        </div>
+                      ) : (
+                        <span className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200">
+                          Bình thường
+                        </span>
                       )}
                     </div>
 
-                    {/* Action Buttons depending on role & status */}
-                    <div className="mt-4 pt-3 border-t border-border/80 flex flex-wrap items-center justify-end gap-2">
-                      {/* UC-21: Assign Technician (For Manager/Technician ONLY, NOT for student) */}
-                      {!isStudent && isPending && (
-                        <button
-                          onClick={() => {
-                            setSelectedTicket(ticket)
-                            setActionModalType("ASSIGN")
-                          }}
-                          className="flex items-center gap-1 rounded-xl bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 text-xs font-bold shadow-xs transition-colors"
-                        >
-                          <UserCheck className="h-3.5 w-3.5" />
-                          <span>Tiếp nhận & Phân công (UC-21)</span>
-                        </button>
-                      )}
+                    {/* Status Badge */}
+                    <span
+                      className={`text-xs font-bold px-2.5 py-1 rounded-full shrink-0 border ${
+                        isPending
+                          ? "bg-amber-50 text-amber-800 border-amber-200"
+                          : isInProgress
+                          ? "bg-blue-50 text-blue-800 border-blue-200"
+                          : isResolved
+                          ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                          : "bg-slate-100 text-slate-700 border-slate-200"
+                      }`}
+                    >
+                      {isPending && "Chờ tiếp nhận"}
+                      {isInProgress && "Đang xử lý"}
+                      {isResolved && "Chờ nghiệm thu"}
+                      {isClosed && "Đã hoàn thành"}
+                    </span>
+                  </div>
 
-                      {/* UC-22: Complete Repair & Upload Result (For Technician/Manager ONLY, NOT for student) */}
-                      {!isStudent && isInProgress && (
-                        <button
-                          onClick={() => {
-                            setSelectedTicket(ticket)
-                            setActionModalType("COMPLETE")
-                          }}
-                          className="flex items-center gap-1 rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 text-xs font-bold shadow-xs transition-colors"
-                        >
-                          <CheckCircle2 className="h-3.5 w-3.5" />
-                          <span>Báo xong & Nghiệm thu (UC-22)</span>
-                        </button>
-                      )}
+                  {/* Title & Description */}
+                  <h3 className="font-bold text-base text-slate-900 line-clamp-1">{ticket.title}</h3>
+                  <p className="text-xs text-slate-600 mt-1 line-clamp-2 leading-relaxed">
+                    {ticket.description}
+                  </p>
 
-                      {/* For student when ticket is pending */}
-                      {isStudent && isPending && (
-                        <span className="text-[11px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-xl">
-                          Đang chờ kỹ thuật viên tiếp nhận
-                        </span>
-                      )}
-
-                      {/* For student when ticket is in progress */}
-                      {isStudent && isInProgress && (
-                        <span className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-xl">
-                          Kỹ thuật viên đang xử lý sự cố
-                        </span>
-                      )}
-
-                      {/* UC-23: Review & Rate 1-5 Stars (For Student) */}
-                      {isResolved && (
-                        <button
-                          onClick={() => {
-                            setSelectedTicket(ticket)
-                            setActionModalType("REVIEW")
-                          }}
-                          className="flex items-center gap-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 text-xs font-bold shadow-xs transition-colors"
-                        >
-                          <Star className="h-3.5 w-3.5 fill-current" />
-                          <span>Nghiệm thu & Đánh giá sao (UC-23)</span>
-                        </button>
-                      )}
-
-                      {/* View Details */}
-                      <button
-                        onClick={() => {
-                          setSelectedTicket(ticket)
-                          setActionModalType("VIEW")
-                        }}
-                        className="flex items-center gap-1 rounded-xl border border-border hover:bg-muted text-foreground px-3 py-1.5 text-xs font-medium transition-colors"
-                      >
-                        <span>Chi tiết</span>
-                        <ChevronRight className="h-3 w-3" />
-                      </button>
+                  {/* Location Meta Box */}
+                  <div className="mt-3 grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                    <div>
+                      <span className="text-slate-500">Vị trí: </span>
+                      <strong className="text-slate-800">
+                        {ticket.building} - {ticket.room}
+                      </strong>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Khu vực: </span>
+                      <strong className="text-slate-800">
+                        {ticket.bedCode || ticket.compartment || "Phòng chung"}
+                      </strong>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Người báo: </span>
+                      <strong className="text-slate-800">{ticket.studentName}</strong>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Thời gian: </span>
+                      <span className="font-mono text-slate-700">{ticket.createdAt}</span>
                     </div>
                   </div>
-                )
-              })}
-            </div>
-          )}
+
+                  {/* Assigned Technician if available */}
+                  {ticket.assignedTechnician && (
+                    <div className="mt-2.5 flex items-center justify-between text-xs bg-blue-50 border border-blue-200 p-2 rounded-xl text-blue-900">
+                      <div className="flex items-center gap-1.5">
+                        <UserCheck className="h-3.5 w-3.5 text-blue-700" />
+                        <span>
+                          Kỹ thuật: <strong>{ticket.assignedTechnician.name}</strong> ({ticket.assignedTechnician.phone})
+                        </span>
+                      </div>
+                      <span className="text-[11px] text-blue-700 font-medium">
+                        ETA: {ticket.assignedTechnician.etaMinutes}p
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Review Stars if closed */}
+                  {ticket.review && (
+                    <div className="mt-2.5 flex items-center gap-2 text-xs bg-emerald-50 border border-emerald-200 p-2 rounded-xl text-emerald-900">
+                      <div className="flex text-amber-500">
+                        {[...Array(ticket.review.rating)].map((_, i) => (
+                          <Star key={i} className="h-3.5 w-3.5 fill-current" />
+                        ))}
+                      </div>
+                      <span className="text-[11px] text-emerald-800 italic">
+                        "{ticket.review.comment}"
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Card Actions Footer */}
+                <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5">
+                    {/* View Details Modal Trigger */}
+                    <button
+                      onClick={() => {
+                        setActiveTicket(ticket)
+                        setIsViewModalOpen(true)
+                      }}
+                      className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-colors"
+                    >
+                      <Info className="h-3.5 w-3.5 text-slate-500" />
+                      <span>Chi tiết</span>
+                    </button>
+
+                    {/* Edit Ticket (U in CRUD) */}
+                    <button
+                      onClick={() => handleOpenEdit(ticket)}
+                      className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-colors"
+                      title="Sửa phiếu"
+                    >
+                      <Edit2 className="h-3.5 w-3.5 text-slate-500" />
+                      <span>Sửa</span>
+                    </button>
+
+                    {/* Delete Ticket (D in CRUD) */}
+                    <button
+                      onClick={() => setDeleteConfirmTicketId(ticket.id)}
+                      className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 transition-colors"
+                      title="Xóa phiếu"
+                    >
+                      <Trash2 className="h-3.5 w-3.5 text-rose-600" />
+                      <span>Xóa</span>
+                    </button>
+                  </div>
+
+                  {/* Contextual Workflow Action Buttons */}
+                  <div className="flex items-center gap-1.5">
+                    {/* For Manager: Assign Tech */}
+                    {isManagerOrAdmin && isPending && (
+                      <button
+                        onClick={() => {
+                          setActiveTicket(ticket)
+                          setIsAssignModalOpen(true)
+                        }}
+                        className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+                      >
+                        <UserCheck className="h-3.5 w-3.5" />
+                        <span>Phân công thợ</span>
+                      </button>
+                    )}
+
+                    {/* For Technician: Mark Completed */}
+                    {isTechnician && isInProgress && (
+                      <button
+                        onClick={() => {
+                          setActiveTicket(ticket)
+                          setMaterials([])
+                          setIsCompleteModalOpen(true)
+                        }}
+                        className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-colors"
+                      >
+                        <CheckCircle2 className="h-3.5 w-3.5" />
+                        <span>Báo hoàn thành</span>
+                      </button>
+                    )}
+
+                    {/* For Student: Review when Resolved */}
+                    {isResolved && (
+                      <button
+                        onClick={() => {
+                          setActiveTicket(ticket)
+                          setRatingStars(5)
+                          setRatingComment("")
+                          setIsReviewModalOpen(true)
+                        }}
+                        className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition-colors"
+                      >
+                        <Star className="h-3.5 w-3.5 fill-current" />
+                        <span>Đánh giá sao</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )
+          })}
         </div>
       )}
 
-      {/* TAB 2: CREATE TICKET FORM (UC-20) */}
-      {activeTab === "create" && (
-        <div className="rounded-3xl border border-border bg-card p-6 sm:p-8 shadow-xs max-w-3xl mx-auto">
-          <div className="flex items-center gap-3 border-b border-border pb-4 mb-6">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600">
-              <PlusCircle className="h-5 w-5" />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-foreground">
-                Tạo Phiếu Báo Hỏng Thiết Bị Cơ Sở Vật Chất (UC-20)
-              </h2>
-              <p className="text-xs text-muted-foreground">
-                Được tiếp nhận bởi Bộ phận Vận hành & Kỹ thuật KTX FPT
-              </p>
-            </div>
-          </div>
-
-          <form onSubmit={handleCreateTicket} className="space-y-5 text-xs">
-            {/* Step 1: Scope Selection (Phòng chung vs Buồng cá nhân) */}
-            <div className="space-y-2">
-              <label className="font-bold text-foreground flex items-center justify-between">
-                <span>1. Phân cấp Vị trí sự cố:</span>
-                <span className="text-[10px] text-amber-600 font-semibold uppercase">
-                  Quy chuẩn SRS IEEE-830
-                </span>
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setFormScope("ROOM_SHARED")}
-                  className={`flex flex-col items-start p-4 rounded-2xl border text-left transition-all ${
-                    formScope === "ROOM_SHARED"
-                      ? "border-amber-500 bg-amber-500/10 text-foreground ring-1 ring-amber-500"
-                      : "border-border bg-card hover:bg-muted text-muted-foreground"
-                  }`}
-                >
-                  <span className="font-bold text-sm text-foreground">Khu vực Phòng chung</span>
-                  <span className="text-[11px] mt-1 text-muted-foreground">
-                    Máy nước nóng WC, vòi sen, lavabo, đèn ban công, cửa ra vào chính.
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFormScope("COMPARTMENT_PRIVATE")}
-                  className={`flex flex-col items-start p-4 rounded-2xl border text-left transition-all ${
-                    formScope === "COMPARTMENT_PRIVATE"
-                      ? "border-amber-500 bg-amber-500/10 text-foreground ring-1 ring-amber-500"
-                      : "border-border bg-card hover:bg-muted text-muted-foreground"
-                  }`}
-                >
-                  <span className="font-bold text-sm text-foreground">Khu vực Buồng cá nhân</span>
-                  <span className="text-[11px] mt-1 text-muted-foreground">
-                    Điều hòa buồng, quạt cá nhân, ổ cắm giường, khóa hộc tủ, giát giường.
-                  </span>
-                </button>
+      {/* MODAL 1: CREATE TICKET (C in CRUD) */}
+      {isCreateModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 my-8">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                  <Plus className="h-4 w-4" />
+                </div>
+                <h3 className="font-bold text-slate-900 text-base">Tạo phiếu báo hỏng thiết bị</h3>
               </div>
+              <button
+                onClick={() => setIsCreateModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 p-1 rounded-lg"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
 
-            {/* Location Inputs */}
-            <div className={`grid grid-cols-1 ${formScope === "COMPARTMENT_PRIVATE" ? "sm:grid-cols-4" : "sm:grid-cols-2"} gap-3`}>
+            <form onSubmit={handleCreateSubmit} className="space-y-4">
               <div>
-                <label className="font-semibold text-foreground">Tòa nhà</label>
-                <select
-                  value={formBuilding}
-                  onChange={(e) => setFormBuilding(e.target.value)}
-                  className="w-full mt-1 rounded-xl border border-border bg-card px-3 py-2 text-xs focus:ring-1 focus:ring-amber-500"
-                >
-                  <option value="Tòa A (Nam)">Tòa A (Khu Nam)</option>
-                  <option value="Tòa B (Nữ)">Tòa B (Khu Nữ)</option>
-                  <option value="Tòa C (Nam)">Tòa C (Khu Nam)</option>
-                </select>
-              </div>
-              <div>
-                <label className="font-semibold text-foreground">Phòng</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Tiêu đề sự cố <span className="text-rose-500">*</span>
+                </label>
                 <input
                   type="text"
-                  value={formRoom}
-                  onChange={(e) => setFormRoom(e.target.value)}
-                  className="w-full mt-1 rounded-xl border border-border bg-card px-3 py-2 text-xs focus:ring-1 focus:ring-amber-500"
+                  required
+                  value={formTitle}
+                  onChange={(e) => setFormTitle(e.target.value)}
+                  placeholder="Ví dụ: Vỡ vòi sen nhà tắm, Chập ổ điện đầu giường..."
+                  className="w-full px-3.5 py-2 text-sm rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:border-blue-500"
                 />
               </div>
-              {formScope === "COMPARTMENT_PRIVATE" && (
-                <>
-                  <div>
-                    <label className="font-semibold text-foreground">Buồng</label>
-                    <select
-                      value={formCompartment}
-                      onChange={(e) => setFormCompartment(e.target.value)}
-                      className="w-full mt-1 rounded-xl border border-border bg-card px-3 py-2 text-xs focus:ring-1 focus:ring-amber-500"
-                    >
-                      <option value="Buồng A1">Buồng A1</option>
-                      <option value="Buồng B1">Buồng B1</option>
-                      <option value="Buồng C1">Buồng C1</option>
-                      <option value="Buồng D1">Buồng D1</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="font-semibold text-foreground">Mã Giường</label>
-                    <input
-                      type="text"
-                      value={formBedCode}
-                      onChange={(e) => setFormBedCode(e.target.value)}
-                      placeholder="VD: A205-B1-G03"
-                      className="w-full mt-1 rounded-xl border border-border bg-card px-3 py-2 text-xs focus:ring-1 focus:ring-amber-500"
-                    />
-                  </div>
-                </>
-              )}
-            </div>
 
-            {/* Category & Urgency */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="font-semibold text-foreground">Nhóm thiết bị</label>
-                <select
-                  value={formCategory}
-                  onChange={(e) => setFormCategory(e.target.value as MaintenanceCategory)}
-                  className="w-full mt-1 rounded-xl border border-border bg-card px-3 py-2 text-xs focus:ring-1 focus:ring-amber-500"
-                >
-                  <option value="ELECTRIC">Điện / Chiếu sáng / Ổ cắm</option>
-                  <option value="PLUMBING">Nước / Vòi sen / Bình nóng lạnh / Thoát sàn</option>
-                  <option value="HVAC">Điều hòa / Quạt thông gió / Quạt trần</option>
-                  <option value="FURNITURE">Khóa cửa / Bản lề / Tủ cá nhân / Giường</option>
-                  <option value="NETWORK">Mạng Internet LAN / Wifi</option>
-                  <option value="OTHER">Hạng mục khác</option>
-                </select>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Phạm vi khu vực</label>
+                  <select
+                    value={formScope}
+                    onChange={(e) => setFormScope(e.target.value as MaintenanceScope)}
+                    className="w-full px-3 py-2 text-xs font-medium rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:border-blue-500"
+                  >
+                    <option value="COMPARTMENT_PRIVATE">Buồng cá nhân (Giường riêng)</option>
+                    <option value="ROOM_SHARED">Khu vực phòng chung (WC, Ban công)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Mức độ ưu tiên</label>
+                  <select
+                    value={formUrgency}
+                    onChange={(e) => setFormUrgency(e.target.value as MaintenanceUrgency)}
+                    className="w-full px-3 py-2 text-xs font-medium rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:border-blue-500"
+                  >
+                    <option value="NORMAL">Bình thường (Trong 24h)</option>
+                    <option value="EMERGENCY">Khẩn cấp (Cháy, nổ, vỡ ống - Trong 2h)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Phân loại sự cố</label>
+                  <select
+                    value={formCategory}
+                    onChange={(e) => setFormCategory(e.target.value as MaintenanceCategory)}
+                    className="w-full px-3 py-2 text-xs font-medium rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:border-blue-500"
+                  >
+                    <option value="ELECTRIC">Hệ thống Điện</option>
+                    <option value="PLUMBING">Nước & Thiết bị WC</option>
+                    <option value="HVAC">Điều hòa không khí</option>
+                    <option value="FURNITURE">Nội thất / Giường tủ</option>
+                    <option value="NETWORK">Mạng Internet / Wifi</option>
+                    <option value="OTHER">Khác</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Phòng & Vị trí</label>
+                  <input
+                    type="text"
+                    value={`${formBuilding} - ${formRoom} (${formCompartment})`}
+                    disabled
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-100 text-slate-600 font-mono"
+                  />
+                </div>
               </div>
 
               <div>
-                <label className="font-semibold text-foreground flex items-center justify-between">
-                  <span>Mức độ khẩn cấp</span>
-                  {formUrgency === "EMERGENCY" && (
-                    <span className="text-[10px] text-red-600 font-bold">Xử lý ngay trong 2h!</span>
-                  )}
-                </label>
-                <select
-                  value={formUrgency}
-                  onChange={(e) => setFormUrgency(e.target.value as MaintenanceUrgency)}
-                  className={`w-full mt-1 rounded-xl border px-3 py-2 text-xs font-semibold focus:ring-1 focus:ring-amber-500 ${
-                    formUrgency === "EMERGENCY"
-                      ? "border-red-500 bg-red-500/10 text-red-600 dark:text-red-400"
-                      : "border-border bg-card text-foreground"
-                  }`}
-                >
-                  <option value="NORMAL">Bình thường (Xử lý trong 24h - 48h)</option>
-                  <option value="EMERGENCY">Khẩn cấp (Rò điện, chập cháy, ngập nước - Trong 2h)</option>
-                </select>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Mô tả chi tiết sự cố</label>
+                <textarea
+                  rows={3}
+                  value={formDescription}
+                  onChange={(e) => setFormDescription(e.target.value)}
+                  placeholder="Mô tả cụ thể hiện trạng hư hỏng, vị trí hoặc dấu hiệu bất thường..."
+                  className="w-full px-3.5 py-2 text-sm rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:border-blue-500"
+                ></textarea>
               </div>
-            </div>
 
-            {/* Title */}
-            <div>
-              <label className="font-semibold text-foreground">Tiêu đề sự cố</label>
-              <input
-                type="text"
-                value={formTitle}
-                onChange={(e) => setFormTitle(e.target.value)}
-                placeholder="VD: Chập ổ cắm điện đầu giường phát ra tia lửa"
-                className="w-full mt-1 rounded-xl border border-border bg-card px-3 py-2 text-xs focus:ring-1 focus:ring-amber-500"
-              />
-            </div>
-
-            {/* Description */}
-            <div>
-              <label className="font-semibold text-foreground">Mô tả chi tiết hiện trường</label>
-              <textarea
-                rows={3}
-                value={formDescription}
-                onChange={(e) => setFormDescription(e.target.value)}
-                placeholder="Mô tả cụ thể dấu hiệu hư hỏng, thời điểm bắt đầu xảy ra sự cố..."
-                className="w-full mt-1 rounded-xl border border-border bg-card p-3 text-xs focus:ring-1 focus:ring-amber-500"
-              />
-            </div>
-
-            {/* Photo Attachment */}
-            <div>
-              <label className="font-semibold text-foreground flex items-center justify-between">
-                <span>Ảnh chụp minh chứng hiện trường (Chống tranh chấp)</span>
-                <span className="text-[10px] text-muted-foreground">URL ảnh hoặc ảnh mẫu</span>
-              </label>
-              <div className="mt-1 flex items-center gap-2">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Link ảnh chụp hiện trường</label>
                 <input
-                  type="text"
+                  type="url"
                   value={formImage}
                   onChange={(e) => setFormImage(e.target.value)}
                   placeholder="https://..."
-                  className="flex-1 rounded-xl border border-border bg-card px-3 py-2 text-xs focus:ring-1 focus:ring-amber-500"
+                  className="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:border-blue-500"
                 />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
                 <button
                   type="button"
-                  onClick={() =>
-                    setFormImage(
-                      "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=600&q=80"
-                    )
-                  }
-                  className="rounded-xl border border-border bg-muted/60 px-3 py-2 text-[11px] font-medium hover:bg-muted shrink-0"
+                  onClick={() => setIsCreateModalOpen(false)}
+                  className="px-4 py-2 text-xs font-semibold rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-colors"
                 >
-                  Ảnh mẫu
+                  Hủy bỏ
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 text-xs font-bold rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+                >
+                  Gửi yêu cầu
                 </button>
               </div>
-              {formImage && (
-                <div className="mt-2 relative w-24 h-24 rounded-xl overflow-hidden border border-border">
-                  <img src={formImage} alt="Proof" className="w-full h-full object-cover" />
-                </div>
-              )}
-            </div>
-
-            {/* Submit Button */}
-            <div className="pt-4 flex items-center justify-end gap-3 border-t border-border">
-              <button
-                type="button"
-                onClick={() => setActiveTab("list")}
-                className="rounded-xl border border-border px-4 py-2 text-xs font-semibold hover:bg-muted"
-              >
-                Hủy bỏ
-              </button>
-              <button
-                type="submit"
-                className="rounded-xl bg-amber-600 hover:bg-amber-700 text-white px-5 py-2 text-xs font-bold shadow-xs transition-colors"
-              >
-                Gửi Phiếu Báo Hỏng
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      {/* MODAL 1: UC-21 ASSIGN TECHNICIAN */}
-      {actionModalType === "ASSIGN" && selectedTicket && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
-          <div className="w-full max-w-md rounded-3xl border border-border bg-card p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <div className="flex items-center gap-2 text-amber-600">
-                <UserCheck className="h-5 w-5" />
-                <h3 className="font-bold text-sm text-foreground">
-                  Tiếp Nhận & Điều Phối Kỹ Thuật (UC-21)
-                </h3>
-              </div>
-              <span className="font-mono text-xs text-muted-foreground">{selectedTicket.id}</span>
-            </div>
-
-            <div className="text-xs space-y-3">
-              <div className="p-3 rounded-2xl bg-muted/50 border border-border space-y-1">
-                <p className="font-bold text-foreground">{selectedTicket.title}</p>
-                <p className="text-muted-foreground text-[11px]">
-                  Vị trí: {selectedTicket.building} - {selectedTicket.room} (
-                  {selectedTicket.bedCode || "Phòng chung"})
-                </p>
-                <p className="text-[11px] font-semibold text-red-600">
-                  Mức độ: {selectedTicket.urgency === "EMERGENCY" ? "KHẨN CẤP (Xử lý trong 2h)" : "Bình thường"}
-                </p>
-              </div>
-
-              <div>
-                <label className="font-semibold text-foreground">Chỉ định kỹ thuật viên</label>
-                <select
-                  value={assignTechName}
-                  onChange={(e) => {
-                    setAssignTechName(e.target.value)
-                    setAssignTechPhone(
-                      e.target.value === "Chú Đỗ Mạnh Hùng" ? "0977 112 233" : "0905 444 555"
-                    )
-                  }}
-                  className="w-full mt-1 rounded-xl border border-border bg-card px-3 py-2 text-xs"
-                >
-                  <option value="Chú Đỗ Mạnh Hùng">Chú Đỗ Mạnh Hùng (Tổ An ninh & Bảo trì Điện Nước)</option>
-                  <option value="Anh Nguyễn Văn Sang">Anh Nguyễn Văn Sang (Kỹ thuật viên Điện Lạnh Daikin)</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="font-semibold text-foreground">Số điện thoại liên hệ</label>
-                <input
-                  type="text"
-                  value={assignTechPhone}
-                  onChange={(e) => setAssignTechPhone(e.target.value)}
-                  className="w-full mt-1 rounded-xl border border-border bg-card px-3 py-2 text-xs"
-                />
-              </div>
-
-              <div>
-                <label className="font-semibold text-foreground">
-                  Hẹn giờ có mặt tại phòng (ETA)
-                </label>
-                <select
-                  value={assignEtaMinutes}
-                  onChange={(e) => setAssignEtaMinutes(Number(e.target.value))}
-                  className="w-full mt-1 rounded-xl border border-border bg-card px-3 py-2 text-xs font-semibold"
-                >
-                  <option value={30}>Trong vòng 30 phút (Ưu tiên đặc biệt)</option>
-                  <option value={60}>Trong vòng 1 giờ</option>
-                  <option value={120}>Trong vòng 2 giờ (Chuẩn khẩn cấp)</option>
-                  <option value={1440}>Trong vòng 24 giờ</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="pt-2 flex items-center justify-end gap-2 border-t border-border">
-              <button
-                onClick={() => setActionModalType(null)}
-                className="rounded-xl border border-border px-3.5 py-2 text-xs font-semibold hover:bg-muted"
-              >
-                Hủy
-              </button>
-              <button
-                onClick={handleAssignTechnician}
-                className="rounded-xl bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 text-xs font-bold shadow-xs"
-              >
-                Xác nhận Điều phối
-              </button>
-            </div>
+            </form>
           </div>
         </div>
       )}
 
-      {/* MODAL 2: UC-22 COMPLETION & MATERIALS */}
-      {actionModalType === "COMPLETE" && selectedTicket && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
-          <div className="w-full max-w-lg rounded-3xl border border-border bg-card p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <div className="flex items-center gap-2 text-blue-600">
-                <CheckCircle2 className="h-5 w-5" />
-                <h3 className="font-bold text-sm text-foreground">
-                  Báo Cáo Kết Quả Sửa Chữa & Vật Tư Thay Thế (UC-22)
-                </h3>
+      {/* MODAL 2: EDIT TICKET (U in CRUD) */}
+      {isEditModalOpen && activeTicket && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 my-8">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center">
+                  <Edit2 className="h-4 w-4" />
+                </div>
+                <h3 className="font-bold text-slate-900 text-base">Chỉnh sửa phiếu {activeTicket.id}</h3>
               </div>
-              <span className="font-mono text-xs text-muted-foreground">{selectedTicket.id}</span>
+              <button
+                onClick={() => setIsEditModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 p-1 rounded-lg"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
 
-            <div className="text-xs space-y-3">
+            <form onSubmit={handleEditSubmit} className="space-y-4">
               <div>
-                <label className="font-semibold text-foreground">Ghi chú công việc đã thực hiện</label>
-                <textarea
-                  rows={2}
-                  value={completionNotes}
-                  onChange={(e) => setCompletionNotes(e.target.value)}
-                  placeholder="VD: Đã thay thế van khóa nước 21mm, thử áp lực nước bình thường không rò rỉ..."
-                  className="w-full mt-1 rounded-xl border border-border bg-card p-2.5 text-xs"
-                />
-              </div>
-
-              <div>
-                <label className="font-semibold text-foreground">Ảnh hiện trường sau khi sửa</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Tiêu đề sự cố</label>
                 <input
                   type="text"
-                  value={completionImage}
-                  onChange={(e) => setCompletionImage(e.target.value)}
-                  className="w-full mt-1 rounded-xl border border-border bg-card px-3 py-2 text-xs"
+                  required
+                  value={formTitle}
+                  onChange={(e) => setFormTitle(e.target.value)}
+                  className="w-full px-3.5 py-2 text-sm rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
-              {/* Materials Section */}
-              <div className="rounded-2xl border border-border p-3 space-y-2 bg-muted/20">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-foreground flex items-center gap-1">
-                    <Package className="h-3.5 w-3.5" /> Danh mục vật tư / linh kiện thay thế
-                  </span>
-                  <span className="text-[10px] text-muted-foreground">
-                    Tổng: {materials.reduce((a, c) => a + c.quantity * c.unitCost, 0).toLocaleString("vi-VN")} đ
-                  </span>
-                </div>
-
-                {materials.map((m) => (
-                  <div
-                    key={m.id}
-                    className="flex items-center justify-between p-2 rounded-xl bg-card border border-border text-[11px]"
-                  >
-                    <div>
-                      <span className="font-semibold text-foreground">{m.name}</span>
-                      <span className="text-muted-foreground ml-2">
-                        x{m.quantity} ({m.unitCost.toLocaleString("vi-VN")} đ/cái)
-                      </span>
-                      <span
-                        className={`ml-2 text-[9px] font-bold px-1.5 py-0.5 rounded ${
-                          m.paidBy === "DORMITORY" ? "bg-emerald-500/10 text-emerald-600" : "bg-red-500/10 text-red-600"
-                        }`}
-                      >
-                        {m.paidBy === "DORMITORY" ? "KTX đài thọ" : "Sinh viên bồi thường"}
-                      </span>
-                    </div>
-                    <button
-                      onClick={() => handleRemoveMaterial(m.id)}
-                      className="text-red-500 hover:text-red-700 text-xs px-1"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
-
-                {/* Add Material Row */}
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-2 border-t border-border/60">
-                  <input
-                    type="text"
-                    value={newMatName}
-                    onChange={(e) => setNewMatName(e.target.value)}
-                    placeholder="Tên linh kiện..."
-                    className="col-span-2 sm:col-span-1 rounded-xl border border-border bg-card px-2 py-1.5 text-xs"
-                  />
-                  <input
-                    type="number"
-                    value={newMatCost}
-                    onChange={(e) => setNewMatCost(Number(e.target.value))}
-                    placeholder="Đơn giá"
-                    className="rounded-xl border border-border bg-card px-2 py-1.5 text-xs"
-                  />
-                  <input
-                    type="number"
-                    value={newMatQty}
-                    onChange={(e) => setNewMatQty(Number(e.target.value))}
-                    placeholder="Số lượng"
-                    className="rounded-xl border border-border bg-card px-2 py-1.5 text-xs"
-                  />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Mức độ ưu tiên</label>
                   <select
-                    value={newMatPayer}
-                    onChange={(e) => setNewMatPayer(e.target.value as "DORMITORY" | "STUDENT")}
-                    className="rounded-xl border border-border bg-card px-2 py-1.5 text-xs"
+                    value={formUrgency}
+                    onChange={(e) => setFormUrgency(e.target.value as MaintenanceUrgency)}
+                    className="w-full px-3 py-2 text-xs font-medium rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:border-blue-500"
                   >
-                    <option value="DORMITORY">KTX đài thọ</option>
-                    <option value="STUDENT">SV bồi thường</option>
+                    <option value="NORMAL">Bình thường</option>
+                    <option value="EMERGENCY">Khẩn cấp</option>
                   </select>
-                  <button
-                    type="button"
-                    onClick={handleAddMaterial}
-                    className="col-span-2 sm:col-span-1 rounded-xl bg-muted hover:bg-muted/80 text-foreground px-2 py-1.5 text-xs font-bold"
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Phân loại</label>
+                  <select
+                    value={formCategory}
+                    onChange={(e) => setFormCategory(e.target.value as MaintenanceCategory)}
+                    className="w-full px-3 py-2 text-xs font-medium rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:border-blue-500"
                   >
-                    + Thêm
-                  </button>
+                    <option value="ELECTRIC">Hệ thống Điện</option>
+                    <option value="PLUMBING">Nước & Thiết bị WC</option>
+                    <option value="HVAC">Điều hòa không khí</option>
+                    <option value="FURNITURE">Nội thất / Giường tủ</option>
+                    <option value="NETWORK">Mạng Internet</option>
+                    <option value="OTHER">Khác</option>
+                  </select>
                 </div>
-              </div>
-            </div>
-
-            <div className="pt-2 flex items-center justify-end gap-2 border-t border-border">
-              <button
-                onClick={() => setActionModalType(null)}
-                className="rounded-xl border border-border px-3.5 py-2 text-xs font-semibold hover:bg-muted"
-              >
-                Hủy
-              </button>
-              <button
-                onClick={handleCompleteRepair}
-                className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-xs font-bold shadow-xs"
-              >
-                Hoàn Tất & Gửi Sinh Viên Nghiệm Thu
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL 3: UC-23 STUDENT REVIEW & RATING */}
-      {actionModalType === "REVIEW" && selectedTicket && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
-          <div className="w-full max-w-md rounded-3xl border border-border bg-card p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <div className="flex items-center gap-2 text-emerald-600">
-                <Star className="h-5 w-5 fill-current" />
-                <h3 className="font-bold text-sm text-foreground">
-                  Nghiệm Thu & Đánh Giá Dịch Vụ 1-5 Sao (UC-23)
-                </h3>
-              </div>
-              <span className="font-mono text-xs text-muted-foreground">{selectedTicket.id}</span>
-            </div>
-
-            <div className="text-xs space-y-4">
-              <div className="p-3 rounded-2xl bg-muted/40 border border-border space-y-1">
-                <p className="font-bold text-foreground">{selectedTicket.title}</p>
-                <p className="text-muted-foreground text-[11px]">
-                  Kỹ thuật viên: {selectedTicket.assignedTechnician?.name || "Chú Đỗ Mạnh Hùng"}
-                </p>
-                {selectedTicket.resolution && (
-                  <p className="text-[11px] text-emerald-700 dark:text-emerald-400 font-medium pt-1">
-                    Ghi chú kỹ thuật: "{selectedTicket.resolution.technicianNotes}"
-                  </p>
-                )}
-              </div>
-
-              {/* Star Rating Selector */}
-              <div className="text-center py-2 space-y-2">
-                <p className="font-bold text-foreground">Bạn đánh giá chất lượng sửa chữa thế nào?</p>
-                <div className="flex items-center justify-center gap-2">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      type="button"
-                      onClick={() => setRatingStars(star)}
-                      className="p-1 text-amber-400 hover:scale-125 transition-transform"
-                    >
-                      <Star
-                        className={`h-7 w-7 ${
-                          star <= ratingStars ? "fill-amber-400 text-amber-500" : "text-gray-300"
-                        }`}
-                      />
-                    </button>
-                  ))}
-                </div>
-                <p className="text-xs font-semibold text-amber-600">
-                  {ratingStars === 5 && "⭐ Tuyệt vời - Rất hài lòng"}
-                  {ratingStars === 4 && "⭐ Tốt - Hài lòng"}
-                  {ratingStars === 3 && "⭐ Đạt yêu cầu"}
-                  {ratingStars === 2 && "⭐ Cần cải thiện"}
-                  {ratingStars === 1 && "⭐ Không hài lòng"}
-                </p>
               </div>
 
               <div>
-                <label className="font-semibold text-foreground">Ý kiến nhận xét thêm (Tùy chọn)</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Mô tả sự cố</label>
                 <textarea
-                  rows={2}
-                  value={ratingComment}
-                  onChange={(e) => setRatingComment(e.target.value)}
-                  placeholder="Gửi lời cảm ơn hoặc phản hồi về thái độ phục vụ..."
-                  className="w-full mt-1 rounded-xl border border-border bg-card p-2.5 text-xs"
-                />
+                  rows={3}
+                  value={formDescription}
+                  onChange={(e) => setFormDescription(e.target.value)}
+                  className="w-full px-3.5 py-2 text-sm rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:border-blue-500"
+                ></textarea>
               </div>
-            </div>
 
-            <div className="pt-2 flex items-center justify-end gap-2 border-t border-border">
-              <button
-                onClick={() => setActionModalType(null)}
-                className="rounded-xl border border-border px-3.5 py-2 text-xs font-semibold hover:bg-muted"
-              >
-                Để sau
-              </button>
-              <button
-                onClick={handleReviewTicket}
-                className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 text-xs font-bold shadow-xs"
-              >
-                Xác Nhận Nghiệm Thu & Đóng Phiếu
-              </button>
-            </div>
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="px-4 py-2 text-xs font-semibold rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-colors"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 text-xs font-bold rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+                >
+                  Lưu thay đổi
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
 
-      {/* MODAL 4: VIEW FULL DETAILS */}
-      {actionModalType === "VIEW" && selectedTicket && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
-          <div className="w-full max-w-lg rounded-3xl border border-border bg-card p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
-                <Info className="h-4 w-4 text-primary" />
-                Chi Tiết Phiếu Sự Cố: {selectedTicket.id}
-              </h3>
+      {/* MODAL 3: VIEW DETAILS (R in CRUD) */}
+      {isViewModalOpen && activeTicket && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 my-8">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200">
+                    {activeTicket.id}
+                  </span>
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-blue-50 text-blue-800 border border-blue-200">
+                    {activeTicket.status}
+                  </span>
+                </div>
+                <h3 className="font-bold text-slate-900 text-lg mt-1">{activeTicket.title}</h3>
+              </div>
               <button
-                onClick={() => setActionModalType(null)}
-                className="text-muted-foreground hover:text-foreground text-sm font-bold"
+                onClick={() => setIsViewModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 p-1 rounded-lg"
               >
-                ✕
+                <X className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="text-xs space-y-3">
-              <div className="space-y-1">
-                <span className="text-muted-foreground text-[10px] uppercase font-bold">Tiêu đề:</span>
-                <p className="font-bold text-sm text-foreground">{selectedTicket.title}</p>
-              </div>
-
-              <div className="p-3 rounded-2xl bg-muted/40 border border-border grid grid-cols-2 gap-2">
-                <div>
-                  <span className="text-muted-foreground">Khu vực:</span>{" "}
-                  <strong>{selectedTicket.scope === "ROOM_SHARED" ? "Phòng chung" : "Buồng cá nhân"}</strong>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Mức độ:</span>{" "}
-                  <strong className={selectedTicket.urgency === "EMERGENCY" ? "text-red-600" : ""}>
-                    {selectedTicket.urgency === "EMERGENCY" ? "Khẩn cấp 2h" : "Bình thường"}
-                  </strong>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Vị trí:</span>{" "}
-                  <strong>{selectedTicket.building} - {selectedTicket.room}</strong>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Mã giường:</span>{" "}
-                  <strong>{selectedTicket.bedCode || "Khu vệ sinh/Phòng khách"}</strong>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Người báo:</span>{" "}
-                  <strong>{selectedTicket.studentName}</strong>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">SĐT:</span>{" "}
-                  <strong>{selectedTicket.studentPhone}</strong>
-                </div>
-              </div>
-
+            <div className="space-y-4 text-sm text-slate-700">
               <div>
-                <span className="text-muted-foreground text-[10px] uppercase font-bold">Mô tả sự cố:</span>
-                <p className="p-3 rounded-xl bg-card border border-border mt-1 leading-relaxed">
-                  {selectedTicket.description}
+                <span className="text-xs font-semibold text-slate-500 uppercase">Mô tả sự cố</span>
+                <p className="mt-1 bg-slate-50 p-3 rounded-xl border border-slate-200 text-slate-800 text-xs leading-relaxed">
+                  {activeTicket.description}
                 </p>
               </div>
 
-              {selectedTicket.evidenceImages && selectedTicket.evidenceImages.length > 0 && (
+              {activeTicket.evidenceImages && activeTicket.evidenceImages.length > 0 && (
                 <div>
-                  <span className="text-muted-foreground text-[10px] uppercase font-bold">Ảnh hiện trường báo ban đầu:</span>
-                  <div className="mt-1 flex gap-2 overflow-x-auto py-1">
-                    {selectedTicket.evidenceImages.map((img, i) => (
+                  <span className="text-xs font-semibold text-slate-500 uppercase">Ảnh hiện trường</span>
+                  <div className="mt-1.5 flex gap-2 overflow-x-auto">
+                    {activeTicket.evidenceImages.map((img, i) => (
                       <img
                         key={i}
                         src={img}
                         alt="Evidence"
-                        className="h-28 w-40 object-cover rounded-xl border border-border shrink-0"
+                        className="h-28 w-40 object-cover rounded-xl border border-slate-200 shadow-2xs"
                       />
                     ))}
                   </div>
                 </div>
               )}
 
-              {selectedTicket.resolution && (
-                <div className="p-3 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 space-y-2">
-                  <span className="font-bold text-emerald-700 dark:text-emerald-400">Kết quả xử lý của kỹ thuật:</span>
-                  <p className="italic text-muted-foreground">"{selectedTicket.resolution.technicianNotes}"</p>
-                  {selectedTicket.resolution.completionImages.length > 0 && (
-                    <div className="flex gap-2">
-                      {selectedTicket.resolution.completionImages.map((img, i) => (
-                        <img
-                          key={i}
-                          src={img}
-                          alt="Resolved"
-                          className="h-24 w-36 object-cover rounded-xl border border-border"
-                        />
-                      ))}
+              {/* Technician Info */}
+              {activeTicket.assignedTechnician && (
+                <div className="p-3.5 bg-blue-50 border border-blue-200 rounded-xl">
+                  <span className="text-xs font-bold text-blue-900 block mb-1">Thông tin Kỹ thuật viên</span>
+                  <div className="grid grid-cols-2 gap-2 text-xs text-blue-800">
+                    <div>Tên: <strong>{activeTicket.assignedTechnician.name}</strong></div>
+                    <div>Điện thoại: <strong>{activeTicket.assignedTechnician.phone}</strong></div>
+                    <div>Thời gian nhận: {activeTicket.assignedTechnician.assignedAt}</div>
+                    <div>Dự kiến hoàn thành: {activeTicket.assignedTechnician.etaMinutes} phút</div>
+                  </div>
+                </div>
+              )}
+
+              {/* Resolution Info */}
+              {activeTicket.resolution && (
+                <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl space-y-2">
+                  <span className="text-xs font-bold text-emerald-900 block">Biên bản nghiệm thu sửa chữa</span>
+                  <p className="text-xs text-emerald-800">{activeTicket.resolution.technicianNotes}</p>
+                  {activeTicket.resolution.materials.length > 0 && (
+                    <div className="mt-2 text-xs">
+                      <strong className="text-emerald-900 block mb-1">Vật tư thay thế:</strong>
+                      <ul className="list-disc pl-4 space-y-0.5 text-emerald-800">
+                        {activeTicket.resolution.materials.map((m) => (
+                          <li key={m.id}>
+                            {m.name} x {m.quantity} = {m.unitCost.toLocaleString("vi-VN")} đ ({m.paidBy === "DORMITORY" ? "KTX chi trả" : "Sinh viên chi trả"})
+                          </li>
+                        ))}
+                      </ul>
+                      <div className="mt-1.5 font-bold text-emerald-900">
+                        Tổng chi phí: {activeTicket.resolution.totalMaterialCost.toLocaleString("vi-VN")} đ
+                      </div>
                     </div>
                   )}
                 </div>
               )}
             </div>
 
-            <div className="pt-2 text-right border-t border-border">
+            <div className="mt-6 pt-3 border-t border-slate-100 flex justify-end">
               <button
-                onClick={() => setActionModalType(null)}
-                className="rounded-xl bg-muted hover:bg-muted/80 px-4 py-1.5 text-xs font-semibold"
+                onClick={() => setIsViewModalOpen(false)}
+                className="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-colors"
               >
                 Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 4: ASSIGN TECHNICIAN */}
+      {isAssignModalOpen && activeTicket && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
+            <h3 className="font-bold text-slate-900 text-base mb-1">Phân công Kỹ thuật viên</h3>
+            <p className="text-xs text-slate-500 mb-4">Gán thợ sửa chữa cho phiếu {activeTicket.id}</p>
+
+            <form onSubmit={handleAssignSubmit} className="space-y-3.5">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Kỹ thuật viên phụ trách</label>
+                <select
+                  value={assignTechName}
+                  onChange={(e) => {
+                    setAssignTechName(e.target.value)
+                    if (e.target.value === "Chú Đỗ Mạnh Hùng") setAssignTechPhone("0977 112 233")
+                    if (e.target.value === "Anh Lê Quốc Tuấn") setAssignTechPhone("0918 889 900")
+                    if (e.target.value === "Anh Vũ Trọng Nghĩa") setAssignTechPhone("0934 567 890")
+                  }}
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white text-slate-900"
+                >
+                  <option value="Chú Đỗ Mạnh Hùng">Chú Đỗ Mạnh Hùng (Trưởng ban Điện lạnh)</option>
+                  <option value="Anh Lê Quốc Tuấn">Anh Lê Quốc Tuấn (Kỹ thuật Điện dân dụng)</option>
+                  <option value="Anh Vũ Trọng Nghĩa">Anh Vũ Trọng Nghĩa (Thợ nước & Vệ sinh)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Số điện thoại liên hệ</label>
+                <input
+                  type="text"
+                  value={assignTechPhone}
+                  onChange={(e) => setAssignTechPhone(e.target.value)}
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white text-slate-900 font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Thời gian dự kiến có mặt (phút)</label>
+                <input
+                  type="number"
+                  min={15}
+                  max={240}
+                  value={assignEtaMinutes}
+                  onChange={(e) => setAssignEtaMinutes(Number(e.target.value))}
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white text-slate-900"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setIsAssignModalOpen(false)}
+                  className="px-4 py-2 text-xs font-semibold rounded-xl border border-slate-200 text-slate-700"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-xs font-bold rounded-xl bg-blue-600 text-white hover:bg-blue-700"
+                >
+                  Xác nhận phân công
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 5: COMPLETE TICKET */}
+      {isCompleteModalOpen && activeTicket && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 my-8">
+            <h3 className="font-bold text-slate-900 text-base mb-1">Báo cáo hoàn thành sửa chữa</h3>
+            <p className="text-xs text-slate-500 mb-4">Nghiệm thu sự cố {activeTicket.id}</p>
+
+            <form onSubmit={handleCompleteSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Ghi chú xử lý kỹ thuật</label>
+                <textarea
+                  rows={2}
+                  required
+                  value={completionNotes}
+                  onChange={(e) => setCompletionNotes(e.target.value)}
+                  placeholder="Đã thay thế linh kiện, đo nguồn điện ổn định..."
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white text-slate-900"
+                ></textarea>
+              </div>
+
+              {/* Material Logging */}
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                <span className="text-xs font-bold text-slate-800 block mb-2">Vật tư thay thế (nếu có)</span>
+                <div className="grid grid-cols-3 gap-2 mb-2">
+                  <input
+                    type="text"
+                    placeholder="Tên vật tư..."
+                    value={newMatName}
+                    onChange={(e) => setNewMatName(e.target.value)}
+                    className="col-span-2 px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 bg-white"
+                  />
+                  <input
+                    type="number"
+                    placeholder="SL"
+                    value={newMatQty}
+                    onChange={(e) => setNewMatQty(Number(e.target.value))}
+                    className="px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 bg-white"
+                  />
+                </div>
+                <div className="flex gap-2 mb-2">
+                  <input
+                    type="number"
+                    placeholder="Đơn giá (VNĐ)"
+                    value={newMatCost}
+                    onChange={(e) => setNewMatCost(Number(e.target.value))}
+                    className="flex-1 px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 bg-white"
+                  />
+                  <select
+                    value={newMatPayer}
+                    onChange={(e) => setNewMatPayer(e.target.value as any)}
+                    className="text-xs px-2 py-1.5 rounded-lg border border-slate-300 bg-white"
+                  >
+                    <option value="DORMITORY">KTX chi trả</option>
+                    <option value="STUDENT">SV bồi thường</option>
+                  </select>
+                  <button
+                    type="button"
+                    onClick={handleAddMaterial}
+                    className="px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-600 text-white"
+                  >
+                    Thêm
+                  </button>
+                </div>
+
+                {materials.length > 0 && (
+                  <div className="mt-2 space-y-1">
+                    {materials.map((m) => (
+                      <div
+                        key={m.id}
+                        className="flex items-center justify-between text-xs bg-white p-2 rounded-lg border border-slate-200"
+                      >
+                        <span>
+                          {m.name} x {m.quantity} ({m.unitCost.toLocaleString("vi-VN")} đ)
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveMaterial(m.id)}
+                          className="text-rose-500 hover:text-rose-700 text-xs font-bold"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Ảnh sau khi hoàn thành</label>
+                <input
+                  type="url"
+                  value={completionImage}
+                  onChange={(e) => setCompletionImage(e.target.value)}
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white text-slate-900"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setIsCompleteModalOpen(false)}
+                  className="px-4 py-2 text-xs font-semibold rounded-xl border border-slate-200 text-slate-700"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-xs font-bold rounded-xl bg-emerald-600 text-white hover:bg-emerald-700"
+                >
+                  Xác nhận hoàn thành
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 6: STUDENT REVIEW & STAR RATING */}
+      {isReviewModalOpen && activeTicket && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 text-center">
+            <div className="h-12 w-12 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center mx-auto mb-3">
+              <Star className="h-6 w-6 fill-current" />
+            </div>
+            <h3 className="font-bold text-slate-900 text-base">Đánh giá chất lượng sửa chữa</h3>
+            <p className="text-xs text-slate-500 mt-1 mb-4">
+              Ý kiến của bạn giúp cải thiện dịch vụ quản lý KTX tốt hơn.
+            </p>
+
+            <form onSubmit={handleReviewSubmit} className="space-y-4">
+              <div className="flex justify-center gap-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setRatingStars(star)}
+                    className="p-1 hover:scale-110 transition-transform"
+                  >
+                    <Star
+                      className={`h-7 w-7 ${
+                        star <= ratingStars ? "text-amber-400 fill-amber-400" : "text-slate-300"
+                      }`}
+                    />
+                  </button>
+                ))}
+              </div>
+
+              <div>
+                <textarea
+                  rows={3}
+                  value={ratingComment}
+                  onChange={(e) => setRatingComment(e.target.value)}
+                  placeholder="Chia sẻ nhận xét về thời gian, thái độ của kỹ thuật viên..."
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white text-slate-900"
+                ></textarea>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsReviewModalOpen(false)}
+                  className="px-4 py-2 text-xs font-semibold rounded-xl border border-slate-200 text-slate-700"
+                >
+                  Bỏ qua
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 text-xs font-bold rounded-xl bg-amber-500 hover:bg-amber-600 text-white"
+                >
+                  Gửi đánh giá
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 7: DELETE CONFIRMATION (D in CRUD) */}
+      {deleteConfirmTicketId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 text-center">
+            <div className="h-12 w-12 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-3">
+              <Trash2 className="h-6 w-6" />
+            </div>
+            <h3 className="font-bold text-slate-900 text-base">Xác nhận xóa phiếu yêu cầu</h3>
+            <p className="text-xs text-slate-600 mt-2 mb-5">
+              Bạn có chắc chắn muốn xóa vĩnh viễn phiếu <strong>{deleteConfirmTicketId}</strong> không? Hành động này không thể hoàn tác.
+            </p>
+
+            <div className="flex items-center justify-center gap-2">
+              <button
+                onClick={() => setDeleteConfirmTicketId(null)}
+                className="px-4 py-2 text-xs font-semibold rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50"
+              >
+                Hủy bỏ
+              </button>
+              <button
+                onClick={() => handleDeleteTicket(deleteConfirmTicketId)}
+                className="px-4 py-2 text-xs font-bold rounded-xl bg-rose-600 hover:bg-rose-700 text-white"
+              >
+                Xóa phiếu
               </button>
             </div>
           </div>
