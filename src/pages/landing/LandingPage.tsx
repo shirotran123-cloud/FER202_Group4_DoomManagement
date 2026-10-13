@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { Link } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
 import { DormitoryGallerySlider } from "@/components/landing/DormitoryGallerySlider"
@@ -18,7 +18,124 @@ import {
   Coffee,
   PhoneCall,
   MapPin,
+  ChevronDown,
 } from "lucide-react"
+
+const FAQ_ITEMS = [
+  {
+    question: "Mô hình buồng riêng 1:4:6 là gì? Tôi có được riêng tư không?",
+    answer:
+      "Mỗi căn phòng lớn tiêu chuẩn có 4 buồng riêng biệt (A, B, C, D) với 6 giường/buồng (tổng 24 giường). Mỗi giường có rèm che chống nhìn xuyên thấu, đèn bàn LED, ổ cắm đôi và tủ cá nhân khóa số riêng biệt.",
+  },
+  {
+    question: "Tiền điện nước được tính và chia như thế nào?",
+    answer:
+      "Công tơ điện và đồng hồ nước được chụp ảnh nghiệm thu từ ngày 25-28 hàng tháng. Hệ thống tự động áp công thức chia đều (Total ÷ N) cho số lượng sinh viên đang thực tế lưu trú trong phòng kèm mã VietQR tự động.",
+  },
+  {
+    question: "Nếu tôi đi làm thêm hoặc học nhóm về muộn sau 23:00 thì sao?",
+    answer:
+      "Sinh viên chỉ cần gửi Đơn xin về muộn trực tuyến trên hệ thống trước 21:00 cùng ngày. BQL duyệt tự động và cấp mã QR mở cổng trục xoay an ninh ban đêm mà không bị trừ điểm rèn luyện.",
+  },
+  {
+    question: "Quy trình thanh toán và nhận cọc diễn ra như thế nào?",
+    answer:
+      "Sau khi giữ chỗ 15 phút, bạn quét mã VietQR để thanh toán. Tiền đặt cọc an ninh 1.000.000 VNĐ sẽ được hoàn trả 100% về tài khoản ngân hàng của sinh viên ngay sau khi hoàn tất Biên bản bàn giao số hóa (UC-15).",
+  },
+  {
+    question: "Sinh viên mới nhập học đăng nhập bằng tài khoản gì?",
+    answer:
+      "Sinh viên dùng Gmail cá nhân (@gmail.com) đã đăng ký trong hồ sơ tuyển sinh. Hệ thống tự động tra cứu và xác thực qua cơ sở dữ liệu nhập học FPT, không cần tạo tài khoản riêng.",
+  },
+  {
+    question: "Khi buồng hỏng điều hòa hoặc vòi sen, báo sự cố ở đâu?",
+    answer:
+      "Đăng nhập vào hệ thống, chọn Phiếu Bảo Trì, mô tả sự cố và đính kèm ảnh chụp. Kỹ thuật viên sẽ tiếp nhận trong vòng 2 giờ và xử lý trong 24–48 giờ làm việc.",
+  },
+  {
+    question: "Cơ chế khóa giữ chỗ 15 phút hoạt động như thế nào?",
+    answer:
+      "Khi bạn chọn giường và nhấn \"Giữ chỗ\", hệ thống sẽ khóa giường đó trong 15 phút để bạn hoàn tất thanh toán cọc qua VietQR. Nếu quá thời gian, giường sẽ tự động mở lại để sinh viên khác có thể đặt.",
+  },
+]
+
+const FaqSection: React.FC = () => {
+  const [openIndex, setOpenIndex] = useState<number | null>(null)
+
+  const toggle = (idx: number) => {
+    setOpenIndex(openIndex === idx ? null : idx)
+  }
+
+  return (
+    <section id="faq" className="space-y-6 scroll-mt-24">
+      <div className="max-w-2xl space-y-1">
+        <span className="text-xs font-bold uppercase tracking-wider text-orange-600">
+          Hỏi đáp nhanh
+        </span>
+        <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
+          Câu Hỏi Thường Gặp Của Sinh Viên
+        </h2>
+        <p className="text-sm text-muted-foreground pt-1">
+          Giải đáp mọi thắc mắc của tân sinh viên và phụ huynh về quy chế sinh hoạt tại KTX FPT.
+        </p>
+      </div>
+
+      <div className="space-y-3">
+        {FAQ_ITEMS.map((item, idx) => {
+          const isOpen = openIndex === idx
+          return (
+            <div
+              key={idx}
+              className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
+                isOpen
+                  ? "border-[#233944]/30 bg-[#f0f5f7] shadow-sm"
+                  : "border-border bg-card hover:border-[#233944]/20 hover:shadow-sm"
+              }`}
+            >
+              <button
+                type="button"
+                onClick={() => toggle(idx)}
+                className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left"
+                aria-expanded={isOpen}
+              >
+                <span className="flex items-center gap-3 text-sm font-semibold text-foreground">
+                  <span
+                    className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
+                      isOpen
+                        ? "bg-[#233944] text-white"
+                        : "bg-orange-500/10 text-orange-600"
+                    }`}
+                  >
+                    {idx + 1}
+                  </span>
+                  {item.question}
+                </span>
+                <ChevronDown
+                  className={`shrink-0 h-4 w-4 text-[#73787b] transition-transform duration-200 ${
+                    isOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              {/* Animated slide-down answer */}
+              <div
+                className={`grid transition-all duration-300 ease-in-out ${
+                  isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                }`}
+              >
+                <div className="overflow-hidden">
+                  <p className="px-5 pb-4 text-sm text-muted-foreground leading-relaxed pl-14">
+                    {item.answer}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </section>
+  )
+}
 
 export const LandingPage: React.FC = () => {
   const { isAuthenticated, user } = useAuth()
@@ -193,9 +310,6 @@ export const LandingPage: React.FC = () => {
           <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
             Tính Năng Nổi Bật Chuẩn IEEE 830
           </h2>
-          <p className="text-sm text-muted-foreground">
-            Được phát triển đồng bộ bám sát 28 Use Cases đặc tả trong tài liệu SRS Ký túc xá FPT.
-          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -335,62 +449,8 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* FAQ & Giải Đáp Thắc Mắc (Q&A Section) */}
-      <section id="faq" className="space-y-6 scroll-mt-24">
-        <div className="text-center max-w-2xl mx-auto space-y-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-orange-600">
-            Hỗ trợ giải đáp
-          </span>
-          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
-            Câu Hỏi Thường Gặp (FAQ)
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Giải đáp mọi thắc mắc của tân sinh viên và phụ huynh về quy chế sinh hoạt tại KTX FPT.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
-            <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
-              <span className="w-5 h-5 rounded-full bg-orange-500/10 text-orange-600 flex items-center justify-center text-xs font-bold">1</span>
-              <span>Mô hình buồng riêng 1:4:6 là gì? Tôi có được riêng tư không?</span>
-            </h3>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Mỗi căn phòng lớn tiêu chuẩn có 4 buồng riêng biệt (A, B, C, D) với 6 giường/buồng (tổng 24 giường). Mỗi giường có rèm che chống nhìn xuyên thấu, đèn bàn LED, ổ cắm đôi và tủ cá nhân khóa số riêng biệt.
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
-            <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
-              <span className="w-5 h-5 rounded-full bg-orange-500/10 text-orange-600 flex items-center justify-center text-xs font-bold">2</span>
-              <span>Tiền điện nước được tính và chia như thế nào?</span>
-            </h3>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Công tơ điện và đồng hồ nước được chụp ảnh nghiệm thu từ ngày 25-28 hàng tháng. Hệ thống tự động áp công thức chia đều (Total ÷ N) cho số lượng sinh viên đang thực tế lưu trú trong phòng kèm mã VietQR tự động.
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
-            <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
-              <span className="w-5 h-5 rounded-full bg-orange-500/10 text-orange-600 flex items-center justify-center text-xs font-bold">3</span>
-              <span>Nếu tôi đi làm thêm hoặc học nhóm về muộn sau 23:00 thì sao?</span>
-            </h3>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Sinh viên chỉ cần gửi Đơn xin về muộn trực tuyến trên hệ thống trước 21:00 cùng ngày. BQL duyệt tự động và cấp mã QR mở cổng trục xoay an ninh ban đêm mà không bị trừ điểm rèn luyện.
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
-            <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
-              <span className="w-5 h-5 rounded-full bg-orange-500/10 text-orange-600 flex items-center justify-center text-xs font-bold">4</span>
-              <span>Quy trình thanh toán và nhận cọc diễn ra như thế nào?</span>
-            </h3>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Sau khi giữ chỗ 15 phút, bạn quét mã VietQR để thanh toán. Tiền đặt cọc an ninh 1.000.000 VNĐ sẽ được hoàn trả 100% về tài khoản ngân hàng của sinh viên ngay sau khi hoàn tất Biên bản bàn giao số hóa (UC-15).
-            </p>
-          </div>
-        </div>
-      </section>
+      {/* FAQ Accordion Section */}
+      <FaqSection />
 
       <footer className="border-t border-border pt-8 text-xs text-muted-foreground space-y-4">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
