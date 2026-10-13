@@ -13,7 +13,6 @@ import { MyRoomPage } from "@/pages/room/MyRoomPage"
 import { MaintenancePage } from "@/pages/maintenance/MaintenancePage"
 import { CurfewPage } from "@/pages/curfew/CurfewPage"
 import { ManagerDashboardPage } from "@/pages/manager/ManagerDashboardPage"
-import { QATestPlanPage } from "@/pages/stubs/QATestPlanPage"
 import { UnauthorizedPage } from "@/pages/errors/UnauthorizedPage"
 import { NotFoundPage } from "@/pages/errors/NotFoundPage"
 
@@ -104,15 +103,6 @@ export function App() {
               element={
                 <ProtectedRoute allowedRoles={["manager", "admin"]}>
                   <ManagerDashboardPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/qa"
-              element={
-                <ProtectedRoute allowedRoles={["admin"]}>
-                  <QATestPlanPage />
                 </ProtectedRoute>
               }
             />

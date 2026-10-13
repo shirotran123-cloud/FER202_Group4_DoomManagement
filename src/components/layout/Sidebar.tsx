@@ -104,7 +104,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           { title: "Quản lý Điện nước", to: "/billing", icon: "electric_meter" },
           { title: "Quản lý Bảo trì", to: "/maintenance", icon: "build" },
           { title: "Kiểm soát An ninh Cổng", to: "/curfew", icon: "verified_user" },
-          { title: "QA Test Matrix", to: "/qa", icon: "fact_check", badge: "FER202" },
         ],
       },
       {
