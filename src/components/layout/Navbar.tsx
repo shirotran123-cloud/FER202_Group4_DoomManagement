@@ -131,11 +131,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
                   setShowUserDropdown(false)
                   setShowNotifications(false)
                 }}
-                className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-medium transition-all ${currentRoleMeta.badgeClass}`}
+                className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-medium transition-all whitespace-nowrap shrink-0 ${currentRoleMeta.badgeClass}`}
               >
                 <span className="text-[11px] opacity-75 hidden sm:inline">Role:</span>
                 <span className="font-semibold">{currentRoleMeta.label}</span>
-                <ChevronDown className="h-3 w-3 opacity-70" />
+                <ChevronDown className="h-3 w-3 opacity-70 shrink-0" />
               </button>
 
               {showRoleDropdown && (
@@ -174,20 +174,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
             {/* Theme Toggle (Light / Dark) */}
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100/80 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200/80 dark:hover:bg-slate-700 transition-colors shadow-2xs"
-              title={theme === "dark" ? "Đang ở Nền Tối - Bấm để chuyển Nền Sáng" : "Đang ở Nền Sáng - Bấm để chuyển Nền Tối"}
+              className="flex items-center justify-center h-8.5 w-8.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shadow-2xs shrink-0"
+              title={theme === "dark" ? "Chuyển sang Nền Sáng" : "Chuyển sang Nền Tối"}
               aria-label="Toggle Theme"
             >
               {theme === "dark" ? (
-                <>
-                  <Sun className="h-4 w-4 text-amber-400" />
-                  <span className="text-xs font-bold hidden sm:inline text-amber-300">Nền Tối</span>
-                </>
+                <Sun className="h-4 w-4 text-amber-400" />
               ) : (
-                <>
-                  <Sun className="h-4 w-4 text-amber-500" />
-                  <span className="text-xs font-bold hidden sm:inline text-slate-800">Nền Sáng</span>
-                </>
+                <Moon className="h-4 w-4 text-slate-700" />
               )}
             </button>
 

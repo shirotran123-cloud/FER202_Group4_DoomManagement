@@ -70,21 +70,21 @@ export const BillingPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
           <Button
             variant="outline"
             onClick={() => window.print()}
-            className="text-xs h-9 gap-1.5 bg-white dark:bg-[#161e23]"
+            className="text-xs h-9 gap-1.5 bg-white dark:bg-[#161e23] whitespace-nowrap shrink-0"
           >
-            <Printer className="h-4 w-4" />
+            <Printer className="h-4 w-4 shrink-0" />
             <span>In Bảng Kê</span>
           </Button>
           <Button
             onClick={() => alert("Đang xuất tệp hóa đơn điện tử e-Invoice PDF...")}
-            className="text-xs h-9 gap-1.5 bg-primary text-white"
+            className="text-xs h-9 gap-1.5 bg-primary text-white whitespace-nowrap shrink-0"
           >
-            <Download className="h-4 w-4" />
-            <span>Tải Hóa Đơn Điện Tử (PDF)</span>
+            <Download className="h-4 w-4 shrink-0" />
+            <span>Tải Hóa Đơn (PDF)</span>
           </Button>
         </div>
       </div>
@@ -493,25 +493,25 @@ export const BillingPage: React.FC = () => {
 
                 {/* Transfer Ledger Details */}
                 <div className="bg-[#f4f4ee] dark:bg-[#1c262c] p-3.5 rounded-xl text-xs space-y-2 font-mono">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground font-sans">Ngân hàng thụ hưởng:</span>
-                    <span className="font-bold text-foreground">TPBank (Tiên Phong Bank)</span>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-muted-foreground font-sans whitespace-nowrap">Ngân hàng:</span>
+                    <span className="font-bold text-foreground truncate text-right">TPBank (Tiên Phong)</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground font-sans">Số tài khoản KTX:</span>
-                    <span className="font-bold text-foreground">0918 239 1024</span>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-muted-foreground font-sans whitespace-nowrap">Số tài khoản:</span>
+                    <span className="font-bold text-foreground truncate text-right">0918 239 1024</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground font-sans">Chủ tài khoản:</span>
-                    <span className="font-bold text-foreground">FPT UNIVERSITY DORMITORY</span>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-muted-foreground font-sans whitespace-nowrap">Chủ tài khoản:</span>
+                    <span className="font-bold text-foreground truncate text-right">KTX ĐẠI HỌC FPT</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground font-sans">Số tiền chính xác:</span>
-                    <span className="font-black text-red-600 text-sm">₫{netDue.toLocaleString()}</span>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-muted-foreground font-sans whitespace-nowrap">Số tiền:</span>
+                    <span className="font-black text-red-600 text-sm whitespace-nowrap">₫{netDue.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between border-t border-border pt-1.5 font-sans">
-                    <span className="text-muted-foreground">Nội dung chuyển khoản:</span>
-                    <span className="font-mono font-bold text-primary dark:text-[#cee6ef] bg-white dark:bg-[#161e23] px-1.5 py-0.5 rounded border">
+                  <div className="flex items-center justify-between gap-2 border-t border-border pt-1.5 font-sans">
+                    <span className="text-muted-foreground whitespace-nowrap">Nội dung:</span>
+                    <span className="font-mono font-bold text-primary dark:text-[#cee6ef] bg-white dark:bg-[#161e23] px-1.5 py-0.5 rounded border whitespace-nowrap truncate text-right">
                       DIENNUOC A205 {user?.studentId || "SE182049"}
                     </span>
                   </div>

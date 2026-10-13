@@ -551,43 +551,43 @@ export const CurfewPage: React.FC = () => {
       </div>
 
       {/* Navigation Sub-Tabs */}
-      <div className="flex rounded-2xl bg-muted/60 p-1 border border-border">
+      <div className="flex rounded-2xl bg-muted/60 p-1 border border-border gap-1 overflow-x-auto">
         {isGuardOrManager && (
           <button
             onClick={() => setActiveTab("GATE_SCAN")}
-            className={`flex-1 flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold transition-all ${
+            className={`flex-1 min-w-[180px] flex items-center justify-center gap-2 rounded-xl py-2 px-3 text-xs font-bold transition-all ${
               activeTab === "GATE_SCAN"
                 ? "bg-card text-foreground shadow-xs"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <Scan className="h-3.5 w-3.5 text-red-500" />
-            <span>Cổng An Ninh & Quét Thẻ 23:00 (UC-25)</span>
+            <Scan className="h-3.5 w-3.5 text-red-500 shrink-0" />
+            <span className="truncate">Quét Thẻ Cổng 23:00 (UC-25)</span>
           </button>
         )}
 
         <button
           onClick={() => setActiveTab("REQUESTS")}
-          className={`flex-1 flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold transition-all ${
+          className={`flex-1 min-w-[180px] flex items-center justify-center gap-2 rounded-xl py-2 px-3 text-xs font-bold transition-all ${
             activeTab === "REQUESTS"
               ? "bg-card text-foreground shadow-xs"
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          <FileText className="h-3.5 w-3.5 text-blue-500" />
-          <span>{isGuardOrManager ? "Duyệt Đơn Vắng Mặt / Về Muộn (UC-24)" : "Nộp & Quản Lý Đơn Của Tôi (UC-24)"}</span>
+          <FileText className="h-3.5 w-3.5 text-blue-500 shrink-0" />
+          <span className="truncate">{isGuardOrManager ? "Duyệt Đơn Về Muộn (UC-24)" : "Đơn Về Muộn Của Tôi (UC-24)"}</span>
         </button>
 
         <button
           onClick={() => setActiveTab("DISCIPLINE")}
-          className={`flex-1 flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold transition-all ${
+          className={`flex-1 min-w-[180px] flex items-center justify-center gap-2 rounded-xl py-2 px-3 text-xs font-bold transition-all ${
             activeTab === "DISCIPLINE"
               ? "bg-card text-foreground shadow-xs"
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          <Shield className="h-3.5 w-3.5 text-amber-500" />
-          <span>{isGuardOrManager ? "Biên Bản Vi Phạm & Điểm Rèn Luyện (UC-26)" : "Điểm Rèn Luyện & Nội Quy (UC-26)"}</span>
+          <Shield className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+          <span className="truncate">{isGuardOrManager ? "Sổ Kỷ Luật & Điểm Trừ (UC-26)" : "Điểm Rèn Luyện & Nội Quy (UC-26)"}</span>
         </button>
       </div>
 

@@ -395,14 +395,14 @@ export const BookingPage: React.FC = () => {
           </div>
 
           {/* Living Note & Facility Snapshot */}
-          <div className="bg-white dark:bg-[#161e23] border border-border p-3.5 rounded-xl shadow-xs flex items-center gap-3">
-            <div className="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 text-primary">
-              <Building className="h-7 w-7" />
+          <div className="bg-white dark:bg-[#161e23] border border-border p-3 rounded-xl shadow-xs flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 text-primary">
+              <Building className="h-5 w-5" />
             </div>
-            <div>
-              <p className="font-bold text-xs text-foreground">Khu A205 Chuẩn Mới 2026</p>
-              <p className="text-[11px] text-muted-foreground leading-snug">
-                Vách tiêu âm cao cấp, rèm che kháng khuẩn từng giường, cổng khóa số thông minh.
+            <div className="min-w-0">
+              <p className="font-bold text-xs text-foreground truncate">Khu A205 Chuẩn Mới 2026</p>
+              <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2">
+                Tiêu âm cao cấp, rèm che kháng khuẩn từng giường, khóa số thông minh.
               </p>
             </div>
           </div>
@@ -554,8 +554,8 @@ export const BookingPage: React.FC = () => {
 
               {/* Architectural CAD Notation */}
               <div className="pt-2 flex justify-between items-center text-slate-500 dark:text-slate-400 text-[10px] font-mono border-t border-border">
-                <span>[CAD-REV: 2026.10-DMS-146]</span>
-                <span>KHU VỆ SINH & KHÔNG GIAN BÀN HỌC BỐ TRÍ CUỐI HÀNH LANG BUỒNG B & D</span>
+                <span className="shrink-0 whitespace-nowrap">[CAD: 2026.10-DMS-146]</span>
+                <span className="truncate ml-2 text-right">WC & BÀN HỌC BỐ TRÍ CUỐI HÀNH LANG B & D</span>
               </div>
             </div>
           </div>
@@ -564,19 +564,19 @@ export const BookingPage: React.FC = () => {
         {/* COLUMN 3: DETAIL & RESERVATION HOLD DRAWER (3 COLS) */}
         <div className="col-span-12 lg:col-span-3 flex flex-col gap-4">
           {/* 15-Minute Countdown Timer Card */}
-          <div className="bg-primary text-white p-4 rounded-xl shadow-md space-y-2">
+          <div className="bg-primary text-white p-3.5 rounded-xl shadow-xs space-y-2">
             <div className="flex items-center justify-between text-xs">
-              <span className="uppercase tracking-wider font-bold text-[#cee6ef] text-[10px]">
+              <span className="uppercase tracking-wider font-bold text-[#cee6ef] text-[10px] whitespace-nowrap">
                 Khóa Giữ Chỗ Tạm Thời
               </span>
-              <Clock className="h-4 w-4 text-[#cee6ef] animate-pulse" />
+              <Clock className="h-3.5 w-3.5 text-[#cee6ef] animate-pulse shrink-0" />
             </div>
 
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-black font-mono tracking-tight text-white">
+              <span className="text-2xl font-black font-mono tracking-tight text-white">
                 {formatTime(timeLeft)}
               </span>
-              <span className="text-xs text-[#cee6ef]">Còn lại</span>
+              <span className="text-xs text-[#cee6ef] whitespace-nowrap">Còn lại</span>
             </div>
 
             {/* Progress bar of timer */}
@@ -587,8 +587,8 @@ export const BookingPage: React.FC = () => {
               ></div>
             </div>
 
-            <p className="text-[11px] text-white/80 leading-relaxed pt-1">
-              Giường đang được khóa độc quyền cho MSSV <strong>{user?.studentId || "SE182049"}</strong>. Hệ thống sẽ tự động giải phóng giường sau khi hết thời gian.
+            <p className="text-[11px] text-white/80 leading-normal pt-0.5">
+              Khóa độc quyền cho MSSV <strong>{user?.studentId || "SE182049"}</strong> (tự giải phóng sau 15p).
             </p>
           </div>
 
@@ -601,88 +601,88 @@ export const BookingPage: React.FC = () => {
                 </span>
                 <h4 className="font-bold text-sm text-foreground">{selectedBed.code}</h4>
               </div>
-              <Badge variant="available">
-                {selectedBed.tier === "lower" ? "Tầng dưới (Lower)" : "Tầng trên (Upper)"}
+              <Badge variant="available" className="shrink-0 whitespace-nowrap">
+                {selectedBed.tier === "lower" ? "Tầng dưới" : "Tầng trên"}
               </Badge>
             </div>
 
             <div className="space-y-1.5 text-xs">
-              <div className="flex justify-between text-muted-foreground">
-                <span>Vị trí buồng:</span>
-                <span className="font-semibold text-foreground">
-                  Buồng {selectedCompartment} · Phòng {selectedRoom}
+              <div className="flex items-center justify-between gap-2 text-muted-foreground">
+                <span className="whitespace-nowrap">Vị trí buồng:</span>
+                <span className="font-semibold text-foreground truncate text-right">
+                  Buồng {selectedCompartment} · P.{selectedRoom}
                 </span>
               </div>
-              <div className="flex justify-between text-muted-foreground">
-                <span>Tiện ích kèm theo:</span>
-                <span className="font-semibold text-foreground">Tủ locker số + Đèn bàn</span>
+              <div className="flex items-center justify-between gap-2 text-muted-foreground">
+                <span className="whitespace-nowrap">Tiện ích kèm:</span>
+                <span className="font-semibold text-foreground truncate text-right">Locker số + Đèn bàn</span>
               </div>
-              <div className="flex justify-between text-muted-foreground">
-                <span>Quy cách đệm:</span>
-                <span className="font-semibold text-foreground">1.0m × 2.0m Orthopedic</span>
+              <div className="flex items-center justify-between gap-2 text-muted-foreground">
+                <span className="whitespace-nowrap">Quy cách đệm:</span>
+                <span className="font-semibold text-foreground truncate text-right">1.0m × 2.0m Foam</span>
               </div>
-              <div className="flex justify-between text-muted-foreground">
-                <span>Thời hạn thuê:</span>
-                <span className="font-semibold text-foreground">Học kỳ 1 (5 Tháng)</span>
+              <div className="flex items-center justify-between gap-2 text-muted-foreground">
+                <span className="whitespace-nowrap">Thời hạn thuê:</span>
+                <span className="font-semibold text-foreground truncate text-right">Học kỳ 1 (5 Tháng)</span>
               </div>
             </div>
 
             {/* Financial Breakdown */}
-            <div className="bg-[#f4f4ee] dark:bg-[#1c262c] p-3.5 rounded-xl space-y-2 text-xs border border-border">
+            <div className="bg-[#f4f4ee] dark:bg-[#1c262c] p-3 rounded-xl space-y-2 text-xs border border-border">
               <span className="text-[10px] uppercase font-bold tracking-wider text-slate-600 dark:text-slate-300 block">
                 Bảng Kê Chi Phí Kỳ 1
               </span>
-              <div className="flex justify-between text-slate-600 dark:text-slate-300">
-                <span>Tiền phòng tháng đầu:</span>
-                <span className="font-mono text-slate-900 dark:text-white font-semibold">₫950,000</span>
+              <div className="flex items-center justify-between gap-2 text-slate-600 dark:text-slate-300">
+                <span className="whitespace-nowrap">Tiền phòng (tháng 1):</span>
+                <span className="font-mono text-slate-900 dark:text-white font-semibold whitespace-nowrap">₫950,000</span>
               </div>
-              <div className="flex justify-between text-slate-600 dark:text-slate-300">
-                <span>Tiền cọc an ninh (Hoàn lại 100%):</span>
-                <span className="font-mono text-slate-900 dark:text-white font-semibold">₫1,000,000</span>
+              <div className="flex items-center justify-between gap-2 text-slate-600 dark:text-slate-300">
+                <span className="whitespace-nowrap">Tiền cọc an ninh:</span>
+                <span className="font-mono text-slate-900 dark:text-white font-semibold whitespace-nowrap">₫1,000,000</span>
               </div>
-              <div className="flex justify-between text-slate-600 dark:text-slate-300">
-                <span>Quỹ tạm ứng điện nước:</span>
-                <span className="font-mono text-slate-900 dark:text-white font-semibold">₫200,000</span>
+              <div className="flex items-center justify-between gap-2 text-slate-600 dark:text-slate-300">
+                <span className="whitespace-nowrap">Tạm ứng điện nước:</span>
+                <span className="font-mono text-slate-900 dark:text-white font-semibold whitespace-nowrap">₫200,000</span>
               </div>
-              <div className="pt-2 border-t border-border flex justify-between font-bold text-slate-900 dark:text-sky-300 text-sm">
-                <span>Tổng nộp hôm nay:</span>
-                <span className="font-mono text-primary dark:text-sky-400 font-black">₫2,150,000</span>
+              <div className="pt-2 border-t border-border flex items-center justify-between gap-2 font-bold text-slate-900 dark:text-sky-300 text-xs">
+                <span className="whitespace-nowrap">Tổng thanh toán:</span>
+                <span className="font-mono text-primary dark:text-sky-400 font-black text-sm whitespace-nowrap">₫2,150,000</span>
               </div>
             </div>
 
             {/* Payment Method Radio Options */}
-            <div className="space-y-2 pt-1">
-              <label className="text-[11px] uppercase font-bold tracking-wider text-slate-600 dark:text-slate-300 block">
+            <div className="space-y-1.5 pt-0.5">
+              <label className="text-[10px] uppercase font-bold tracking-wider text-slate-600 dark:text-slate-300 block">
                 Phương Thức Thanh Toán
               </label>
 
               {/* VietQR Option */}
               <div
                 onClick={() => setPaymentMethod("vietqr")}
-                className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer text-xs transition-all ${
+                className={`flex items-center justify-between p-2.5 rounded-xl border cursor-pointer text-xs transition-all ${
                   paymentMethod === "vietqr"
-                    ? "border-sky-500 bg-sky-500/10 shadow-xs ring-1 ring-sky-500/30 dark:border-sky-400 dark:bg-sky-950/40 dark:ring-sky-400/40"
+                    ? "border-sky-500 bg-sky-500/10 shadow-2xs ring-1 ring-sky-500/30 dark:border-sky-400 dark:bg-sky-950/40 dark:ring-sky-400/40"
                     : "border-border hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c]"
                 }`}
               >
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-2 min-w-0">
                   <input
                     type="radio"
                     name="pm"
                     checked={paymentMethod === "vietqr"}
                     onChange={() => setPaymentMethod("vietqr")}
-                    className="accent-sky-500 h-4 w-4 cursor-pointer"
+                    className="accent-sky-500 h-3.5 w-3.5 shrink-0 cursor-pointer"
                   />
-                  <div>
-                    <span className="font-bold text-slate-900 dark:text-white block text-xs">
-                      VietQR NAPAS 24/7 (Động)
+                  <div className="min-w-0">
+                    <span className="font-bold text-slate-900 dark:text-white block text-xs truncate">
+                      VietQR NAPAS 24/7
                     </span>
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400">
-                      Tự động quét mã QR nhận diện tức thì
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block truncate">
+                      Tự động xác thực tức thì
                     </span>
                   </div>
                 </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-500/20">
+                <span className="shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-500/20 whitespace-nowrap ml-2">
                   Tức thì
                 </span>
               </div>
@@ -690,30 +690,30 @@ export const BookingPage: React.FC = () => {
               {/* VNPay Option */}
               <div
                 onClick={() => setPaymentMethod("vnpay")}
-                className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer text-xs transition-all ${
+                className={`flex items-center justify-between p-2.5 rounded-xl border cursor-pointer text-xs transition-all ${
                   paymentMethod === "vnpay"
-                    ? "border-sky-500 bg-sky-500/10 shadow-xs ring-1 ring-sky-500/30 dark:border-sky-400 dark:bg-sky-950/40 dark:ring-sky-400/40"
+                    ? "border-sky-500 bg-sky-500/10 shadow-2xs ring-1 ring-sky-500/30 dark:border-sky-400 dark:bg-sky-950/40 dark:ring-sky-400/40"
                     : "border-border hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c]"
                 }`}
               >
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-2 min-w-0">
                   <input
                     type="radio"
                     name="pm"
                     checked={paymentMethod === "vnpay"}
                     onChange={() => setPaymentMethod("vnpay")}
-                    className="accent-sky-500 h-4 w-4 cursor-pointer"
+                    className="accent-sky-500 h-3.5 w-3.5 shrink-0 cursor-pointer"
                   />
-                  <div>
-                    <span className="font-bold text-slate-900 dark:text-white block text-xs">
-                      VNPay QR / Thẻ nội địa
+                  <div className="min-w-0">
+                    <span className="font-bold text-slate-900 dark:text-white block text-xs truncate">
+                      VNPay QR / Thẻ ATM
                     </span>
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400">
-                      Cổng thanh toán thẻ ATM / Thẻ quốc tế
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block truncate">
+                      Cổng ATM & Thẻ quốc tế
                     </span>
                   </div>
                 </div>
-                <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-200/60 dark:bg-slate-800 px-2 py-0.5 rounded-md">
+                <span className="shrink-0 text-[10px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-200/60 dark:bg-slate-800 px-2 py-0.5 rounded-md whitespace-nowrap ml-2">
                   Cổng phụ
                 </span>
               </div>
@@ -722,14 +722,14 @@ export const BookingPage: React.FC = () => {
             {/* CTA Button */}
             <Button
               onClick={handleStartCheckout}
-              className="w-full h-11 bg-primary hover:bg-[#3a505b] dark:bg-sky-600 dark:hover:bg-sky-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm rounded-lg"
+              className="w-full h-10 bg-primary hover:bg-[#3a505b] dark:bg-sky-600 dark:hover:bg-sky-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs rounded-lg"
             >
-              <QrCode className="h-4 w-4" />
-              <span>Tạo VietQR & Xác Nhận Giữ Chỗ</span>
+              <QrCode className="h-4 w-4 shrink-0" />
+              <span className="whitespace-nowrap">Tạo VietQR & Xác Nhận Giữ Chỗ</span>
             </Button>
 
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 text-center leading-tight">
-              Hệ thống tự động duyệt 0-chạm và cấp Hợp đồng điện tử PDF có mã xác thực tức thì sau khi ngân hàng báo Có.
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 text-center leading-normal">
+              Tự động duyệt 0-chạm & cấp Hợp đồng điện tử PDF tức thì khi có báo Có.
             </p>
           </div>
         </div>

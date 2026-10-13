@@ -94,13 +94,13 @@ export const StudentOverviewPage: React.FC = () => {
           </div>
 
           <div className="mt-5 pt-3 space-y-2 bg-[#f4f4ee]/70 rounded-lg p-3">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-[#42474b]">Hợp đồng:</span>
-              <span className="font-semibold text-emerald-600">Đang hiệu lực (Học kỳ 1)</span>
+            <div className="flex items-center justify-between gap-2 text-xs">
+              <span className="text-[#42474b] whitespace-nowrap">Hợp đồng:</span>
+              <span className="font-semibold text-emerald-600 truncate text-right">Hiệu lực (Kỳ 1)</span>
             </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-[#42474b]">Mật độ phòng:</span>
-              <span className="font-bold text-[#233944]">18 / 24 Giường</span>
+            <div className="flex items-center justify-between gap-2 text-xs">
+              <span className="text-[#42474b] whitespace-nowrap">Mật độ phòng:</span>
+              <span className="font-bold text-[#233944] whitespace-nowrap">18 / 24 Giường</span>
             </div>
           </div>
         </div>
@@ -574,9 +574,9 @@ export const StudentOverviewPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="mt-3 flex items-center justify-between text-[#bac9cd] text-xs px-1">
-                <span>Chạm máy đọc thẻ hoặc quét QR</span>
-                <span className="font-semibold text-white">Khoảng cách &lt; 5cm</span>
+              <div className="mt-3 flex items-center justify-between gap-2 text-[#bac9cd] text-xs px-1">
+                <span className="truncate">Chạm NFC hoặc quét mã QR</span>
+                <span className="font-semibold text-white shrink-0 whitespace-nowrap">&lt; 5cm</span>
               </div>
             </div>
           </div>

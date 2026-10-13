@@ -107,34 +107,34 @@ export const MyRoomPage: React.FC = () => {
           <Button
             variant="outline"
             onClick={() => alert("Đang mở bản xem trước Hợp đồng điện tử e-Contract PDF...")}
-            className="text-xs h-9 gap-1.5 bg-[#f4f4ee] dark:bg-[#1c262c]"
+            className="text-xs h-9 gap-1.5 bg-[#f4f4ee] dark:bg-[#1c262c] whitespace-nowrap shrink-0"
           >
-            <FileText className="h-4 w-4 text-primary" />
+            <FileText className="h-4 w-4 text-primary shrink-0" />
             <span>Hợp Đồng (PDF)</span>
           </Button>
 
           <Link to="/billing">
             <Button
               variant="outline"
-              className="text-xs h-9 gap-1.5 bg-[#f4f4ee] dark:bg-[#1c262c]"
+              className="text-xs h-9 gap-1.5 bg-[#f4f4ee] dark:bg-[#1c262c] whitespace-nowrap shrink-0"
             >
-              <Receipt className="h-4 w-4 text-primary" />
+              <Receipt className="h-4 w-4 text-primary shrink-0" />
               <span>Hóa Đơn Điện Nước</span>
             </Button>
           </Link>
 
           <Link to="/maintenance">
-            <Button className="text-xs h-9 gap-1.5 bg-primary text-white">
-              <Wrench className="h-4 w-4" />
+            <Button className="text-xs h-9 gap-1.5 bg-primary text-white whitespace-nowrap shrink-0">
+              <Wrench className="h-4 w-4 shrink-0" />
               <span>Báo Hỏng / Sửa Chữa</span>
             </Button>
           </Link>
 
           <Button
             onClick={() => setShowCheckoutModal(true)}
-            className="text-xs h-9 gap-1.5 bg-red-100 hover:bg-red-200 text-red-700"
+            className="text-xs h-9 gap-1.5 bg-red-100 hover:bg-red-200 text-red-700 whitespace-nowrap shrink-0"
           >
-            <LogOut className="h-4 w-4" />
+            <LogOut className="h-4 w-4 shrink-0" />
             <span>Yêu Cầu Trả Phòng</span>
           </Button>
         </div>
@@ -267,11 +267,11 @@ export const MyRoomPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex sm:flex-col items-start sm:items-end justify-between border-t sm:border-t-0 pt-2 sm:pt-0 border-border text-xs">
-                  <span className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/40 px-2 py-0.5 rounded">
+                <div className="flex sm:flex-col items-start sm:items-end justify-between border-t sm:border-t-0 pt-2 sm:pt-0 border-border text-xs shrink-0">
+                  <span className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/40 px-2 py-0.5 rounded whitespace-nowrap shrink-0">
                     Trực nhật: {rm.dutyDay}
                   </span>
-                  <span className="text-[11px] font-mono text-muted-foreground mt-1">
+                  <span className="text-[11px] font-mono text-muted-foreground mt-1 whitespace-nowrap">
                     {rm.phone}
                   </span>
                 </div>
@@ -324,7 +324,7 @@ export const MyRoomPage: React.FC = () => {
               className="w-full text-xs font-semibold h-9.5 gap-2 text-slate-800 dark:text-slate-100 hover:text-primary dark:hover:text-primary bg-slate-50/50 dark:bg-slate-800/40 border-border hover:border-primary/50 transition-all shadow-xs"
             >
               <FileText className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span>Xem Toàn Bộ Biên Bản Nghiệm Thu Kèm Ảnh</span>
+              <span className="whitespace-nowrap truncate">Xem biên bản nghiệm thu & ảnh</span>
             </Button>
           </div>
         </div>

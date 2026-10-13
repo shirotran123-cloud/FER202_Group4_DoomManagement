@@ -184,18 +184,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                       to={item.to}
                       end={item.to === "/"}
                       onClick={onClose}
-                      className={`flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${
+                      className={`flex items-center justify-between px-3 py-2 rounded-lg transition-colors min-w-0 ${
                         isActive
                           ? "bg-blue-600 text-white font-semibold shadow-xs"
                           : "text-slate-300 hover:bg-slate-800 hover:text-white"
                       }`}
                     >
-                      <div className="flex items-center gap-2.5">
-                        <span className="material-symbols-outlined text-lg">{item.icon}</span>
-                        <span>{item.title}</span>
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <span className="material-symbols-outlined text-lg shrink-0">{item.icon}</span>
+                        <span className="truncate">{item.title}</span>
                       </div>
                       {item.badge && (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-blue-300 font-mono border border-slate-700">
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-blue-300 font-mono border border-slate-700 shrink-0 ml-1.5 whitespace-nowrap">
                           {item.badge}
                         </span>
                       )}
