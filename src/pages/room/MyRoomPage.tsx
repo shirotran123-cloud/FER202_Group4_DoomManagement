@@ -12,7 +12,213 @@ import {
   Users,
   CheckCircle2,
   CheckSquare,
+  ChevronLeft,
+  ChevronRight,
+  BedDouble,
 } from "lucide-react"
+
+// ─── Compartment Slide Carousel ───────────────────────────────────────────────
+const COMPARTMENTS = [
+  {
+    id: "A", label: "Buồng A", subtitle: "Window Bay · Hướng Đông",
+    occupancy: "5/6", myComp: false,
+    beds: [
+      { g: 1, tier: "Dưới", name: "H. Long",   status: "occupied" },
+      { g: 2, tier: "Trên", name: "T. Tuấn",  status: "occupied" },
+      { g: 3, tier: "Dưới", name: null,        status: "available" },
+      { g: 4, tier: "Trên", name: "P. Quang", status: "occupied" },
+      { g: 5, tier: "Dưới", name: "Đ. Khoa",  status: "occupied" },
+      { g: 6, tier: "Trên", name: "M. Đức",   status: "occupied" },
+    ],
+  },
+  {
+    id: "B", label: "Buồng B", subtitle: "Balcony Wing · Ban Công",
+    occupancy: "5/6", myComp: true,
+    beds: [
+      { g: 1, tier: "Dưới", name: "B. Trần",  status: "occupied" },
+      { g: 2, tier: "Trên", name: "L. Nam",   status: "occupied" },
+      { g: 3, tier: "Dưới", name: "Vinh",     status: "mine" },
+      { g: 4, tier: "Trên", name: "V. Thanh", status: "occupied" },
+      { g: 5, tier: "Dưới", name: "N. Huy",   status: "occupied" },
+      { g: 6, tier: "Trên", name: null,        status: "available" },
+    ],
+  },
+  {
+    id: "C", label: "Buồng C", subtitle: "Study Hub · Góc Tự Học",
+    occupancy: "4/6", myComp: false,
+    beds: [
+      { g: 1, tier: "Dưới", name: "K. Minh",  status: "occupied" },
+      { g: 2, tier: "Trên", name: null,        status: "available" },
+      { g: 3, tier: "Dưới", name: "P. Linh",  status: "occupied" },
+      { g: 4, tier: "Trên", name: "T. Dung",  status: "occupied" },
+      { g: 5, tier: "Dưới", name: null,        status: "available" },
+      { g: 6, tier: "Trên", name: "S. Sơn",   status: "occupied" },
+    ],
+  },
+  {
+    id: "D", label: "Buồng D", subtitle: "Main Hall Door · Cửa Ra Vào & WC",
+    occupancy: "4/6", myComp: false,
+    beds: [
+      { g: 1, tier: "Dưới", name: "A. Hiến",  status: "occupied" },
+      { g: 2, tier: "Trên", name: "V. Khôi",  status: "occupied" },
+      { g: 3, tier: "Dưới", name: null,        status: "available" },
+      { g: 4, tier: "Trên", name: null,        status: "available" },
+      { g: 5, tier: "Dưới", name: "H. Phúc",  status: "occupied" },
+      { g: 6, tier: "Trên", name: "Q. Thắng", status: "occupied" },
+    ],
+  },
+]
+
+const CompartmentSlide: React.FC = () => {
+  const [current, setCurrent] = useState(1) // default: Buồng B (index 1)
+
+  const comp = COMPARTMENTS[current]
+  const prev = () => setCurrent((c) => (c - 1 + COMPARTMENTS.length) % COMPARTMENTS.length)
+  const next = () => setCurrent((c) => (c + 1) % COMPARTMENTS.length)
+
+  return (
+    <div className="bg-white dark:bg-[#161e23] border border-border rounded-xl shadow-xs overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-border">
+        <div>
+          <h2 className="font-bold text-sm text-foreground">Sơ Đồ Phân Bổ Giường Phòng A205</h2>
+          <p className="text-[11px] text-muted-foreground">Vuốt qua từng buồng để xem trạng thái giường</p>
+        </div>
+        <div className="flex items-center gap-3 text-[11px]">
+          <span className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-sm bg-primary"></span>
+            <strong className="text-primary dark:text-[#cee6ef]">Giường bạn</strong>
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-sm bg-slate-300 dark:bg-slate-600"></span>
+            <span>Đã ở</span>
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-sm bg-emerald-400"></span>
+            <span>Trống</span>
+          </span>
+        </div>
+      </div>
+
+      {/* Slide body */}
+      <div className="relative px-5 py-5">
+        {/* Nav buttons */}
+        <button
+          onClick={prev}
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white dark:bg-[#1c262c] border border-border shadow-sm flex items-center justify-center hover:bg-[#f4f4ee] dark:hover:bg-[#283740] transition-colors"
+        >
+          <ChevronLeft className="h-4 w-4 text-muted-foreground" />
+        </button>
+        <button
+          onClick={next}
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white dark:bg-[#1c262c] border border-border shadow-sm flex items-center justify-center hover:bg-[#f4f4ee] dark:hover:bg-[#283740] transition-colors"
+        >
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        </button>
+
+        {/* Card */}
+        <div className={`mx-8 rounded-xl border p-4 space-y-4 transition-all ${
+          comp.myComp
+            ? "bg-primary/5 border-primary ring-1 ring-primary"
+            : "bg-[#f4f4ee] dark:bg-[#1c262c] border-border"
+        }`}>
+          {/* Compartment header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-black text-base text-foreground">{comp.label}</span>
+                {comp.myComp && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary text-white">BUỒNG CỦA BẠN</span>
+                )}
+              </div>
+              <p className="text-[11px] text-muted-foreground mt-0.5">{comp.subtitle}</p>
+            </div>
+            <div className="text-right">
+              <span className="text-xs font-bold text-foreground">{comp.occupancy} Giường</span>
+            </div>
+          </div>
+
+          {/* Beds grid */}
+          <div className="grid grid-cols-3 gap-2.5">
+            {comp.beds.map((bed) => {
+              const isMine = bed.status === "mine"
+              const isAvail = bed.status === "available"
+              return (
+                <div
+                  key={bed.g}
+                  className={`rounded-xl p-3 text-center border transition-all ${
+                    isMine
+                      ? "bg-primary text-white border-primary shadow-md"
+                      : isAvail
+                      ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-700"
+                      : "bg-white dark:bg-[#161e23] border-border"
+                  }`}
+                >
+                  <div className={`text-[10px] font-bold mb-1.5 ${
+                    isMine ? "text-white/80" : "text-muted-foreground"
+                  }`}>
+                    G0{bed.g} · {bed.tier}
+                  </div>
+                  {isAvail ? (
+                    <>
+                      <BedDouble className="h-5 w-5 mx-auto text-emerald-500 mb-0.5" />
+                      <div className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">TRỐNG</div>
+                    </>
+                  ) : (
+                    <>
+                      <div className={`text-xs font-bold truncate ${
+                        isMine ? "text-white" : "text-foreground"
+                      }`}>
+                        {bed.name}
+                      </div>
+                      <div className={`text-[10px] mt-0.5 ${
+                        isMine ? "text-white/70" : "text-muted-foreground"
+                      }`}>
+                        {isMine ? "Tầng dưới" : "Đã ở"}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Dot indicators */}
+        <div className="flex items-center justify-center gap-2 mt-4">
+          {COMPARTMENTS.map((c, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrent(i)}
+              className={`transition-all rounded-full ${
+                i === current
+                  ? "w-6 h-2 bg-primary"
+                  : "w-2 h-2 bg-border hover:bg-muted-foreground"
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* Compartment label row */}
+        <div className="flex justify-center gap-1.5 mt-3">
+          {COMPARTMENTS.map((c, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrent(i)}
+              className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all ${
+                i === current
+                  ? "bg-primary text-white"
+                  : "bg-[#f4f4ee] dark:bg-[#1c262c] text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {c.id}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export const MyRoomPage: React.FC = () => {
   const { user } = useAuth()
@@ -140,78 +346,8 @@ export const MyRoomPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 02. ARCHITECTURAL BLUEPRINT MINI COMPARTMENT VISUALIZER */}
-      <div className="bg-white dark:bg-[#161e23] border border-border rounded-xl p-5 shadow-xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-border">
-          <div>
-            <h2 className="font-bold text-sm text-foreground">
-              Mô Hình Phân Bổ Phòng 1:4:6 (Phòng A205)
-            </h2>
-            <p className="text-[11px] text-muted-foreground">
-              Vị trí giường của bạn và các bạn cùng phòng theo kiến trúc tiêu chuẩn
-            </p>
-          </div>
-          <div className="flex items-center gap-3 text-[11px]">
-            <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-xs bg-primary"></span>
-              <strong className="text-primary dark:text-[#cee6ef]">Giường của bạn (B-G03)</strong>
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-xs bg-slate-300 dark:bg-slate-700"></span>
-              <span>Đã có người ở</span>
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-xs bg-emerald-400"></span>
-              <span>Còn trống</span>
-            </span>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {["Buồng A (Window Bay)", "Buồng B (Của bạn)", "Buồng C (Study Hub)", "Buồng D (Main Hall Door)"].map((comp, idx) => {
-            const isMyComp = idx === 1
-            return (
-              <div
-                key={idx}
-                className={`p-3.5 rounded-xl border space-y-2.5 ${
-                  isMyComp
-                    ? "bg-primary/5 border-primary ring-1 ring-primary"
-                    : "bg-[#f4f4ee] dark:bg-[#1c262c] border-border"
-                }`}
-              >
-                <div className="flex items-center justify-between gap-1">
-                  <span className="font-bold text-xs text-foreground whitespace-nowrap truncate">{comp}</span>
-                  <span className="text-[10px] font-semibold text-muted-foreground whitespace-nowrap shrink-0">
-                    {idx === 1 ? "4/6 Đang ở" : "6/6 Đầy"}
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-3 gap-1.5 text-center text-[10px] font-mono">
-                  {[1, 2, 3, 4, 5, 6].map((g) => {
-                    const isMyBed = isMyComp && g === 3
-                    return (
-                      <div
-                        key={g}
-                        className={`p-1.5 rounded-md font-bold ${
-                          isMyBed
-                            ? "bg-primary text-white shadow-xs"
-                            : isMyComp && g === 2
-                            ? "bg-amber-100 text-amber-800"
-                            : isMyComp && g === 6
-                            ? "bg-emerald-100 text-emerald-800"
-                            : "bg-white dark:bg-[#161e23] border border-border text-muted-foreground"
-                        }`}
-                      >
-                        G0{g}
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      </div>
+      {/* 02. ARCHITECTURAL BLUEPRINT — SLIDE CAROUSEL VISUALIZER */}
+      <CompartmentSlide />
 
       {/* 03. TWO-COLUMN: ROOMMATES ROSTER & DIGITAL HANDOVER CHECKLIST */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

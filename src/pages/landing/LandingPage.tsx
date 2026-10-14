@@ -522,7 +522,7 @@ export const LandingPage: React.FC = () => {
               <h4 className="text-xs font-bold uppercase tracking-widest text-orange-400">Về Đại Học FPT</h4>
               <ul className="space-y-2">
                 {[
-                  { label: "Trang chủ FPT Quy Nhơn", href: "https://daihocfpt.edu.vn" },
+                  { label: "Trang chủ FPT Quy Nhơn", href: "https://daihoc.fpt.edu.vn/quy-nhon" },
                   { label: "Cổng sinh viên FAP", href: "https://fap.fpt.edu.vn" },
                   { label: "Phòng Công tác Sinh viên", href: "https://daihocfpt.edu.vn" },
                   { label: "Học bổng & Hỗ trợ", href: "https://daihocfpt.edu.vn" },

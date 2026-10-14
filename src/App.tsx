@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { AuthProvider } from "@/contexts/AuthContext"
+import { BookingProvider } from "@/contexts/BookingContext"
 import { AppLayout } from "@/components/layout/AppLayout"
 import { LandingLayout } from "@/components/layout/LandingLayout"
 import { ProtectedRoute } from "@/components/layout/ProtectedRoute"
@@ -20,6 +21,7 @@ export function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <BookingProvider>
         <Routes>
           {/* Trang chủ KTX: Không có Sidebar, trang đầu tiên khi truy cập localhost:5173 */}
           <Route
@@ -113,6 +115,7 @@ export function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
+        </BookingProvider>
       </AuthProvider>
     </BrowserRouter>
   )

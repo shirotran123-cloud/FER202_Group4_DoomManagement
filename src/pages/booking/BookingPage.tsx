@@ -2,17 +2,8 @@ import React, { useState, useEffect } from "react"
 import { useAuth } from "@/contexts/useAuth"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Building,
-  CheckCircle2,
-  Clock,
-  QrCode,
-  Download,
-  Check,
-  Zap,
-  Sun,
-  Compass,
-} from "lucide-react"
+import { useBooking } from "@/contexts/BookingContext"
+import { CheckCircle2, QrCode, Download, Check, Zap } from "lucide-react"
 
 interface Bed {
   id: string
@@ -22,7 +13,6 @@ interface Bed {
   price: number
   tier: "lower" | "upper"
   holdingTime?: string
-  studentName?: string
 }
 
 interface Compartment {
@@ -35,6 +25,7 @@ interface Compartment {
 
 export const BookingPage: React.FC = () => {
   const { user } = useAuth()
+  const { setBooking, confirmBooking } = useBooking()
 
   // Selection states
   const [selectedBuilding, setSelectedBuilding] = useState("b1")
@@ -50,47 +41,39 @@ export const BookingPage: React.FC = () => {
     tier: "lower",
   })
 
-  // Timer state (15 minutes = 900 seconds)
+  // Active step: which step is currently highlighted (others dim)
+  // -1 means all steps done (payment confirmed)
+  const [activeStep, setActiveStep] = useState<number>(1)
+
+  // Whether a step has been "completed" (user clicked Next)
+  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set([2, 3, 4, 5]))
+
+  // Timer (15min)
   const [timeLeft, setTimeLeft] = useState(14 * 60 + 45)
   const [isLocked, setIsLocked] = useState(true)
 
-  // Payment method
-  const [paymentMethod, setPaymentMethod] = useState<"vietqr" | "vnpay" | "student_acc">("vietqr")
-
-  // Modal states
+  // Payment
+  const [paymentMethod, setPaymentMethod] = useState<"vietqr" | "vnpay">("vietqr")
   const [showCheckoutModal, setShowCheckoutModal] = useState(false)
   const [checkoutStep, setCheckoutStep] = useState<"qr" | "verifying" | "success">("qr")
   const [autoApprovalProgress, setAutoApprovalProgress] = useState(0)
 
-  // Countdown timer effect
   useEffect(() => {
     if (!isLocked) return
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer)
-          setIsLocked(false)
-          return 0
-        }
+        if (prev <= 1) { clearInterval(timer); setIsLocked(false); return 0 }
         return prev - 1
       })
     }, 1000)
     return () => clearInterval(timer)
   }, [isLocked])
 
-  const formatTime = (seconds: number) => {
-    const m = Math.floor(seconds / 60)
-    const s = seconds % 60
-    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`
-  }
+  const formatTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60).toString().padStart(2, "0")}`
 
-  // Compartments definition based on Stitch architectural blueprint
   const compartments: Compartment[] = [
     {
-      id: "A",
-      name: "Compartment A",
-      title: "Window Bay",
-      zone: "Đón nắng ban mai",
+      id: "A", name: "Compartment A", title: "Window Bay", zone: "Đón nắng ban mai",
       beds: [
         { id: "A-G01", code: "A205-A-G01", slot: "G01", status: "occupied", price: 950000, tier: "lower" },
         { id: "A-G02", code: "A205-A-G02", slot: "G02", status: "occupied", price: 950000, tier: "upper" },
@@ -101,10 +84,7 @@ export const BookingPage: React.FC = () => {
       ],
     },
     {
-      id: "B",
-      name: "Compartment B",
-      title: "Balcony Wing",
-      zone: "Hướng ban công",
+      id: "B", name: "Compartment B", title: "Balcony Wing", zone: "Hướng ban công",
       beds: [
         { id: "B-G01", code: "A205-B-G01", slot: "G01", status: "occupied", price: 950000, tier: "lower" },
         { id: "B-G02", code: "A205-B-G02", slot: "G02", status: "holding", price: 950000, tier: "upper", holdingTime: "12m" },
@@ -115,10 +95,7 @@ export const BookingPage: React.FC = () => {
       ],
     },
     {
-      id: "C",
-      name: "Compartment C",
-      title: "Study Hub",
-      zone: "Góc bàn học",
+      id: "C", name: "Compartment C", title: "Study Hub", zone: "Góc bàn học",
       beds: [
         { id: "C-G01", code: "A205-C-G01", slot: "G01", status: "available", price: 950000, tier: "lower" },
         { id: "C-G02", code: "A205-C-G02", slot: "G02", status: "available", price: 950000, tier: "upper" },
@@ -129,10 +106,7 @@ export const BookingPage: React.FC = () => {
       ],
     },
     {
-      id: "D",
-      name: "Compartment D",
-      title: "Main Hall Door",
-      zone: "Cạnh cửa & WC",
+      id: "D", name: "Compartment D", title: "Main Hall Door", zone: "Cạnh cửa & WC",
       beds: [
         { id: "D-G01", code: "A205-D-G01", slot: "G01", status: "occupied", price: 950000, tier: "lower" },
         { id: "D-G02", code: "A205-D-G02", slot: "G02", status: "occupied", price: 950000, tier: "upper" },
@@ -144,7 +118,15 @@ export const BookingPage: React.FC = () => {
     },
   ]
 
-  // Handle bed selection
+  const roomOptions = [
+    { id: "A201", label: "Phòng A201", desc: "Phòng góc · View sân vườn trung tâm", available: 0, badge: "Đầy" },
+    { id: "A202", label: "Phòng A202", desc: "Giữa hành lang · Pod tự học yên tĩnh", available: 2, badge: "2 Trống" },
+    { id: "A205", label: "Phòng A205", desc: "3 mặt thoáng · Đón gió ban mai · Ban công riêng", available: 6, badge: "6 Trống" },
+    { id: "A208", label: "Phòng A208", desc: "Cuối hành lang · Gần thang máy", available: 4, badge: "4 Trống" },
+  ]
+
+  const buildingLabel = selectedBuilding === "b1" ? "Tòa A · Khu Nam" : selectedBuilding === "b2" ? "Tòa B · Khu Nữ" : "Tòa C · Quốc Tế"
+
   const handleSelectBed = (bed: Bed, compId: string) => {
     if (bed.status !== "available") return
     setSelectedBed(bed)
@@ -153,7 +135,11 @@ export const BookingPage: React.FC = () => {
     setIsLocked(true)
   }
 
-  // Trigger checkout & simulate auto-approval
+  const completeStep = (step: number) => {
+    setCompletedSteps((prev) => new Set([...prev, step]))
+    setActiveStep(step + 1)
+  }
+
   const handleStartCheckout = () => {
     setShowCheckoutModal(true)
     setCheckoutStep("qr")
@@ -167,744 +153,485 @@ export const BookingPage: React.FC = () => {
     setTimeout(() => {
       setAutoApprovalProgress(100)
       setCheckoutStep("success")
+      // Sync to BookingContext
+      const comp = compartments.find((c) => c.id === selectedCompartment)
+      setBooking({
+        building: selectedBuilding,
+        buildingLabel,
+        floor: selectedFloor,
+        room: selectedRoom,
+        compartment: selectedCompartment,
+        compartmentTitle: comp?.title || "Balcony Wing",
+        bedCode: selectedBed.code,
+        bedSlot: selectedBed.slot,
+        bedTier: selectedBed.tier,
+        isConfirmed: true,
+      })
+      setActiveStep(-1)
+      setCompletedSteps(new Set([1, 2, 3, 4, 5]))
     }, 2200)
   }
 
+  // Step header component
+  const StepHeader = ({
+    step, title, summary, isActive, isDone,
+  }: { step: number; title: string; summary: string; isActive: boolean; isDone: boolean }) => (
+    <button
+      onClick={() => setActiveStep(step)}
+      className={`w-full flex items-center justify-between px-6 py-4 text-left transition-all ${
+        isActive ? "bg-white dark:bg-[#161e23]" : "hover:bg-[#f9f9f7] dark:hover:bg-[#1c2830]"
+      }`}
+    >
+      <div className="flex items-center gap-4">
+        <span className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-sm shrink-0 transition-all ${
+          isDone
+            ? "bg-emerald-500 text-white"
+            : isActive
+            ? "bg-primary text-white"
+            : "bg-[#e8e8e2] dark:bg-[#1c262c] text-muted-foreground"
+        }`}>
+          {isDone ? <Check className="h-4 w-4" /> : step}
+        </span>
+        <div>
+          <p className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Bước {step}</p>
+          <p className={`font-bold text-sm ${isActive ? "text-foreground" : "text-muted-foreground"}`}>{title}</p>
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
+        <span className={`text-xs font-semibold ${isActive ? "text-primary dark:text-[#cee6ef]" : "text-muted-foreground"}`}>
+          {summary}
+        </span>
+        <span className={`material-symbols-outlined text-muted-foreground text-base transition-transform ${isActive ? "rotate-180" : ""}`}>
+          expand_more
+        </span>
+      </div>
+    </button>
+  )
+
   return (
-    <div className="max-w-[1600px] mx-auto space-y-6 pb-12">
-      {/* 01. STEP PROGRESS HIERARCHY BANNER */}
-      <div className="w-full bg-white dark:bg-[#161e23] border border-border rounded-xl p-4 shadow-xs">
-        <div className="flex items-center justify-between gap-3 overflow-x-auto pb-1 text-xs">
-          <div className="flex items-center gap-2.5 min-w-max">
-            <span className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center font-bold text-[11px]">
-              01
-            </span>
-            <div>
-              <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block">
-                Tòa nhà
-              </span>
-              <span className="font-semibold text-foreground">Tòa A (Nam)</span>
-            </div>
-          </div>
-
-          <span className="text-muted-foreground/40 font-mono">→</span>
-
-          <div className="flex items-center gap-2.5 min-w-max">
-            <span className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center font-bold text-[11px]">
-              02
-            </span>
-            <div>
-              <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block">
-                Tầng lầu
-              </span>
-              <span className="font-semibold text-foreground">Tầng {selectedFloor}</span>
-            </div>
-          </div>
-
-          <span className="text-muted-foreground/40 font-mono">→</span>
-
-          <div className="flex items-center gap-2.5 min-w-max">
-            <span className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center font-bold text-[11px]">
-              03
-            </span>
-            <div>
-              <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block">
-                Phòng chuẩn
-              </span>
-              <span className="font-semibold text-foreground">Phòng {selectedRoom} (24 Giường)</span>
-            </div>
-          </div>
-
-          <span className="text-muted-foreground/40 font-mono">→</span>
-
-          <div className="flex items-center gap-2.5 min-w-max">
-            <span className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center font-bold text-[11px]">
-              04
-            </span>
-            <div>
-              <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block">
-                Buồng riêng
-              </span>
-              <span className="font-semibold text-foreground">Buồng {selectedCompartment}</span>
-            </div>
-          </div>
-
-          <span className="text-muted-foreground/40 font-mono">→</span>
-
-          <div className="flex items-center gap-2.5 min-w-max">
-            <span className="w-6 h-6 rounded-full bg-[#4C6269] text-white flex items-center justify-center font-bold text-[11px]">
-              05
-            </span>
-            <div>
-              <span className="text-[10px] uppercase font-bold tracking-wider text-[#4C6269] block">
-                Vị trí giường
-              </span>
-              <span className="font-bold text-primary dark:text-[#cee6f4]">{selectedBed.code}</span>
-            </div>
-          </div>
-
-          <span className="text-muted-foreground/40 font-mono">→</span>
-
-          <div className="flex items-center gap-2.5 min-w-max opacity-80">
-            <span className="w-6 h-6 rounded-full bg-muted text-muted-foreground flex items-center justify-center font-semibold text-[11px]">
-              06
-            </span>
-            <div>
-              <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block">
-                Thanh toán
-              </span>
-              <span className="font-medium text-muted-foreground">VietQR Giữ chỗ 15m</span>
-            </div>
-          </div>
+    <div className="w-full space-y-4 pb-12">
+      {/* BREADCRUMB PROGRESS BANNER */}
+      <div className="w-full bg-white dark:bg-[#161e23] border border-border rounded-xl px-6 py-3 shadow-xs">
+        <div className="flex items-center gap-2 overflow-x-auto text-[11px]">
+          {[
+            { n: 1, label: "Tòa nhà", value: buildingLabel.split(" · ")[0] },
+            { n: 2, label: "Tầng", value: `Tầng ${selectedFloor}` },
+            { n: 3, label: "Phòng", value: selectedRoom ? `Phòng ${selectedRoom}` : "—" },
+            { n: 4, label: "Buồng", value: selectedCompartment ? `Buồng ${selectedCompartment}` : "—" },
+            { n: 5, label: "Giường", value: selectedBed?.code || "—" },
+          ].map((s, i, arr) => (
+            <React.Fragment key={s.n}>
+              <button
+                onClick={() => setActiveStep(s.n)}
+                className={`flex items-center gap-1.5 min-w-max transition-opacity ${activeStep === s.n ? "opacity-100" : "opacity-55 hover:opacity-80"}`}
+              >
+                <span className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] shrink-0 ${
+                  completedSteps.has(s.n) && activeStep !== s.n
+                    ? "bg-emerald-500 text-white"
+                    : activeStep === s.n
+                    ? "bg-primary text-white"
+                    : "bg-[#f4f4ee] dark:bg-[#1c262c] text-muted-foreground"
+                }`}>
+                  {completedSteps.has(s.n) && activeStep !== s.n ? <Check className="h-2.5 w-2.5" /> : `0${s.n}`}
+                </span>
+                <div>
+                  <span className="block text-[9px] uppercase tracking-wider text-muted-foreground leading-none">{s.label}</span>
+                  <span className={`font-semibold leading-tight ${activeStep === s.n ? "text-primary dark:text-[#cee6ef]" : "text-foreground"}`}>{s.value}</span>
+                </div>
+              </button>
+              {i < arr.length - 1 && <span className="text-muted-foreground/30 font-mono shrink-0 text-base">→</span>}
+            </React.Fragment>
+          ))}
         </div>
       </div>
 
-      {/* 02. MAIN 3-COLUMN ERGONOMIC GRID */}
-      <div className="grid grid-cols-12 gap-6 items-start">
-        {/* COLUMN 1: BUILDING, LEVEL, ROOM LIST (3 COLS) */}
-        <div className="col-span-12 lg:col-span-3 flex flex-col gap-5">
-          {/* Building Selector */}
-          <div className="bg-white dark:bg-[#161e23] border border-border p-4 rounded-xl shadow-xs space-y-3">
-            <label className="text-[11px] uppercase font-bold tracking-wider text-muted-foreground block">
-              Khu Ký Túc Xá (Complex)
-            </label>
-            <div className="relative">
-              <select
-                value={selectedBuilding}
-                onChange={(e) => setSelectedBuilding(e.target.value)}
-                className="w-full bg-[#f4f4ee] dark:bg-[#1c262c] text-foreground text-xs font-semibold py-2.5 px-3 pr-8 rounded-lg border border-border appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary"
-              >
-                <option value="b1">Tòa A · Khu Nam (Standard Tech)</option>
-                <option value="b2">Tòa B · Khu Nữ (Quiet Quad)</option>
-                <option value="b3">Tòa C · Sinh viên Quốc tế</option>
-              </select>
-              <span className="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none text-base">
-                expand_more
-              </span>
+      {/* STEP 1 — TÒA NHÀ */}
+      <div className={`w-full bg-white dark:bg-[#161e23] border border-border rounded-xl shadow-xs overflow-hidden transition-opacity ${activeStep !== 1 && !completedSteps.has(1) ? "opacity-40" : activeStep !== 1 ? "opacity-55 hover:opacity-80" : ""}`}>
+        <StepHeader step={1} title="Chọn Tòa Nhà" summary={buildingLabel} isActive={activeStep === 1} isDone={completedSteps.has(1) && activeStep !== 1} />
+        {activeStep === 1 && (
+          <div className="px-6 pb-6 border-t border-border space-y-4">
+            <p className="text-[11px] text-muted-foreground pt-4">Chọn khu ký túc xá phù hợp với giới tính và nhu cầu:</p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {[
+                { id: "b1", icon: "🏢", label: "Tòa A · Khu Nam", desc: "Standard Tech · 5 tầng · 120 phòng" },
+                { id: "b2", icon: "🏛️", label: "Tòa B · Khu Nữ", desc: "Quiet Quad · Phòng yên tĩnh" },
+                { id: "b3", icon: "🌐", label: "Tòa C · Sinh viên QT", desc: "International · 3 tầng" },
+              ].map((b) => (
+                <button
+                  key={b.id}
+                  onClick={() => setSelectedBuilding(b.id)}
+                  className={`p-5 rounded-xl border text-left transition-all ${
+                    selectedBuilding === b.id
+                      ? "border-primary bg-primary/5 ring-2 ring-primary/30"
+                      : "border-border hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c]"
+                  }`}
+                >
+                  <div className="text-3xl mb-2">{b.icon}</div>
+                  <p className="font-bold text-sm text-foreground">{b.label}</p>
+                  <p className="text-[11px] text-muted-foreground mt-1">{b.desc}</p>
+                </button>
+              ))}
             </div>
+            <button
+              onClick={() => completeStep(1)}
+              className="w-full py-3 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary/90 transition-colors"
+            >
+              Tiếp theo: Chọn Tầng →
+            </button>
+          </div>
+        )}
+      </div>
 
-            {/* Floor Selection */}
-            <div className="pt-2">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] uppercase font-bold tracking-wider text-muted-foreground">
-                  Chọn Tầng
-                </span>
-                <span className="text-[11px] text-[#4C6269] dark:text-[#b3cad3] font-medium flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                  Thang máy khả dụng
-                </span>
-              </div>
-              <div className="grid grid-cols-5 gap-1 p-1 bg-[#f4f4ee] dark:bg-[#1c262c] rounded-lg">
-                {[1, 2, 3, 4, 5].map((lvl) => (
+      {/* STEP 2 — TẦNG */}
+      <div className={`w-full bg-white dark:bg-[#161e23] border border-border rounded-xl shadow-xs overflow-hidden transition-opacity ${activeStep !== 2 && !completedSteps.has(2) ? "opacity-40" : activeStep !== 2 ? "opacity-55 hover:opacity-80" : ""}`}>
+        <StepHeader step={2} title="Chọn Tầng" summary={`Tầng ${selectedFloor}`} isActive={activeStep === 2} isDone={completedSteps.has(2) && activeStep !== 2} />
+        {activeStep === 2 && (
+          <div className="px-6 pb-6 border-t border-border space-y-4">
+            <p className="text-[11px] text-muted-foreground pt-4">Tầng càng cao càng thoáng. Thang máy khả dụng tất cả các tầng.</p>
+            <div className="grid grid-cols-5 gap-3">
+              {[1, 2, 3, 4, 5].map((lvl) => (
+                <button
+                  key={lvl}
+                  onClick={() => setSelectedFloor(lvl)}
+                  className={`py-4 rounded-xl font-bold text-base transition-all ${
+                    selectedFloor === lvl
+                      ? "bg-primary text-white shadow-sm ring-2 ring-primary/30"
+                      : "bg-[#f4f4ee] dark:bg-[#1c262c] text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  T{lvl}
+                </button>
+              ))}
+            </div>
+            <div className="p-4 bg-[#f4f4ee] dark:bg-[#1c262c] rounded-xl text-xs text-muted-foreground">
+              <span className="font-semibold text-foreground">Tầng {selectedFloor}:</span>{" "}
+              {selectedFloor === 1 ? "Gần cổng ra vào, thuận tiện đi lại." :
+               selectedFloor === 2 ? "Tầng phổ biến nhất, có ban công rộng, gần thang máy." :
+               selectedFloor === 3 ? "Thoáng mát, ít tiếng ồn từ sảnh chính." :
+               selectedFloor === 4 ? "View đẹp, yên tĩnh, lý tưởng để học bài." :
+               "Tầng cao nhất, thoáng nhất, ít người qua lại."}
+            </div>
+            <button
+              onClick={() => completeStep(2)}
+              className="w-full py-3 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary/90 transition-colors"
+            >
+              Tiếp theo: Chọn Phòng →
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* STEP 3 — PHÒNG */}
+      <div className={`w-full bg-white dark:bg-[#161e23] border border-border rounded-xl shadow-xs overflow-hidden transition-opacity ${activeStep !== 3 && !completedSteps.has(3) ? "opacity-40" : activeStep !== 3 ? "opacity-55 hover:opacity-80" : ""}`}>
+        <StepHeader step={3} title="Chọn Phòng" summary={selectedRoom ? `Phòng ${selectedRoom}` : "Chưa chọn"} isActive={activeStep === 3} isDone={completedSteps.has(3) && activeStep !== 3} />
+        {activeStep === 3 && (
+          <div className="px-6 pb-6 border-t border-border space-y-3">
+            <p className="text-[11px] text-muted-foreground pt-4">Phòng có sẵn tại Tầng {selectedFloor} — {roomOptions.length} phòng tìm thấy:</p>
+            <div className="space-y-2">
+              {roomOptions.map((room) => (
+                <button
+                  key={room.id}
+                  onClick={() => room.available > 0 && setSelectedRoom(room.id)}
+                  disabled={room.available === 0}
+                  className={`w-full p-4 rounded-xl border text-left flex items-center justify-between transition-all ${
+                    selectedRoom === room.id
+                      ? "border-primary bg-primary/5 ring-2 ring-primary/30"
+                      : room.available === 0
+                      ? "border-border opacity-40 cursor-not-allowed"
+                      : "border-border hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c]"
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
+                    <span className={`material-symbols-outlined text-2xl ${selectedRoom === room.id ? "text-primary" : "text-muted-foreground"}`}>meeting_room</span>
+                    <div>
+                      <p className="font-bold text-sm text-foreground">{room.label}</p>
+                      <p className="text-[11px] text-muted-foreground">{room.desc}</p>
+                    </div>
+                  </div>
+                  <span className={`text-xs font-bold px-3 py-1.5 rounded-lg whitespace-nowrap ${
+                    room.available === 0
+                      ? "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400"
+                      : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400"
+                  }`}>{room.badge}</span>
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => completeStep(3)}
+              disabled={!selectedRoom}
+              className="w-full py-3 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary/90 transition-colors disabled:opacity-40"
+            >
+              Tiếp theo: Chọn Buồng →
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* STEP 4 — BUỒNG */}
+      <div className={`w-full bg-white dark:bg-[#161e23] border border-border rounded-xl shadow-xs overflow-hidden transition-opacity ${activeStep !== 4 && !completedSteps.has(4) ? "opacity-40" : activeStep !== 4 ? "opacity-55 hover:opacity-80" : ""}`}>
+        <StepHeader step={4} title="Chọn Buồng Riêng" summary={selectedCompartment ? `Buồng ${selectedCompartment}` : "Chưa chọn"} isActive={activeStep === 4} isDone={completedSteps.has(4) && activeStep !== 4} />
+        {activeStep === 4 && (
+          <div className="px-6 pb-6 border-t border-border space-y-4">
+            <p className="text-[11px] text-muted-foreground pt-4">Mỗi phòng có 4 buồng riêng (A, B, C, D), mỗi buồng 6 giường tầng:</p>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              {compartments.map((comp) => {
+                const avail = comp.beds.filter((b) => b.status === "available").length
+                return (
                   <button
-                    key={lvl}
-                    onClick={() => setSelectedFloor(lvl)}
-                    className={`py-1.5 text-xs font-bold rounded-md transition-all ${
-                      selectedFloor === lvl
-                        ? "bg-primary text-white shadow-xs"
-                        : "text-muted-foreground hover:text-foreground"
+                    key={comp.id}
+                    onClick={() => avail > 0 && setSelectedCompartment(comp.id)}
+                    disabled={avail === 0}
+                    className={`p-5 rounded-xl border text-left transition-all ${
+                      selectedCompartment === comp.id
+                        ? "border-primary bg-primary/5 ring-2 ring-primary/30"
+                        : avail === 0
+                        ? "border-border opacity-40 cursor-not-allowed"
+                        : "border-border hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c]"
                     }`}
                   >
-                    T{lvl}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Rooms on Floor Manifest */}
-          <div className="bg-white dark:bg-[#161e23] border border-border p-4 rounded-xl shadow-xs space-y-3">
-            <div className="flex items-center justify-between pb-1 border-b border-border">
-              <span className="text-xs font-bold text-foreground">Phòng tại Tầng {selectedFloor}</span>
-              <span className="text-[11px] text-muted-foreground">4 phòng tìm thấy</span>
-            </div>
-
-            {/* Room items */}
-            <div
-              onClick={() => setSelectedRoom("A201")}
-              className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                selectedRoom === "A201"
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c]"
-              }`}
-            >
-              <div className="flex items-center justify-between mb-1">
-                <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
-                  <span className="material-symbols-outlined text-sm text-muted-foreground">meeting_room</span>
-                  <span>Phòng A201</span>
-                </div>
-                <Badge variant="occupied">24/24 Đầy</Badge>
-              </div>
-              <p className="text-[11px] text-muted-foreground mb-2">Phòng góc · View sân vườn trung tâm</p>
-              <div className="w-full bg-[#e3e3dd] dark:bg-[#283740] h-1.5 rounded-full overflow-hidden">
-                <div className="bg-muted-foreground h-full w-full"></div>
-              </div>
-            </div>
-
-            <div
-              onClick={() => setSelectedRoom("A202")}
-              className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                selectedRoom === "A202"
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c]"
-              }`}
-            >
-              <div className="flex items-center justify-between mb-1">
-                <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
-                  <span className="material-symbols-outlined text-sm text-muted-foreground">meeting_room</span>
-                  <span>Phòng A202</span>
-                </div>
-                <Badge variant="secondary">22/24 Đã ở</Badge>
-              </div>
-              <p className="text-[11px] text-muted-foreground mb-2">Giữa hành lang · Pod tự học yên tĩnh</p>
-              <div className="w-full bg-[#e3e3dd] dark:bg-[#283740] h-1.5 rounded-full overflow-hidden">
-                <div className="bg-[#4C6269] h-full w-[91%]"></div>
-              </div>
-            </div>
-
-            {/* Room A205 (Active Selection) */}
-            <div
-              onClick={() => setSelectedRoom("A205")}
-              className="p-3 rounded-lg bg-primary text-white shadow-xs space-y-2 border border-primary relative"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 font-bold text-xs">
-                  <span className="material-symbols-outlined text-sm text-[#cee6ef]">meeting_room</span>
-                  <span>Phòng A205</span>
-                </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#cee6ef] text-[#233944]">
-                  6 Giường Trống
-                </span>
-              </div>
-              <p className="text-[11px] text-white/80">3 mặt thoáng · Đón gió ban mai · Ban công riêng</p>
-              <div className="w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
-                <div className="bg-[#cee6ef] h-full w-[75%]"></div>
-              </div>
-              <div className="flex flex-wrap gap-1 pt-1">
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/20 text-white/90 flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[11px]">balcony</span> Ban công
-                </span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/20 text-white/90 flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[11px]">ac_unit</span> ĐH Inverter
-                </span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/20 text-white/90 flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[11px]">wifi</span> Fiber 1Gbps
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Living Note & Facility Snapshot */}
-          <div className="bg-white dark:bg-[#161e23] border border-border p-3 rounded-xl shadow-xs flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 text-primary">
-              <Building className="h-5 w-5" />
-            </div>
-            <div className="min-w-0">
-              <p className="font-bold text-xs text-foreground truncate">Khu A205 Chuẩn Mới 2026</p>
-              <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2">
-                Tiêu âm cao cấp, rèm che kháng khuẩn từng giường, khóa số thông minh.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* COLUMN 2: CENTER ARCHITECTURAL 1:4:6 UNIT BLUEPRINT (6 COLS) */}
-        <div className="col-span-12 lg:col-span-6 flex flex-col gap-4">
-          <div className="bg-white dark:bg-[#161e23] border border-border rounded-xl shadow-xs p-5 space-y-4">
-            {/* Header blueprint */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-border">
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-lg bg-[#cee6ef] text-[#233944] dark:bg-[#233944] dark:text-[#cee6ef]">
-                  <span className="material-symbols-outlined text-lg">view_in_ar_new</span>
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="font-bold text-base text-foreground">
-                      Bản Đồ Kiến Trúc · Phòng {selectedRoom}
-                    </h2>
-                    <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#f4f4ee] dark:bg-[#1c262c] text-muted-foreground font-semibold">
-                      Mô hình 1:4:6 (24 Giường)
-                    </span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Nhấp vào giường có màu xanh lá để khóa giữ chỗ 15 phút.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span>Thời gian thực: 6 giường trống</span>
-              </div>
-            </div>
-
-            {/* Status Legend */}
-            <div className="flex flex-wrap items-center gap-4 py-2 px-3 rounded-lg bg-[#f4f4ee] dark:bg-[#1c262c] text-[11px]">
-              <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-xs bg-[#10b981]"></span>
-                <span className="font-medium text-foreground">Trống (6)</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-xs bg-[#94a3b8]"></span>
-                <span className="text-muted-foreground">Đã ở (16)</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-xs bg-[#f59e0b]"></span>
-                <span className="text-muted-foreground">Đang giữ (1)</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-xs bg-[#ef4444]"></span>
-                <span className="text-muted-foreground">Bảo trì (1)</span>
-              </div>
-              <div className="flex items-center gap-1.5 ml-auto">
-                <span className="w-3 h-3 rounded-xs bg-primary ring-2 ring-primary ring-offset-1"></span>
-                <span className="font-bold text-primary dark:text-[#cee6f4]">Đang chọn (1)</span>
-              </div>
-            </div>
-
-            {/* Visual Floor Canvas Matrix */}
-            <div className="p-3.5 bg-[#f4f4ee] dark:bg-[#141c21] rounded-xl border border-border relative space-y-3">
-              {/* Orientation Indicators */}
-              <div className="flex justify-between items-center text-muted-foreground text-[10px] font-mono tracking-wider px-1">
-                <span className="flex items-center gap-1 whitespace-nowrap truncate">
-                  <Sun className="h-3 w-3 text-amber-500 shrink-0" /> HƯỚNG ĐÔNG (BAN CÔNG)
-                </span>
-                <span className="flex items-center gap-1 whitespace-nowrap truncate text-right">
-                  <Compass className="h-3 w-3 shrink-0" /> HƯỚNG BẮC (KHUÔN VIÊN)
-                </span>
-              </div>
-
-              {/* 4 Quadrants (1:4:6 Layout) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                {compartments.map((comp) => {
-                  const isSelectedComp = selectedCompartment === comp.id
-                  return (
-                    <div
-                      key={comp.id}
-                      className={`bg-white dark:bg-[#161e23] p-3 rounded-xl border transition-all ${
-                        isSelectedComp
-                          ? "ring-2 ring-primary border-primary shadow-sm"
-                          : "border-border"
-                      }`}
-                    >
-                      {/* Compartment Header */}
-                      <div className="mb-2 pb-1.5 border-b border-border/60">
-                        <div className="flex items-center justify-between gap-1.5">
-                          <span className="font-bold text-xs text-foreground whitespace-nowrap flex items-center gap-1.5 shrink-0">
-                            Compartment {comp.id}
-                            {isSelectedComp && (
-                              <span className="w-1.5 h-1.5 rounded-full bg-primary inline-block shrink-0"></span>
-                            )}
-                          </span>
-                          <span className="text-[10px] font-semibold text-[#4C6269] dark:text-[#b3cad3] bg-[#cee6ef]/40 dark:bg-[#233944] px-1.5 py-0.5 rounded whitespace-nowrap shrink-0">
-                            {comp.zone}
-                          </span>
-                        </div>
-                        <span className="text-[10px] text-muted-foreground whitespace-nowrap block truncate mt-0.5">
-                          Buồng {comp.id} · {comp.title}
-                        </span>
-                      </div>
-
-                      {/* 6 Beds Grid (2 rows x 3 columns) */}
-                      <div className="grid grid-cols-3 gap-2">
-                        {comp.beds.map((bed) => {
-                          const isCurrentPick = selectedBed.id === bed.id
-                          const isAvailable = bed.status === "available"
-                          const isHolding = bed.status === "holding"
-                          const isMaint = bed.status === "maintenance"
-
-                          return (
-                            <div
-                              key={bed.id}
-                              onClick={() => handleSelectBed(bed, comp.id)}
-                              className={`p-2 rounded-lg text-center flex flex-col items-center justify-center transition-all ${
-                                isCurrentPick
-                                  ? "bg-primary text-white shadow-md scale-105 ring-2 ring-primary ring-offset-2 z-10 cursor-pointer"
-                                  : isAvailable
-                                  ? "bg-[#ECFDF5] dark:bg-[#065F46]/20 border border-[#A7F3D0] hover:bg-[#d1fae5] cursor-pointer text-[#065F46] dark:text-[#6ee7b7]"
-                                  : isHolding
-                                  ? "bg-[#FFFBEB] dark:bg-[#78350f]/20 border border-[#FDE68A] text-[#92400E] dark:text-[#fcd34d] cursor-not-allowed"
-                                  : isMaint
-                                  ? "bg-[#FEF2F2] dark:bg-[#7f1d1d]/20 border border-[#FECACA] text-[#991B1B] dark:text-[#fca5a5] cursor-not-allowed"
-                                  : "bg-[#F1F5F9] dark:bg-[#1e293b] text-muted-foreground opacity-75 cursor-not-allowed"
-                              }`}
-                            >
-                              <span className="material-symbols-outlined text-base shrink-0">
-                                {isCurrentPick ? "check_circle" : "single_bed"}
-                              </span>
-                              <span className="font-mono font-bold text-[11px] leading-tight whitespace-nowrap">
-                                {bed.slot}
-                              </span>
-                              <span className="text-[9px] mt-0.5 font-medium whitespace-nowrap">
-                                {isCurrentPick
-                                  ? "Đang chọn"
-                                  : isAvailable
-                                  ? "950k/th"
-                                  : isHolding
-                                  ? `${bed.holdingTime} Giữ`
-                                  : isMaint
-                                  ? "Bảo trì"
-                                  : "Đã ở"}
-                              </span>
-                            </div>
-                          )
-                        })}
-                      </div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="font-black text-lg text-foreground">Buồng {comp.id}</span>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                        avail > 0 ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400" : "bg-slate-100 text-slate-500 dark:bg-slate-800"
+                      }`}>{avail > 0 ? `${avail} trống` : "Đầy"}</span>
                     </div>
-                  )
-                })}
-              </div>
-
-              {/* Architectural CAD Notation */}
-              <div className="pt-2 flex justify-between items-center text-slate-500 dark:text-slate-400 text-[10px] font-mono border-t border-border">
-                <span className="shrink-0 whitespace-nowrap">[CAD: 2026.10-DMS-146]</span>
-                <span className="truncate ml-2 text-right">WC & BÀN HỌC BỐ TRÍ CUỐI HÀNH LANG B & D</span>
-              </div>
+                    <p className="text-xs font-semibold text-foreground">{comp.title}</p>
+                    <p className="text-[11px] text-muted-foreground">{comp.zone}</p>
+                    <div className="flex gap-1 mt-3">
+                      {comp.beds.map((b) => (
+                        <span key={b.id} className={`flex-1 h-2.5 rounded-sm ${
+                          b.status === "available" ? "bg-emerald-400" :
+                          b.status === "holding" ? "bg-amber-400" :
+                          b.status === "maintenance" ? "bg-red-400" :
+                          "bg-slate-300 dark:bg-slate-600"
+                        }`} />
+                      ))}
+                    </div>
+                  </button>
+                )
+              })}
             </div>
-          </div>
-        </div>
-
-        {/* COLUMN 3: DETAIL & RESERVATION HOLD DRAWER (3 COLS) */}
-        <div className="col-span-12 lg:col-span-3 flex flex-col gap-4">
-          {/* 15-Minute Countdown Timer Card */}
-          <div className="bg-primary text-white p-3.5 rounded-xl shadow-xs space-y-2">
-            <div className="flex items-center justify-between text-xs">
-              <span className="uppercase tracking-wider font-bold text-[#cee6ef] text-[10px] whitespace-nowrap">
-                Khóa Giữ Chỗ Tạm Thời
-              </span>
-              <Clock className="h-3.5 w-3.5 text-[#cee6ef] animate-pulse shrink-0" />
-            </div>
-
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-black font-mono tracking-tight text-white">
-                {formatTime(timeLeft)}
-              </span>
-              <span className="text-xs text-[#cee6ef] whitespace-nowrap">Còn lại</span>
-            </div>
-
-            {/* Progress bar of timer */}
-            <div className="w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
-              <div
-                className="bg-[#cee6ef] h-full transition-all duration-1000"
-                style={{ width: `${(timeLeft / 900) * 100}%` }}
-              ></div>
-            </div>
-
-            <p className="text-[11px] text-white/80 leading-normal pt-0.5">
-              Khóa độc quyền cho MSSV <strong>{user?.studentId || "SE182049"}</strong> (tự giải phóng sau 15p).
-            </p>
-          </div>
-
-          {/* Selected Bed Specifications */}
-          <div className="bg-white dark:bg-[#161e23] border border-border p-4 rounded-xl shadow-xs space-y-3">
-            <div className="flex items-center justify-between pb-2 border-b border-border">
-              <div>
-                <span className="text-[10px] uppercase font-bold text-muted-foreground block">
-                  Giường bạn đã chọn
-                </span>
-                <h4 className="font-bold text-sm text-foreground">{selectedBed.code}</h4>
-              </div>
-              <Badge variant="available" className="shrink-0 whitespace-nowrap">
-                {selectedBed.tier === "lower" ? "Tầng dưới" : "Tầng trên"}
-              </Badge>
-            </div>
-
-            <div className="space-y-1.5 text-xs">
-              <div className="flex items-center justify-between gap-2 text-muted-foreground">
-                <span className="whitespace-nowrap">Vị trí buồng:</span>
-                <span className="font-semibold text-foreground truncate text-right">
-                  Buồng {selectedCompartment} · P.{selectedRoom}
-                </span>
-              </div>
-              <div className="flex items-center justify-between gap-2 text-muted-foreground">
-                <span className="whitespace-nowrap">Tiện ích kèm:</span>
-                <span className="font-semibold text-foreground truncate text-right">Locker số + Đèn bàn</span>
-              </div>
-              <div className="flex items-center justify-between gap-2 text-muted-foreground">
-                <span className="whitespace-nowrap">Quy cách đệm:</span>
-                <span className="font-semibold text-foreground truncate text-right">1.0m × 2.0m Foam</span>
-              </div>
-              <div className="flex items-center justify-between gap-2 text-muted-foreground">
-                <span className="whitespace-nowrap">Thời hạn thuê:</span>
-                <span className="font-semibold text-foreground truncate text-right">Học kỳ 1 (5 Tháng)</span>
-              </div>
-            </div>
-
-            {/* Financial Breakdown */}
-            <div className="bg-[#f4f4ee] dark:bg-[#1c262c] p-3 rounded-xl space-y-2 text-xs border border-border">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-600 dark:text-slate-300 block">
-                Bảng Kê Chi Phí Kỳ 1
-              </span>
-              <div className="flex items-center justify-between gap-2 text-slate-600 dark:text-slate-300">
-                <span className="whitespace-nowrap">Tiền phòng (tháng 1):</span>
-                <span className="font-mono text-slate-900 dark:text-white font-semibold whitespace-nowrap">₫950,000</span>
-              </div>
-              <div className="flex items-center justify-between gap-2 text-slate-600 dark:text-slate-300">
-                <span className="whitespace-nowrap">Tiền cọc an ninh:</span>
-                <span className="font-mono text-slate-900 dark:text-white font-semibold whitespace-nowrap">₫1,000,000</span>
-              </div>
-              <div className="flex items-center justify-between gap-2 text-slate-600 dark:text-slate-300">
-                <span className="whitespace-nowrap">Tạm ứng điện nước:</span>
-                <span className="font-mono text-slate-900 dark:text-white font-semibold whitespace-nowrap">₫200,000</span>
-              </div>
-              <div className="pt-2 border-t border-border flex items-center justify-between gap-2 font-bold text-slate-900 dark:text-sky-300 text-xs">
-                <span className="whitespace-nowrap">Tổng thanh toán:</span>
-                <span className="font-mono text-primary dark:text-sky-400 font-black text-sm whitespace-nowrap">₫2,150,000</span>
-              </div>
-            </div>
-
-            {/* Payment Method Radio Options */}
-            <div className="space-y-1.5 pt-0.5">
-              <label className="text-[10px] uppercase font-bold tracking-wider text-slate-600 dark:text-slate-300 block">
-                Phương Thức Thanh Toán
-              </label>
-
-              {/* VietQR Option */}
-              <div
-                onClick={() => setPaymentMethod("vietqr")}
-                className={`flex items-center justify-between p-2.5 rounded-xl border cursor-pointer text-xs transition-all ${
-                  paymentMethod === "vietqr"
-                    ? "border-sky-500 bg-sky-500/10 shadow-2xs ring-1 ring-sky-500/30 dark:border-sky-400 dark:bg-sky-950/40 dark:ring-sky-400/40"
-                    : "border-border hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c]"
-                }`}
-              >
-                <div className="flex items-center gap-2 min-w-0">
-                  <input
-                    type="radio"
-                    name="pm"
-                    checked={paymentMethod === "vietqr"}
-                    onChange={() => setPaymentMethod("vietqr")}
-                    className="accent-sky-500 h-3.5 w-3.5 shrink-0 cursor-pointer"
-                  />
-                  <div className="min-w-0">
-                    <span className="font-bold text-slate-900 dark:text-white block text-xs truncate">
-                      VietQR NAPAS 24/7
-                    </span>
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block truncate">
-                      Tự động xác thực tức thì
-                    </span>
-                  </div>
-                </div>
-                <span className="shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-500/20 whitespace-nowrap ml-2">
-                  Tức thì
-                </span>
-              </div>
-
-              {/* VNPay Option */}
-              <div
-                onClick={() => setPaymentMethod("vnpay")}
-                className={`flex items-center justify-between p-2.5 rounded-xl border cursor-pointer text-xs transition-all ${
-                  paymentMethod === "vnpay"
-                    ? "border-sky-500 bg-sky-500/10 shadow-2xs ring-1 ring-sky-500/30 dark:border-sky-400 dark:bg-sky-950/40 dark:ring-sky-400/40"
-                    : "border-border hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c]"
-                }`}
-              >
-                <div className="flex items-center gap-2 min-w-0">
-                  <input
-                    type="radio"
-                    name="pm"
-                    checked={paymentMethod === "vnpay"}
-                    onChange={() => setPaymentMethod("vnpay")}
-                    className="accent-sky-500 h-3.5 w-3.5 shrink-0 cursor-pointer"
-                  />
-                  <div className="min-w-0">
-                    <span className="font-bold text-slate-900 dark:text-white block text-xs truncate">
-                      VNPay QR / Thẻ ATM
-                    </span>
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block truncate">
-                      Cổng ATM & Thẻ quốc tế
-                    </span>
-                  </div>
-                </div>
-                <span className="shrink-0 text-[10px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-200/60 dark:bg-slate-800 px-2 py-0.5 rounded-md whitespace-nowrap ml-2">
-                  Cổng phụ
-                </span>
-              </div>
-            </div>
-
-            {/* CTA Button */}
-            <Button
-              onClick={handleStartCheckout}
-              className="w-full h-10 bg-primary hover:bg-[#3a505b] dark:bg-sky-600 dark:hover:bg-sky-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs rounded-lg"
+            <button
+              onClick={() => completeStep(4)}
+              disabled={!selectedCompartment}
+              className="w-full py-3 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary/90 transition-colors disabled:opacity-40"
             >
-              <QrCode className="h-4 w-4 shrink-0" />
-              <span className="whitespace-nowrap">Tạo VietQR & Xác Nhận Giữ Chỗ</span>
-            </Button>
-
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 text-center leading-normal">
-              Tự động duyệt 0-chạm & cấp Hợp đồng điện tử PDF tức thì khi có báo Có.
-            </p>
+              Tiếp theo: Chọn Giường →
+            </button>
           </div>
-        </div>
+        )}
       </div>
 
-      {/* CHECKOUT & AUTO-APPROVAL POPUP MODAL */}
-      {showCheckoutModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-[#161e23] border border-border w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
-            {/* Modal Header */}
-            <div className="p-5 bg-[#f4f4ee] dark:bg-[#1c262c] border-b border-border flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="p-1.5 rounded-lg bg-primary text-white">
-                  <QrCode className="h-4 w-4" />
-                </span>
-                <div>
-                  <h3 className="font-bold text-sm text-foreground">
-                    Cổng Thanh Toán VietQR & Xét Duyệt Tự Động
-                  </h3>
-                  <p className="text-[11px] text-muted-foreground">
-                    Khóa giữ chỗ giường {selectedBed.code} · Hợp đồng K19
-                  </p>
+      {/* STEP 5 — GIƯỜNG + THANH TOÁN */}
+      <div className={`w-full bg-white dark:bg-[#161e23] border border-border rounded-xl shadow-xs overflow-hidden transition-opacity ${activeStep !== 5 && !completedSteps.has(5) ? "opacity-40" : activeStep !== 5 ? "opacity-55 hover:opacity-80" : ""}`}>
+        <StepHeader step={5} title="Chọn Vị Trí Giường & Thanh Toán" summary={selectedBed?.code || "Chưa chọn"} isActive={activeStep === 5} isDone={completedSteps.has(5) && activeStep !== 5} />
+        {activeStep === 5 && (
+          <div className="px-6 pb-6 border-t border-border space-y-5">
+            {/* Bed grid */}
+            {compartments.filter((c) => c.id === selectedCompartment).map((comp) => (
+              <div key={comp.id} className="pt-4">
+                <p className="text-xs font-bold text-foreground mb-1">Buồng {comp.id} · {comp.title}</p>
+                <p className="text-[11px] text-muted-foreground mb-4">Nhấp vào ô xanh lá để chọn giường:</p>
+                <div className="grid grid-cols-3 lg:grid-cols-6 gap-3">
+                  {comp.beds.map((bed) => {
+                    const isPick = selectedBed?.id === bed.id
+                    const isAvail = bed.status === "available"
+                    const isHold = bed.status === "holding"
+                    const isMaint = bed.status === "maintenance"
+                    return (
+                      <button
+                        key={bed.id}
+                        onClick={() => handleSelectBed(bed, comp.id)}
+                        disabled={!isAvail}
+                        className={`p-4 rounded-xl border flex flex-col items-center text-center gap-1.5 transition-all ${
+                          isPick
+                            ? "bg-primary text-white border-primary shadow-lg scale-105 ring-2 ring-primary ring-offset-2"
+                            : isAvail
+                            ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-700 hover:bg-emerald-100 cursor-pointer"
+                            : isHold
+                            ? "bg-amber-50 dark:bg-amber-950/20 border-amber-200 cursor-not-allowed opacity-60"
+                            : isMaint
+                            ? "bg-red-50 dark:bg-red-950/20 border-red-200 cursor-not-allowed opacity-60"
+                            : "bg-[#f4f4ee] dark:bg-[#1c262c] border-border cursor-not-allowed opacity-50"
+                        }`}
+                      >
+                        <span className={`material-symbols-outlined text-xl ${isPick ? "text-white" : isAvail ? "text-emerald-600" : "text-muted-foreground"}`}>
+                          {isPick ? "check_circle" : "single_bed"}
+                        </span>
+                        <span className={`font-mono font-bold text-sm ${isPick ? "text-white" : "text-foreground"}`}>{bed.slot}</span>
+                        <span className={`text-[10px] ${isPick ? "text-white/80" : "text-muted-foreground"}`}>
+                          {bed.tier === "lower" ? "Tầng dưới" : "Tầng trên"}
+                        </span>
+                        <span className={`text-[10px] font-semibold ${
+                          isPick ? "text-white/90" :
+                          isAvail ? "text-emerald-600 dark:text-emerald-400" :
+                          isHold ? "text-amber-600" :
+                          isMaint ? "text-red-600" : "text-muted-foreground"
+                        }`}>
+                          {isPick ? "Đang chọn" : isAvail ? "950k/th" : isHold ? `${bed.holdingTime} Giữ` : isMaint ? "Bảo trì" : "Đã ở"}
+                        </span>
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
-              <button
-                onClick={() => setShowCheckoutModal(false)}
-                className="text-muted-foreground hover:text-foreground text-sm p-1 rounded-md"
-              >
-                ✕
-              </button>
+            ))}
+
+            {/* Payment block */}
+            {selectedBed && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 pt-2">
+                {/* Left: Summary */}
+                <div className="space-y-4">
+                  {/* Timer */}
+                  {isLocked && (
+                    <div className="bg-primary text-white p-4 rounded-xl flex items-center justify-between gap-4">
+                      <div>
+                        <p className="text-[10px] uppercase font-bold text-white/70 tracking-wider">Khóa giữ chỗ tạm thời</p>
+                        <p className="font-black text-2xl font-mono mt-0.5">{formatTime(timeLeft)}</p>
+                      </div>
+                      <div className="text-right text-xs text-white/80">
+                        <p>MSSV: <strong>{user?.studentId || "SE182049"}</strong></p>
+                        <p className="text-white/60">Còn lại</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Bảng kê chi phí */}
+                  <div className="bg-[#f4f4ee] dark:bg-[#1c262c] rounded-xl p-4 space-y-2.5 border border-border text-sm">
+                    <div className="flex justify-between font-bold text-foreground border-b border-border pb-2">
+                      <span>Giường đã chọn:</span>
+                      <span className="text-primary dark:text-[#cee6ef] font-mono">{selectedBed.code}</span>
+                    </div>
+                    <div className="flex justify-between text-muted-foreground text-xs"><span>Tiền phòng tháng 1:</span><span className="font-mono font-semibold text-foreground">₫950,000</span></div>
+                    <div className="flex justify-between text-muted-foreground text-xs"><span>Tiền cọc an ninh:</span><span className="font-mono font-semibold text-foreground">₫1,000,000</span></div>
+                    <div className="flex justify-between text-muted-foreground text-xs"><span>Tạm ứng điện nước:</span><span className="font-mono font-semibold text-foreground">₫200,000</span></div>
+                    <div className="flex justify-between font-black text-base pt-2 border-t border-border">
+                      <span>Tổng thanh toán:</span>
+                      <span className="text-primary dark:text-sky-400 font-mono">₫2,150,000</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right: Payment method + CTA */}
+                <div className="space-y-3">
+                  <p className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Phương Thức Thanh Toán</p>
+                  {[
+                    { id: "vietqr" as const, label: "VietQR NAPAS 24/7", sub: "Tự động xác thực tức thì", badge: "Tức thì", color: "emerald" },
+                    { id: "vnpay" as const, label: "VNPay QR / Thẻ ATM", sub: "Cổng ATM & Thẻ quốc tế", badge: "Cổng phụ", color: "slate" },
+                  ].map((pm) => (
+                    <div
+                      key={pm.id}
+                      onClick={() => setPaymentMethod(pm.id)}
+                      className={`flex items-center justify-between p-3.5 rounded-xl border cursor-pointer text-sm transition-all ${
+                        paymentMethod === pm.id
+                          ? "border-sky-500 bg-sky-500/10 ring-1 ring-sky-500/30 dark:border-sky-400"
+                          : "border-border hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c]"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <input type="radio" name="pm" checked={paymentMethod === pm.id} onChange={() => setPaymentMethod(pm.id)} className="accent-sky-500 h-4 w-4 shrink-0" />
+                        <div>
+                          <p className="font-bold text-foreground">{pm.label}</p>
+                          <p className="text-[11px] text-muted-foreground">{pm.sub}</p>
+                        </div>
+                      </div>
+                      <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${pm.id === "vietqr" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400" : "bg-slate-100 text-slate-500 dark:bg-slate-800"}`}>{pm.badge}</span>
+                    </div>
+                  ))}
+
+                  <Button
+                    onClick={handleStartCheckout}
+                    className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-bold text-sm flex items-center justify-center gap-2 rounded-xl shadow-sm mt-2"
+                  >
+                    <QrCode className="h-5 w-5 shrink-0" />
+                    <span>Tạo VietQR &amp; Xác Nhận Giữ Chỗ</span>
+                  </Button>
+                  <p className="text-[11px] text-muted-foreground text-center">Tự động duyệt 0-chạm &amp; cấp Hợp đồng điện tử PDF tức thì.</p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* CHECKOUT MODAL */}
+      {showCheckoutModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-[#161e23] border border-border w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
+            <div className="p-5 bg-[#f4f4ee] dark:bg-[#1c262c] border-b border-border flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="p-2 rounded-lg bg-primary text-white"><QrCode className="h-4 w-4" /></span>
+                <div>
+                  <h3 className="font-bold text-sm text-foreground">Cổng Thanh Toán VietQR &amp; Xét Duyệt Tự Động</h3>
+                  <p className="text-[11px] text-muted-foreground">Khóa giữ chỗ giường {selectedBed?.code}</p>
+                </div>
+              </div>
+              <button onClick={() => setShowCheckoutModal(false)} className="text-muted-foreground hover:text-foreground p-1 rounded-md text-lg leading-none">✕</button>
             </div>
 
-            {/* Modal Body */}
             <div className="p-6 space-y-5">
               {checkoutStep === "qr" && (
                 <>
-                  <div className="flex flex-col items-center justify-center p-4 bg-white rounded-xl border border-border">
-                    {/* Dynamic QR Code graphic */}
-                    <div className="relative p-2 bg-white rounded-xl shadow-xs border border-gray-100">
-                      <img
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=DORM_BOOKING_${selectedBed.code}_${user?.studentId || "SE182049"}_2150000`}
-                        alt="VietQR Payment Code"
-                        className="w-48 h-48 rounded-lg"
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center p-1 border">
-                          <span className="font-bold text-[9px] text-primary">VIETQR</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mt-3 text-center space-y-1">
-                      <span className="text-xs font-bold text-primary dark:text-[#cee6ef]">
-                        Quét mã bằng app ngân hàng bất kỳ (NAPAS 24/7)
-                      </span>
-                      <p className="text-[11px] text-muted-foreground font-mono">
-                        Số tiền: <strong>2,150,000 VNĐ</strong> • Nội dung:{" "}
-                        <span className="bg-[#f4f4ee] px-1 py-0.5 rounded text-foreground font-semibold">
-                          KTX {user?.studentId || "SE182049"} {selectedBed.code}
-                        </span>
-                      </p>
-                    </div>
+                  <div className="flex flex-col items-center p-4 bg-white rounded-xl border border-border gap-3">
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=DORM_BOOKING_${selectedBed?.code}_${user?.studentId || "SE182049"}_2150000`}
+                      alt="VietQR" className="w-48 h-48 rounded-lg shadow-sm"
+                    />
+                    <p className="text-xs font-bold text-primary">Quét mã bằng app ngân hàng bất kỳ (NAPAS 24/7)</p>
+                    <p className="text-[11px] text-muted-foreground font-mono">
+                      Số tiền: <strong>2,150,000 VNĐ</strong> · Nội dung: <span className="bg-[#f4f4ee] px-1 rounded font-semibold text-foreground">KTX {user?.studentId || "SE182049"} {selectedBed?.code}</span>
+                    </p>
                   </div>
 
-                  <div className="bg-[#f4f4ee] dark:bg-[#1c262c] p-3.5 rounded-xl space-y-2 text-xs">
+                  <div className="bg-[#f4f4ee] dark:bg-[#1c262c] p-4 rounded-xl space-y-2 text-xs">
                     <div className="flex items-center gap-2 font-bold text-foreground">
                       <Zap className="h-4 w-4 text-amber-500" />
-                      <span>Cơ chế Tự Động Xét Duyệt 0-Chạm (Auto-Approval)</span>
+                      <span>Cơ chế Tự Động Xét Duyệt 0-Chạm</span>
                     </div>
-                    <ul className="space-y-1 text-[11px] text-muted-foreground">
-                      <li className="flex items-center gap-1.5">
-                        <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                        Đối soát giới tính: Nam khớp Tòa A
-                      </li>
-                      <li className="flex items-center gap-1.5">
-                        <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                        Tình trạng nợ cũ: 0 VNĐ (Đủ điều kiện xếp phòng)
-                      </li>
-                      <li className="flex items-center gap-1.5">
-                        <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                        Trạng thái sinh viên: Đang học chính quy K19
-                      </li>
-                    </ul>
+                    {["Đối soát giới tính: Nam khớp Tòa A", "Tình trạng nợ cũ: 0 VNĐ (Đủ điều kiện)", "Trạng thái sinh viên: Đang học chính quy K19"].map((t) => (
+                      <div key={t} className="flex items-center gap-1.5 text-muted-foreground">
+                        <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />{t}
+                      </div>
+                    ))}
                   </div>
 
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowCheckoutModal(false)}
-                      className="flex-1 text-xs"
-                    >
-                      Hủy bỏ
-                    </Button>
-                    <Button
-                      onClick={handleConfirmPayment}
-                      className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5"
-                    >
-                      <CheckCircle2 className="h-4 w-4" />
-                      <span>Mô Phỏng Thanh Toán Thành Công</span>
+                  <div className="flex gap-3">
+                    <Button variant="outline" onClick={() => setShowCheckoutModal(false)} className="flex-1 text-sm">Hủy bỏ</Button>
+                    <Button onClick={handleConfirmPayment} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm flex items-center justify-center gap-2">
+                      <CheckCircle2 className="h-4 w-4" />Mô Phỏng Thanh Toán
                     </Button>
                   </div>
                 </>
               )}
 
               {checkoutStep === "verifying" && (
-                <div className="py-8 flex flex-col items-center justify-center text-center space-y-4">
-                  <div className="relative">
-                    <div className="w-16 h-16 rounded-full border-4 border-primary/20 border-t-primary animate-spin"></div>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <Zap className="h-6 w-6 text-primary animate-pulse" />
-                    </div>
+                <div className="py-10 flex flex-col items-center gap-5">
+                  <div className="w-16 h-16 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
+                  <div className="text-center space-y-1">
+                    <h4 className="font-bold text-sm text-foreground">Auto-Approval Engine đang xử lý... ({autoApprovalProgress}%)</h4>
+                    <p className="text-xs text-muted-foreground max-w-xs">Kiểm tra đối soát số dư, khóa vĩnh viễn giường {selectedBed?.code} và khởi tạo Hợp đồng điện tử...</p>
                   </div>
-
-                  <div className="space-y-1">
-                    <h4 className="font-bold text-sm text-foreground">
-                      Auto-Approval Engine Đang Xử Lý... ({autoApprovalProgress}%)
-                    </h4>
-                    <p className="text-xs text-muted-foreground max-w-sm">
-                      Kiểm tra đối soát số dư ngân hàng, khóa vĩnh viễn giường {selectedBed.code} và khởi tạo Hợp đồng điện tử e-Contract PDF...
-                    </p>
+                  <div className="w-full bg-[#f4f4ee] dark:bg-[#1c262c] rounded-full h-2">
+                    <div className="bg-primary h-2 rounded-full transition-all duration-500" style={{ width: `${autoApprovalProgress}%` }} />
                   </div>
                 </div>
               )}
 
               {checkoutStep === "success" && (
-                <div className="py-4 flex flex-col items-center justify-center text-center space-y-4">
-                  <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
-                    <CheckCircle2 className="h-8 w-8" />
+                <div className="py-4 flex flex-col items-center gap-5 text-center">
+                  <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 flex items-center justify-center">
+                    <CheckCircle2 className="h-9 w-9" />
                   </div>
-
-                  <div className="space-y-1">
-                    <h4 className="font-bold text-base text-foreground">
-                      Đặt Giường Thành Công & Đã Phê Duyệt!
-                    </h4>
-                    <p className="text-xs text-muted-foreground">
-                      Mã hợp đồng: <strong className="font-mono text-primary">CTR-2026-A205-B03</strong>
-                    </p>
-                    <p className="text-xs text-muted-foreground max-w-sm">
-                      Bạn đã hoàn tất đăng ký giường <strong>{selectedBed.code}</strong>. Hợp đồng điện tử kèm biên nhận tiền cọc đã được lưu vào hồ sơ cá nhân.
-                    </p>
+                  <div>
+                    <h4 className="font-black text-lg text-foreground">Đặt Giường Thành Công!</h4>
+                    <p className="text-xs text-muted-foreground mt-1">Mã hợp đồng: <strong className="font-mono text-primary">CTR-2026-{selectedBed?.code?.replace(/-/g, "")}</strong></p>
+                    <p className="text-xs text-muted-foreground mt-2 max-w-sm">Trang <strong>Phòng Của Tôi</strong> đã được cập nhật với thông tin giường bạn vừa đặt.</p>
                   </div>
-
-                  <div className="p-3 bg-[#f4f4ee] dark:bg-[#1c262c] rounded-xl text-left w-full text-xs space-y-1">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Sinh viên:</span>
-                      <span className="font-semibold">{user?.fullName || "Nguyễn Hoàng Vinh"}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Phòng & Buồng:</span>
-                      <span className="font-semibold">Phòng {selectedRoom} - Buồng {selectedCompartment}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Ngày bắt đầu vào ở:</span>
-                      <span className="font-semibold">05/09/2026</span>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-2 w-full">
-                    <Button
-                      onClick={() => alert("Hợp đồng điện tử PDF đã được tải xuống máy!")}
-                      className="flex-1 bg-primary text-white text-xs font-bold flex items-center justify-center gap-1.5"
-                    >
-                      <Download className="h-4 w-4" />
-                      <span>Tải Hợp Đồng PDF</span>
+                  <div className="flex gap-3 w-full">
+                    <Button onClick={() => alert("Hợp đồng điện tử PDF đã được tải xuống!")} className="flex-1 bg-primary text-white text-sm font-bold flex items-center justify-center gap-2">
+                      <Download className="h-4 w-4" />Tải Hợp Đồng PDF
                     </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowCheckoutModal(false)}
-                      className="text-xs"
-                    >
-                      Đóng
-                    </Button>
+                    <Button variant="outline" onClick={() => setShowCheckoutModal(false)} className="text-sm">Đóng</Button>
                   </div>
                 </div>
               )}
