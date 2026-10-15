@@ -1,12 +1,13 @@
-"""Build dolly scrub sequence + mp4 clip from 3 real FPT dorm photos.
+"""Build dolly scrub sequence + mp4 clip from 4 real FPT dorm photos.
 
 Style follows the Gemini reference video: monotonic dolly-in (zoom toward
-center anchor), warm grade, 1280x720, 96 scrub frames + 10s 24fps mp4.
+center anchor), warm grade, 1280x720, 96 scrub frames + 20s 24fps mp4
+(5s per image, all 4 images).
 
-Input : staging-fpt-ktx/fpt1.jpg (1024x575), fpt2.jpg (2048x1150), fpt3.jpg (2048x1365)
+Input : staging-fpt-ktx/fpt1, fpt4, fpt5, fpt6
 Output: public/assets/dorm-cinematic/scrub-fpt/frame-001..096.jpg
         public/assets/dorm-cinematic/dorm-dolly-fpt.mp4
-        public/assets/dorm-cinematic/dorm-keyframe-fpt-{1,2,3}.jpg (gallery/cards)
+        public/assets/dorm-cinematic/dorm-keyframe-fpt-{1..4}.jpg (gallery/cards)
 """
 import pathlib
 
@@ -90,16 +91,15 @@ for i, idx in enumerate((12, 36, 60, 84), 1):
     frames[idx - 1].save(OUT / f"dorm-keyframe-fpt-{i}.jpg", quality=85)
 print("keyframes written")
 
-# mp4 clip 10s 24fps from the 96 frames (each held 2.5 ticks -> 240 frames)
+# mp4 clip: 5s per image x 4 images = 20s @24fps (480 frames).
+# Each of the 96 scrub frames held 5 ticks -> full sequence, all 4 images.
 import numpy as np
 
 clip_frames = []
 for fr in frames:
     for _ in range(5):
         clip_frames.append(np.asarray(fr))
-    if len(clip_frames) >= FPS * SECS:
-        break
-clip_frames = clip_frames[: FPS * SECS]
+SECS = len(clip_frames) // FPS
 ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
 out_mp4 = str(OUT / "dorm-dolly-fpt.mp4")
 iio.imwrite(out_mp4, clip_frames, fps=FPS, codec="libx264", quality=8,
