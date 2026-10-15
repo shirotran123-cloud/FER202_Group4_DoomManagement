@@ -24,7 +24,6 @@ export interface UserProfile {
   id: string
   fullName: string
   email: string
-  avatar: string
   role: UserRole
   roleTitle: string
   studentId?: string

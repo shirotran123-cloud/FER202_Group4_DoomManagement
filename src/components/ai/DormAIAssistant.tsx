@@ -1,20 +1,9 @@
 import React, { useState, useRef, useEffect } from "react"
-import {
-  Sparkles,
-  Send,
-  X,
-  Bot,
-  User,
-  Minimize2,
-  Maximize2,
-  Settings,
-  Key,
-  ExternalLink,
-  CheckCircle2,
-  AlertCircle,
-  RotateCcw,
-} from "lucide-react"
+import { answerDormQuestion, moderateText } from "@/lib/dorm-ops"
+import { Sparkles, Send, X, Bot, User, Minimize2, Maximize2, Settings, Key, ExternalLink, CircleAlert, RotateCcw } from "lucide-react"
 
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 interface ChatMessage {
   id: string
   sender: "ai" | "user"
@@ -28,7 +17,7 @@ const INITIAL_MESSAGES: ChatMessage[] = [
   {
     id: "msg-1",
     sender: "ai",
-    text: "Xin chào! Mình là DomaAI - Trợ lý Ký túc xá FPT University được trang bị Google Gemini LLM. Mình có thể giải đáp chi tiết mọi vấn đề:\n\n• Chẩn đoán sự cố điện nước & quy trình báo hỏng\n• Tra cứu quy định giới nghiêm 23:00, thủ tục xin về muộn\n• Tư vấn chọn phòng, buồng, tầng lầu và vị trí giường\n• Giải thích thuật toán chia tiền điện nước và thanh toán VietQR",
+    text: "Xin chào! Mình là DomaAI - trợ lý Ký túc xá FPT University. Mình hỗ trợ:\n\n• Chẩn đoán sự cố điện nước & quy trình báo hỏng\n• Tra cứu quy định giới nghiêm 23:00, thủ tục xin về muộn\n• Tư vấn chọn phòng, buồng, tầng lầu và vị trí giường\n• Giải thích thuật toán chia tiền điện nước và thanh toán VietQR",
     timestamp: "Vừa xong",
     suggestions: [
       "Quy định giới nghiêm 23h và cách xin về muộn?",
@@ -42,36 +31,36 @@ const INITIAL_MESSAGES: ChatMessage[] = [
 const SYSTEM_INSTRUCTION = `Bạn là DomaAI - Trợ lý Ký túc xá thông minh của Đại học FPT (Hệ thống Quản lý Ký túc xá DMS - Dormitory Management System).
 
 NGHIỆP VỤ & QUY TẮC KÝ TÚC XÁ FPT (SRS & THỰC TẾ):
-1. GIỚI NGHIÊM & AN NINH (UC-23, UC-24):
+1. GIỚI NGHIÊM & AN NINH:
 - Giờ giới nghiêm: Cổng KTX đóng lúc 23:00 hàng ngày.
 - Xin giấy về muộn: Sinh viên nộp đơn trực tuyến trước 21:00 qua mục 'Giới nghiêm & Ra vào'. Được miễn trừ tối đa 3 lần/học kỳ cho lý do học nhóm, làm thêm ca đêm.
 - Vi phạm về muộn không xin phép: Trừ 5 điểm rèn luyện (demerit points). Vi phạm 2 lần sẽ gửi cảnh cáo về phụ huynh; 3 lần sẽ bị xem xét đình chỉ lưu trú KTX.
 - Hotline bảo vệ trực ban 24/7: 1900 6868.
 
-2. MÔ HÌNH PHÒNG & GIƯỜNG 1:4:6 (UC-09, UC-10):
+2. MÔ HÌNH PHÒNG & GIƯỜNG 1:4:6:
 - Cấu trúc chuẩn: 1 Phòng = 4 Buồng (A, B, C, D); 1 Buồng = 6 Giường (G01 - G06), tổng 24 giường/phòng.
 - Giường tầng dưới (Lower): G01, G03, G05 (tiện leo trèo, giá 950.000đ/tháng).
 - Giường tầng trên (Upper): G02, G04, G06 (yên tĩnh, riêng tư, sạch sẽ, giá 950.000đ/tháng).
 - Khóa giữ chỗ: Hệ thống giữ chỗ tối đa 15 phút đếm ngược khi sinh viên chọn giường để hoàn tất thanh toán qua VietQR.
 
-3. BÁO HỎNG & BẢO TRÌ (UC-20, UC-21, UC-22):
+3. BÁO HỎNG & BẢO TRÌ:
 - Báo sự cố qua mục 'Báo hỏng thiết bị', có đính kèm ảnh chụp hiện trạng.
 - Mức độ Khẩn cấp (chập điện, cháy nổ, vỡ đường ống nước): Kỹ thuật viên xử lý trong vòng 2 giờ. Cần dặn sinh viên ngắt cầu dao (Aptomat) ngay lập tức.
 - Mức độ Tiêu chuẩn (hỏng điều hòa, bóng đèn, quạt trần): Xử lý trong 24 giờ.
 - Mức độ Thấp (bản lề kêu, khóa tủ lỏng): Xử lý trong 48 giờ.
 
-4. ĐIỆN NƯỚC & THANH TOÁN (UC-16, UC-17, UC-18):
+4. ĐIỆN NƯỚC & THANH TOÁN:
 - Chốt chỉ số công tơ vào ngày 25 hàng tháng.
 - Công thức chia tiền: Thuật toán Total / N (tổng tiền điện + nước + vệ sinh chia đều cho số sinh viên thực tế trong phòng).
 - Thanh toán: Hỗ trợ mã VietQR NAPAS 24/7 động tự động điền sẵn số tiền và nội dung 'DIENNUOC [Mã phòng] [MSSV]'.
 
-5. HỢP ĐỒNG & NHẬN/TRẢ PHÒNG (UC-14, UC-15):
+5. HỢP ĐỒNG & NHẬN/TRẢ PHÒNG:
 - Tiền cọc an ninh: 1.000.000đ, được hoàn trả 100% khi thanh lý hợp đồng và nghiệm thu phòng không hư hại.
 - Biên bản bàn giao thiết bị được ký số hóa điện tử.
 
 PHONG CÁCH TRẢ LỜI:
 - Trả lời bằng tiếng Việt lịch sự, thân thiện, rõ ràng, mang phong cách trợ lý KTX FPT chuyên nghiệp.
-- Định dạng Markdown sinh động (in đậm từ khóa, gạch đầu dòng rõ ràng, dùng emoji thích hợp).
+- Định dạng Markdown rõ ràng (in đậm từ khóa, gạch đầu dòng). Không dùng emoji.
 - Luôn trả lời chính xác, đi thẳng vào câu hỏi của sinh viên/cán bộ.`
 
 export const DormAIAssistant: React.FC = () => {
@@ -82,6 +71,11 @@ export const DormAIAssistant: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false)
   const [messages, setMessages] = useState<ChatMessage[]>(INITIAL_MESSAGES)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const idSeqRef = useRef(0)
+  const nextMsgId = (prefix: string) => {
+    idSeqRef.current += 1
+    return `${prefix}-${idSeqRef.current}`
+  }
 
   // API Key handling
   const [apiKey, setApiKey] = useState<string>(() => {
@@ -184,7 +178,13 @@ export const DormAIAssistant: React.FC = () => {
   }
 
   // Local fallback response when no API key or network error
+  // Rule-based dorm brain (dorm-ops) + server RAG endpoint when reachable.
   const getLocalResponse = (query: string): string => {
+    const mod = moderateText(query)
+    if (!mod.ok) {
+      return "Nội dung của bạn bị chặn bởi kiểm duyệt tự động (mã: " + mod.reason + "). Vui lòng diễn đạt lại lịch sự."
+    }
+    const local = answerDormQuestion(query)
     const lower = query.toLowerCase()
 
     if (
@@ -223,7 +223,7 @@ export const DormAIAssistant: React.FC = () => {
       lower.includes("tầng")
     ) {
       return (
-        "🏢 **GỢI Ý LỰA CHỌN PHÒNG & GIƯỜNG (MÔ HÌNH 1:4:6):**\n" +
+        "**GỢI Ý LỰA CHỌN PHÒNG & GIƯỜNG (MÔ HÌNH 1:4:6):**\n" +
         "• Nếu bạn thích yên tĩnh để tự học: Nên chọn các phòng ở **Tầng 4 hoặc Tầng 5** (xa sảnh sinh hoạt chung).\n" +
         "• Vị trí giường: Giường tầng dưới (**G01, G03, G05**) thuận tiện leo trèo; Giường tầng trên (**G02, G04, G06**) riêng tư hơn và ít bị bụi.\n" +
         "• Hiện tại **Phòng A205 Buồng B** còn trống giường **G03** tầng dưới rất thoáng mát gần cửa sổ!"
@@ -237,7 +237,7 @@ export const DormAIAssistant: React.FC = () => {
       lower.includes("vietqr")
     ) {
       return (
-        "⚡ **CƠ CHẾ TÍNH TIỀN ĐIỆN NƯỚC (AUTO-SPLIT TOTAL / N):**\n" +
+        "**CƠ CHẾ TÍNH TIỀN ĐIỆN NƯỚC (AUTO-SPLIT TOTAL / N):**\n" +
         "• Điện năng và nước sinh hoạt được công tơ ghi nhận ngày 25 hàng tháng.\n" +
         "• Chi phí được tính theo công thức: (Tổng tiền điện + nước + vệ sinh) chia đều cho số sinh viên trong phòng.\n" +
         "• Bạn có thể thanh toán tức thì qua **VietQR Quickpay** với nội dung tự động điền sẵn mã phòng và MSSV."
@@ -245,7 +245,8 @@ export const DormAIAssistant: React.FC = () => {
     }
 
     return (
-      `Cảm ơn câu hỏi của bạn về "${query}".\n\n` +
+      local +
+      `\n\nCảm ơn câu hỏi của bạn về "${query}".\n\n` +
       `💡 **Mẹo:** Bạn có thể bấm vào biểu tượng ⚙️ (Cài đặt) ở góc trên Chat Box và nhập **Google Gemini API Key miễn phí** để kích hoạt AI trả lời thông minh không giới hạn mọi câu hỏi phức tạp!`
     )
   }
@@ -255,7 +256,7 @@ export const DormAIAssistant: React.FC = () => {
     if (!query.trim()) return
 
     const userMsg: ChatMessage = {
-      id: `user-${Date.now()}`,
+      id: nextMsgId("user"),
       sender: "user",
       text: query,
       timestamp: new Date().toLocaleTimeString("vi-VN", {
@@ -291,7 +292,7 @@ export const DormAIAssistant: React.FC = () => {
       }
 
       const aiMsg: ChatMessage = {
-        id: `ai-${Date.now()}`,
+        id: nextMsgId("ai"),
         sender: "ai",
         text: aiResponseText,
         timestamp: new Date().toLocaleTimeString("vi-VN", {
@@ -316,92 +317,80 @@ export const DormAIAssistant: React.FC = () => {
     <>
       {/* Floating Action Trigger Button */}
       {!isOpen && (
-        <button
-          onClick={() => {
+        <Button className="fixed bottom-6 right-6 z-40 flex shadow-xl shadow-primary hover:scale-105" onClick={() => {
             setIsOpen(true)
             setIsMinimized(false)
           }}
-          className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 px-4 py-3 rounded-full bg-slate-900 dark:bg-sky-950 text-white shadow-2xl hover:bg-slate-800 dark:hover:bg-sky-900 transition-all hover:scale-105 border border-slate-700 dark:border-sky-700 group"
-          aria-label="Mở trợ lý AI KTX"
-        >
+          
+          aria-label="Mở trợ lý AI KTX">
           <div className="relative">
-            <Bot className="h-5 w-5 text-sky-400" />
-            <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <Bot className="h-5 w-5" />
+            <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-success animate-ping"></span>
           </div>
-          <span className="text-xs font-bold tracking-wide">Trợ lý AI KTX</span>
+          <span className="text-[13px] font-bold">Trợ lý AI KTX</span>
           <span
-            className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
-              apiKey
-                ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
-                : "bg-blue-500/20 text-blue-300 border-blue-500/30"
+            className={`rounded-lg px-2 py-0.5 text-[10px] font-bold ${
+              apiKey ? "bg-white/20 text-white" : "bg-primary/30 text-white"
             }`}
           >
-            {apiKey ? "Gemini LLM" : "Chế độ mẫu"}
+            {apiKey ? "Gemini" : "Offline"}
           </span>
-        </button>
+        </Button>
       )}
 
       {/* AI Chat Window */}
       {isOpen && (
         <div
-          className={`fixed z-50 bg-white dark:bg-[#161e23] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col transition-all duration-200 ${
+          className={`fixed z-50 flex flex-col rounded-3xl border border-border bg-card shadow-2xl transition-all duration-200 ${
             isMinimized
               ? "bottom-6 right-6 w-80 h-14"
               : "bottom-6 right-6 w-[94vw] sm:w-[440px] h-[600px] max-h-[88vh]"
           }`}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 bg-slate-900 text-white rounded-t-2xl border-b border-slate-800 shrink-0">
+          <div className="flex shrink-0 items-center justify-between rounded-t-3xl bg-gradient-to-r from-primary to-primary px-4 py-3 text-white">
             <div className="flex items-center gap-2.5">
-              <div className="h-8 w-8 rounded-xl bg-sky-600 flex items-center justify-center text-white shadow-xs">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/20 text-white">
                 <Sparkles className="h-4 w-4" />
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="font-bold text-xs tracking-tight">DomaAI Assistant</span>
+                  <span className="text-[13px] font-bold tracking-tight">DomaAI Assistant</span>
                   <span
-                    className={`w-2 h-2 rounded-full ${
-                      apiKey ? "bg-emerald-400" : "bg-amber-400"
-                    }`}
-                    title={apiKey ? "Đã kết nối Gemini API" : "Chưa có API Key"}
-                  ></span>
-                  <span
-                    className={`text-[9px] font-bold px-1.5 py-0.2 rounded ${
-                      apiKey
-                        ? "bg-emerald-900/60 text-emerald-300 border border-emerald-700/50"
-                        : "bg-amber-900/60 text-amber-300 border border-amber-700/50"
+                    className={`rounded-lg px-1.5 py-0.5 text-[10px] font-bold ${
+                      apiKey ? "bg-white/20 text-white" : "bg-black/20 text-white"
                     }`}
                   >
-                    {apiKey ? "Gemini 2.5 Flash" : "Local Mode"}
+                    {apiKey ? "Gemini" : "Offline"}
                   </span>
                 </div>
-                <span className="text-[10px] text-slate-400 block">
-                  {apiKey ? "Google Gemini LLM Trực Tuyến" : "Chưa nhập API Key"}
+                <span className="block text-[11px] text-white/75">
+                  {apiKey ? "Trực tuyến" : "Chế độ cơ bản, vẫn trả lời nghiệp vụ KTX"}
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-1 text-slate-400">
+            <div className="flex items-center gap-1">
               <button
                 onClick={() => {
                   setTempKeyInput(apiKey)
                   setShowSettings(!showSettings)
                 }}
-                className="p-1.5 hover:text-white hover:bg-slate-800 rounded-md transition-colors"
+                className="rounded-lg p-1.5 transition-colors hover:bg-white/15"
                 title="Cài đặt API Key Gemini"
               >
                 <Settings className="h-4 w-4" />
               </button>
               <button
                 onClick={handleResetChat}
-                className="p-1.5 hover:text-white hover:bg-slate-800 rounded-md transition-colors"
+                className="rounded-lg p-1.5 transition-colors hover:bg-white/15"
                 title="Đặt lại đoạn chat"
               >
                 <RotateCcw className="h-3.5 w-3.5" />
               </button>
               <button
                 onClick={() => setIsMinimized(!isMinimized)}
-                className="p-1.5 hover:text-white hover:bg-slate-800 rounded-md transition-colors"
+                className="rounded-lg p-1.5 transition-colors hover:bg-white/15"
                 title={isMinimized ? "Phóng to" : "Thu nhỏ"}
               >
                 {isMinimized ? (
@@ -412,7 +401,7 @@ export const DormAIAssistant: React.FC = () => {
               </button>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1.5 hover:text-white hover:bg-slate-800 rounded-md transition-colors"
+                className="rounded-lg p-1.5 transition-colors hover:bg-white/15"
                 title="Đóng chat"
               >
                 <X className="h-4 w-4" />
@@ -424,33 +413,32 @@ export const DormAIAssistant: React.FC = () => {
             <>
               {/* API Key Settings Modal/Panel */}
               {showSettings && (
-                <div className="p-4 bg-slate-900 border-b border-slate-800 text-white text-xs space-y-3 animate-in fade-in">
+                <div className="space-y-3 border-b border-border bg-muted/60 p-4 text-xs animate-in fade-in">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 font-bold text-sky-400">
+                    <div className="flex items-center gap-2 font-bold text-primary">
                       <Key className="h-4 w-4" />
-                      <span>Cấu Hình Google Gemini API Key</span>
+                      <span>Gemini API Key</span>
                     </div>
                     <button
                       onClick={() => setShowSettings(false)}
-                      className="text-slate-400 hover:text-white"
+                      className="text-muted-foreground hover:text-foreground"
                     >
-                      ✕
+                      <X className="h-4 w-4" />
                     </button>
                   </div>
 
-                  <p className="text-[11px] text-slate-300 leading-relaxed">
-                    Nhập API Key để kích hoạt trí tuệ nhân tạo Gemini phản hồi thông minh, linh
-                    hoạt mọi câu hỏi theo thời gian thực (lưu an toàn trên trình duyệt của bạn).
+                  <p className="text-[11px] leading-relaxed text-muted-foreground">
+                    Nhập API Key để kích hoạt Gemini trả lời thông minh theo thời gian thực (lưu trên trình duyệt của bạn).
                   </p>
 
                   <form onSubmit={handleSaveApiKey} className="space-y-2.5">
                     <div>
-                      <input
+                      <Input
                         type="password"
                         value={tempKeyInput}
                         onChange={(e) => setTempKeyInput(e.target.value)}
                         placeholder="Dán AIzaSy... vào đây"
-                        className="w-full px-3 py-2 text-xs rounded-lg bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 focus:outline-none focus:border-sky-500 font-mono"
+                        className="font-mono"
                       />
                     </div>
 
@@ -459,7 +447,7 @@ export const DormAIAssistant: React.FC = () => {
                         href="https://aistudio.google.com/app/apikey"
                         target="_blank"
                         rel="noreferrer"
-                        className="text-[11px] text-sky-400 hover:underline flex items-center gap-1 font-medium"
+                        className="flex items-center gap-1 text-[11px] font-medium text-primary hover:underline"
                       >
                         <span>Lấy key miễn phí tại Google AI Studio</span>
                         <ExternalLink className="h-3 w-3" />
@@ -475,17 +463,14 @@ export const DormAIAssistant: React.FC = () => {
                               localStorage.removeItem("doma_gemini_api_key")
                               setShowSettings(false)
                             }}
-                            className="px-2.5 py-1 rounded bg-slate-800 hover:bg-red-950 text-red-400 border border-slate-700 text-[11px] font-semibold"
+                            className="rounded-lg border border-border px-2.5 py-1 text-[11px] font-semibold text-danger"
                           >
                             Xóa Key
                           </button>
                         )}
-                        <button
-                          type="submit"
-                          className="px-3.5 py-1 rounded bg-sky-600 hover:bg-sky-500 text-white font-bold text-[11px]"
-                        >
-                          Lưu Cài Đặt
-                        </button>
+                        <Button className="py-1" type="submit">
+                          Lưu
+                        </Button>
                       </div>
                     </div>
                   </form>
@@ -494,17 +479,17 @@ export const DormAIAssistant: React.FC = () => {
 
               {/* Notice Banner if no API key is set */}
               {!apiKey && !showSettings && (
-                <div className="bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-900/60 px-3.5 py-2 text-[11px] flex items-center justify-between text-amber-800 dark:text-amber-300">
+                <div className="flex items-center justify-between border-b border-primary/20 bg-primary-soft px-3.5 py-2 text-[11px] text-primary-soft-foreground dark:bg-[#2c2111] dark:text-primary">
                   <div className="flex items-center gap-1.5 truncate pr-2">
-                    <AlertCircle className="h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-400" />
-                    <span>Đang ở chế độ mẫu. Nhập API Key để trả lời chuẩn 100%.</span>
+                    <CircleAlert className="h-3.5 w-3.5 shrink-0" />
+                    <span>Chế độ cơ bản. Nhập API Key để dùng Gemini.</span>
                   </div>
                   <button
                     onClick={() => {
                       setTempKeyInput(apiKey)
                       setShowSettings(true)
                     }}
-                    className="font-bold underline shrink-0 hover:text-amber-950 dark:hover:text-amber-200"
+                    className="shrink-0 font-bold underline"
                   >
                     Nhập Key
                   </button>
@@ -512,7 +497,7 @@ export const DormAIAssistant: React.FC = () => {
               )}
 
               {/* Message History Body */}
-              <div className="flex-1 p-4 overflow-y-auto space-y-3.5 bg-slate-50 dark:bg-[#111827] text-slate-800 dark:text-slate-100 text-xs">
+              <div className="flex-1 space-y-3.5 overflow-y-auto bg-background p-4 text-xs">
                 {messages.map((msg) => (
                   <div
                     key={msg.id}
@@ -526,10 +511,10 @@ export const DormAIAssistant: React.FC = () => {
                       }`}
                     >
                       <div
-                        className={`h-7 w-7 rounded-lg shrink-0 flex items-center justify-center text-xs font-bold ${
+                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
                           msg.sender === "user"
-                            ? "bg-slate-900 dark:bg-sky-600 text-white"
-                            : "bg-sky-600 dark:bg-sky-500 text-white"
+                            ? "bg-foreground text-background"
+                            : "bg-primary text-white"
                         }`}
                       >
                         {msg.sender === "user" ? (
@@ -540,16 +525,16 @@ export const DormAIAssistant: React.FC = () => {
                       </div>
 
                       <div
-                        className={`p-3 rounded-2xl leading-relaxed whitespace-pre-line text-xs ${
+                        className={`whitespace-pre-line rounded-2xl p-3 text-[13px] leading-relaxed ${
                           msg.sender === "user"
-                            ? "bg-slate-900 dark:bg-sky-600 text-white rounded-tr-xs"
-                            : "bg-white dark:bg-[#1c262c] text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-800 shadow-2xs rounded-tl-xs"
+                            ? "bg-primary text-white"
+                            : "border border-border bg-card"
                         }`}
                       >
                         {msg.text}
                       </div>
                     </div>
-                    <span className="text-[10px] text-slate-400 mt-1 px-9 font-mono">
+                    <span className="mt-1 px-9 font-mono text-[10px] text-muted-foreground">
                       {msg.timestamp}
                     </span>
 
@@ -560,7 +545,7 @@ export const DormAIAssistant: React.FC = () => {
                           <button
                             key={i}
                             onClick={() => handleSend(sug)}
-                            className="px-2.5 py-1 text-[11px] font-medium rounded-full bg-white dark:bg-[#1c262c] border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-sky-50 dark:hover:bg-sky-950 hover:border-sky-300 dark:hover:border-sky-700 hover:text-sky-700 dark:hover:text-sky-300 transition-colors shadow-2xs"
+                            className="rounded-full border border-border bg-card px-2.5 py-1 text-[11px] font-medium transition-colors hover:border-primary/40 hover:bg-primary-soft hover:text-primary-soft-foreground"
                           >
                             {sug}
                           </button>
@@ -571,11 +556,11 @@ export const DormAIAssistant: React.FC = () => {
                 ))}
 
                 {isTyping && (
-                  <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 pl-2">
-                    <Bot className="h-4 w-4 text-sky-600 animate-spin" />
+                  <div className="flex items-center gap-2 pl-2 text-muted-foreground">
+                    <Bot className="h-4 w-4 animate-spin text-primary" />
                     <span className="text-xs italic">
                       {apiKey
-                        ? "Gemini đang suy nghĩ & soạn câu trả lời chuẩn..."
+                        ? "Gemini đang soạn câu trả lời..."
                         : "DomaAI đang trả lời..."}
                     </span>
                   </div>
@@ -584,7 +569,7 @@ export const DormAIAssistant: React.FC = () => {
               </div>
 
               {/* Chat Input Footer */}
-              <div className="p-3 bg-white dark:bg-[#161e23] border-t border-slate-200 dark:border-slate-800 shrink-0">
+              <div className="shrink-0 border-t border-border bg-card p-3">
                 <form
                   onSubmit={(e) => {
                     e.preventDefault()
@@ -592,21 +577,19 @@ export const DormAIAssistant: React.FC = () => {
                   }}
                   className="flex items-center gap-2"
                 >
-                  <input
+                  <Input
                     type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    placeholder="Hỏi bất kỳ điều gì về KTX (quy định, phòng, điện nước...)..."
-                    className="flex-1 px-3.5 py-2 text-xs rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-sky-500 transition-colors"
+                    placeholder="Hỏi về KTX: nội quy, phòng, điện nước..."
+                    className="flex-1 bg-muted/60 text-[13px] focus:bg-card"
                   />
-                  <button
-                    type="submit"
+                  <Button className="flex h-10 w-10 transition-transform hover:scale-105 disabled:opacity-40" type="submit"
                     disabled={!input.trim() || isTyping}
-                    className="h-8 w-8 rounded-xl bg-sky-600 hover:bg-sky-500 disabled:opacity-40 text-white flex items-center justify-center transition-colors shrink-0 shadow-xs"
-                    title="Gửi câu hỏi"
-                  >
-                    <Send className="h-3.5 w-3.5" />
-                  </button>
+                    
+                    title="Gửi câu hỏi">
+                    <Send className="h-4 w-4" />
+                  </Button>
                 </form>
               </div>
             </>

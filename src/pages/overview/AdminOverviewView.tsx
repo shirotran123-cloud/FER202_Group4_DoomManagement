@@ -7,23 +7,11 @@ import { INITIAL_MAINTENANCE_TICKETS } from "@/data/mockMaintenance"
 import type { CurfewRequest } from "@/types/curfew"
 import type { MaintenanceTicket } from "@/types/maintenance"
 import type { ResidentTemporaryRecord } from "@/types/dashboard"
-import {
-  Users,
-  FileText,
-  Clock,
-  Wrench,
-  Search,
-  Building2,
-  ArrowRight,
-  ShieldCheck,
-  Filter,
-  Bed,
-  Check,
-  X,
-  Sparkles,
-  ExternalLink,
-} from "lucide-react"
+import { Users, FileText, Clock, Wrench, Search, Building2, ArrowRight, ShieldCheck, Filter, BedDouble, Check, X, Sparkles, ExternalLink } from "lucide-react"
 
+import { Input } from "@/components/ui/input"
+import { Select } from "@/components/ui/select"
+import { Button } from "@/components/ui/button"
 const STORAGE_KEY_CURFEW_REQS = "dms_curfew_requests_v1"
 const STORAGE_KEY_TICKETS = "dms_maintenance_tickets_v1"
 
@@ -108,20 +96,20 @@ export const AdminOverviewView: React.FC = () => {
       {/* Toast Alert */}
       {toastMessage && (
         <div className="fixed top-20 right-6 z-50 flex items-center gap-2 rounded-2xl bg-foreground text-background px-4 py-3 shadow-xl text-xs font-semibold animate-in fade-in slide-in-from-top-4">
-          <Sparkles className="h-4 w-4 text-amber-400 shrink-0" />
+          <Sparkles className="h-4 w-4 text-primary shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}
 
       {/* Admin Welcome & Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#233944] via-[#2c4755] to-[#1c2e37] text-white p-6 sm:p-8 shadow-md">
-        <div className="absolute -right-20 -top-20 w-80 h-80 rounded-full bg-[#cee6ef]/10 blur-3xl pointer-events-none" />
-        <div className="absolute right-40 -bottom-20 w-60 h-60 rounded-full bg-orange-500/10 blur-2xl pointer-events-none" />
+      <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-primary to-primary p-6 text-primary-foreground shadow-md sm:p-8">
+        <div className="absolute -right-20 -top-20 pointer-events-none h-80 w-80 rounded-full bg-white/10 blur-3xl" />
+        <div className="absolute right-40 -bottom-20 w-60 h-60 rounded-full bg-primary/10 blur-2xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#cee6ef]/20 text-[#cee6ef] text-xs font-semibold backdrop-blur-md border border-white/10">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-white backdrop-blur-md">
                 <ShieldCheck className="h-3.5 w-3.5" />
                 Quản Trị Viên Hệ Thống DMS
               </span>
@@ -132,7 +120,7 @@ export const AdminOverviewView: React.FC = () => {
 
             <div>
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-                Tổng Quan Điều Hành Quản Trị Ký Túc Xá 👋
+                Tổng Quan Điều Hành Ký Túc Xá
               </h1>
               <p className="text-sm text-white/80 mt-1 max-w-2xl leading-relaxed">
                 Tra cứu danh bạ sinh viên nội trú, giám sát tình trạng lưu trú và trực tiếp phê duyệt đơn từ, yêu cầu học viên toàn trường.
@@ -152,7 +140,7 @@ export const AdminOverviewView: React.FC = () => {
 
             <Link
               to="/curfew"
-              className="px-4 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all"
+              className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-primary"
             >
               <Clock className="h-4 w-4" />
               <span>Cổng Giới Nghiêm 23h</span>
@@ -170,7 +158,7 @@ export const AdminOverviewView: React.FC = () => {
               <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold">
                 Sinh Viên Đang Ở
               </span>
-              <div className="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-600">
+              <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary-soft-foreground">
                 <Users className="h-5 w-5" />
               </div>
             </div>
@@ -184,7 +172,7 @@ export const AdminOverviewView: React.FC = () => {
 
           <div className="mt-4 pt-3 border-t border-border/80 flex items-center justify-between text-xs">
             <span className="text-muted-foreground">Còn trống:</span>
-            <span className="font-bold text-emerald-600">{MOCK_OCCUPANCY_STATS.availableBeds} Giường</span>
+            <span className="font-bold text-success-soft-foreground">{MOCK_OCCUPANCY_STATS.availableBeds} Giường</span>
           </div>
         </div>
 
@@ -195,11 +183,11 @@ export const AdminOverviewView: React.FC = () => {
               <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold">
                 Yêu Cầu & Đơn Chờ Duyệt
               </span>
-              <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600">
+              <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary-soft-foreground">
                 <FileText className="h-5 w-5" />
               </div>
             </div>
-            <div className="text-2xl font-black text-amber-600">
+            <div className="text-2xl font-black text-primary-soft-foreground">
               {totalPendingRequests} <span className="text-sm font-normal text-muted-foreground">hồ sơ</span>
             </div>
             <div className="text-xs text-muted-foreground mt-1">
@@ -214,7 +202,7 @@ export const AdminOverviewView: React.FC = () => {
                 setActiveTab("REQUESTS")
                 setRequestStatusFilter("PENDING")
               }}
-              className="font-bold text-amber-600 hover:underline flex items-center gap-1"
+              className="font-bold text-primary-soft-foreground hover:underline flex items-center gap-1"
             >
               <span>Xem & Duyệt ngay</span>
               <ArrowRight className="h-3 w-3" />
@@ -229,7 +217,7 @@ export const AdminOverviewView: React.FC = () => {
               <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold">
                 Sự Cố Kỹ Thuật Đang Xử Lý
               </span>
-              <div className="w-9 h-9 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-600">
+              <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary-soft-foreground">
                 <Wrench className="h-5 w-5" />
               </div>
             </div>
@@ -244,7 +232,7 @@ export const AdminOverviewView: React.FC = () => {
 
           <div className="mt-4 pt-3 border-t border-border/80 flex items-center justify-between text-xs">
             <span className="text-muted-foreground">Đã hoàn thành:</span>
-            <span className="font-bold text-emerald-600">
+            <span className="font-bold text-success-soft-foreground">
               {maintenanceTickets.filter((t) => t.status === "CLOSED").length} phiếu
             </span>
           </div>
@@ -257,7 +245,7 @@ export const AdminOverviewView: React.FC = () => {
               <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold">
                 Kiểm Soát Giới Nghiêm 23:00
               </span>
-              <div className="w-9 h-9 rounded-xl bg-red-500/10 flex items-center justify-center text-red-600">
+              <div className="w-9 h-9 rounded-xl bg-danger/10 flex items-center justify-center text-danger-soft-foreground">
                 <Clock className="h-5 w-5" />
               </div>
             </div>
@@ -272,8 +260,8 @@ export const AdminOverviewView: React.FC = () => {
 
           <div className="mt-4 pt-3 border-t border-border/80 flex items-center justify-between text-xs">
             <span className="text-muted-foreground">Trạng thái cổng:</span>
-            <span className="font-bold text-emerald-600 flex items-center gap-1">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="font-bold text-success-soft-foreground flex items-center gap-1">
+              <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
               Cổng bảo vệ sẵn sàng
             </span>
           </div>
@@ -290,7 +278,7 @@ export const AdminOverviewView: React.FC = () => {
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          <Users className="h-4 w-4 text-blue-600" />
+          <Users className="h-4 w-4 text-primary-soft-foreground" />
           <span>Danh Sách Sinh Viên ({MOCK_RESIDENTS_REGISTRY.length})</span>
         </button>
 
@@ -302,10 +290,10 @@ export const AdminOverviewView: React.FC = () => {
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          <FileText className="h-4 w-4 text-amber-600" />
+          <FileText className="h-4 w-4 text-primary-soft-foreground" />
           <span>Yêu Cầu & Đơn Từ ({curfewRequests.length + maintenanceTickets.length})</span>
           {totalPendingRequests > 0 && (
-            <span className="ml-1 rounded-full bg-amber-500 px-1.5 py-0.2 text-[10px] font-black text-white">
+            <span className="ml-1 rounded-full bg-primary px-1.5 py-0.2 text-[10px] font-black text-white">
               {totalPendingRequests}
             </span>
           )}
@@ -321,28 +309,28 @@ export const AdminOverviewView: React.FC = () => {
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-card p-4 rounded-2xl border border-border shadow-xs">
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <input
+              <Input
                 type="text"
                 placeholder="Tìm theo MSSV, Họ tên, Phòng hoặc Số điện thoại..."
                 value={studentSearch}
                 onChange={(e) => setStudentSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-xl border border-border bg-background text-xs focus:outline-hidden focus:ring-2 focus:ring-blue-500/20"
+                className="pl-10 pr-4 focus:outline-hidden focus:ring-primary/20"
               />
             </div>
 
             <div className="flex items-center gap-2">
               <Filter className="h-3.5 w-3.5 text-muted-foreground" />
               <span className="text-xs text-muted-foreground">Tòa nhà:</span>
-              <select
+              <Select
                 value={buildingFilter}
                 onChange={(e) => setBuildingFilter(e.target.value)}
-                className="rounded-xl border border-border bg-background px-3 py-2 text-xs font-medium"
+                className="font-medium"
               >
                 <option value="ALL">Tất cả các tòa</option>
                 <option value="Tòa A">Tòa A (Nam - High-Rise)</option>
                 <option value="Tòa B">Tòa B (Nữ)</option>
                 <option value="Tòa C">Tòa C</option>
-              </select>
+              </Select>
             </div>
           </div>
 
@@ -352,14 +340,14 @@ export const AdminOverviewView: React.FC = () => {
               <table className="w-full text-left text-xs">
                 <thead className="bg-muted/60 text-muted-foreground text-[11px] uppercase border-b border-border font-bold">
                   <tr>
-                    <th className="py-3 px-4">MSSV</th>
-                    <th className="py-3 px-4">Họ và Tên</th>
-                    <th className="py-3 px-4">Phòng & Giường</th>
-                    <th className="py-3 px-4">Số Điện Thoại</th>
-                    <th className="py-3 px-4">Quê Quán</th>
-                    <th className="py-3 px-4">Hạn Hợp Đồng</th>
-                    <th className="py-3 px-4 text-center">Rèn Luyện</th>
-                    <th className="py-3 px-4 text-right">Chi Tiết</th>
+                    <th className="whitespace-nowrap py-3 px-4">MSSV</th>
+                    <th className="whitespace-nowrap py-3 px-4">Họ và Tên</th>
+                    <th className="whitespace-nowrap py-3 px-4">Phòng & Giường</th>
+                    <th className="whitespace-nowrap py-3 px-4">Số Điện Thoại</th>
+                    <th className="whitespace-nowrap py-3 px-4">Quê Quán</th>
+                    <th className="whitespace-nowrap py-3 px-4">Hạn Hợp Đồng</th>
+                    <th className="whitespace-nowrap py-3 px-4 text-center">Rèn Luyện</th>
+                    <th className="whitespace-nowrap py-3 px-4 text-right">Chi Tiết</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
@@ -369,38 +357,38 @@ export const AdminOverviewView: React.FC = () => {
                       className="hover:bg-muted/40 transition-colors cursor-pointer"
                       onClick={() => setSelectedStudent(st)}
                     >
-                      <td className="py-3.5 px-4 font-mono font-bold text-foreground">
+                      <td className="whitespace-nowrap py-3.5 px-4 font-mono font-bold text-foreground">
                         {st.studentId}
                       </td>
-                      <td className="py-3.5 px-4">
+                      <td className="whitespace-nowrap py-3.5 px-4">
                         <div className="font-bold text-foreground">{st.fullName}</div>
                         <div className="text-[11px] text-muted-foreground">
                           {st.gender === "Nam" ? "Nam" : "Nữ"} • CCCD: {st.citizenId}
                         </div>
                       </td>
-                      <td className="py-3.5 px-4">
+                      <td className="whitespace-nowrap py-3.5 px-4">
                         <span className="inline-flex items-center gap-1 font-bold text-foreground bg-muted px-2 py-0.5 rounded-md">
-                          <Bed className="h-3 w-3 text-blue-600" />
+                          <BedDouble className="h-3 w-3 text-primary-soft-foreground" />
                           {st.room} • {st.bedCode}
                         </span>
                         <div className="text-[10px] text-muted-foreground mt-0.5">{st.building}</div>
                       </td>
-                      <td className="py-3.5 px-4">
+                      <td className="whitespace-nowrap py-3.5 px-4">
                         <div className="font-medium text-foreground">{st.phone}</div>
                         <div className="text-[10px] text-muted-foreground">
                           PH: {st.parentPhone}
                         </div>
                       </td>
-                      <td className="py-3.5 px-4 text-muted-foreground">{st.hometown}</td>
-                      <td className="py-3.5 px-4 font-mono text-[11px] text-muted-foreground">
+                      <td className="whitespace-nowrap py-3.5 px-4 text-muted-foreground">{st.hometown}</td>
+                      <td className="whitespace-nowrap py-3.5 px-4 font-mono text-[11px] text-muted-foreground">
                         {st.endDate}
                       </td>
-                      <td className="py-3.5 px-4 text-center">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
+                      <td className="whitespace-nowrap py-3.5 px-4 text-center">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-success/10 text-success-soft-foreground">
                           100/100 đ
                         </span>
                       </td>
-                      <td className="py-3.5 px-4 text-right">
+                      <td className="whitespace-nowrap py-3.5 px-4 text-right">
                         <button
                           type="button"
                           onClick={(e) => {
@@ -452,7 +440,7 @@ export const AdminOverviewView: React.FC = () => {
                 onClick={() => setRequestTypeFilter("CURFEW")}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                   requestTypeFilter === "CURFEW"
-                    ? "bg-blue-600 text-white"
+                    ? "bg-primary text-white"
                     : "bg-muted text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -463,7 +451,7 @@ export const AdminOverviewView: React.FC = () => {
                 onClick={() => setRequestTypeFilter("MAINTENANCE")}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                   requestTypeFilter === "MAINTENANCE"
-                    ? "bg-orange-600 text-white"
+                    ? "bg-primary text-white"
                     : "bg-muted text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -473,15 +461,15 @@ export const AdminOverviewView: React.FC = () => {
 
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-muted-foreground">Trạng thái:</span>
-              <select
+              <Select
                 value={requestStatusFilter}
-                onChange={(e) => setRequestStatusFilter(e.target.value as any)}
-                className="rounded-xl border border-border bg-background px-3 py-1.5 text-xs font-medium"
+                onChange={(e) => setRequestStatusFilter(e.target.value as "ALL" | "PENDING" | "RESOLVED")}
+                className="font-medium"
               >
                 <option value="ALL">Tất cả trạng thái</option>
                 <option value="PENDING">Chỉ đơn chờ duyệt / chưa xử lý</option>
                 <option value="RESOLVED">Đã duyệt / Đã hoàn thành</option>
-              </select>
+              </Select>
             </div>
           </div>
 
@@ -498,13 +486,13 @@ export const AdminOverviewView: React.FC = () => {
                 .map((req) => (
                   <div
                     key={req.id}
-                    className="p-5 rounded-2xl border border-border bg-card shadow-xs space-y-3 hover:border-blue-500/40 transition-colors"
+                    className="p-5 rounded-2xl border border-border bg-card shadow-xs space-y-3 hover:border-primary/40 transition-colors"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-700 dark:text-blue-400 text-xs font-bold">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-primary/10 text-primary-soft-foreground dark:text-primary text-xs font-bold">
                           <Clock className="h-3.5 w-3.5" />
-                          Đơn Về Muộn (UC-24)
+                          Đơn về muộn
                         </span>
                         <span className="font-mono text-xs font-bold bg-muted px-2 py-0.5 rounded-md">
                           {req.id}
@@ -519,8 +507,8 @@ export const AdminOverviewView: React.FC = () => {
                         <span
                           className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                             req.isSubmittedBefore2100
-                              ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
-                              : "bg-red-500/10 text-red-600"
+                              ? "bg-success/10 text-success-soft-foreground "
+                              : "bg-danger/10 text-danger-soft-foreground"
                           }`}
                         >
                           {req.isSubmittedBefore2100 ? "Nộp trước 21:00" : "Nộp muộn sau 21:00"}
@@ -529,10 +517,10 @@ export const AdminOverviewView: React.FC = () => {
                         <span
                           className={`text-xs font-bold px-2.5 py-1 rounded-full ${
                             req.status === "APPROVED"
-                              ? "bg-emerald-600 text-white"
+                              ? "bg-success text-white"
                               : req.status === "REJECTED"
-                              ? "bg-red-600 text-white"
-                              : "bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30"
+                              ? "bg-danger text-white"
+                              : "bg-primary/20 text-primary-soft-foreground  border border-primary/25"
                           }`}
                         >
                           {req.status === "APPROVED" && "Đã phê duyệt"}
@@ -562,22 +550,14 @@ export const AdminOverviewView: React.FC = () => {
 
                       {req.status === "PENDING" ? (
                         <div className="flex gap-2">
-                          <button
-                            type="button"
-                            onClick={() => handleReviewCurfew(req.id, "APPROVED")}
-                            className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors"
-                          >
+                          <Button variant="success" className="flex hover:bg-success" type="button" onClick={() => handleReviewCurfew(req.id, "APPROVED")}>
                             <Check className="h-3.5 w-3.5" />
                             <span>Duyệt đơn hợp lệ</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleReviewCurfew(req.id, "REJECTED")}
-                            className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs transition-colors"
-                          >
+                          </Button>
+                          <Button variant="destructive" className="flex hover:bg-danger" type="button" onClick={() => handleReviewCurfew(req.id, "REJECTED")}>
                             <X className="h-3.5 w-3.5" />
                             <span>Từ chối</span>
-                          </button>
+                          </Button>
                         </div>
                       ) : (
                         <span className="text-xs font-semibold text-muted-foreground">
@@ -599,13 +579,13 @@ export const AdminOverviewView: React.FC = () => {
                 .map((ticket) => (
                   <div
                     key={ticket.id}
-                    className="p-5 rounded-2xl border border-border bg-card shadow-xs space-y-3 hover:border-orange-500/40 transition-colors"
+                    className="p-5 rounded-2xl border border-border bg-card shadow-xs space-y-3 hover:border-primary/25 transition-colors"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-orange-500/10 text-orange-700 dark:text-orange-400 text-xs font-bold">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-primary/10 text-primary-soft-foreground text-xs font-bold">
                           <Wrench className="h-3.5 w-3.5" />
-                          Phiếu Báo Hỏng (UC-20)
+                          Phiếu báo hỏng
                         </span>
                         <span className="font-mono text-xs font-bold bg-muted px-2 py-0.5 rounded-md">
                           {ticket.id}
@@ -616,10 +596,10 @@ export const AdminOverviewView: React.FC = () => {
                       <span
                         className={`text-xs font-bold px-2.5 py-1 rounded-full ${
                           ticket.status === "CLOSED"
-                            ? "bg-emerald-600 text-white"
+                            ? "bg-success text-white"
                             : ticket.status === "IN_PROGRESS"
-                            ? "bg-blue-600 text-white"
-                            : "bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30"
+                            ? "bg-primary text-white"
+                            : "bg-primary/20 text-primary-soft-foreground  border border-primary/25"
                         }`}
                       >
                         {ticket.status === "PENDING" && "Chờ tiếp nhận"}
@@ -634,26 +614,22 @@ export const AdminOverviewView: React.FC = () => {
                       <span>Vị trí: <strong className="text-foreground">{ticket.building} - Phòng {ticket.room}</strong></span>
                       <span>Người báo: <strong className="text-foreground">{ticket.studentName} ({ticket.studentId})</strong></span>
                       <span>Thời gian: <span className="font-mono">{ticket.createdAt}</span></span>
-                      <span>Mức độ: <strong className="text-red-600">{ticket.urgency}</strong></span>
+                      <span>Mức độ: <strong className="text-danger-soft-foreground">{ticket.urgency}</strong></span>
                     </div>
 
                     <div className="flex items-center justify-between pt-1">
                       <Link
                         to="/maintenance"
-                        className="text-xs font-bold text-orange-600 hover:text-orange-700 flex items-center gap-1"
+                        className="text-xs font-bold text-primary-soft-foreground hover:text-primary-soft-foreground flex items-center gap-1"
                       >
                         <span>Mở phân hệ Điều phối Kỹ thuật</span>
                         <ExternalLink className="h-3.5 w-3.5" />
                       </Link>
 
                       {ticket.status === "PENDING" && (
-                        <button
-                          type="button"
-                          onClick={() => handleUpdateMaintenanceStatus(ticket.id, "IN_PROGRESS")}
-                          className="px-3 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold transition-colors"
-                        >
+                        <Button className="hover:bg-primary" type="button" onClick={() => handleUpdateMaintenanceStatus(ticket.id, "IN_PROGRESS")}>
                           Tiếp nhận xử lý
-                        </button>
+                        </Button>
                       )}
                     </div>
                   </div>
@@ -668,7 +644,7 @@ export const AdminOverviewView: React.FC = () => {
           <div className="w-full max-w-lg rounded-3xl border border-border bg-card p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between border-b border-border pb-4">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary-soft-foreground flex items-center justify-center">
                   <Users className="h-5 w-5" />
                 </div>
                 <div>
@@ -685,7 +661,7 @@ export const AdminOverviewView: React.FC = () => {
                 onClick={() => setSelectedStudent(null)}
                 className="h-8 w-8 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground"
               >
-                ✕
+                <X className="h-4 w-4" />
               </button>
             </div>
 
@@ -711,7 +687,7 @@ export const AdminOverviewView: React.FC = () => {
                 </div>
               </div>
 
-              <div className="p-3 bg-blue-500/5 rounded-2xl border border-blue-500/15 space-y-2">
+              <div className="p-3 bg-primary/5 rounded-2xl border border-primary/15 space-y-2">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Vị trí lưu trú:</span>
                   <strong className="text-foreground">
@@ -720,7 +696,7 @@ export const AdminOverviewView: React.FC = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Mã giường cá nhân:</span>
-                  <span className="font-mono font-bold text-blue-600">{selectedStudent.bedCode}</span>
+                  <span className="font-mono font-bold text-primary-soft-foreground">{selectedStudent.bedCode}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Thời hạn hợp đồng:</span>

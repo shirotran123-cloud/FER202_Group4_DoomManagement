@@ -53,7 +53,7 @@ export function exportToExcelXml<T>(options: {
   </Style>
   <Style ss:ID="TitleStyle">
    <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
-   <Font ss:FontName="Calibri" x:CharSet="0" ss:Size="16" ss:Bold="1" ss:Color="#1E3A8A"/>
+   <Font ss:FontName="Calibri" x:CharSet="0" ss:Size="16" ss:Bold="1" ss:Color="#4F46E5"/>
   </Style>
   <Style ss:ID="SubtitleStyle">
    <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
@@ -68,7 +68,7 @@ export function exportToExcelXml<T>(options: {
     <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D1D5DB"/>
    </Borders>
    <Font ss:FontName="Calibri" x:CharSet="0" ss:Size="11" ss:Bold="1" ss:Color="#FFFFFF"/>
-   <Interior ss:Color="#EA580C" ss:Pattern="Solid"/>
+   <Interior ss:Color="#4F46E5" ss:Pattern="Solid"/>
   </Style>
   <Style ss:ID="DataRowEven">
    <Alignment ss:Vertical="Center"/>

@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+﻿import React, { useState } from "react"
 import { useAuth } from "@/contexts/useAuth"
 import {
   MOCK_OCCUPANCY_STATS,
@@ -9,23 +9,10 @@ import {
 } from "@/data/mockDashboard"
 import { exportToExcelXml, exportToCsv, type ExportColumn } from "@/lib/excelExport"
 import type { ResidentTemporaryRecord, OverdueDebtRecord } from "@/types/dashboard"
-import {
-  LayoutDashboard,
-  FileSpreadsheet,
-  PieChart,
-  TrendingUp,
-  Download,
-  Search,
-  Building,
-  DollarSign,
-  Zap,
-  Droplets,
-  AlertTriangle,
-  Users,
-  Sparkles,
-  FileDown,
-} from "lucide-react"
+import { LayoutDashboard, FileSpreadsheet, ChartPie, TrendingUp, Download, Search, Building, DollarSign, Zap, Droplets, TriangleAlert, Users, Sparkles, FileDown } from "lucide-react"
 
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 export const ManagerDashboardPage: React.FC = () => {
   const { user } = useAuth()
   const [activeTab, setActiveTab] = useState<"OVERVIEW" | "REPORTS">("OVERVIEW")
@@ -181,38 +168,38 @@ export const ManagerDashboardPage: React.FC = () => {
       {/* Toast Alert */}
       {toastMessage && (
         <div className="fixed top-20 right-6 z-50 flex items-center gap-2 rounded-2xl bg-foreground text-background px-4 py-3 shadow-xl text-xs font-semibold animate-in fade-in slide-in-from-top-4">
-          <Sparkles className="h-4 w-4 text-emerald-400 shrink-0" />
+          <Sparkles className="h-4 w-4 text-success shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}
 
       {/* Header Banner */}
-      <div className="rounded-3xl border border-purple-500/20 bg-gradient-to-br from-card via-purple-500/5 to-card p-6 sm:p-8 shadow-xs">
+      <div className="rounded-3xl border border-primary/25 bg-gradient-to-br from-card via-primary to-card p-6 sm:p-8 shadow-xs">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border/80 pb-6">
           <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 shadow-xs">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary-soft-foreground border border-primary/25 shadow-xs">
               <LayoutDashboard className="h-7 w-7" />
             </div>
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-purple-500/10 px-3 py-0.5 text-[11px] font-bold text-purple-700 dark:text-purple-400">
-                <span>Module 7</span>
+              <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-0.5 text-[11px] font-bold text-primary-soft-foreground">
+                <span>Vận hành</span>
                 <span>•</span>
-                <span>UC-27 ➔ UC-28</span>
+                <span>Tổng quan · Báo cáo</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-black text-foreground mt-1">
-                Tổng Quan Quản Trị & Báo Cáo Thống Kê KTX
+                Tổng quan quản trị KTX
               </h1>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Dashboard công suất phòng • Biểu đồ doanh thu đa trục • Xuất báo cáo Excel (.xlsx) chuẩn công an & tài chính
+                Công suất phòng · Doanh thu · Xuất báo cáo Excel
               </p>
             </div>
           </div>
           <div className="rounded-2xl border border-border bg-card/90 px-4 py-2.5 text-right shadow-xs shrink-0">
             <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
-              Phụ trách kỹ thuật & an ninh:
+              Ban quản lý:
             </p>
-            <p className="text-xs font-bold text-purple-600 dark:text-purple-400 flex items-center justify-end gap-1 mt-0.5">
-              <span>🛡️ Đinh Thanh Trung & Ban Quản Lý</span>
+            <p className="text-xs font-bold text-primary-soft-foreground flex items-center justify-end gap-1 mt-0.5">
+              <span>Đinh Thanh Trung & Ban Quản Lý</span>
             </p>
             {user && (
               <p className="text-[10px] text-muted-foreground mt-0.5">
@@ -224,48 +211,48 @@ export const ManagerDashboardPage: React.FC = () => {
 
         {/* Top 4 KPI Metrics */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 text-xs">
-          <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4">
-            <div className="flex items-center justify-between text-emerald-700 dark:text-emerald-400 text-[11px] font-medium">
+          <div className="rounded-2xl border border-success/25 bg-success/5 p-4">
+            <div className="flex items-center justify-between text-success-soft-foreground text-[11px] font-medium">
               <span>Tỷ lệ lấp đầy giường</span>
-              <PieChart className="h-4 w-4" />
+              <ChartPie className="h-4 w-4" />
             </div>
-            <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">
+            <p className="text-2xl font-black text-success-soft-foreground mt-1">
               {stats.occupancyRate}%
             </p>
-            <span className="text-[10px] text-emerald-700/80 dark:text-emerald-400/80">
+            <span className="text-[10px] text-success-soft-foreground">
               {stats.occupiedBeds}/{stats.totalBeds} giường đang ở
             </span>
           </div>
 
-          <div className="rounded-2xl border border-blue-500/20 bg-blue-500/5 p-4">
-            <div className="flex items-center justify-between text-blue-700 dark:text-blue-400 text-[11px] font-medium">
+          <div className="rounded-2xl border border-primary/20 bg-primary-soft p-4">
+            <div className="flex items-center justify-between text-primary-soft-foreground dark:text-primary text-[11px] font-medium">
               <span>Doanh thu tháng 10</span>
               <TrendingUp className="h-4 w-4" />
             </div>
-            <p className="text-2xl font-black text-blue-600 dark:text-blue-400 mt-1">318.5 tr</p>
-            <span className="text-[10px] text-blue-700/80 dark:text-blue-400/80">
+            <p className="text-2xl font-black text-primary-soft-foreground dark:text-primary mt-1">318.5 tr</p>
+            <span className="text-[10px] text-primary-soft-foreground/80 dark:text-primary/80">
               +2.1% so với tháng trước
             </span>
           </div>
 
-          <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4">
-            <div className="flex items-center justify-between text-amber-700 dark:text-amber-400 text-[11px] font-medium">
+          <div className="rounded-2xl border border-primary/25 bg-primary/5 p-4">
+            <div className="flex items-center justify-between text-primary-soft-foreground text-[11px] font-medium">
               <span>Sự cố đang xử lý</span>
               <Zap className="h-4 w-4" />
             </div>
-            <p className="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1">2 phiếu</p>
-            <span className="text-[10px] text-amber-700/80 dark:text-amber-400/80">
+            <p className="text-2xl font-black text-primary-soft-foreground mt-1">2 phiếu</p>
+            <span className="text-[10px] text-primary-soft-foreground">
               1 ca khẩn cấp &lt;2h
             </span>
           </div>
 
-          <div className="rounded-2xl border border-purple-500/20 bg-purple-500/5 p-4">
-            <div className="flex items-center justify-between text-purple-700 dark:text-purple-400 text-[11px] font-medium">
+          <div className="rounded-2xl border border-primary/25 bg-primary/5 p-4">
+            <div className="flex items-center justify-between text-primary-soft-foreground text-[11px] font-medium">
               <span>Công nợ quá hạn</span>
               <DollarSign className="h-4 w-4" />
             </div>
-            <p className="text-2xl font-black text-purple-600 dark:text-purple-400 mt-1">3 sinh viên</p>
-            <span className="text-[10px] text-purple-700/80 dark:text-purple-400/80">
+            <p className="text-2xl font-black text-primary-soft-foreground mt-1">3 sinh viên</p>
+            <span className="text-[10px] text-primary-soft-foreground">
               Tổng 3,313,000 VNĐ
             </span>
           </div>
@@ -282,8 +269,8 @@ export const ManagerDashboardPage: React.FC = () => {
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          <PieChart className="h-3.5 w-3.5 text-purple-500" />
-          <span>Dashboard Trực Quan Công Suất & Năng Lượng (UC-27)</span>
+          <ChartPie className="h-3.5 w-3.5 text-primary" />
+          <span>Tổng quan công suất & năng lượng</span>
         </button>
 
         <button
@@ -294,13 +281,13 @@ export const ManagerDashboardPage: React.FC = () => {
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-500" />
-          <span>Xuất Báo Cáo Nghiệp Vụ Excel (.xlsx) (UC-28)</span>
+          <FileSpreadsheet className="h-3.5 w-3.5 text-success" />
+          <span>Xuất báo cáo Excel</span>
         </button>
       </div>
 
       {/* ========================================================= */}
-      {/* TAB 1: VISUAL DASHBOARDS & CHARTS (UC-27)                 */}
+      {/* TAB 1: BIỂU ĐỒ TRỰC QUAN */}
       {/* ========================================================= */}
       {activeTab === "OVERVIEW" && (
         <div className="space-y-6">
@@ -310,7 +297,7 @@ export const ManagerDashboardPage: React.FC = () => {
             <div className="rounded-3xl border border-border bg-card p-6 shadow-xs flex flex-col justify-between space-y-4">
               <div className="flex items-center justify-between border-b border-border pb-3">
                 <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
-                  <PieChart className="h-4 w-4 text-purple-600" />
+                  <ChartPie className="h-4 w-4 text-primary-soft-foreground" />
                   Cơ Cấu Trạng Thái Giường (Tòa A)
                 </h3>
                 <span className="text-xs font-mono font-bold text-muted-foreground">240 Giường</span>
@@ -334,7 +321,7 @@ export const ManagerDashboardPage: React.FC = () => {
                     cx="90"
                     cy="90"
                     r={radius}
-                    stroke="#64748b"
+                    stroke="var(--muted-foreground)"
                     strokeWidth="20"
                     fill="transparent"
                     strokeDasharray={`${occupiedStroke} ${circumference}`}
@@ -346,7 +333,7 @@ export const ManagerDashboardPage: React.FC = () => {
                     cx="90"
                     cy="90"
                     r={radius}
-                    stroke="#10b981"
+                    stroke="var(--success)"
                     strokeWidth="20"
                     fill="transparent"
                     strokeDasharray={`${availableStroke} ${circumference}`}
@@ -358,7 +345,7 @@ export const ManagerDashboardPage: React.FC = () => {
                     cx="90"
                     cy="90"
                     r={radius}
-                    stroke="#f97316"
+                    stroke="var(--primary)"
                     strokeWidth="20"
                     fill="transparent"
                     strokeDasharray={`${holdingStroke} ${circumference}`}
@@ -370,7 +357,7 @@ export const ManagerDashboardPage: React.FC = () => {
                     cx="90"
                     cy="90"
                     r={radius}
-                    stroke="#ef4444"
+                    stroke="var(--danger)"
                     strokeWidth="20"
                     fill="transparent"
                     strokeDasharray={`${maintenanceStroke} ${circumference}`}
@@ -391,22 +378,22 @@ export const ManagerDashboardPage: React.FC = () => {
               {/* Legend & Breakdown */}
               <div className="grid grid-cols-2 gap-2 text-xs border-t border-border pt-3">
                 <div className="flex items-center gap-2">
-                  <span className="h-3 w-3 rounded-md bg-slate-500 shrink-0" />
+                  <span className="h-3 w-3 rounded-md bg-muted-foreground shrink-0" />
                   <span className="text-muted-foreground">Đang ở (80%):</span>
                   <strong className="text-foreground ml-auto">{stats.occupiedBeds}</strong>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="h-3 w-3 rounded-md bg-emerald-500 shrink-0" />
+                  <span className="h-3 w-3 rounded-md bg-success shrink-0" />
                   <span className="text-muted-foreground">Còn trống (12.5%):</span>
                   <strong className="text-foreground ml-auto">{stats.availableBeds}</strong>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="h-3 w-3 rounded-md bg-orange-500 shrink-0" />
+                  <span className="h-3 w-3 rounded-md bg-primary shrink-0" />
                   <span className="text-muted-foreground">Giữ chỗ 15p (5%):</span>
                   <strong className="text-foreground ml-auto">{stats.holdingBeds}</strong>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="h-3 w-3 rounded-md bg-red-500 shrink-0" />
+                  <span className="h-3 w-3 rounded-md bg-danger shrink-0" />
                   <span className="text-muted-foreground">Bảo trì (2.5%):</span>
                   <strong className="text-foreground ml-auto">{stats.maintenanceBeds}</strong>
                 </div>
@@ -418,7 +405,7 @@ export const ManagerDashboardPage: React.FC = () => {
               <div className="flex items-center justify-between border-b border-border pb-3">
                 <div>
                   <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-blue-600" />
+                    <TrendingUp className="h-4 w-4 text-primary-soft-foreground" />
                     Biểu Đồ Xu Hướng Doanh Thu 6 Tháng Gần Nhất
                   </h3>
                   <p className="text-[11px] text-muted-foreground">
@@ -426,11 +413,11 @@ export const ManagerDashboardPage: React.FC = () => {
                   </p>
                 </div>
                 <div className="flex items-center gap-3 text-xs">
-                  <span className="flex items-center gap-1.5 text-blue-600 font-semibold">
-                    <span className="h-2.5 w-2.5 rounded bg-blue-500" /> Tiền phòng
+                  <span className="flex items-center gap-1.5 text-primary-soft-foreground font-semibold">
+                    <span className="h-2.5 w-2.5 rounded bg-primary" /> Tiền phòng
                   </span>
-                  <span className="flex items-center gap-1.5 text-amber-600 font-semibold">
-                    <span className="h-2.5 w-2.5 rounded bg-amber-500" /> Điện nước/DV
+                  <span className="flex items-center gap-1.5 text-primary-soft-foreground font-semibold">
+                    <span className="h-2.5 w-2.5 rounded bg-primary" /> Điện nước/DV
                   </span>
                 </div>
               </div>
@@ -455,12 +442,12 @@ export const ManagerDashboardPage: React.FC = () => {
                           {/* Utility Fee (Orange) */}
                           <div
                             style={{ height: `${utilHeightPercent}%` }}
-                            className="w-full bg-amber-500 hover:bg-amber-400 rounded-t-md transition-all"
+                            className="w-full bg-primary hover:bg-primary rounded-t-md transition-all"
                           />
                           {/* Room Fee (Blue) */}
                           <div
                             style={{ height: `${roomHeightPercent}%` }}
-                            className="w-full bg-blue-600 hover:bg-blue-500 transition-all"
+                            className="w-full bg-primary hover:bg-primary/90 transition-all"
                           />
                         </div>
 
@@ -489,14 +476,14 @@ export const ManagerDashboardPage: React.FC = () => {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-border pb-3">
               <div>
                 <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
-                  <Zap className="h-4 w-4 text-amber-500" />
+                  <Zap className="h-4 w-4 text-primary" />
                   Đối Chiếu Mức Tiêu Thụ Điện & Nước Trung Bình Giữa Các Tòa Nhà
                 </h3>
                 <p className="text-xs text-muted-foreground">
                   Phát hiện bất thường rò rỉ nước hoặc quá tải điện năng theo phòng (kWh/phòng & m³/phòng)
                 </p>
               </div>
-              <span className="text-xs font-bold text-emerald-600 bg-emerald-500/10 px-3 py-1 rounded-full">
+              <span className="text-xs font-bold text-success-soft-foreground bg-success/10 px-3 py-1 rounded-full">
                 Kỳ đối soát: Tháng 10/2026
               </span>
             </div>
@@ -510,7 +497,7 @@ export const ManagerDashboardPage: React.FC = () => {
                     key={idx}
                     className={`p-5 rounded-2xl border transition-all ${
                       isAnomaly
-                        ? "border-amber-500/40 bg-amber-500/5 shadow-xs"
+                        ? "border-primary/25 bg-primary/5 shadow-xs"
                         : "border-border bg-muted/20"
                     }`}
                   >
@@ -520,8 +507,8 @@ export const ManagerDashboardPage: React.FC = () => {
                         {item.building}
                       </h4>
                       {isAnomaly && (
-                        <span className="text-[10px] font-bold text-amber-600 bg-amber-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
-                          <AlertTriangle className="h-3 w-3" /> Cảnh báo
+                        <span className="text-[10px] font-bold text-primary-soft-foreground bg-primary/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+                          <TriangleAlert className="h-3 w-3" /> Cảnh báo
                         </span>
                       )}
                     </div>
@@ -530,7 +517,7 @@ export const ManagerDashboardPage: React.FC = () => {
                       {/* Electricity */}
                       <div className="bg-card p-3 rounded-xl border border-border space-y-1">
                         <span className="text-muted-foreground flex items-center gap-1 text-[11px]">
-                          <Zap className="h-3.5 w-3.5 text-amber-500" /> Điện TB
+                          <Zap className="h-3.5 w-3.5 text-primary" /> Điện TB
                         </span>
                         <p className="text-lg font-black text-foreground font-mono">
                           {item.electricityAvgKwh}{" "}
@@ -541,7 +528,7 @@ export const ManagerDashboardPage: React.FC = () => {
                       {/* Water */}
                       <div className="bg-card p-3 rounded-xl border border-border space-y-1">
                         <span className="text-muted-foreground flex items-center gap-1 text-[11px]">
-                          <Droplets className="h-3.5 w-3.5 text-blue-500" /> Nước TB
+                          <Droplets className="h-3.5 w-3.5 text-primary" /> Nước TB
                         </span>
                         <p className="text-lg font-black text-foreground font-mono">
                           {item.waterAvgM3}{" "}
@@ -562,15 +549,15 @@ export const ManagerDashboardPage: React.FC = () => {
       )}
 
       {/* ========================================================= */}
-      {/* TAB 2: EXCEL REPORTS EXPORT & DATA PREVIEW (UC-28)        */}
+      {/* TAB 2: XUẤT BÁO CÁO EXCEL */}
       {/* ========================================================= */}
       {activeTab === "REPORTS" && (
         <div className="space-y-6">
           {/* Action Box to Trigger Excel Exports */}
-          <div className="rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-card to-emerald-500/5 p-6 sm:p-8 shadow-xs">
+          <div className="rounded-3xl border border-success/25 bg-gradient-to-br from-card to-success p-6 sm:p-8 shadow-xs">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border/80 pb-6">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 flex items-center gap-1.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-success-soft-foreground flex items-center gap-1.5">
                   <FileSpreadsheet className="h-4 w-4" /> Kết Xuất Dữ Liệu Nghiệp Vụ Chuẩn
                 </span>
                 <h2 className="text-xl font-black text-foreground mt-0.5">
@@ -583,29 +570,23 @@ export const ManagerDashboardPage: React.FC = () => {
 
               {/* Big Export Buttons */}
               <div className="flex flex-wrap items-center gap-2">
-                <button
-                  onClick={handleExportResidenceExcel}
-                  className="rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 text-xs font-bold shadow-xs flex items-center gap-2 transition-colors"
-                >
+                <Button variant="success" className="hover:bg-success flex" onClick={handleExportResidenceExcel}>
                   <Download className="h-4 w-4" />
                   <span>Xuất Excel Tạm Trú (.xlsx)</span>
-                </button>
+                </Button>
 
                 <button
                   onClick={handleExportResidenceCsv}
-                  className="rounded-2xl border border-emerald-600/40 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-700 dark:text-emerald-300 px-3.5 py-2.5 text-xs font-bold shadow-xs flex items-center gap-1.5 transition-colors"
+                  className="rounded-2xl border border-success/25 bg-success/10 hover:bg-success/20 text-success-soft-foreground px-3.5 py-2.5 text-xs font-bold shadow-xs flex items-center gap-1.5 transition-colors"
                 >
                   <FileDown className="h-4 w-4" />
                   <span>Xuất CSV (UTF-8)</span>
                 </button>
 
-                <button
-                  onClick={handleExportOverdueDebtsExcel}
-                  className="rounded-2xl bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 text-xs font-bold shadow-xs flex items-center gap-2 transition-colors"
-                >
+                <Button variant="destructive" className="hover:bg-danger flex" onClick={handleExportOverdueDebtsExcel}>
                   <Download className="h-4 w-4" />
                   <span>Xuất Excel Công Nợ (.xlsx)</span>
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -637,12 +618,12 @@ export const ManagerDashboardPage: React.FC = () => {
               {/* Search Bar for Preview */}
               <div className="relative w-full sm:w-64">
                 <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
-                <input
+                <Input
                   type="text"
                   value={searchReportQuery}
                   onChange={(e) => setSearchReportQuery(e.target.value)}
                   placeholder="Tra cứu MSSV, họ tên, phòng..."
-                  className="w-full rounded-xl border border-border bg-card pl-9 pr-3 py-1.5 text-xs focus:ring-1 focus:ring-emerald-500"
+                  className="pl-9 pr-3 focus:ring-success/30"
                 />
               </div>
             </div>
@@ -653,14 +634,14 @@ export const ManagerDashboardPage: React.FC = () => {
             <div className="rounded-3xl border border-border bg-card p-6 shadow-xs space-y-4">
               <div className="flex items-center justify-between border-b border-border pb-3">
                 <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-emerald-600" />
+                  <Users className="h-4 w-4 text-success-soft-foreground" />
                   <h3 className="font-bold text-sm text-foreground">
                     Xem Trước Dữ Liệu: Danh Sách Sinh Viên Nội Trú Khai Báo Tạm Trú
                   </h3>
                 </div>
                 <button
                   onClick={handleExportResidenceExcel}
-                  className="text-xs text-emerald-600 hover:text-emerald-700 font-bold flex items-center gap-1"
+                  className="text-xs text-success-soft-foreground hover:text-success-soft-foreground font-bold flex items-center gap-1"
                 >
                   <Download className="h-3.5 w-3.5" /> Tải về file Excel
                 </button>
@@ -670,35 +651,35 @@ export const ManagerDashboardPage: React.FC = () => {
                 <table className="w-full text-xs text-left">
                   <thead className="bg-muted/50 text-muted-foreground uppercase text-[10px] font-bold border-b border-border">
                     <tr>
-                      <th className="py-2.5 px-3">STT</th>
-                      <th className="py-2.5 px-3">Hợp Đồng</th>
-                      <th className="py-2.5 px-3">Họ và Tên</th>
-                      <th className="py-2.5 px-3">MSSV</th>
-                      <th className="py-2.5 px-3">Giới Tính</th>
-                      <th className="py-2.5 px-3">CCCD</th>
-                      <th className="py-2.5 px-3">Quê Quán</th>
-                      <th className="py-2.5 px-3">Phòng - Giường</th>
-                      <th className="py-2.5 px-3">Thời Hạn</th>
-                      <th className="py-2.5 px-3 text-right">Phụ Huynh</th>
+                      <th className="whitespace-nowrap py-2.5 px-3">STT</th>
+                      <th className="whitespace-nowrap py-2.5 px-3">Hợp Đồng</th>
+                      <th className="whitespace-nowrap py-2.5 px-3">Họ và Tên</th>
+                      <th className="whitespace-nowrap py-2.5 px-3">MSSV</th>
+                      <th className="whitespace-nowrap py-2.5 px-3">Giới Tính</th>
+                      <th className="whitespace-nowrap py-2.5 px-3">CCCD</th>
+                      <th className="whitespace-nowrap py-2.5 px-3">Quê Quán</th>
+                      <th className="whitespace-nowrap py-2.5 px-3">Phòng - Giường</th>
+                      <th className="whitespace-nowrap py-2.5 px-3">Thời Hạn</th>
+                      <th className="whitespace-nowrap py-2.5 px-3 text-right">Phụ Huynh</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
                     {filteredResidents.map((res) => (
                       <tr key={res.contractCode} className="hover:bg-muted/30">
-                        <td className="py-2.5 px-3 font-mono text-muted-foreground">{res.stt}</td>
-                        <td className="py-2.5 px-3 font-mono text-muted-foreground">{res.contractCode}</td>
-                        <td className="py-2.5 px-3 font-bold text-foreground">{res.fullName}</td>
-                        <td className="py-2.5 px-3 font-mono font-bold text-foreground">{res.studentId}</td>
-                        <td className="py-2.5 px-3">{res.gender}</td>
-                        <td className="py-2.5 px-3 font-mono">{res.citizenId}</td>
-                        <td className="py-2.5 px-3">{res.hometown}</td>
-                        <td className="py-2.5 px-3 font-semibold text-primary">
+                        <td className="whitespace-nowrap py-2.5 px-3 font-mono text-muted-foreground">{res.stt}</td>
+                        <td className="whitespace-nowrap py-2.5 px-3 font-mono text-muted-foreground">{res.contractCode}</td>
+                        <td className="whitespace-nowrap py-2.5 px-3 font-bold text-foreground">{res.fullName}</td>
+                        <td className="whitespace-nowrap py-2.5 px-3 font-mono font-bold text-foreground">{res.studentId}</td>
+                        <td className="whitespace-nowrap py-2.5 px-3">{res.gender}</td>
+                        <td className="whitespace-nowrap py-2.5 px-3 font-mono">{res.citizenId}</td>
+                        <td className="whitespace-nowrap py-2.5 px-3">{res.hometown}</td>
+                        <td className="whitespace-nowrap py-2.5 px-3 font-semibold text-primary">
                           {res.room} • {res.bedCode}
                         </td>
-                        <td className="py-2.5 px-3 text-[11px] text-muted-foreground">
+                        <td className="whitespace-nowrap py-2.5 px-3 text-[11px] text-muted-foreground">
                           {res.startDate} ➔ {res.endDate}
                         </td>
-                        <td className="py-2.5 px-3 text-right text-[11px]">
+                        <td className="whitespace-nowrap py-2.5 px-3 text-right text-[11px]">
                           <span className="font-semibold text-foreground">{res.parentName}</span>
                           <span className="block text-muted-foreground font-mono">{res.parentPhone}</span>
                         </td>
@@ -715,14 +696,14 @@ export const ManagerDashboardPage: React.FC = () => {
             <div className="rounded-3xl border border-border bg-card p-6 shadow-xs space-y-4">
               <div className="flex items-center justify-between border-b border-border pb-3">
                 <div className="flex items-center gap-2">
-                  <DollarSign className="h-4 w-4 text-red-600" />
+                  <DollarSign className="h-4 w-4 text-danger-soft-foreground" />
                   <h3 className="font-bold text-sm text-foreground">
                     Xem Trước Dữ Liệu: Danh Sách Công Nợ Quá Hạn Chưa Nộp Tiền Điện Nước
                   </h3>
                 </div>
                 <button
                   onClick={handleExportOverdueDebtsExcel}
-                  className="text-xs text-red-600 hover:text-red-700 font-bold flex items-center gap-1"
+                  className="text-xs text-danger-soft-foreground hover:text-danger-soft-foreground font-bold flex items-center gap-1"
                 >
                   <Download className="h-3.5 w-3.5" /> Tải về file Excel
                 </button>
@@ -732,44 +713,44 @@ export const ManagerDashboardPage: React.FC = () => {
                 <table className="w-full text-xs text-left">
                   <thead className="bg-muted/50 text-muted-foreground uppercase text-[10px] font-bold border-b border-border">
                     <tr>
-                      <th className="py-2.5 px-3">STT</th>
-                      <th className="py-2.5 px-3">Mã Hóa Đơn</th>
-                      <th className="py-2.5 px-3">MSSV</th>
-                      <th className="py-2.5 px-3">Họ và Tên</th>
-                      <th className="py-2.5 px-3">Phòng - Giường</th>
-                      <th className="py-2.5 px-3">Kỳ Cước</th>
-                      <th className="py-2.5 px-3 text-right">Tiền Phòng Nợ</th>
-                      <th className="py-2.5 px-3 text-right">Điện Nước Nợ</th>
-                      <th className="py-2.5 px-3 text-right">Tổng Nợ</th>
-                      <th className="py-2.5 px-3 text-right">Trạng Thái</th>
+                      <th className="whitespace-nowrap py-2.5 px-3">STT</th>
+                      <th className="whitespace-nowrap py-2.5 px-3">Mã Hóa Đơn</th>
+                      <th className="whitespace-nowrap py-2.5 px-3">MSSV</th>
+                      <th className="whitespace-nowrap py-2.5 px-3">Họ và Tên</th>
+                      <th className="whitespace-nowrap py-2.5 px-3">Phòng - Giường</th>
+                      <th className="whitespace-nowrap py-2.5 px-3">Kỳ Cước</th>
+                      <th className="whitespace-nowrap py-2.5 px-3 text-right">Tiền Phòng Nợ</th>
+                      <th className="whitespace-nowrap py-2.5 px-3 text-right">Điện Nước Nợ</th>
+                      <th className="whitespace-nowrap py-2.5 px-3 text-right">Tổng Nợ</th>
+                      <th className="whitespace-nowrap py-2.5 px-3 text-right">Trạng Thái</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
                     {filteredDebts.map((debt) => (
                       <tr key={debt.invoiceCode} className="hover:bg-muted/30">
-                        <td className="py-2.5 px-3 font-mono text-muted-foreground">{debt.stt}</td>
-                        <td className="py-2.5 px-3 font-mono text-muted-foreground">{debt.invoiceCode}</td>
-                        <td className="py-2.5 px-3 font-mono font-bold text-foreground">{debt.studentId}</td>
-                        <td className="py-2.5 px-3 font-bold text-foreground">{debt.fullName}</td>
-                        <td className="py-2.5 px-3 font-semibold text-primary">
+                        <td className="whitespace-nowrap py-2.5 px-3 font-mono text-muted-foreground">{debt.stt}</td>
+                        <td className="whitespace-nowrap py-2.5 px-3 font-mono text-muted-foreground">{debt.invoiceCode}</td>
+                        <td className="whitespace-nowrap py-2.5 px-3 font-mono font-bold text-foreground">{debt.studentId}</td>
+                        <td className="whitespace-nowrap py-2.5 px-3 font-bold text-foreground">{debt.fullName}</td>
+                        <td className="whitespace-nowrap py-2.5 px-3 font-semibold text-primary">
                           {debt.room} ({debt.bedCode})
                         </td>
-                        <td className="py-2.5 px-3 text-muted-foreground">{debt.billingPeriod}</td>
-                        <td className="py-2.5 px-3 text-right font-mono">
+                        <td className="whitespace-nowrap py-2.5 px-3 text-muted-foreground">{debt.billingPeriod}</td>
+                        <td className="whitespace-nowrap py-2.5 px-3 text-right font-mono">
                           {debt.roomDebt.toLocaleString("vi-VN")} đ
                         </td>
-                        <td className="py-2.5 px-3 text-right font-mono">
+                        <td className="whitespace-nowrap py-2.5 px-3 text-right font-mono">
                           {debt.utilityDebt.toLocaleString("vi-VN")} đ
                         </td>
-                        <td className="py-2.5 px-3 text-right font-mono font-bold text-red-600">
+                        <td className="whitespace-nowrap py-2.5 px-3 text-right font-mono font-bold text-danger-soft-foreground">
                           {debt.totalDebt.toLocaleString("vi-VN")} đ
                         </td>
-                        <td className="py-2.5 px-3 text-right">
+                        <td className="whitespace-nowrap py-2.5 px-3 text-right">
                           <span
                             className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${
                               debt.status === "CẢNH BÁO ĐÌNH CHỈ"
-                                ? "bg-red-600 text-white animate-pulse"
-                                : "bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20"
+                                ? "bg-danger text-white animate-pulse"
+                                : "bg-primary/10 text-primary-soft-foreground  border border-primary/25"
                             }`}
                           >
                             {debt.status}

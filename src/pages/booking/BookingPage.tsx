@@ -2,18 +2,11 @@ import React, { useState, useEffect } from "react"
 import { useAuth } from "@/contexts/useAuth"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Building,
-  CheckCircle2,
-  Clock,
-  QrCode,
-  Download,
-  Check,
-  Zap,
-  Sun,
-  Compass,
-} from "lucide-react"
+import { suggestRoomAllocation } from "@/lib/dorm-ops"
+import { Building, CircleCheck, Clock, QrCode, Download, Check, Zap, Sun, Compass, BedDouble, DoorOpen, ChevronDown, Snowflake, Wifi, LayoutGrid, X } from "lucide-react"
 
+import { Select } from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
 interface Bed {
   id: string
   code: string
@@ -173,7 +166,7 @@ export const BookingPage: React.FC = () => {
   return (
     <div className="max-w-[1600px] mx-auto space-y-6 pb-12">
       {/* 01. STEP PROGRESS HIERARCHY BANNER */}
-      <div className="w-full bg-white dark:bg-[#161e23] border border-border rounded-xl p-4 shadow-xs">
+      <div className="dms-card w-full p-4">
         <div className="flex items-center justify-between gap-3 overflow-x-auto pb-1 text-xs">
           <div className="flex items-center gap-2.5 min-w-max">
             <span className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center font-bold text-[11px]">
@@ -232,14 +225,14 @@ export const BookingPage: React.FC = () => {
           <span className="text-muted-foreground/40 font-mono">→</span>
 
           <div className="flex items-center gap-2.5 min-w-max">
-            <span className="w-6 h-6 rounded-full bg-[#4C6269] text-white flex items-center justify-center font-bold text-[11px]">
+            <span className="w-6 h-6 rounded-full bg-muted-foreground text-white flex items-center justify-center font-bold text-[11px]">
               05
             </span>
             <div>
-              <span className="text-[10px] uppercase font-bold tracking-wider text-[#4C6269] block">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block">
                 Vị trí giường
               </span>
-              <span className="font-bold text-primary dark:text-[#cee6f4]">{selectedBed.code}</span>
+              <span className="font-bold text-primary dark:text-primary">{selectedBed.code}</span>
             </div>
           </div>
 
@@ -264,23 +257,21 @@ export const BookingPage: React.FC = () => {
         {/* COLUMN 1: BUILDING, LEVEL, ROOM LIST (3 COLS) */}
         <div className="col-span-12 lg:col-span-3 flex flex-col gap-5">
           {/* Building Selector */}
-          <div className="bg-white dark:bg-[#161e23] border border-border p-4 rounded-xl shadow-xs space-y-3">
+          <div className="dms-card p-4 space-y-3">
             <label className="text-[11px] uppercase font-bold tracking-wider text-muted-foreground block">
               Khu Ký Túc Xá (Complex)
             </label>
             <div className="relative">
-              <select
+              <Select
                 value={selectedBuilding}
                 onChange={(e) => setSelectedBuilding(e.target.value)}
-                className="w-full bg-[#f4f4ee] dark:bg-[#1c262c] text-foreground text-xs font-semibold py-2.5 px-3 pr-8 rounded-lg border border-border appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary"
+                className="font-semibold pr-8 appearance-none cursor-pointer"
               >
                 <option value="b1">Tòa A · Khu Nam (Standard Tech)</option>
                 <option value="b2">Tòa B · Khu Nữ (Quiet Quad)</option>
                 <option value="b3">Tòa C · Sinh viên Quốc tế</option>
-              </select>
-              <span className="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none text-base">
-                expand_more
-              </span>
+              </Select>
+              <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none h-4 w-4" />
             </div>
 
             {/* Floor Selection */}
@@ -289,12 +280,12 @@ export const BookingPage: React.FC = () => {
                 <span className="text-[11px] uppercase font-bold tracking-wider text-muted-foreground">
                   Chọn Tầng
                 </span>
-                <span className="text-[11px] text-[#4C6269] dark:text-[#b3cad3] font-medium flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                <span className="text-[11px] text-muted-foreground font-medium flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-success"></span>
                   Thang máy khả dụng
                 </span>
               </div>
-              <div className="grid grid-cols-5 gap-1 p-1 bg-[#f4f4ee] dark:bg-[#1c262c] rounded-lg">
+              <div className="grid grid-cols-5 gap-1 p-1 bg-muted rounded-lg">
                 {[1, 2, 3, 4, 5].map((lvl) => (
                   <button
                     key={lvl}
@@ -313,7 +304,7 @@ export const BookingPage: React.FC = () => {
           </div>
 
           {/* Rooms on Floor Manifest */}
-          <div className="bg-white dark:bg-[#161e23] border border-border p-4 rounded-xl shadow-xs space-y-3">
+          <div className="dms-card p-4 space-y-3">
             <div className="flex items-center justify-between pb-1 border-b border-border">
               <span className="text-xs font-bold text-foreground">Phòng tại Tầng {selectedFloor}</span>
               <span className="text-[11px] text-muted-foreground">4 phòng tìm thấy</span>
@@ -325,18 +316,18 @@ export const BookingPage: React.FC = () => {
               className={`p-3 rounded-lg border cursor-pointer transition-all ${
                 selectedRoom === "A201"
                   ? "border-primary bg-primary/5"
-                  : "border-border hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c]"
+                  : "border-border hover:bg-muted"
               }`}
             >
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
-                  <span className="material-symbols-outlined text-sm text-muted-foreground">meeting_room</span>
+                  <DoorOpen className="h-4 w-4 text-muted-foreground shrink-0" />
                   <span>Phòng A201</span>
                 </div>
-                <Badge variant="occupied">24/24 Đầy</Badge>
+                <Badge variant="neutral">24/24 Đầy</Badge>
               </div>
               <p className="text-[11px] text-muted-foreground mb-2">Phòng góc · View sân vườn trung tâm</p>
-              <div className="w-full bg-[#e3e3dd] dark:bg-[#283740] h-1.5 rounded-full overflow-hidden">
+              <div className="w-full bg-muted h-1.5 rounded-full overflow-hidden">
                 <div className="bg-muted-foreground h-full w-full"></div>
               </div>
             </div>
@@ -346,19 +337,19 @@ export const BookingPage: React.FC = () => {
               className={`p-3 rounded-lg border cursor-pointer transition-all ${
                 selectedRoom === "A202"
                   ? "border-primary bg-primary/5"
-                  : "border-border hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c]"
+                  : "border-border hover:bg-muted"
               }`}
             >
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
-                  <span className="material-symbols-outlined text-sm text-muted-foreground">meeting_room</span>
+                  <DoorOpen className="h-4 w-4 text-muted-foreground shrink-0" />
                   <span>Phòng A202</span>
                 </div>
                 <Badge variant="secondary">22/24 Đã ở</Badge>
               </div>
               <p className="text-[11px] text-muted-foreground mb-2">Giữa hành lang · Pod tự học yên tĩnh</p>
-              <div className="w-full bg-[#e3e3dd] dark:bg-[#283740] h-1.5 rounded-full overflow-hidden">
-                <div className="bg-[#4C6269] h-full w-[91%]"></div>
+              <div className="w-full bg-muted h-1.5 rounded-full overflow-hidden">
+                <div className="bg-muted-foreground h-full w-[91%]"></div>
               </div>
             </div>
 
@@ -369,38 +360,38 @@ export const BookingPage: React.FC = () => {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 font-bold text-xs">
-                  <span className="material-symbols-outlined text-sm text-[#cee6ef]">meeting_room</span>
+                  <DoorOpen className="h-4 w-4 text-white/80 shrink-0" />
                   <span>Phòng A205</span>
                 </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#cee6ef] text-[#233944]">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/90 text-primary">
                   6 Giường Trống
                 </span>
               </div>
               <p className="text-[11px] text-white/80">3 mặt thoáng · Đón gió ban mai · Ban công riêng</p>
               <div className="w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
-                <div className="bg-[#cee6ef] h-full w-[75%]"></div>
+                <div className="bg-white h-full w-[75%]"></div>
               </div>
               <div className="flex flex-wrap gap-1 pt-1">
                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/20 text-white/90 flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[11px]">balcony</span> Ban công
+                  <Sun className="h-3 w-3 shrink-0" /> Ban công
                 </span>
                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/20 text-white/90 flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[11px]">ac_unit</span> ĐH Inverter
+                  <Snowflake className="h-3 w-3 shrink-0" /> ĐH Inverter
                 </span>
                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/20 text-white/90 flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[11px]">wifi</span> Fiber 1Gbps
+                  <Wifi className="h-3 w-3 shrink-0" /> Fiber 1Gbps
                 </span>
               </div>
             </div>
           </div>
 
           {/* Living Note & Facility Snapshot */}
-          <div className="bg-white dark:bg-[#161e23] border border-border p-3 rounded-xl shadow-xs flex items-center gap-2.5">
+          <div className="dms-card p-3 flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 text-primary">
               <Building className="h-5 w-5" />
             </div>
             <div className="min-w-0">
-              <p className="font-bold text-xs text-foreground truncate">Khu A205 Chuẩn Mới 2026</p>
+              <p className="font-bold text-xs text-foreground whitespace-nowrap">Khu A205 · Chuẩn 2026</p>
               <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2">
                 Tiêu âm cao cấp, rèm che kháng khuẩn từng giường, khóa số thông minh.
               </p>
@@ -410,19 +401,19 @@ export const BookingPage: React.FC = () => {
 
         {/* COLUMN 2: CENTER ARCHITECTURAL 1:4:6 UNIT BLUEPRINT (6 COLS) */}
         <div className="col-span-12 lg:col-span-6 flex flex-col gap-4">
-          <div className="bg-white dark:bg-[#161e23] border border-border rounded-xl shadow-xs p-5 space-y-4">
+          <div className="dms-card p-5 space-y-4">
             {/* Header blueprint */}
             <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-border">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-lg bg-[#cee6ef] text-[#233944] dark:bg-[#233944] dark:text-[#cee6ef]">
-                  <span className="material-symbols-outlined text-lg">view_in_ar_new</span>
+                <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                  <LayoutGrid className="h-5 w-5" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
                     <h2 className="font-bold text-base text-foreground">
                       Bản Đồ Kiến Trúc · Phòng {selectedRoom}
                     </h2>
-                    <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#f4f4ee] dark:bg-[#1c262c] text-muted-foreground font-semibold">
+                    <span className="text-[11px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-semibold">
                       Mô hình 1:4:6 (24 Giường)
                     </span>
                   </div>
@@ -432,42 +423,45 @@ export const BookingPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success/10 text-success-soft-foreground text-xs font-semibold">
+                <span className="w-2 h-2 rounded-full bg-success animate-pulse"></span>
                 <span>Thời gian thực: 6 giường trống</span>
               </div>
             </div>
 
             {/* Status Legend */}
-            <div className="flex flex-wrap items-center gap-4 py-2 px-3 rounded-lg bg-[#f4f4ee] dark:bg-[#1c262c] text-[11px]">
+            <div className="flex flex-wrap items-center gap-4 py-2 px-3 rounded-lg bg-muted/70 text-[11px]">
               <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-xs bg-[#10b981]"></span>
-                <span className="font-medium text-foreground">Trống (6)</span>
+                <span className="w-3 h-3 rounded-xs bg-success"></span>
+                <span className="font-medium text-foreground">Còn chỗ (6)</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-xs bg-[#94a3b8]"></span>
-                <span className="text-muted-foreground">Đã ở (16)</span>
+                <span className="w-3 h-3 rounded-xs bg-muted"></span>
+                <span className="text-muted-foreground">Đã đầy (16)</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-xs bg-[#f59e0b]"></span>
+                <span className="w-3 h-3 rounded-xs bg-primary"></span>
                 <span className="text-muted-foreground">Đang giữ (1)</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-xs bg-[#ef4444]"></span>
+                <span className="w-3 h-3 rounded-xs bg-danger"></span>
                 <span className="text-muted-foreground">Bảo trì (1)</span>
+              </div>
+              <div className="ml-auto rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
+                AI gợi ý: {suggestRoomAllocation({ id: user?.studentId || "SE182049", faculty: user?.major || "CNTT", nightOwl: false, quiet: true }, [{ id: "A205", facultyMix: [user?.major || "CNTT"], nightOwlFriendly: false, quietZone: true, freeBeds: 6 }, { id: "A202", facultyMix: ["KETOAN"], nightOwlFriendly: true, quietZone: false, freeBeds: 2 }], 1)[0]?.id || "A205"} hợp thói quen yên tĩnh
               </div>
               <div className="flex items-center gap-1.5 ml-auto">
                 <span className="w-3 h-3 rounded-xs bg-primary ring-2 ring-primary ring-offset-1"></span>
-                <span className="font-bold text-primary dark:text-[#cee6f4]">Đang chọn (1)</span>
+                <span className="font-bold text-primary dark:text-primary">Đang chọn (1)</span>
               </div>
             </div>
 
             {/* Visual Floor Canvas Matrix */}
-            <div className="p-3.5 bg-[#f4f4ee] dark:bg-[#141c21] rounded-xl border border-border relative space-y-3">
+            <div className="p-3.5 bg-muted/70 rounded-xl border border-border relative space-y-3">
               {/* Orientation Indicators */}
               <div className="flex justify-between items-center text-muted-foreground text-[10px] font-mono tracking-wider px-1">
                 <span className="flex items-center gap-1 whitespace-nowrap truncate">
-                  <Sun className="h-3 w-3 text-amber-500 shrink-0" /> HƯỚNG ĐÔNG (BAN CÔNG)
+                  <Sun className="h-3 w-3 text-primary shrink-0" /> HƯỚNG ĐÔNG (BAN CÔNG)
                 </span>
                 <span className="flex items-center gap-1 whitespace-nowrap truncate text-right">
                   <Compass className="h-3 w-3 shrink-0" /> HƯỚNG BẮC (KHUÔN VIÊN)
@@ -481,7 +475,7 @@ export const BookingPage: React.FC = () => {
                   return (
                     <div
                       key={comp.id}
-                      className={`bg-white dark:bg-[#161e23] p-3 rounded-xl border transition-all ${
+                      className={`bg-card p-3 rounded-xl border transition-all ${
                         isSelectedComp
                           ? "ring-2 ring-primary border-primary shadow-sm"
                           : "border-border"
@@ -496,7 +490,7 @@ export const BookingPage: React.FC = () => {
                               <span className="w-1.5 h-1.5 rounded-full bg-primary inline-block shrink-0"></span>
                             )}
                           </span>
-                          <span className="text-[10px] font-semibold text-[#4C6269] dark:text-[#b3cad3] bg-[#cee6ef]/40 dark:bg-[#233944] px-1.5 py-0.5 rounded whitespace-nowrap shrink-0">
+                          <span className="text-[10px] font-semibold text-muted-foreground bg-muted px-1.5 py-0.5 rounded whitespace-nowrap shrink-0">
                             {comp.zone}
                           </span>
                         </div>
@@ -517,21 +511,23 @@ export const BookingPage: React.FC = () => {
                             <div
                               key={bed.id}
                               onClick={() => handleSelectBed(bed, comp.id)}
-                              className={`p-2 rounded-lg text-center flex flex-col items-center justify-center transition-all ${
+                              className={`p-2 rounded-lg text-center flex flex-col items-center justify-center transition-all border ${
                                 isCurrentPick
-                                  ? "bg-primary text-white shadow-md scale-105 ring-2 ring-primary ring-offset-2 z-10 cursor-pointer"
+                                  ? "bg-primary text-white border-primary shadow-md scale-105 ring-2 ring-primary ring-offset-2 z-10 cursor-pointer"
                                   : isAvailable
-                                  ? "bg-[#ECFDF5] dark:bg-[#065F46]/20 border border-[#A7F3D0] hover:bg-[#d1fae5] cursor-pointer text-[#065F46] dark:text-[#6ee7b7]"
+                                  ? "bg-success-soft border-success/25 hover:bg-success-soft cursor-pointer text-success-soft-foreground   "
                                   : isHolding
-                                  ? "bg-[#FFFBEB] dark:bg-[#78350f]/20 border border-[#FDE68A] text-[#92400E] dark:text-[#fcd34d] cursor-not-allowed"
+                                  ? "bg-primary-soft border-primary/25 text-primary-soft-foreground    cursor-not-allowed"
                                   : isMaint
-                                  ? "bg-[#FEF2F2] dark:bg-[#7f1d1d]/20 border border-[#FECACA] text-[#991B1B] dark:text-[#fca5a5] cursor-not-allowed"
-                                  : "bg-[#F1F5F9] dark:bg-[#1e293b] text-muted-foreground opacity-75 cursor-not-allowed"
+                                  ? "bg-danger-soft border-danger/25 text-danger-soft-foreground    cursor-not-allowed"
+                                  : "bg-muted border-border text-muted-foreground cursor-not-allowed"
                               }`}
                             >
-                              <span className="material-symbols-outlined text-base shrink-0">
-                                {isCurrentPick ? "check_circle" : "single_bed"}
-                              </span>
+                              {isCurrentPick ? (
+                                <CircleCheck className="h-4 w-4 shrink-0" />
+                              ) : (
+                                <BedDouble className="h-4 w-4 shrink-0" />
+                              )}
                               <span className="font-mono font-bold text-[11px] leading-tight whitespace-nowrap">
                                 {bed.slot}
                               </span>
@@ -556,7 +552,7 @@ export const BookingPage: React.FC = () => {
               </div>
 
               {/* Architectural CAD Notation */}
-              <div className="pt-2 flex justify-between items-center text-slate-500 dark:text-slate-400 text-[10px] font-mono border-t border-border">
+              <div className="pt-2 flex justify-between items-center text-muted-foreground text-[10px] font-mono border-t border-border">
                 <span className="shrink-0 whitespace-nowrap">[CAD: 2026.10-DMS-146]</span>
                 <span className="truncate ml-2 text-right">WC & BÀN HỌC BỐ TRÍ CUỐI HÀNH LANG B & D</span>
               </div>
@@ -569,23 +565,23 @@ export const BookingPage: React.FC = () => {
           {/* 15-Minute Countdown Timer Card */}
           <div className="bg-primary text-white p-3.5 rounded-xl shadow-xs space-y-2">
             <div className="flex items-center justify-between text-xs">
-              <span className="uppercase tracking-wider font-bold text-[#cee6ef] text-[10px] whitespace-nowrap">
+              <span className="uppercase tracking-wider font-bold text-white/80 text-[10px] whitespace-nowrap">
                 Khóa Giữ Chỗ Tạm Thời
               </span>
-              <Clock className="h-3.5 w-3.5 text-[#cee6ef] animate-pulse shrink-0" />
+              <Clock className="h-3.5 w-3.5 text-white/80 animate-pulse shrink-0" />
             </div>
 
             <div className="flex items-baseline gap-2">
               <span className="text-2xl font-black font-mono tracking-tight text-white">
                 {formatTime(timeLeft)}
               </span>
-              <span className="text-xs text-[#cee6ef] whitespace-nowrap">Còn lại</span>
+              <span className="text-xs text-white/80 whitespace-nowrap">Còn lại</span>
             </div>
 
             {/* Progress bar of timer */}
             <div className="w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
               <div
-                className="bg-[#cee6ef] h-full transition-all duration-1000"
+                className="bg-white h-full transition-all duration-1000"
                 style={{ width: `${(timeLeft / 900) * 100}%` }}
               ></div>
             </div>
@@ -596,7 +592,7 @@ export const BookingPage: React.FC = () => {
           </div>
 
           {/* Selected Bed Specifications */}
-          <div className="bg-white dark:bg-[#161e23] border border-border p-4 rounded-xl shadow-xs space-y-3">
+          <div className="dms-card p-4 space-y-3">
             <div className="flex items-center justify-between pb-2 border-b border-border">
               <div>
                 <span className="text-[10px] uppercase font-bold text-muted-foreground block">
@@ -604,7 +600,7 @@ export const BookingPage: React.FC = () => {
                 </span>
                 <h4 className="font-bold text-sm text-foreground">{selectedBed.code}</h4>
               </div>
-              <Badge variant="available" className="shrink-0 whitespace-nowrap">
+              <Badge variant="success" className="shrink-0 whitespace-nowrap">
                 {selectedBed.tier === "lower" ? "Tầng dưới" : "Tầng trên"}
               </Badge>
             </div>
@@ -618,44 +614,44 @@ export const BookingPage: React.FC = () => {
               </div>
               <div className="flex items-center justify-between gap-2 text-muted-foreground">
                 <span className="whitespace-nowrap">Tiện ích kèm:</span>
-                <span className="font-semibold text-foreground truncate text-right">Locker số + Đèn bàn</span>
+                <span className="font-semibold text-foreground whitespace-nowrap text-right">Locker + Đèn bàn</span>
               </div>
               <div className="flex items-center justify-between gap-2 text-muted-foreground">
                 <span className="whitespace-nowrap">Quy cách đệm:</span>
-                <span className="font-semibold text-foreground truncate text-right">1.0m × 2.0m Foam</span>
+                <span className="font-semibold text-foreground whitespace-nowrap text-right">1.0 × 2.0m Foam</span>
               </div>
               <div className="flex items-center justify-between gap-2 text-muted-foreground">
                 <span className="whitespace-nowrap">Thời hạn thuê:</span>
-                <span className="font-semibold text-foreground truncate text-right">Học kỳ 1 (5 Tháng)</span>
+                <span className="font-semibold text-foreground whitespace-nowrap text-right">HK1 · 5 tháng</span>
               </div>
             </div>
 
             {/* Financial Breakdown */}
-            <div className="bg-[#f4f4ee] dark:bg-[#1c262c] p-3 rounded-xl space-y-2 text-xs border border-border">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-600 dark:text-slate-300 block">
+            <div className="bg-muted/70 p-3 rounded-xl space-y-2 text-xs border border-border">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block">
                 Bảng Kê Chi Phí Kỳ 1
               </span>
-              <div className="flex items-center justify-between gap-2 text-slate-600 dark:text-slate-300">
+              <div className="flex items-center justify-between gap-2 text-muted-foreground">
                 <span className="whitespace-nowrap">Tiền phòng (tháng 1):</span>
-                <span className="font-mono text-slate-900 dark:text-white font-semibold whitespace-nowrap">₫950,000</span>
+                <span className="font-mono text-foreground font-semibold whitespace-nowrap">₫950,000</span>
               </div>
-              <div className="flex items-center justify-between gap-2 text-slate-600 dark:text-slate-300">
+              <div className="flex items-center justify-between gap-2 text-muted-foreground">
                 <span className="whitespace-nowrap">Tiền cọc an ninh:</span>
-                <span className="font-mono text-slate-900 dark:text-white font-semibold whitespace-nowrap">₫1,000,000</span>
+                <span className="font-mono text-foreground font-semibold whitespace-nowrap">₫1,000,000</span>
               </div>
-              <div className="flex items-center justify-between gap-2 text-slate-600 dark:text-slate-300">
+              <div className="flex items-center justify-between gap-2 text-muted-foreground">
                 <span className="whitespace-nowrap">Tạm ứng điện nước:</span>
-                <span className="font-mono text-slate-900 dark:text-white font-semibold whitespace-nowrap">₫200,000</span>
+                <span className="font-mono text-foreground font-semibold whitespace-nowrap">₫200,000</span>
               </div>
-              <div className="pt-2 border-t border-border flex items-center justify-between gap-2 font-bold text-slate-900 dark:text-sky-300 text-xs">
+              <div className="pt-2 border-t border-border flex items-center justify-between gap-2 font-bold text-foreground text-xs">
                 <span className="whitespace-nowrap">Tổng thanh toán:</span>
-                <span className="font-mono text-primary dark:text-sky-400 font-black text-sm whitespace-nowrap">₫2,150,000</span>
+                <span className="font-mono text-primary dark:text-primary font-black text-sm whitespace-nowrap">₫2,150,000</span>
               </div>
             </div>
 
             {/* Payment Method Radio Options */}
             <div className="space-y-1.5 pt-0.5">
-              <label className="text-[10px] uppercase font-bold tracking-wider text-slate-600 dark:text-slate-300 block">
+              <label className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block">
                 Phương Thức Thanh Toán
               </label>
 
@@ -664,28 +660,27 @@ export const BookingPage: React.FC = () => {
                 onClick={() => setPaymentMethod("vietqr")}
                 className={`flex items-center justify-between p-2.5 rounded-xl border cursor-pointer text-xs transition-all ${
                   paymentMethod === "vietqr"
-                    ? "border-sky-500 bg-sky-500/10 shadow-2xs ring-1 ring-sky-500/30 dark:border-sky-400 dark:bg-sky-950/40 dark:ring-sky-400/40"
-                    : "border-border hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c]"
+                    ? "border-primary bg-primary/5 shadow-2xs ring-1 ring-primary/30"
+                    : "border-border hover:bg-muted"
                 }`}
               >
                 <div className="flex items-center gap-2 min-w-0">
-                  <input
-                    type="radio"
+                  <Checkbox
                     name="pm"
                     checked={paymentMethod === "vietqr"}
                     onChange={() => setPaymentMethod("vietqr")}
-                    className="accent-sky-500 h-3.5 w-3.5 shrink-0 cursor-pointer"
+                    className="h-3.5 w-3.5 shrink-0 cursor-pointer accent-primary"
                   />
                   <div className="min-w-0">
-                    <span className="font-bold text-slate-900 dark:text-white block text-xs truncate">
-                      VietQR NAPAS 24/7
+                    <span className="font-bold text-foreground block text-xs whitespace-nowrap">
+                      VietQR NAPAS
                     </span>
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block truncate">
-                      Tự động xác thực tức thì
+                    <span className="text-[10px] text-muted-foreground block whitespace-nowrap">
+                      Xác thực tức thì
                     </span>
                   </div>
                 </div>
-                <span className="shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-500/20 whitespace-nowrap ml-2">
+                <span className="shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full bg-success-soft text-success-soft-foreground border border-success/25 whitespace-nowrap ml-2">
                   Tức thì
                 </span>
               </div>
@@ -695,28 +690,27 @@ export const BookingPage: React.FC = () => {
                 onClick={() => setPaymentMethod("vnpay")}
                 className={`flex items-center justify-between p-2.5 rounded-xl border cursor-pointer text-xs transition-all ${
                   paymentMethod === "vnpay"
-                    ? "border-sky-500 bg-sky-500/10 shadow-2xs ring-1 ring-sky-500/30 dark:border-sky-400 dark:bg-sky-950/40 dark:ring-sky-400/40"
-                    : "border-border hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c]"
+                    ? "border-primary bg-primary/5 shadow-2xs ring-1 ring-primary/30"
+                    : "border-border hover:bg-muted"
                 }`}
               >
                 <div className="flex items-center gap-2 min-w-0">
-                  <input
-                    type="radio"
+                  <Checkbox
                     name="pm"
                     checked={paymentMethod === "vnpay"}
                     onChange={() => setPaymentMethod("vnpay")}
-                    className="accent-sky-500 h-3.5 w-3.5 shrink-0 cursor-pointer"
+                    className="h-3.5 w-3.5 shrink-0 cursor-pointer accent-primary"
                   />
                   <div className="min-w-0">
-                    <span className="font-bold text-slate-900 dark:text-white block text-xs truncate">
-                      VNPay QR / Thẻ ATM
+                    <span className="font-bold text-foreground block text-xs whitespace-nowrap">
+                      VNPay QR
                     </span>
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block truncate">
-                      Cổng ATM & Thẻ quốc tế
+                    <span className="text-[10px] text-muted-foreground block whitespace-nowrap">
+                      ATM &amp; Thẻ quốc tế
                     </span>
                   </div>
                 </div>
-                <span className="shrink-0 text-[10px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-200/60 dark:bg-slate-800 px-2 py-0.5 rounded-md whitespace-nowrap ml-2">
+                <span className="shrink-0 text-[10px] font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded-md whitespace-nowrap ml-2">
                   Cổng phụ
                 </span>
               </div>
@@ -725,13 +719,13 @@ export const BookingPage: React.FC = () => {
             {/* CTA Button */}
             <Button
               onClick={handleStartCheckout}
-              className="w-full h-10 bg-primary hover:bg-[#3a505b] dark:bg-sky-600 dark:hover:bg-sky-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs rounded-lg"
+              className="w-full h-10 bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs rounded-lg"
             >
               <QrCode className="h-4 w-4 shrink-0" />
               <span className="whitespace-nowrap">Tạo VietQR & Xác Nhận Giữ Chỗ</span>
             </Button>
 
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 text-center leading-normal">
+            <p className="text-[10px] text-muted-foreground text-center leading-normal">
               Tự động duyệt 0-chạm & cấp Hợp đồng điện tử PDF tức thì khi có báo Có.
             </p>
           </div>
@@ -741,9 +735,9 @@ export const BookingPage: React.FC = () => {
       {/* CHECKOUT & AUTO-APPROVAL POPUP MODAL */}
       {showCheckoutModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-[#161e23] border border-border w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
+          <div className="bg-card border border-border w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
             {/* Modal Header */}
-            <div className="p-5 bg-[#f4f4ee] dark:bg-[#1c262c] border-b border-border flex items-center justify-between">
+            <div className="p-5 bg-muted/70 border-b border-border flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="p-1.5 rounded-lg bg-primary text-white">
                   <QrCode className="h-4 w-4" />
@@ -761,7 +755,7 @@ export const BookingPage: React.FC = () => {
                 onClick={() => setShowCheckoutModal(false)}
                 className="text-muted-foreground hover:text-foreground text-sm p-1 rounded-md"
               >
-                ✕
+                <X className="h-4 w-4" />
               </button>
             </div>
 
@@ -769,9 +763,9 @@ export const BookingPage: React.FC = () => {
             <div className="p-6 space-y-5">
               {checkoutStep === "qr" && (
                 <>
-                  <div className="flex flex-col items-center justify-center p-4 bg-white rounded-xl border border-border">
+                  <div className="flex flex-col items-center justify-center p-4 bg-card rounded-xl border border-border">
                     {/* Dynamic QR Code graphic */}
-                    <div className="relative p-2 bg-white rounded-xl shadow-xs border border-gray-100">
+                    <div className="relative p-2 bg-white rounded-xl shadow-xs border border-border">
                       <img
                         src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=DORM_BOOKING_${selectedBed.code}_${user?.studentId || "SE182049"}_2150000`}
                         alt="VietQR Payment Code"
@@ -785,34 +779,34 @@ export const BookingPage: React.FC = () => {
                     </div>
 
                     <div className="mt-3 text-center space-y-1">
-                      <span className="text-xs font-bold text-primary dark:text-[#cee6ef]">
+                      <span className="text-xs font-bold text-primary dark:text-primary">
                         Quét mã bằng app ngân hàng bất kỳ (NAPAS 24/7)
                       </span>
                       <p className="text-[11px] text-muted-foreground font-mono">
                         Số tiền: <strong>2,150,000 VNĐ</strong> • Nội dung:{" "}
-                        <span className="bg-[#f4f4ee] px-1 py-0.5 rounded text-foreground font-semibold">
+                        <span className="bg-muted px-1 py-0.5 rounded text-foreground font-semibold">
                           KTX {user?.studentId || "SE182049"} {selectedBed.code}
                         </span>
                       </p>
                     </div>
                   </div>
 
-                  <div className="bg-[#f4f4ee] dark:bg-[#1c262c] p-3.5 rounded-xl space-y-2 text-xs">
+                  <div className="bg-muted/70 p-3.5 rounded-xl space-y-2 text-xs">
                     <div className="flex items-center gap-2 font-bold text-foreground">
-                      <Zap className="h-4 w-4 text-amber-500" />
+                      <Zap className="h-4 w-4 text-primary" />
                       <span>Cơ chế Tự Động Xét Duyệt 0-Chạm (Auto-Approval)</span>
                     </div>
                     <ul className="space-y-1 text-[11px] text-muted-foreground">
                       <li className="flex items-center gap-1.5">
-                        <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                        <Check className="h-3.5 w-3.5 text-success shrink-0" />
                         Đối soát giới tính: Nam khớp Tòa A
                       </li>
                       <li className="flex items-center gap-1.5">
-                        <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                        <Check className="h-3.5 w-3.5 text-success shrink-0" />
                         Tình trạng nợ cũ: 0 VNĐ (Đủ điều kiện xếp phòng)
                       </li>
                       <li className="flex items-center gap-1.5">
-                        <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                        <Check className="h-3.5 w-3.5 text-success shrink-0" />
                         Trạng thái sinh viên: Đang học chính quy K19
                       </li>
                     </ul>
@@ -828,9 +822,9 @@ export const BookingPage: React.FC = () => {
                     </Button>
                     <Button
                       onClick={handleConfirmPayment}
-                      className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5"
+                      className="flex-1 bg-success hover:bg-success text-white font-bold text-xs flex items-center justify-center gap-1.5"
                     >
-                      <CheckCircle2 className="h-4 w-4" />
+                      <CircleCheck className="h-4 w-4" />
                       <span>Mô Phỏng Thanh Toán Thành Công</span>
                     </Button>
                   </div>
@@ -859,8 +853,8 @@ export const BookingPage: React.FC = () => {
 
               {checkoutStep === "success" && (
                 <div className="py-4 flex flex-col items-center justify-center text-center space-y-4">
-                  <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
-                    <CheckCircle2 className="h-8 w-8" />
+                  <div className="w-14 h-14 rounded-full bg-success-soft text-success-soft-foreground flex items-center justify-center">
+                    <CircleCheck className="h-8 w-8" />
                   </div>
 
                   <div className="space-y-1">
@@ -875,7 +869,7 @@ export const BookingPage: React.FC = () => {
                     </p>
                   </div>
 
-                  <div className="p-3 bg-[#f4f4ee] dark:bg-[#1c262c] rounded-xl text-left w-full text-xs space-y-1">
+                  <div className="p-3 bg-muted/70 rounded-xl text-left w-full text-xs space-y-1">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Sinh viên:</span>
                       <span className="font-semibold">{user?.fullName || "Nguyễn Hoàng Vinh"}</span>

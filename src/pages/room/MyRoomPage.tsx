@@ -2,22 +2,23 @@ import React, { useState } from "react"
 import { useAuth } from "@/contexts/useAuth"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Avatar } from "@/components/ui/avatar"
 import { Link } from "react-router-dom"
-import {
-  DoorClosed,
-  FileText,
-  Receipt,
-  Wrench,
-  LogOut,
-  Users,
-  CheckCircle2,
-  CheckSquare,
-} from "lucide-react"
+import { computeCheckoutSettlement, createRoomSwitchRequest, type DamageItem } from "@/lib/dorm-ops"
+import { DoorClosed, FileText, Receipt, Wrench, LogOut, Users, CircleCheck, SquareCheck, X } from "lucide-react"
 
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 export const MyRoomPage: React.FC = () => {
   const { user } = useAuth()
   const [showHandoverModal, setShowHandoverModal] = useState(false)
   const [showCheckoutModal, setShowCheckoutModal] = useState(false)
+  const [showSwitchModal, setShowSwitchModal] = useState(false)
+  const [toRoom, setToRoom] = useState("A202")
+  const [switchReason, setSwitchReason] = useState("")
+  const [switchMsg, setSwitchMsg] = useState<string | null>(null)
+  const [damages] = useState<DamageItem[]>([{ name: "Vòi sen rò rỉ", cost: 250000 }])
+  const settlement = computeCheckoutSettlement(1000000, damages, 0)
 
   const roommates = [
     {
@@ -28,7 +29,6 @@ export const MyRoomPage: React.FC = () => {
       phone: "0912 345 678",
       dutyDay: "Thứ Hai & Thứ Năm",
       isMe: true,
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
     },
     {
       name: "Trần Công Tiến",
@@ -38,7 +38,6 @@ export const MyRoomPage: React.FC = () => {
       phone: "0934 112 233",
       dutyDay: "Thứ Ba & Thứ Sáu",
       isMe: false,
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
     },
     {
       name: "Văn Thái Trung",
@@ -48,7 +47,6 @@ export const MyRoomPage: React.FC = () => {
       phone: "0977 445 566",
       dutyDay: "Thứ Tư & Thứ Bảy",
       isMe: false,
-      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
     },
     {
       name: "Đinh Thanh Trung",
@@ -58,7 +56,6 @@ export const MyRoomPage: React.FC = () => {
       phone: "0988 990 011",
       dutyDay: "Chủ Nhật (Tổng vệ sinh)",
       isMe: false,
-      avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=200&q=80",
     },
   ]
 
@@ -74,20 +71,20 @@ export const MyRoomPage: React.FC = () => {
   return (
     <div className="max-w-[1440px] mx-auto space-y-6 pb-12">
       {/* 01. TOP UNIT SUMMARY & OPERATIONAL ACTION BAR */}
-      <div className="bg-white dark:bg-[#161e23] border border-border rounded-xl p-6 shadow-xs flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+      <div className="dms-card p-6 shadow-xs flex flex-col xl:flex-row xl:items-center justify-between gap-6">
         <div className="flex items-start gap-4">
           <div className="w-16 h-16 rounded-xl bg-primary text-white flex items-center justify-center shrink-0 shadow-xs">
             <DoorClosed className="h-8 w-8" />
           </div>
           <div className="space-y-1.5">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-black text-primary dark:text-[#cee6ef] tracking-tight">
+              <h1 className="text-2xl font-black text-primary dark:text-primary tracking-tight">
                 Phòng A205
               </h1>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground px-2 py-0.5 rounded bg-[#f4f4ee] dark:bg-[#1c262c]">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground px-2 py-0.5 rounded bg-muted/70">
                 Khu A · Tầng 2
               </span>
-              <Badge variant="available" dot>
+              <Badge variant="success" dot>
                 Đang Lưu Trú (Active)
               </Badge>
               <Badge variant="secondary">Sinh viên Chính quy K19</Badge>
@@ -95,7 +92,7 @@ export const MyRoomPage: React.FC = () => {
             <p className="text-xs text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1">
               <span className="font-semibold text-foreground">Buồng B (Balcony Wing)</span>
               <span>•</span>
-              <span className="font-semibold text-primary dark:text-[#cee6ef]">Giường G03 (Tầng dưới)</span>
+              <span className="font-semibold text-primary dark:text-primary">Giường G03 (Tầng dưới)</span>
               <span>•</span>
               <span>Học kỳ 1 Năm học 2026–2027 (Hết hạn: 15/01/2027)</span>
             </p>
@@ -107,7 +104,7 @@ export const MyRoomPage: React.FC = () => {
           <Button
             variant="outline"
             onClick={() => alert("Đang mở bản xem trước Hợp đồng điện tử e-Contract PDF...")}
-            className="text-xs h-9 gap-1.5 bg-[#f4f4ee] dark:bg-[#1c262c] whitespace-nowrap shrink-0"
+            className="text-xs h-9 gap-1.5 bg-muted/70 whitespace-nowrap shrink-0"
           >
             <FileText className="h-4 w-4 text-primary shrink-0" />
             <span>Hợp Đồng (PDF)</span>
@@ -116,7 +113,7 @@ export const MyRoomPage: React.FC = () => {
           <Link to="/billing">
             <Button
               variant="outline"
-              className="text-xs h-9 gap-1.5 bg-[#f4f4ee] dark:bg-[#1c262c] whitespace-nowrap shrink-0"
+              className="text-xs h-9 gap-1.5 bg-muted/70 whitespace-nowrap shrink-0"
             >
               <Receipt className="h-4 w-4 text-primary shrink-0" />
               <span>Hóa Đơn Điện Nước</span>
@@ -131,8 +128,17 @@ export const MyRoomPage: React.FC = () => {
           </Link>
 
           <Button
+            onClick={() => setShowSwitchModal(true)}
+            variant="outline"
+            className="text-xs h-9 gap-1.5 whitespace-nowrap shrink-0"
+          >
+            <DoorClosed className="h-4 w-4 shrink-0" />
+            <span>Yêu Cầu Đổi Phòng</span>
+          </Button>
+
+          <Button
             onClick={() => setShowCheckoutModal(true)}
-            className="text-xs h-9 gap-1.5 bg-red-100 hover:bg-red-200 text-red-700 whitespace-nowrap shrink-0"
+            className="text-xs h-9 gap-1.5 bg-danger-soft hover:bg-danger-soft text-danger-soft-foreground whitespace-nowrap shrink-0"
           >
             <LogOut className="h-4 w-4 shrink-0" />
             <span>Yêu Cầu Trả Phòng</span>
@@ -141,7 +147,7 @@ export const MyRoomPage: React.FC = () => {
       </div>
 
       {/* 02. ARCHITECTURAL BLUEPRINT MINI COMPARTMENT VISUALIZER */}
-      <div className="bg-white dark:bg-[#161e23] border border-border rounded-xl p-5 shadow-xs space-y-4">
+      <div className="dms-card p-5 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-border">
           <div>
             <h2 className="font-bold text-sm text-foreground">
@@ -154,21 +160,21 @@ export const MyRoomPage: React.FC = () => {
           <div className="flex items-center gap-3 text-[11px]">
             <span className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-xs bg-primary"></span>
-              <strong className="text-primary dark:text-[#cee6ef]">Giường của bạn (B-G03)</strong>
+              <strong className="text-primary dark:text-primary">Giường của bạn (B-G03)</strong>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-xs bg-slate-300 dark:bg-slate-700"></span>
+              <span className="w-2.5 h-2.5 rounded-xs bg-muted"></span>
               <span>Đã có người ở</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-xs bg-emerald-400"></span>
+              <span className="w-2.5 h-2.5 rounded-xs bg-success"></span>
               <span>Còn trống</span>
             </span>
           </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {["Buồng A (Window Bay)", "Buồng B (Của bạn)", "Buồng C (Study Hub)", "Buồng D (Main Hall Door)"].map((comp, idx) => {
+          {["Buồng A", "Buồng B (Của bạn)", "Buồng C", "Buồng D"].map((comp, idx) => {
             const isMyComp = idx === 1
             return (
               <div
@@ -176,7 +182,7 @@ export const MyRoomPage: React.FC = () => {
                 className={`p-3.5 rounded-xl border space-y-2.5 ${
                   isMyComp
                     ? "bg-primary/5 border-primary ring-1 ring-primary"
-                    : "bg-[#f4f4ee] dark:bg-[#1c262c] border-border"
+                    : "bg-muted/70 border-border"
                 }`}
               >
                 <div className="flex items-center justify-between gap-1">
@@ -196,10 +202,10 @@ export const MyRoomPage: React.FC = () => {
                           isMyBed
                             ? "bg-primary text-white shadow-xs"
                             : isMyComp && g === 2
-                            ? "bg-amber-100 text-amber-800"
+                            ? "bg-primary-soft text-primary-soft-foreground"
                             : isMyComp && g === 6
-                            ? "bg-emerald-100 text-emerald-800"
-                            : "bg-white dark:bg-[#161e23] border border-border text-muted-foreground"
+                            ? "bg-success-soft text-success-soft-foreground"
+                            : "bg-card border border-border text-muted-foreground"
                         }`}
                       >
                         G0{g}
@@ -216,7 +222,7 @@ export const MyRoomPage: React.FC = () => {
       {/* 03. TWO-COLUMN: ROOMMATES ROSTER & DIGITAL HANDOVER CHECKLIST */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* ROOMMATES ROSTER (7 COLS) */}
-        <div className="lg:col-span-7 bg-white dark:bg-[#161e23] border border-border rounded-xl p-5 shadow-xs space-y-4">
+        <div className="lg:col-span-7 dms-card p-5 shadow-xs space-y-4">
           <div className="flex items-center justify-between pb-2 border-b border-border">
             <div className="flex items-center gap-2">
               <span className="p-1.5 rounded-lg bg-primary/10 text-primary">
@@ -231,7 +237,7 @@ export const MyRoomPage: React.FC = () => {
                 </p>
               </div>
             </div>
-            <Badge variant="available">4 Thành Viên</Badge>
+            <Badge variant="success">4 Thành Viên</Badge>
           </div>
 
           <div className="space-y-3">
@@ -241,15 +247,11 @@ export const MyRoomPage: React.FC = () => {
                 className={`p-3.5 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors ${
                   rm.isMe
                     ? "bg-primary/5 border-primary/40 ring-1 ring-primary/20"
-                    : "bg-[#f4f4ee] dark:bg-[#1c262c] border-border"
+                    : "bg-muted/70 border-border"
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <img
-                    src={rm.avatar}
-                    alt={rm.name}
-                    className="w-10 h-10 rounded-full object-cover border border-border shrink-0"
-                  />
+                  <Avatar name={rm.name} className="h-10 w-10 text-xs" />
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-xs text-foreground">{rm.name}</span>
@@ -261,14 +263,14 @@ export const MyRoomPage: React.FC = () => {
                     </div>
                     <p className="text-[11px] text-muted-foreground">
                       MSSV: <strong className="font-mono">{rm.mssv}</strong> • Giường:{" "}
-                      <strong className="text-primary dark:text-[#cee6ef]">{rm.bed}</strong>
+                      <strong className="text-primary dark:text-primary">{rm.bed}</strong>
                     </p>
                     <p className="text-[10px] text-muted-foreground">{rm.major}</p>
                   </div>
                 </div>
 
                 <div className="flex sm:flex-col items-start sm:items-end justify-between border-t sm:border-t-0 pt-2 sm:pt-0 border-border text-xs shrink-0">
-                  <span className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/40 px-2 py-0.5 rounded whitespace-nowrap shrink-0">
+                  <span className="text-[11px] font-semibold text-success-soft-foreground bg-success-soft px-2 py-0.5 rounded whitespace-nowrap shrink-0">
                     Trực nhật: {rm.dutyDay}
                   </span>
                   <span className="text-[11px] font-mono text-muted-foreground mt-1 whitespace-nowrap">
@@ -280,39 +282,39 @@ export const MyRoomPage: React.FC = () => {
           </div>
         </div>
 
-        {/* DIGITAL HANDOVER & AMENITIES CHECKLIST (5 COLS - UC-14 & UC-15) */}
-        <div className="lg:col-span-5 bg-white dark:bg-[#161e23] border border-border rounded-xl p-5 shadow-xs space-y-4">
+        {/* Danh mục bàn giao thiết bị */}
+        <div className="lg:col-span-5 dms-card p-5 shadow-xs space-y-4">
           <div className="flex items-center justify-between pb-2 border-b border-border">
             <div className="flex items-center gap-2">
-              <span className="p-1.5 rounded-lg bg-emerald-100 text-emerald-700">
-                <CheckSquare className="h-4 w-4" />
+              <span className="p-1.5 rounded-lg bg-success-soft text-success-soft-foreground">
+                <SquareCheck className="h-4 w-4" />
               </span>
               <div>
                 <h3 className="font-bold text-sm text-foreground">
-                  Biên Bản Bàn Giao Thiết Bị (UC-14)
+                  Biên bản bàn giao thiết bị
                 </h3>
                 <p className="text-[11px] text-muted-foreground">
                   Nghiệm thu tài sản khi nhận phòng & hoàn cọc
                 </p>
               </div>
             </div>
-            <Badge variant="available">Đã Ký Số</Badge>
+            <Badge variant="success">Đã Ký Số</Badge>
           </div>
 
           <div className="space-y-2.5 text-xs">
             {inventoryItems.map((item, idx) => (
               <div
                 key={idx}
-                className="p-2.5 rounded-lg bg-[#f4f4ee] dark:bg-[#1c262c] border border-border flex items-center justify-between"
+                className="p-2.5 rounded-lg bg-muted/70 border border-border flex items-center justify-between"
               >
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                  <CircleCheck className="h-4 w-4 text-success-soft-foreground shrink-0" />
                   <div>
                     <span className="font-semibold text-foreground block">{item.name}</span>
                     <span className="text-[10px] text-muted-foreground">{item.note}</span>
                   </div>
                 </div>
-                <Badge variant="available">{item.status}</Badge>
+                <Badge variant="success">{item.status}</Badge>
               </div>
             ))}
           </div>
@@ -321,9 +323,9 @@ export const MyRoomPage: React.FC = () => {
             <Button
               onClick={() => setShowHandoverModal(true)}
               variant="outline"
-              className="w-full text-xs font-semibold h-9.5 gap-2 text-slate-800 dark:text-slate-100 hover:text-primary dark:hover:text-primary bg-slate-50/50 dark:bg-slate-800/40 border-border hover:border-primary/50 transition-all shadow-xs"
+              className="w-full text-xs font-semibold h-9 gap-2 border-border transition-all shadow-xs"
             >
-              <FileText className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <FileText className="h-4 w-4 text-success-soft-foreground shrink-0" />
               <span className="whitespace-nowrap truncate">Xem biên bản nghiệm thu & ảnh</span>
             </Button>
           </div>
@@ -333,7 +335,7 @@ export const MyRoomPage: React.FC = () => {
       {/* HANDOVER DETAILS MODAL */}
       {showHandoverModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="bg-white dark:bg-[#161e23] border border-border w-full max-w-lg rounded-2xl shadow-xl p-6 space-y-4">
+          <div className="bg-card border border-border w-full max-w-lg rounded-2xl shadow-xl p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h3 className="font-bold text-sm text-foreground">
                 Biên Bản Bàn Giao & Hiện Trạng Thiết Bị Số Hóa
@@ -342,7 +344,7 @@ export const MyRoomPage: React.FC = () => {
                 onClick={() => setShowHandoverModal(false)}
                 className="text-muted-foreground hover:text-foreground text-sm"
               >
-                ✕
+                <X className="h-4 w-4" />
               </button>
             </div>
 
@@ -352,7 +354,7 @@ export const MyRoomPage: React.FC = () => {
                 <strong>{user?.fullName || "Nguyễn Hoàng Vinh"}</strong>. Mọi tài sản hỏng hóc trong thời gian lưu trú cần báo ngay qua mục Báo Hỏng.
               </p>
 
-              <div className="p-3 bg-[#f4f4ee] dark:bg-[#1c262c] rounded-xl space-y-1 font-mono text-[11px]">
+              <div className="p-3 bg-muted/70 rounded-xl space-y-1 font-mono text-[11px]">
                 <div>Mã biên bản: BB-2026-A205-0905</div>
                 <div>Chỉ số điện ban đầu: 12,450 kWh</div>
                 <div>Chỉ số nước ban đầu: 840 m³</div>
@@ -379,26 +381,68 @@ export const MyRoomPage: React.FC = () => {
         </div>
       )}
 
-      {/* CHECKOUT MODAL (UC-15) */}
+      {/* Modal trả phòng */}
+      {showSwitchModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
+          <div className="bg-card border border-border w-full max-w-md rounded-2xl shadow-xl p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <h3 className="font-bold text-sm text-foreground">Yêu Cầu Đổi Phòng (Submit → BQL duyệt → cập nhật sơ đồ)</h3>
+              <button onClick={() => setShowSwitchModal(false)} className="text-muted-foreground hover:text-foreground text-sm"><X className="h-4 w-4" /></button>
+            </div>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault()
+                try {
+                  const req = createRoomSwitchRequest(user?.studentId || "SE182049", "A205", toRoom, switchReason)
+                  try {
+                    const raw = localStorage.getItem("dms_room_switch_v1")
+                    const list = raw ? JSON.parse(raw) : []
+                    localStorage.setItem("dms_room_switch_v1", JSON.stringify([req, ...list]))
+                  } catch {
+                    // ignore
+                  }
+                  setSwitchMsg(`Đã gửi ${req.id}: A205 → ${req.toRoom}. BQL duyệt rồi cập nhật sơ đồ phòng.`)
+                } catch (err) {
+                  setSwitchMsg(err instanceof Error ? err.message : "Gửi thất bại")
+                }
+              }}
+              className="space-y-3 text-xs"
+            >
+              <Input value={toRoom} onChange={(e) => setToRoom(e.target.value)} placeholder="Phòng muốn chuyển (VD: A202)"  required />
+              <Textarea value={switchReason} onChange={(e) => setSwitchReason(e.target.value)} placeholder="Lý do đổi phòng" rows={3}  />
+              <Button type="submit" className="w-full">Gửi yêu cầu đổi phòng</Button>
+            </form>
+            {switchMsg && <p className="text-xs font-semibold text-success-soft-foreground">{switchMsg}</p>}
+          </div>
+        </div>
+      )}
+
+      {/* Modal trả phòng */}
       {showCheckoutModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="bg-white dark:bg-[#161e23] border border-border w-full max-w-md rounded-2xl shadow-xl p-6 space-y-4">
+          <div className="bg-card border border-border w-full max-w-md rounded-2xl shadow-xl p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h3 className="font-bold text-sm text-foreground">
-                Quy Trình Trả Phòng & Quyết Toán Hoàn Cọc (UC-15)
+                Trả phòng & quyết toán hoàn cọc
               </h3>
               <button
                 onClick={() => setShowCheckoutModal(false)}
                 className="text-muted-foreground hover:text-foreground text-sm"
               >
-                ✕
+                <X className="h-4 w-4" />
               </button>
             </div>
 
             <div className="space-y-3 text-xs">
               <p className="text-muted-foreground leading-relaxed">
-                Khi sinh viên gửi yêu cầu trả phòng:
+                Kiểm kê tài sản → trừ hư hỏng → hoàn cọc. Tạm tính từ hư hỏng đã ghi nhận:
               </p>
+              <div className="rounded-xl bg-muted/50 p-3 font-mono text-[11px]">
+                <div>Cọc giữ: {settlement.deposit.toLocaleString()}đ</div>
+                <div>Hư hỏng: {settlement.damageTotal.toLocaleString()}đ</div>
+                <div>Khấu trừ: {settlement.deduction.toLocaleString()}đ</div>
+                <div className="font-bold">Hoàn lại: {settlement.refund.toLocaleString()}đ</div>
+              </div>
               <ul className="list-disc pl-4 space-y-1 text-muted-foreground text-[11px]">
                 <li>Cán bộ KTX sẽ kiểm tra hiện trạng thiết bị và chỉ số công tơ cuối cùng.</li>
                 <li>Nếu không có hư hại, <strong>100% tiền cọc (1,000,000 VNĐ)</strong> sẽ được hoàn trả tự động vào tài khoản ngân hàng của sinh viên trong 48 giờ.</li>
@@ -417,7 +461,7 @@ export const MyRoomPage: React.FC = () => {
                     alert("Yêu cầu trả phòng đã được gửi tới Ban Quản lý KTX!")
                     setShowCheckoutModal(false)
                   }}
-                  className="flex-1 bg-red-600 hover:bg-red-700 text-white text-xs font-bold"
+                  className="flex-1 bg-danger hover:bg-danger text-white text-xs font-bold"
                 >
                   Gửi Yêu Cầu Trả Phòng
                 </Button>

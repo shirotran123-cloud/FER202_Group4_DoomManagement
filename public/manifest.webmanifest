@@ -1,0 +1,13 @@
+{
+  "name": "Domanage KTX",
+  "short_name": "Domanage",
+  "description": "Hệ thống quản lý ký túc xá FPT: đặt giường, điện nước VietQR, báo hỏng, giới nghiêm 23:00.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "lang": "vi",
+  "icons": [
+    { "src": "/vite.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

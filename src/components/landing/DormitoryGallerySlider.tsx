@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react"
-import { ChevronLeft, ChevronRight, Sparkles, Bed, BookOpen, Coffee, ShieldCheck, Pause, Play } from "lucide-react"
+import { ChevronLeft, ChevronRight, BookOpen, Coffee, Pause, Play, Sparkles } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 
 interface SlideItem {
   id: number
@@ -14,49 +16,47 @@ interface SlideItem {
 const SLIDES: SlideItem[] = [
   {
     id: 1,
-    badge: "Mô hình độc quyền 1:4:6",
-    icon: Bed,
-    title: "Không Gian Buồng Ngủ Riêng Tư & Tiện Nghi",
+    badge: "KTX FPT Quy Nhơn",
+    icon: BookOpen,
+    title: "Toàn cảnh KTX",
     subtitle:
-      "Cấu trúc buồng riêng biệt với rèm kéo cách âm, đệm cao cấp, đèn đọc sách chuyên dụng, ổ sạc Type-C và tủ đồ khóa mã số cá nhân an toàn tuyệt đối.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=1600&q=80",
-    tags: ["Rèm che riêng tư 100%", "Đèn học & Ổ cắm cá nhân", "Khóa tủ điện tử", "Điều hòa Inverter"],
+      "Toàn cảnh KTX FPT Quy Nhơn — ngôi nhà thứ hai của sinh viên.",
+    imageUrl: "/assets/dorm-cinematic/dorm-keyframe-fpt-1.jpg",
+    tags: ["Ảnh thật", "FPT Quy Nhơn", "Toàn cảnh"],
   },
   {
     id: 2,
-    badge: "Khu vực tự học & Sáng tạo",
-    icon: BookOpen,
-    title: "Phòng Tự Học Co-Working Mở Cửa 24/7",
+    badge: "Phòng sinh hoạt chung",
+    icon: Coffee,
+    title: "Phòng sinh hoạt chung",
     subtitle:
-      "Không gian làm việc nhóm và ôn thi Capstone lý tưởng với bàn ghế công thái học, ánh sáng tiêu chuẩn bảo vệ mắt cùng mạng Wi-Fi 6 tốc độ cao miễn phí.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&q=80",
-    tags: ["Wi-Fi 6 Băng thông rộng", "Ghế công thái học", "Bàn học cá nhân & nhóm", "Môi trường yên tĩnh"],
+      "Không gian sinh hoạt chung thoáng đãng — đúng chuẩn mô hình quản lý 1:4:6 của web.",
+    imageUrl: "/assets/dorm-cinematic/dorm-keyframe-fpt-2.jpg",
+    tags: ["Ảnh thật", "Sinh hoạt chung", "Mô hình 1:4:6"],
   },
   {
     id: 3,
-    badge: "Tiện ích sinh hoạt toàn diện",
+    badge: "Buồng 6 người",
     icon: Coffee,
-    title: "Bếp Nấu Ăn Tầng 1 & Phòng Sinh Hoạt Chung",
+    title: "Buồng 6 người",
     subtitle:
-      "Trang bị đầy đủ hệ thống bếp từ âm an toàn PCCC, lò vi sóng, tủ lạnh lớn và khu máy giặt sấy tự động hiện đại giúp sinh viên an tâm sinh hoạt như tại nhà.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1600&q=80",
-    tags: ["Bếp điện từ & Lò vi sóng", "Máy giặt sấy thông minh", "Không gian sinh hoạt rộng", "Tủ lạnh bảo quản"],
+      "Buồng ở 6 người gọn gàng, riêng tư — mỗi giường đều có không gian cá nhân.",
+    imageUrl: "/assets/dorm-cinematic/dorm-keyframe-fpt-3.jpg",
+    tags: ["Ảnh thật", "Buồng 6 người", "Riêng tư"],
   },
   {
     id: 4,
-    badge: "An ninh 24/7 & Cảnh quan xanh",
-    icon: ShieldCheck,
-    title: "Khuôn Viên Xanh & Cổng Kiểm Soát Thông Minh",
+    badge: "Khu vực nhà vệ sinh",
+    icon: BookOpen,
+    title: "Khu vực nhà vệ sinh",
     subtitle:
-      "Cổng xoay an ninh tự động đối chiếu thẻ sinh viên RFID, bảo vệ trực ban 24/7 cùng khuôn viên nhiều cây xanh, sân thể thao bóng rổ năng động.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1600&q=80",
-    tags: ["Cổng trục xoay RFID", "Camera giám sát AI", "Sân bóng rổ & Thể thao", "Công viên dạo bộ"],
+      "Khu vệ sinh sạch sẽ, hiện đại — đảm bảo tiện nghi sinh hoạt hằng ngày.",
+    imageUrl: "/assets/dorm-cinematic/dorm-keyframe-fpt-4.jpg",
+    tags: ["Ảnh thật", "Tiện nghi", "Sạch sẽ"],
   },
 ]
+
+const DOT_LABELS = ["Toàn cảnh", "SH chung", "Buồng 6", "Vệ sinh"]
 
 export const DormitoryGallerySlider: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -91,17 +91,17 @@ export const DormitoryGallerySlider: React.FC = () => {
 
   return (
     <div
-      className="relative overflow-hidden rounded-3xl border border-border bg-card shadow-lg group"
+      className="group relative overflow-hidden rounded-3xl border border-border bg-card shadow-lg"
       onMouseEnter={() => setIsPlaying(false)}
       onMouseLeave={() => setIsPlaying(true)}
     >
       {/* Main Image Banner with Smooth Crossfade */}
-      <div className="relative h-[380px] sm:h-[460px] lg:h-[520px] w-full overflow-hidden bg-slate-900">
+      <div className="relative h-[380px] w-full overflow-hidden bg-[#171a26] sm:h-[460px] lg:h-[520px]">
         {SLIDES.map((slide, idx) => (
           <div
             key={slide.id}
             className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-              idx === currentIndex ? "opacity-100 z-10 scale-100" : "opacity-0 z-0 pointer-events-none scale-105"
+              idx === currentIndex ? "z-10 scale-100 opacity-100" : "pointer-events-none z-0 scale-105 opacity-0"
             } transition-transform duration-1000`}
           >
             <img
@@ -116,92 +116,97 @@ export const DormitoryGallerySlider: React.FC = () => {
         ))}
 
         {/* Content Box Over the Image */}
-        <div className="absolute inset-0 z-20 flex flex-col justify-between p-6 sm:p-10 lg:p-12 text-white pointer-events-none">
+        <div className="pointer-events-none absolute inset-0 z-20 flex flex-col justify-between p-6 text-white sm:p-10 lg:p-12">
           {/* Top Bar inside Slide */}
-          <div className="flex items-center justify-between pointer-events-auto">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-black/40 px-3.5 py-1.5 text-xs font-semibold backdrop-blur-md shadow-xs">
-              <IconComponent className="h-4 w-4 text-orange-400" />
-              <span className="text-orange-200">{currentSlide.badge}</span>
-            </div>
+          <div className="pointer-events-auto flex items-center justify-between">
+            <Badge variant="default" className="border-white/25 bg-black/40 text-white backdrop-blur-md">
+              <IconComponent className="h-4 w-4 shrink-0" />
+              <span className="whitespace-nowrap">{currentSlide.badge}</span>
+            </Badge>
 
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setIsPlaying(!isPlaying)}
-                className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-black/40 px-3 py-1 text-[11px] font-medium backdrop-blur-md hover:bg-black/60 transition-colors"
+                className="hidden items-center gap-1.5 rounded-full border border-white/20 bg-black/40 px-3 py-1 text-[11px] font-medium backdrop-blur-md transition-colors hover:bg-black/60 sm:inline-flex"
                 title={isPlaying ? "Tạm dừng lướt tự động" : "Tiếp tục lướt tự động"}
               >
                 {isPlaying ? (
                   <>
-                    <Pause className="h-3 w-3 text-white/80" />
-                    <span className="text-white/80">Tự động chuyển</span>
+                    <Pause className="h-3 w-3 shrink-0 text-white/80" />
+                    <span className="whitespace-nowrap text-white/80">Tự động chuyển</span>
                   </>
                 ) : (
                   <>
-                    <Play className="h-3 w-3 text-orange-400" />
-                    <span className="text-orange-300">Đang dừng</span>
+                    <Play className="h-3 w-3 shrink-0" />
+                    <span className="whitespace-nowrap">Đang dừng</span>
                   </>
                 )}
               </button>
 
-              <div className="rounded-full border border-white/20 bg-black/40 px-3.5 py-1 text-xs font-mono font-bold backdrop-blur-md">
-                <span className="text-orange-400">0{currentIndex + 1}</span>
-                <span className="text-white/40 mx-1">/</span>
+              <div className="rounded-full border border-white/20 bg-black/40 px-3.5 py-1 font-mono text-xs font-bold backdrop-blur-md">
+                <span>0{currentIndex + 1}</span>
+                <span className="mx-1 text-white/40">/</span>
                 <span className="text-white/80">0{SLIDES.length}</span>
               </div>
             </div>
           </div>
 
           {/* Bottom Captions & Feature Tags */}
-          <div className="max-w-2xl space-y-3.5 pointer-events-auto">
-            <h3 className="text-xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight text-white drop-shadow-md">
+          <div className="pointer-events-auto max-w-2xl space-y-3.5">
+            <h3 className="text-xl font-extrabold leading-tight tracking-tight text-white drop-shadow-md sm:text-3xl lg:text-4xl">
               {currentSlide.title}
             </h3>
 
-            <p className="text-xs sm:text-sm lg:text-base text-white/85 leading-relaxed drop-shadow-sm max-w-xl">
+            <p className="max-w-xl text-xs leading-relaxed text-white/85 drop-shadow-sm sm:text-sm lg:text-base">
               {currentSlide.subtitle}
             </p>
 
             <div className="flex flex-wrap gap-2 pt-1">
               {currentSlide.tags.map((tag, tIdx) => (
-                <span
+                <Badge
                   key={tIdx}
-                  className="rounded-lg border border-white/20 bg-white/10 px-2.5 py-1 text-[11px] font-medium backdrop-blur-md text-white/95"
+                  variant="outline"
+                  className="border-white/20 bg-white/10 text-[11px] font-medium text-white/95 backdrop-blur-md"
                 >
-                  ✓ {tag}
-                </span>
+                  {tag}
+                </Badge>
               ))}
             </div>
           </div>
         </div>
 
         {/* Prev & Next Floating Buttons */}
-        <button
+        <Button
           type="button"
+          variant="outline"
+          size="icon"
           onClick={handlePrev}
           aria-label="Slide trước"
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-30 flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-black/40 text-white backdrop-blur-md transition-all hover:bg-orange-600 hover:border-orange-500 hover:scale-110 active:scale-95 shadow-lg"
+          className="absolute left-4 top-1/2 z-30 -translate-y-1/2 rounded-full border-white/30 bg-black/40 text-white backdrop-blur-md hover:bg-black/60 hover:text-white"
         >
           <ChevronLeft className="h-6 w-6" />
-        </button>
+        </Button>
 
-        <button
+        <Button
           type="button"
+          variant="outline"
+          size="icon"
           onClick={handleNext}
           aria-label="Slide tiếp theo"
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-30 flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-black/40 text-white backdrop-blur-md transition-all hover:bg-orange-600 hover:border-orange-500 hover:scale-110 active:scale-95 shadow-lg"
+          className="absolute right-4 top-1/2 z-30 -translate-y-1/2 rounded-full border-white/30 bg-black/40 text-white backdrop-blur-md hover:bg-black/60 hover:text-white"
         >
           <ChevronRight className="h-6 w-6" />
-        </button>
+        </Button>
       </div>
 
       {/* Thumbnail / Dot Navigation Bar at bottom */}
-      <div className="bg-card/95 border-t border-border px-4 py-3 sm:px-6">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div className="border-t border-border bg-card/95 px-4 py-3 sm:px-6">
+        <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-orange-600 dark:text-orange-400" />
-            <span className="text-xs font-bold text-foreground">
-              Khám Phá Không Gian Ký Túc Xá FPT Chuẩn 1:4:6
+            <Sparkles className="h-4 w-4 shrink-0 text-primary" />
+            <span className="whitespace-nowrap text-xs font-bold text-foreground">
+              Không gian KTX FPT chuẩn 1:4:6
             </span>
           </div>
 
@@ -212,26 +217,18 @@ export const DormitoryGallerySlider: React.FC = () => {
                 key={slide.id}
                 type="button"
                 onClick={() => goToSlide(sIdx)}
-                className={`group flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-all ${
+                className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-all ${
                   sIdx === currentIndex
-                    ? "bg-orange-600 text-white shadow-xs"
-                    : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <span
-                  className={`h-2 w-2 rounded-full transition-transform ${
-                    sIdx === currentIndex ? "bg-white scale-110" : "bg-muted-foreground/60"
+                  className={`h-2 w-2 shrink-0 rounded-full transition-transform ${
+                    sIdx === currentIndex ? "scale-110 bg-current" : "bg-current opacity-60"
                   }`}
                 />
-                <span className="hidden md:inline text-[11px]">
-                  {sIdx === 0
-                    ? "Buồng ngủ"
-                    : sIdx === 1
-                    ? "Tự học 24/7"
-                    : sIdx === 2
-                    ? "Bếp & Sinh hoạt"
-                    : "Khuôn viên & An ninh"}
-                </span>
+                <span className="hidden whitespace-nowrap text-[11px] md:inline">{DOT_LABELS[sIdx]}</span>
               </button>
             ))}
           </div>

@@ -1,7 +1,8 @@
 import React from "react"
 import { NavLink, useLocation } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
-import { Building2, LogOut, LogIn } from "lucide-react"
+import type { UserRole } from "@/types/auth"
+import { LayoutDashboard, BedDouble, Receipt, Wrench, MoonStar, Users, Megaphone, Store, UserRound, ClipboardList, LogOut, LogIn, Sparkles } from "lucide-react"
 
 interface SidebarProps {
   isOpen: boolean
@@ -11,191 +12,141 @@ interface SidebarProps {
 interface NavItem {
   title: string
   to: string
-  icon: string
+  icon: React.ReactNode
   badge?: string
 }
 
-interface NavGroup {
-  groupTitle: string
-  items: NavItem[]
+const ICON_CLS = "h-[18px] w-[18px] shrink-0"
+
+const STUDENT_NAV: NavItem[] = [
+  { title: "Tổng quan", to: "/overview", icon: <LayoutDashboard className={ICON_CLS} /> },
+  { title: "Phòng của tôi", to: "/my-room", icon: <BedDouble className={ICON_CLS} />, badge: "A205" },
+  { title: "Đặt giường", to: "/booking", icon: <Sparkles className={ICON_CLS} /> },
+  { title: "Điện nước · VietQR", to: "/billing", icon: <Receipt className={ICON_CLS} /> },
+  { title: "Báo hỏng", to: "/maintenance", icon: <Wrench className={ICON_CLS} /> },
+  { title: "Giới nghiêm 23:00", to: "/curfew", icon: <MoonStar className={ICON_CLS} /> },
+  { title: "Khách thăm", to: "/visitor", icon: <Users className={ICON_CLS} /> },
+  { title: "Bảng tin", to: "/notices", icon: <Megaphone className={ICON_CLS} /> },
+  { title: "Chợ & thất lạc", to: "/marketplace", icon: <Store className={ICON_CLS} /> },
+]
+
+const ROLE_HOME: Record<UserRole, { to: string; label: string }> = {
+  student: { to: "/overview", label: "Cổng sinh viên" },
+  manager: { to: "/manager", label: "Bàn quản lý" },
+  technician: { to: "/maintenance", label: "Hàng đợi sửa chữa" },
+  admin: { to: "/manager", label: "Quản trị" },
+}
+
+function navFor(role: UserRole | undefined, isAuthed: boolean): { group: string; items: NavItem[] }[] {
+  if (!isAuthed || !role) {
+    return [
+      {
+        group: "Khám phá",
+        items: [
+          { title: "Đặt giường", to: "/booking", icon: <Sparkles className={ICON_CLS} /> },
+          { title: "Đăng nhập", to: "/login", icon: <LogIn className={ICON_CLS} /> },
+        ],
+      },
+    ]
+  }
+  if (role === "student") {
+    return [
+      { group: "Ở nội trú", items: STUDENT_NAV.slice(0, 6) },
+      { group: "Cộng đồng", items: STUDENT_NAV.slice(6) },
+      { group: "Cá nhân", items: [{ title: "Hồ sơ", to: "/profile", icon: <UserRound className={ICON_CLS} /> }] },
+    ]
+  }
+  if (role === "manager" || role === "admin") {
+    return [
+      {
+        group: "Vận hành",
+        items: [
+          { title: "Tổng quan", to: "/manager", icon: <ClipboardList className={ICON_CLS} /> },
+          { title: "Điện nước", to: "/billing", icon: <Receipt className={ICON_CLS} /> },
+          { title: "Bảo trì", to: "/maintenance", icon: <Wrench className={ICON_CLS} /> },
+          { title: "Giới nghiêm", to: "/curfew", icon: <MoonStar className={ICON_CLS} /> },
+          { title: "Bảng tin", to: "/notices", icon: <Megaphone className={ICON_CLS} /> },
+        ],
+      },
+      { group: "Cá nhân", items: [{ title: "Hồ sơ", to: "/profile", icon: <UserRound className={ICON_CLS} /> }] },
+    ]
+  }
+  return [
+    {
+      group: "Kỹ thuật",
+      items: [
+        { title: "Hàng đợi sửa chữa", to: "/maintenance", icon: <Wrench className={ICON_CLS} /> },
+        { title: "Điện nước", to: "/billing", icon: <Receipt className={ICON_CLS} /> },
+        { title: "Trực cổng", to: "/curfew", icon: <MoonStar className={ICON_CLS} /> },
+      ],
+    },
+    { group: "Cá nhân", items: [{ title: "Hồ sơ", to: "/profile", icon: <UserRound className={ICON_CLS} /> }] },
+  ]
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const { user, isAuthenticated, logout } = useAuth()
   const location = useLocation()
-  const currentRole = user?.role
-
-  // Build role-tailored navigation items
-  const getNavGroups = (): NavGroup[] => {
-    if (!isAuthenticated || !user) {
-      return [
-        {
-          groupTitle: "Cổng Thông Tin KTX",
-          items: [
-            { title: "Xem phòng 1:4:6", to: "/booking", icon: "bed" },
-            { title: "Đăng nhập", to: "/login", icon: "login" },
-          ],
-        },
-      ]
-    }
-
-    if (currentRole === "student") {
-      return [
-        {
-          groupTitle: "Cổng Sinh Viên (Student)",
-          items: [
-            { title: "Tổng quan (Overview)", to: "/overview", icon: "dashboard" },
-            { title: "Phòng của tôi", to: "/my-room", icon: "meeting_room", badge: "A205" },
-            { title: "Đặt giường 1:4:6", to: "/booking", icon: "bed" },
-            { title: "Điện nước & VietQR", to: "/billing", icon: "receipt_long" },
-            { title: "Báo hỏng thiết bị", to: "/maintenance", icon: "build" },
-            { title: "Giới nghiêm & Ra vào", to: "/curfew", icon: "schedule", badge: "23:00" },
-          ],
-        },
-        {
-          groupTitle: "Cá Nhân",
-          items: [{ title: "Hồ sơ sinh viên", to: "/profile", icon: "person" }],
-        },
-      ]
-    }
-
-    if (currentRole === "manager") {
-      return [
-        {
-          groupTitle: "Bàn Làm Việc Quản Lý (Ops)",
-          items: [
-            { title: "Bàn làm việc Quản lý", to: "/manager", icon: "admin_panel_settings", badge: "Desk" },
-            { title: "Chốt số & Chia điện nước", to: "/billing", icon: "electric_meter" },
-            { title: "Giám sát Cổng & Giới nghiêm", to: "/curfew", icon: "verified_user", badge: "23:00" },
-            { title: "Điều phối Bảo trì", to: "/maintenance", icon: "engineering" },
-          ],
-        },
-        {
-          groupTitle: "Cá Nhân",
-          items: [{ title: "Hồ sơ quản lý", to: "/profile", icon: "person" }],
-        },
-      ]
-    }
-
-    if (currentRole === "technician") {
-      return [
-        {
-          groupTitle: "Tác Vụ Kỹ Thuật & An Ninh",
-          items: [
-            { title: "Hàng đợi Sửa chữa", to: "/maintenance", icon: "build", badge: "2 Phiếu" },
-            { title: "Nhập số Điện Nước", to: "/billing", icon: "electric_meter" },
-            { title: "Trực Cổng An Ninh", to: "/curfew", icon: "shield", badge: "24/7" },
-          ],
-        },
-        {
-          groupTitle: "Cá Nhân",
-          items: [{ title: "Hồ sơ kỹ thuật viên", to: "/profile", icon: "person" }],
-        },
-      ]
-    }
-
-    // Admin role: Toàn quyền truy cập
-    return [
-      {
-        groupTitle: "Quản Trị Toàn Quyền (Admin)",
-        items: [
-          { title: "Tổng quan Quản trị", to: "/overview", icon: "dashboard" },
-          { title: "Bàn làm việc Quản trị", to: "/manager", icon: "admin_panel_settings" },
-          { title: "Quản lý Điện nước", to: "/billing", icon: "electric_meter" },
-          { title: "Quản lý Bảo trì", to: "/maintenance", icon: "build" },
-          { title: "Kiểm soát An ninh Cổng", to: "/curfew", icon: "verified_user" },
-        ],
-      },
-      {
-        groupTitle: "Cá Nhân",
-        items: [{ title: "Hồ sơ quản trị", to: "/profile", icon: "person" }],
-      },
-    ]
-  }
-
-  const navGroups = getNavGroups()
-
-  // Hall label by role
-  const getRoleBadge = () => {
-    if (!isAuthenticated || !user) return "Ký túc xá FPT University"
-    if (currentRole === "student") return "Phòng A205 · Tòa A (High-Rise)"
-    if (currentRole === "manager") return "BQL Ký túc xá · Tòa A"
-    if (currentRole === "technician") return "Đội Kỹ thuật & An ninh"
-    return "Quản trị viên Hệ thống DMS"
-  }
+  const groups = navFor(user?.role, isAuthenticated)
+  const home = user ? ROLE_HOME[user.role] : null
 
   return (
     <>
-      {/* Mobile backdrop */}
       {isOpen && (
-        <div
-          onClick={onClose}
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-xs lg:hidden"
-        />
+        <div onClick={onClose} className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px] lg:hidden" aria-hidden />
       )}
-
-      {/* Main Stitch Sidebar */}
       <aside
-        className={`fixed left-0 top-0 h-full w-[260px] bg-slate-900 text-slate-100 z-50 flex flex-col justify-between shadow-xl transition-transform duration-300 ease-in-out ${
+        className={`fixed left-0 top-0 z-50 flex h-full w-[272px] flex-col border-r border-border bg-card transition-transform duration-300 ease-out ${
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
-        <div className="flex flex-col flex-1 overflow-y-auto">
-          {/* Logo Header */}
-          <div className="h-[68px] px-4 flex items-center gap-3 bg-slate-900 border-b border-slate-800 shrink-0">
-            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-xs shrink-0">
-              <Building2 className="h-5 w-5 text-white" />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-base text-white tracking-tight leading-none">
-                Domanage
-              </span>
-              <span className="text-[11px] text-slate-400 tracking-wide mt-1">
-                DMS Campus Portal
-              </span>
+        <div className="flex h-[72px] shrink-0 items-center gap-3 border-b border-border px-5">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary text-xl font-black text-white shadow-md">
+            D
+          </div>
+          <div className="leading-tight">
+            <p className="font-display text-[17px] font-extrabold tracking-tight">Domanage</p>
+            <p className="text-[11px] font-medium text-muted-foreground">KTX FPT University</p>
+          </div>
+        </div>
+
+        {home && (
+          <div className="shrink-0 px-4 pt-4">
+            <div className="rounded-2xl bg-gradient-to-r from-primary to-primary px-4 py-3 text-white shadow-md">
+              <p className="text-[11px] font-medium text-white/75">{home.label}</p>
+              <p className="truncate text-[13px] font-bold">{user?.fullName}</p>
             </div>
           </div>
+        )}
 
-          {/* Hall & Zone Badge */}
-          <div className="px-4 pt-3.5 pb-2">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800 text-slate-200 border border-slate-700">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
-              <span className="text-[11px] text-white font-semibold tracking-wide truncate">
-                {getRoleBadge()}
-              </span>
-            </div>
-          </div>
-
-          {/* Role-tailored Navigation Links */}
-          <nav className="flex-1 px-3 py-2 space-y-4 text-xs">
-            {navGroups.map((group) => (
-              <div key={group.groupTitle} className="space-y-1">
-                <div className="px-3 py-1 text-[10px] uppercase tracking-wider text-slate-400 font-bold">
-                  {group.groupTitle}
-                </div>
+        <nav className="flex-1 space-y-5 overflow-y-auto px-3 py-4">
+          {groups.map((group) => (
+            <div key={group.group}>
+              <p className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                {group.group}
+              </p>
+              <div className="space-y-0.5">
                 {group.items.map((item) => {
                   const isActive =
-                    item.to === "/"
-                      ? location.pathname === "/"
-                      : location.pathname.startsWith(item.to)
+                    item.to === "/" ? location.pathname === "/" : location.pathname.startsWith(item.to)
                   return (
                     <NavLink
                       key={item.to}
                       to={item.to}
                       end={item.to === "/"}
                       onClick={onClose}
-                      className={`flex items-center justify-between px-3 py-2 rounded-lg transition-colors min-w-0 ${
+                      className={`group flex items-center justify-between rounded-xl px-3 py-2.5 text-[13.5px] transition-all ${
                         isActive
-                          ? "bg-blue-600 text-white font-semibold shadow-xs"
-                          : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                          ? "bg-primary-soft font-bold text-primary-soft-foreground dark:bg-primary-soft dark:text-primary-soft-foreground"
+                          : "font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
                       }`}
                     >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <span className="material-symbols-outlined text-lg shrink-0">{item.icon}</span>
+                      <span className="flex min-w-0 items-center gap-3">
+                        <span className={isActive ? "" : "opacity-70 group-hover:opacity-100"}>{item.icon}</span>
                         <span className="truncate">{item.title}</span>
-                      </div>
+                      </span>
                       {item.badge && (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-blue-300 font-mono border border-slate-700 shrink-0 ml-1.5 whitespace-nowrap">
+                        <span className="ml-2 shrink-0 rounded-full bg-primary-soft px-2 py-0.5 font-mono text-[10px] font-bold text-primary-soft-foreground">
                           {item.badge}
                         </span>
                       )}
@@ -203,27 +154,24 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                   )
                 })}
               </div>
-            ))}
-          </nav>
-        </div>
+            </div>
+          ))}
+        </nav>
 
-        {/* Bottom Emergency Guard & Sign Out */}
-        <div className="p-3 bg-slate-950 border-t border-slate-800 space-y-2 shrink-0">
-          <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-            <div className="flex items-center gap-1.5 mb-0.5">
-              <span className="material-symbols-outlined text-sm text-red-400">emergency</span>
-              <span className="text-[11px] font-bold text-white">Emergency Guard</span>
+        <div className="shrink-0 space-y-2 border-t border-border p-3">
+          <div className="flex items-center gap-2.5 rounded-xl bg-muted/70 px-3 py-2.5">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-danger/10 text-[13px] font-black text-danger">
+              SOS
+            </span>
+            <div className="leading-tight">
+              <p className="font-mono text-[13px] font-bold">1900 6868</p>
+              <p className="text-[10px] text-muted-foreground">Bảo vệ trực 24/7</p>
             </div>
-            <div className="text-sm font-bold font-mono tracking-wider text-white">
-              1900 6868
-            </div>
-            <div className="text-[10px] text-slate-400">24/7 Gate Patrol Desk</div>
           </div>
-
           {isAuthenticated ? (
             <button
               onClick={() => logout()}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors text-xs"
+              className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
               <span>Đăng xuất</span>
               <LogOut className="h-4 w-4" />
@@ -232,7 +180,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             <NavLink
               to="/login"
               onClick={onClose}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-blue-600 text-white transition-colors text-xs font-semibold hover:bg-blue-700"
+              className="flex w-full items-center justify-between rounded-xl bg-foreground px-3 py-2.5 text-[13px] font-bold text-white transition-colors hover:bg-black"
             >
               <span>Đăng nhập</span>
               <LogIn className="h-4 w-4" />

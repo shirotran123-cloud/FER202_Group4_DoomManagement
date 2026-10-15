@@ -2,79 +2,58 @@ import React, { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
 import type { UserRole } from "@/types/auth"
-import {
-  Building2,
-  Sparkles,
-  ArrowRight,
-  LogOut,
-  User,
-  ChevronDown,
-  CheckCircle2,
-  UserPlus,
-  LogIn,
-} from "lucide-react"
+import { ArrowRight, ChevronDown, LogIn, LogOut, User } from "lucide-react"
 import { DormAIAssistant } from "@/components/ai/DormAIAssistant"
+import { Avatar } from "@/components/ui/avatar"
 
 interface LandingLayoutProps {
   children: React.ReactNode
 }
 
 export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
-  const { user, isAuthenticated, logout, switchRole } = useAuth()
+  const { user, isAuthenticated, logout } = useAuth()
   const navigate = useNavigate()
   const [activeNav, setActiveNav] = useState<string>(() => (typeof window !== "undefined" ? window.location.hash : ""))
-  const [showRoleDropdown, setShowRoleDropdown] = useState(false)
   const [showUserDropdown, setShowUserDropdown] = useState(false)
 
-  const navItems = [
-    { label: "Mô hình 1:4:6", href: "#mo-hinh" },
-    { label: "Biểu phí & Tiện ích", href: "#bieu-phi" },
-    { label: "Nội quy & Giới nghiêm", href: "#noi-quy" },
-    { label: "Hỏi đáp (FAQ)", href: "#faq" },
-  ]
+  const navItems = React.useMemo(
+    () => [
+      { label: "Mô hình 1:4:6", href: "#mo-hinh" },
+      { label: "Biểu phí & Tiện ích", href: "#bieu-phi" },
+      { label: "Nội quy & Giới nghiêm", href: "#noi-quy" },
+      { label: "Hỏi đáp", href: "#faq" },
+    ],
+    []
+  )
 
   React.useEffect(() => {
-    const handleHashChange = () => {
-      setActiveNav(window.location.hash)
-    }
+    const handleHashChange = () => setActiveNav(window.location.hash)
     window.addEventListener("hashchange", handleHashChange)
-
-    // IntersectionObserver tự động đánh dấu mục đang xem khi cuộn trang
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveNav(`#${entry.target.id}`)
-          }
+          if (entry.isIntersecting) setActiveNav(`#${entry.target.id}`)
         })
       },
       { rootMargin: "-80px 0px -60% 0px" }
     )
-
     navItems.forEach((item) => {
       const el = document.querySelector(item.href)
       if (el) observer.observe(el)
     })
-
     return () => {
       window.removeEventListener("hashchange", handleHashChange)
       observer.disconnect()
     }
-  }, [])
+  }, [navItems])
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     setActiveNav(href)
     const targetElement = document.querySelector(href)
     if (targetElement) {
       e.preventDefault()
-      const headerOffset = 80
-      const elementPosition = targetElement.getBoundingClientRect().top
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      })
+      const offsetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - 88
+      window.scrollTo({ top: offsetPosition, behavior: "smooth" })
       window.history.pushState(null, "", href)
     }
   }
@@ -87,193 +66,102 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans antialiased flex flex-col">
-      {/* Top Full-width Landing Navigation Bar */}
-      <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
-        <div className="max-w-7xl mx-auto h-[68px] px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
-          {/* Logo & Brand */}
-          <Link to="/" className="flex items-center gap-3 transition-opacity hover:opacity-90 shrink-0">
-            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-xs">
-              <Building2 className="h-5 w-5" />
+    <div className="flex min-h-screen flex-col overflow-x-clip bg-background font-sans text-foreground antialiased">
+      <header className="sticky top-0 z-50 w-full border-b border-border bg-card/90 backdrop-blur-md">
+        <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+          <Link to="/" className="flex shrink-0 items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary text-xl font-black text-white shadow-md">
+              D
             </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-base tracking-tight text-slate-900">
-                  DOMANAGE
-                </span>
-                <span className="rounded-md bg-blue-50 px-1.5 py-0.5 text-[10px] font-bold text-blue-700 border border-blue-200 tracking-wider">
-                  DMS Campus
-                </span>
-              </div>
-              <span className="text-[11px] text-slate-500 hidden sm:inline">
-                Hệ thống Quản lý Ký túc xá FPT University
-              </span>
+            <div className="leading-tight">
+              <p className="font-display text-[17px] font-extrabold tracking-tight">Domanage</p>
+              <p className="hidden text-[11px] text-muted-foreground sm:block">KTX FPT University</p>
             </div>
           </Link>
 
-          {/* Quick Anchor Links */}
-          <nav className="hidden lg:flex items-center gap-1.5 xl:gap-2 text-xs font-semibold shrink-0 bg-slate-100 p-1 rounded-2xl border border-slate-200">
-            {navItems.map((item) => {
-              const isActive = activeNav === item.href
-              return (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  onClick={(e) => handleNavClick(e, item.href)}
-                  className={`whitespace-nowrap px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
-                    isActive
-                      ? "bg-orange-600 text-white font-bold shadow-xs shadow-orange-600/30"
-                      : "text-[#42474b] hover:bg-orange-500/15 hover:text-orange-600"
-                  }`}
-                >
-                  {item.label}
-                </a>
-              )
-            })}
+          <nav className="hidden items-center gap-1 rounded-2xl bg-muted p-1 lg:flex">
+            {navItems.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                onClick={(e) => handleNavClick(e, item.href)}
+                className={`whitespace-nowrap rounded-xl px-4 py-2 text-[13px] transition-all ${
+                  activeNav === item.href
+                    ? "bg-card font-bold text-foreground shadow-sm"
+                    : "font-medium text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {item.label}
+              </a>
+            ))}
           </nav>
 
-          {/* Actions: Login or Dashboard */}
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex shrink-0 items-center gap-2">
             {isAuthenticated && user ? (
-              <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
-                {/* Role Switcher Pill */}
-                <div className="relative hidden sm:block shrink-0">
-                  <button
-                    onClick={() => {
-                      setShowRoleDropdown(!showRoleDropdown)
-                      setShowUserDropdown(false)
-                    }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#efeee8] bg-white text-xs font-semibold text-[#233944] hover:bg-[#f4f4ee] transition-colors whitespace-nowrap shrink-0"
-                  >
-                    <span className="text-[11px] text-[#73787b] shrink-0">Role:</span>
-                    <span className="whitespace-nowrap">{user.roleTitle}</span>
-                    <ChevronDown className="h-3.5 w-3.5 opacity-70 shrink-0" />
-                  </button>
-
-                  {showRoleDropdown && (
-                    <div className="absolute right-0 mt-2 w-56 rounded-xl border border-[#efeee8] bg-white p-2 shadow-xl z-50">
-                      <div className="px-2 py-1 text-[10px] font-bold text-[#73787b] uppercase">
-                        Đổi vai trò Demo
-                      </div>
-                      {(["student", "manager", "technician", "admin"] as UserRole[]).map((r) => (
-                        <button
-                          key={r}
-                          onClick={() => {
-                            switchRole(r)
-                            setShowRoleDropdown(false)
-                          }}
-                          className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs transition-colors ${
-                            user.role === r
-                              ? "bg-[#233944]/10 font-bold text-[#233944]"
-                              : "text-[#1b1c19] hover:bg-[#f4f4ee]"
-                          }`}
-                        >
-                          <span className="whitespace-nowrap">
-                            {r === "student"
-                              ? "🎓 Sinh viên"
-                              : r === "manager"
-                              ? "🏢 Quản lý KTX"
-                              : r === "technician"
-                              ? "🛡️ An ninh / Kỹ thuật"
-                              : "⚡ Quản trị viên"}
-                          </span>
-                          {user.role === r && <CheckCircle2 className="h-4 w-4 text-[#233944] shrink-0" />}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Go to Dashboard button */}
+              <>
                 <Link
                   to={getDashboardLink(user.role)}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-[#233944] px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-[#3a505b] transition-all whitespace-nowrap shrink-0"
+                  className="hidden items-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-[13px] font-bold text-white transition-transform hover:scale-[1.02] sm:inline-flex"
                 >
-                  <Sparkles className="h-3.5 w-3.5 shrink-0" />
-                  <span className="whitespace-nowrap">Vào Bảng Điều Khiển</span>
-                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                  Vào bảng điều khiển
+                  <ArrowRight className="h-4 w-4" />
                 </Link>
-
-                {/* User avatar & dropdown */}
                 <div className="relative">
                   <button
-                    onClick={() => {
-                      setShowUserDropdown(!showUserDropdown)
-                      setShowRoleDropdown(false)
-                    }}
-                    className="flex items-center gap-2 rounded-lg p-1 hover:bg-[#efeee8] transition-all"
+                    onClick={() => setShowUserDropdown(!showUserDropdown)}
+                    className="flex items-center gap-2 rounded-xl border border-border p-1.5 transition-colors hover:bg-muted"
                   >
-                    <img
-                      src={user.avatar}
-                      alt={user.fullName}
-                      className="h-8 w-8 rounded-full object-cover shrink-0"
-                    />
-                    <ChevronDown className="h-3 w-3 text-[#73787b] hidden sm:inline" />
+                    <Avatar name={user.fullName} className="h-8 w-8 text-xs" />
+                    <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
                   </button>
-
                   {showUserDropdown && (
-                    <div className="absolute right-0 mt-2 w-56 rounded-xl border border-[#efeee8] bg-white p-2 shadow-xl z-50">
-                      <div className="border-b border-[#efeee8] px-3 py-2">
-                        <p className="text-xs font-bold text-[#1b1c19]">{user.fullName}</p>
-                        <p className="text-[11px] text-[#73787b] truncate">{user.email}</p>
+                    <div className="absolute right-0 z-50 mt-2 w-60 rounded-2xl border border-border bg-card p-2 shadow-xl">
+                      <div className="border-b border-border px-3 py-2.5">
+                        <p className="truncate text-[13px] font-bold">{user.fullName}</p>
+                        <p className="truncate text-xs text-muted-foreground">{user.email}</p>
                       </div>
-                      <div className="py-1">
-                        <Link
-                          to="/profile"
-                          onClick={() => setShowUserDropdown(false)}
-                          className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs text-[#1b1c19] hover:bg-[#f4f4ee]"
-                        >
-                          <User className="h-3.5 w-3.5 text-[#73787b]" />
-                          <span>Hồ sơ cá nhân</span>
-                        </Link>
-                      </div>
-                      <div className="border-t border-[#efeee8] pt-1">
-                        <button
-                          onClick={() => {
-                            logout()
-                            setShowUserDropdown(false)
-                            navigate("/login")
-                          }}
-                          className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs text-[#ba1a1a] hover:bg-[#ba1a1a]/10"
-                        >
-                          <LogOut className="h-3.5 w-3.5" />
-                          <span>Đăng xuất</span>
-                        </button>
-                      </div>
+                      <Link
+                        to="/profile"
+                        onClick={() => setShowUserDropdown(false)}
+                        className="mt-1 flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-[13px] font-medium hover:bg-muted"
+                      >
+                        <User className="h-4 w-4 text-muted-foreground" />
+                        Hồ sơ cá nhân
+                      </Link>
+                      <button
+                        onClick={() => {
+                          logout()
+                          setShowUserDropdown(false)
+                          navigate("/login")
+                        }}
+                        className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-[13px] font-semibold text-danger hover:bg-danger-soft dark:hover:bg-danger-soft"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Đăng xuất
+                      </button>
                     </div>
                   )}
                 </div>
-              </div>
+              </>
             ) : (
-              <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                <Link
-                  to="/login?mode=register"
-                  id="landing-header-register-btn"
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-[#233944]/30 bg-white px-3.5 sm:px-4 py-2 text-xs font-bold text-[#233944] shadow-xs hover:bg-[#f4f4ee] hover:border-[#233944] transition-all whitespace-nowrap shrink-0"
-                >
-                  <UserPlus className="h-3.5 w-3.5 text-[#233944] shrink-0" />
-                  <span className="whitespace-nowrap">Đăng ký</span>
-                </Link>
-                <Link
-                  to="/login?mode=login"
-                  id="landing-header-login-btn"
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-[#233944] px-3.5 sm:px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-[#3a505b] transition-all whitespace-nowrap shrink-0"
-                >
-                  <LogIn className="h-3.5 w-3.5 shrink-0" />
-                  <span className="whitespace-nowrap">Đăng nhập</span>
-                </Link>
-              </div>
+              <Link
+                to="/login?mode=login"
+                id="landing-header-login-btn"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-foreground px-5 py-2.5 text-[13px] font-bold text-white transition-transform hover:scale-[1.02]"
+              >
+                <LogIn className="h-4 w-4" />
+                Đăng nhập
+              </Link>
             )}
           </div>
         </div>
       </header>
 
-      {/* Main Content Area without Sidebar */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        {children}
-      </main>
+      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-8">{children}</main>
 
-      {/* AI Assistant */}
+      <footer className="border-t border-border py-6 text-center text-xs text-muted-foreground">
+        Domanage · KTX FPT University · Hotline bảo vệ 1900 6868
+      </footer>
       <DormAIAssistant />
     </div>
   )

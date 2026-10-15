@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+﻿import React, { useState, useEffect } from "react"
 import { useAuth } from "@/contexts/useAuth"
 import type {
   MaintenanceTicket,
@@ -8,20 +8,14 @@ import type {
   ReplacedMaterial,
 } from "@/types/maintenance"
 import { INITIAL_MAINTENANCE_TICKETS } from "@/data/mockMaintenance"
-import {
-  Wrench,
-  AlertTriangle,
-  CheckCircle2,
-  Plus,
-  Search,
-  Star,
-  UserCheck,
-  Info,
-  Edit2,
-  Trash2,
-  X,
-} from "lucide-react"
+import { Wrench, TriangleAlert, CircleCheck, Plus, Search, Star, UserCheck, Info, Pencil, Trash2, X } from "lucide-react"
+import { ImageUpload } from "@/components/ui/image-upload"
+import type { PhotoRecord } from "@/lib/photo-upload"
 
+import { Input } from "@/components/ui/input"
+import { Select } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
+import { Button } from "@/components/ui/button"
 const STORAGE_KEY_TICKETS = "dms_maintenance_tickets_v1"
 
 export const MaintenancePage: React.FC = () => {
@@ -74,6 +68,7 @@ export const MaintenancePage: React.FC = () => {
   const [formImage, setFormImage] = useState(
     "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=600&q=80"
   )
+  const [formPhotos, setFormPhotos] = useState<PhotoRecord[]>([])
 
   // Assign Modal State
   const [assignTechName, setAssignTechName] = useState("Chú Đỗ Mạnh Hùng")
@@ -138,7 +133,7 @@ export const MaintenancePage: React.FC = () => {
       studentId: user?.studentId || "SE182049",
       studentName: user?.fullName || "Nguyễn Hoàng Vinh",
       studentPhone: "0912 345 678",
-      evidenceImages: formImage ? [formImage] : [],
+      evidenceImages: [...formPhotos.map((p) => p.dataUrl), ...(formImage ? [formImage] : [])].slice(0, 5),
       status: "PENDING",
       createdAt: new Date().toISOString().replace("T", " ").substring(0, 16),
     }
@@ -336,85 +331,82 @@ export const MaintenancePage: React.FC = () => {
     <div className="space-y-6">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 rounded-xl bg-slate-900 px-4 py-3 text-sm font-medium text-white shadow-xl border border-slate-700 animate-in fade-in slide-in-from-bottom-5">
-          <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 rounded-xl bg-foreground px-4 py-3 text-sm font-medium text-white shadow-xl animate-in fade-in slide-in-from-bottom-5">
+          <CircleCheck className="h-5 w-5 text-success shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}
 
       {/* Header & Quick Action */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card p-6 rounded-2xl border border-border shadow-xs">
         <div>
           <div className="flex items-center gap-2.5 mb-1">
-            <div className="h-9 w-9 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600">
+            <div className="h-9 w-9 rounded-xl bg-primary-soft border border-primary/20 flex items-center justify-center text-primary">
               <Wrench className="h-5 w-5" />
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Quản lý Báo hỏng & Sửa chữa</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground">Quản lý Báo hỏng & Sửa chữa</h1>
           </div>
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-muted-foreground">
             Theo dõi, điều phối kỹ thuật và nghiệm thu sửa chữa cơ sở vật chất KTX FPT
           </p>
         </div>
 
-        <button
-          onClick={handleOpenCreate}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-xs transition-colors shrink-0"
-        >
+        <Button onClick={handleOpenCreate}>
           <Plus className="h-4 w-4" />
           <span>Tạo phiếu báo hỏng mới</span>
-        </button>
+        </Button>
       </div>
 
       {/* Metric Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-4">
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
-          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Tổng số phiếu</span>
-          <div className="mt-2 text-2xl font-bold text-slate-900">{stats.total}</div>
-          <div className="mt-1 text-xs text-slate-500">Tất cả các thời điểm</div>
+        <div className="bg-card p-4 rounded-xl border border-border shadow-xs">
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Tổng số phiếu</span>
+          <div className="mt-2 text-2xl font-bold text-foreground">{stats.total}</div>
+          <div className="mt-1 text-xs text-muted-foreground">Tất cả các thời điểm</div>
         </div>
 
-        <div className="bg-white p-4 rounded-xl border border-amber-200/80 bg-amber-50/20 shadow-xs">
-          <span className="text-xs font-semibold text-amber-800 uppercase tracking-wider">Chờ tiếp nhận</span>
-          <div className="mt-2 text-2xl font-bold text-amber-600">{stats.pending}</div>
-          <div className="mt-1 text-xs text-amber-700">Cần phân công kỹ thuật</div>
+        <div className="bg-card p-4 rounded-xl border border-primary/25 bg-primary-soft shadow-xs">
+          <span className="text-xs font-semibold text-primary-soft-foreground uppercase tracking-wider">Chờ tiếp nhận</span>
+          <div className="mt-2 text-2xl font-bold text-primary-soft-foreground">{stats.pending}</div>
+          <div className="mt-1 text-xs text-primary-soft-foreground">Cần phân công kỹ thuật</div>
         </div>
 
-        <div className="bg-white p-4 rounded-xl border border-blue-200/80 bg-blue-50/20 shadow-xs">
-          <span className="text-xs font-semibold text-blue-800 uppercase tracking-wider">Đang xử lý</span>
-          <div className="mt-2 text-2xl font-bold text-blue-600">{stats.inProgress}</div>
-          <div className="mt-1 text-xs text-blue-700">Thợ đang làm việc</div>
+        <div className="bg-card p-4 rounded-xl border border-primary/20 bg-primary-soft shadow-xs">
+          <span className="text-xs font-semibold text-primary-soft-foreground uppercase tracking-wider">Đang xử lý</span>
+          <div className="mt-2 text-2xl font-bold text-primary">{stats.inProgress}</div>
+          <div className="mt-1 text-xs text-primary-soft-foreground">Thợ đang làm việc</div>
         </div>
 
-        <div className="bg-white p-4 rounded-xl border border-emerald-200/80 bg-emerald-50/20 shadow-xs">
-          <span className="text-xs font-semibold text-emerald-800 uppercase tracking-wider">Chờ nghiệm thu</span>
-          <div className="mt-2 text-2xl font-bold text-emerald-600">{stats.resolved}</div>
-          <div className="mt-1 text-xs text-emerald-700">Chờ sinh viên đánh giá</div>
+        <div className="bg-card p-4 rounded-xl border border-success/25 bg-success-soft shadow-xs">
+          <span className="text-xs font-semibold text-success-soft-foreground uppercase tracking-wider">Chờ nghiệm thu</span>
+          <div className="mt-2 text-2xl font-bold text-success-soft-foreground">{stats.resolved}</div>
+          <div className="mt-1 text-xs text-success-soft-foreground">Chờ sinh viên đánh giá</div>
         </div>
 
-        <div className="bg-white p-4 rounded-xl border border-rose-200/80 bg-rose-50/20 shadow-xs col-span-2 lg:col-span-1">
-          <span className="text-xs font-semibold text-rose-800 uppercase tracking-wider">Sự cố khẩn cấp</span>
-          <div className="mt-2 text-2xl font-bold text-rose-600">{stats.emergency}</div>
-          <div className="mt-1 text-xs text-rose-700">Cam kết có mặt 2h</div>
+        <div className="bg-card p-4 rounded-xl border border-danger/25 bg-danger-soft shadow-xs col-span-2 lg:col-span-1">
+          <span className="text-xs font-semibold text-danger-soft-foreground uppercase tracking-wider">Sự cố khẩn cấp</span>
+          <div className="mt-2 text-2xl font-bold text-danger-soft-foreground">{stats.emergency}</div>
+          <div className="mt-1 text-xs text-danger-soft-foreground">Cam kết có mặt 2h</div>
         </div>
       </div>
 
       {/* Filters & Search Control Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+      <div className="bg-card p-4 rounded-2xl border border-border shadow-xs space-y-3">
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
           {/* Search Bar */}
           <div className="relative flex-1">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-            <input
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Tìm theo mã phiếu, phòng, tên sinh viên hoặc sự cố..."
-              className="w-full pl-10 pr-4 py-2 text-sm rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-blue-500 transition-colors"
+              className="pl-10 pr-4"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -423,30 +415,30 @@ export const MaintenancePage: React.FC = () => {
 
           {/* Quick Urgency & Scope Selects */}
           <div className="flex items-center gap-2">
-            <select
+            <Select
               value={filterUrgency}
               onChange={(e) => setFilterUrgency(e.target.value)}
-              className="px-3 py-2 text-xs font-medium rounded-xl border border-slate-200 bg-slate-50 text-slate-700 focus:outline-none focus:bg-white"
+              className="font-medium text-muted-foreground"
             >
               <option value="ALL">Mức độ: Tất cả</option>
               <option value="NORMAL">Bình thường</option>
               <option value="EMERGENCY">Khẩn cấp (2h)</option>
-            </select>
+            </Select>
 
-            <select
+            <Select
               value={filterScope}
               onChange={(e) => setFilterScope(e.target.value)}
-              className="px-3 py-2 text-xs font-medium rounded-xl border border-slate-200 bg-slate-50 text-slate-700 focus:outline-none focus:bg-white"
+              className="font-medium text-muted-foreground"
             >
               <option value="ALL">Phạm vi: Tất cả</option>
               <option value="ROOM_SHARED">Phòng chung</option>
               <option value="COMPARTMENT_PRIVATE">Buồng cá nhân</option>
-            </select>
+            </Select>
           </div>
         </div>
 
         {/* Status Filter Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pt-1 border-t border-slate-100">
+        <div className="flex items-center gap-1.5 overflow-x-auto pt-1 border-t border-border">
           {[
             { id: "ALL", label: "Tất cả phiếu" },
             { id: "PENDING", label: "Chờ tiếp nhận" },
@@ -461,8 +453,8 @@ export const MaintenancePage: React.FC = () => {
                 onClick={() => setFilterStatus(tab.id)}
                 className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap ${
                   isActive
-                    ? "bg-slate-900 text-white shadow-xs"
-                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    ? "bg-foreground text-white shadow-xs"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 }`}
               >
                 {tab.label}
@@ -474,12 +466,12 @@ export const MaintenancePage: React.FC = () => {
 
       {/* Tickets List View (R in CRUD) */}
       {filteredTickets.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
-          <div className="h-12 w-12 rounded-full bg-slate-100 text-slate-400 mx-auto flex items-center justify-center mb-3">
+        <div className="bg-card rounded-2xl border border-border p-12 text-center">
+          <div className="h-12 w-12 rounded-full bg-muted text-muted-foreground mx-auto flex items-center justify-center mb-3">
             <Info className="h-6 w-6" />
           </div>
-          <h3 className="font-bold text-slate-800 text-base">Không tìm thấy phiếu yêu cầu nào</h3>
-          <p className="text-sm text-slate-500 mt-1">
+          <h3 className="font-bold text-foreground text-base">Không tìm thấy phiếu yêu cầu nào</h3>
+          <p className="text-sm text-muted-foreground mt-1">
             Hãy thử tìm kiếm với từ khóa khác hoặc điều chỉnh bộ lọc trạng thái.
           </p>
           <button
@@ -489,7 +481,7 @@ export const MaintenancePage: React.FC = () => {
               setFilterUrgency("ALL")
               setFilterScope("ALL")
             }}
-            className="mt-4 px-4 py-2 text-xs font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+            className="mt-4 px-4 py-2 text-xs font-semibold rounded-xl bg-muted hover:bg-muted text-foreground transition-colors"
           >
             Đặt lại bộ lọc
           </button>
@@ -506,15 +498,15 @@ export const MaintenancePage: React.FC = () => {
             return (
               <div
                 key={ticket.id}
-                className={`rounded-2xl border bg-white p-5 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between ${
-                  isEmergency ? "border-rose-300 bg-rose-50/10" : "border-slate-200"
+                className={`rounded-2xl border bg-card p-5 shadow-xs hover:border-border transition-all flex flex-col justify-between ${
+                  isEmergency ? "border-danger/25 bg-danger-soft" : "border-border"
                 }`}
               >
                 <div>
                   {/* Card Header: Code, Badges, Status */}
                   <div className="flex items-start justify-between gap-2 mb-3">
                     <div className="flex flex-wrap items-center gap-1.5">
-                      <span className="font-mono text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
+                      <span className="font-mono text-xs font-bold text-foreground bg-muted px-2 py-0.5 rounded-md border border-border">
                         {ticket.id}
                       </span>
 
@@ -522,8 +514,8 @@ export const MaintenancePage: React.FC = () => {
                       <span
                         className={`text-[11px] font-semibold px-2 py-0.5 rounded-md border ${
                           ticket.scope === "ROOM_SHARED"
-                            ? "bg-indigo-50 text-indigo-800 border-indigo-200"
-                            : "bg-teal-50 text-teal-800 border-teal-200"
+                            ? "bg-primary-soft text-primary-soft-foreground border-primary/25"
+                            : "bg-success-soft text-success-soft-foreground border-success/25"
                         }`}
                       >
                         {ticket.scope === "ROOM_SHARED" ? "Phòng chung" : "Buồng cá nhân"}
@@ -531,12 +523,12 @@ export const MaintenancePage: React.FC = () => {
 
                       {/* Urgency Badge */}
                       {isEmergency ? (
-                        <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1">
-                          <AlertTriangle className="h-3 w-3" />
+                        <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-danger-soft text-danger-soft-foreground border border-danger/25 flex items-center gap-1">
+                          <TriangleAlert className="h-3 w-3" />
                           <span>Khẩn cấp (2h)</span>
                         </span>
                       ) : (
-                        <span className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200">
+                        <span className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-muted text-muted-foreground border border-border">
                           Bình thường
                         </span>
                       )}
@@ -546,12 +538,12 @@ export const MaintenancePage: React.FC = () => {
                     <span
                       className={`text-xs font-bold px-2.5 py-1 rounded-full shrink-0 border ${
                         isPending
-                          ? "bg-amber-50 text-amber-800 border-amber-200"
+                          ? "bg-primary-soft text-primary-soft-foreground border-primary/25"
                           : isInProgress
-                          ? "bg-blue-50 text-blue-800 border-blue-200"
+                          ? "bg-primary-soft text-primary-soft-foreground border-primary/20"
                           : isResolved
-                          ? "bg-emerald-50 text-emerald-800 border-emerald-200"
-                          : "bg-slate-100 text-slate-700 border-slate-200"
+                          ? "bg-success-soft text-success-soft-foreground border-success/25"
+                          : "bg-muted text-foreground border-border"
                       }`}
                     >
                       {isPending && "Chờ tiếp nhận"}
@@ -562,45 +554,45 @@ export const MaintenancePage: React.FC = () => {
                   </div>
 
                   {/* Title & Description */}
-                  <h3 className="font-bold text-base text-slate-900 line-clamp-1">{ticket.title}</h3>
-                  <p className="text-xs text-slate-600 mt-1 line-clamp-2 leading-relaxed">
+                  <h3 className="font-bold text-base text-foreground line-clamp-1">{ticket.title}</h3>
+                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed">
                     {ticket.description}
                   </p>
 
                   {/* Location Meta Box */}
-                  <div className="mt-3 grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                  <div className="mt-3 grid grid-cols-2 gap-2 text-xs bg-muted p-2.5 rounded-xl border border-border">
                     <div>
-                      <span className="text-slate-500">Vị trí: </span>
-                      <strong className="text-slate-800">
+                      <span className="text-muted-foreground">Vị trí: </span>
+                      <strong className="text-foreground">
                         {ticket.building} - {ticket.room}
                       </strong>
                     </div>
                     <div>
-                      <span className="text-slate-500">Khu vực: </span>
-                      <strong className="text-slate-800">
+                      <span className="text-muted-foreground">Khu vực: </span>
+                      <strong className="text-foreground">
                         {ticket.bedCode || ticket.compartment || "Phòng chung"}
                       </strong>
                     </div>
                     <div>
-                      <span className="text-slate-500">Người báo: </span>
-                      <strong className="text-slate-800">{ticket.studentName}</strong>
+                      <span className="text-muted-foreground">Người báo: </span>
+                      <strong className="text-foreground">{ticket.studentName}</strong>
                     </div>
                     <div>
-                      <span className="text-slate-500">Thời gian: </span>
-                      <span className="font-mono text-slate-700">{ticket.createdAt}</span>
+                      <span className="text-muted-foreground">Thời gian: </span>
+                      <span className="font-mono text-foreground">{ticket.createdAt}</span>
                     </div>
                   </div>
 
                   {/* Assigned Technician if available */}
                   {ticket.assignedTechnician && (
-                    <div className="mt-2.5 flex items-center justify-between text-xs bg-blue-50 border border-blue-200 p-2 rounded-xl text-blue-900">
+                    <div className="mt-2.5 flex items-center justify-between text-xs bg-primary-soft border border-primary/20 p-2 rounded-xl text-primary-soft-foreground">
                       <div className="flex items-center gap-1.5">
-                        <UserCheck className="h-3.5 w-3.5 text-blue-700" />
+                        <UserCheck className="h-3.5 w-3.5 text-primary-soft-foreground" />
                         <span>
                           Kỹ thuật: <strong>{ticket.assignedTechnician.name}</strong> ({ticket.assignedTechnician.phone})
                         </span>
                       </div>
-                      <span className="text-[11px] text-blue-700 font-medium">
+                      <span className="text-[11px] text-primary-soft-foreground font-medium">
                         ETA: {ticket.assignedTechnician.etaMinutes}p
                       </span>
                     </div>
@@ -608,13 +600,13 @@ export const MaintenancePage: React.FC = () => {
 
                   {/* Review Stars if closed */}
                   {ticket.review && (
-                    <div className="mt-2.5 flex items-center gap-2 text-xs bg-emerald-50 border border-emerald-200 p-2 rounded-xl text-emerald-900">
-                      <div className="flex text-amber-500">
+                    <div className="mt-2.5 flex items-center gap-2 text-xs bg-success-soft border border-success/25 p-2 rounded-xl text-success-soft-foreground">
+                      <div className="flex text-primary">
                         {[...Array(ticket.review.rating)].map((_, i) => (
                           <Star key={i} className="h-3.5 w-3.5 fill-current" />
                         ))}
                       </div>
-                      <span className="text-[11px] text-emerald-800 italic">
+                      <span className="text-[11px] text-success-soft-foreground italic">
                         "{ticket.review.comment}"
                       </span>
                     </div>
@@ -622,7 +614,7 @@ export const MaintenancePage: React.FC = () => {
                 </div>
 
                 {/* Card Actions Footer */}
-                <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                <div className="mt-4 pt-3 border-t border-border flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-1.5">
                     {/* View Details Modal Trigger */}
                     <button
@@ -630,29 +622,29 @@ export const MaintenancePage: React.FC = () => {
                         setActiveTicket(ticket)
                         setIsViewModalOpen(true)
                       }}
-                      className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-colors"
+                      className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-border bg-card hover:bg-muted text-foreground transition-colors"
                     >
-                      <Info className="h-3.5 w-3.5 text-slate-500" />
+                      <Info className="h-3.5 w-3.5 text-muted-foreground" />
                       <span>Chi tiết</span>
                     </button>
 
                     {/* Edit Ticket (U in CRUD) */}
                     <button
                       onClick={() => handleOpenEdit(ticket)}
-                      className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-colors"
+                      className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-border bg-card hover:bg-muted text-foreground transition-colors"
                       title="Sửa phiếu"
                     >
-                      <Edit2 className="h-3.5 w-3.5 text-slate-500" />
+                      <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
                       <span>Sửa</span>
                     </button>
 
                     {/* Delete Ticket (D in CRUD) */}
                     <button
                       onClick={() => setDeleteConfirmTicketId(ticket.id)}
-                      className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 transition-colors"
+                      className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-danger/25 bg-danger-soft hover:bg-danger-soft text-danger-soft-foreground transition-colors"
                       title="Xóa phiếu"
                     >
-                      <Trash2 className="h-3.5 w-3.5 text-rose-600" />
+                      <Trash2 className="h-3.5 w-3.5 text-danger-soft-foreground" />
                       <span>Xóa</span>
                     </button>
                   </div>
@@ -661,47 +653,38 @@ export const MaintenancePage: React.FC = () => {
                   <div className="flex items-center gap-1.5">
                     {/* For Manager: Assign Tech */}
                     {isManagerOrAdmin && isPending && (
-                      <button
-                        onClick={() => {
+                      <Button onClick={() => {
                           setActiveTicket(ticket)
                           setIsAssignModalOpen(true)
-                        }}
-                        className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors"
-                      >
+                        }}>
                         <UserCheck className="h-3.5 w-3.5" />
                         <span>Phân công thợ</span>
-                      </button>
+                      </Button>
                     )}
 
                     {/* For Technician: Mark Completed */}
                     {isTechnician && isInProgress && (
-                      <button
-                        onClick={() => {
+                      <Button variant="success" className="hover:bg-success" onClick={() => {
                           setActiveTicket(ticket)
                           setMaterials([])
                           setIsCompleteModalOpen(true)
-                        }}
-                        className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-colors"
-                      >
-                        <CheckCircle2 className="h-3.5 w-3.5" />
+                        }}>
+                        <CircleCheck className="h-3.5 w-3.5" />
                         <span>Báo hoàn thành</span>
-                      </button>
+                      </Button>
                     )}
 
                     {/* For Student: Review when Resolved */}
                     {isResolved && (
-                      <button
-                        onClick={() => {
+                      <Button className="hover:bg-primary" onClick={() => {
                           setActiveTicket(ticket)
                           setRatingStars(5)
                           setRatingComment("")
                           setIsReviewModalOpen(true)
-                        }}
-                        className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition-colors"
-                      >
+                        }}>
                         <Star className="h-3.5 w-3.5 fill-current" />
                         <span>Đánh giá sao</span>
-                      </button>
+                      </Button>
                     )}
                   </div>
                 </div>
@@ -714,17 +697,17 @@ export const MaintenancePage: React.FC = () => {
       {/* MODAL 1: CREATE TICKET (C in CRUD) */}
       {isCreateModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 my-8">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+          <div className="bg-card rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-border my-8">
+            <div className="flex items-center justify-between border-b border-border pb-3 mb-4">
               <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                <div className="h-8 w-8 rounded-lg bg-primary-soft text-primary flex items-center justify-center">
                   <Plus className="h-4 w-4" />
                 </div>
-                <h3 className="font-bold text-slate-900 text-base">Tạo phiếu báo hỏng thiết bị</h3>
+                <h3 className="font-bold text-foreground text-base">Tạo phiếu báo hỏng thiết bị</h3>
               </div>
               <button
                 onClick={() => setIsCreateModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700 p-1 rounded-lg"
+                className="text-muted-foreground hover:text-foreground p-1 rounded-lg"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -732,52 +715,52 @@ export const MaintenancePage: React.FC = () => {
 
             <form onSubmit={handleCreateSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Tiêu đề sự cố <span className="text-rose-500">*</span>
+                <label className="block text-xs font-bold text-foreground mb-1">
+                  Tiêu đề sự cố <span className="text-danger">*</span>
                 </label>
-                <input
+                <Input
                   type="text"
                   required
                   value={formTitle}
                   onChange={(e) => setFormTitle(e.target.value)}
                   placeholder="Ví dụ: Vỡ vòi sen nhà tắm, Chập ổ điện đầu giường..."
-                  className="w-full px-3.5 py-2 text-sm rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:border-blue-500"
+                  
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Phạm vi khu vực</label>
-                  <select
+                  <label className="block text-xs font-bold text-foreground mb-1">Phạm vi khu vực</label>
+                  <Select
                     value={formScope}
                     onChange={(e) => setFormScope(e.target.value as MaintenanceScope)}
-                    className="w-full px-3 py-2 text-xs font-medium rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:border-blue-500"
+                    className="font-medium"
                   >
                     <option value="COMPARTMENT_PRIVATE">Buồng cá nhân (Giường riêng)</option>
                     <option value="ROOM_SHARED">Khu vực phòng chung (WC, Ban công)</option>
-                  </select>
+                  </Select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Mức độ ưu tiên</label>
-                  <select
+                  <label className="block text-xs font-bold text-foreground mb-1">Mức độ ưu tiên</label>
+                  <Select
                     value={formUrgency}
                     onChange={(e) => setFormUrgency(e.target.value as MaintenanceUrgency)}
-                    className="w-full px-3 py-2 text-xs font-medium rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:border-blue-500"
+                    className="font-medium"
                   >
                     <option value="NORMAL">Bình thường (Trong 24h)</option>
                     <option value="EMERGENCY">Khẩn cấp (Cháy, nổ, vỡ ống - Trong 2h)</option>
-                  </select>
+                  </Select>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Phân loại sự cố</label>
-                  <select
+                  <label className="block text-xs font-bold text-foreground mb-1">Phân loại sự cố</label>
+                  <Select
                     value={formCategory}
                     onChange={(e) => setFormCategory(e.target.value as MaintenanceCategory)}
-                    className="w-full px-3 py-2 text-xs font-medium rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:border-blue-500"
+                    className="font-medium"
                   >
                     <option value="ELECTRIC">Hệ thống Điện</option>
                     <option value="PLUMBING">Nước & Thiết bị WC</option>
@@ -785,56 +768,60 @@ export const MaintenancePage: React.FC = () => {
                     <option value="FURNITURE">Nội thất / Giường tủ</option>
                     <option value="NETWORK">Mạng Internet / Wifi</option>
                     <option value="OTHER">Khác</option>
-                  </select>
+                  </Select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Phòng & Vị trí</label>
-                  <input
+                  <label className="block text-xs font-bold text-foreground mb-1">Phòng & Vị trí</label>
+                  <Input
                     type="text"
                     value={`${formBuilding} - ${formRoom} (${formCompartment})`}
                     disabled
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-100 text-slate-600 font-mono"
+                    className="text-muted-foreground font-mono"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Mô tả chi tiết sự cố</label>
-                <textarea
+                <label className="block text-xs font-bold text-foreground mb-1">Mô tả chi tiết sự cố</label>
+                <Textarea
                   rows={3}
                   value={formDescription}
                   onChange={(e) => setFormDescription(e.target.value)}
                   placeholder="Mô tả cụ thể hiện trạng hư hỏng, vị trí hoặc dấu hiệu bất thường..."
-                  className="w-full px-3.5 py-2 text-sm rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:border-blue-500"
-                ></textarea>
+                  
+                />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Link ảnh chụp hiện trường</label>
-                <input
+                <ImageUpload
+                  storageKey="dms_maintenance_create_photos"
+                  label="Ảnh chụp hiện trường (chọn từ máy)"
+                  hint="JPG/PNG/WebP, mỗi ảnh ≤ 5MB, tối đa 5 ảnh. Ảnh được lưu kèm phiếu."
+                  value={formPhotos}
+                  onChange={setFormPhotos}
+                />
+                <label className="mt-2 block text-xs font-bold text-foreground mb-1">Hoặc dán link ảnh (tùy chọn)</label>
+                <Input
                   type="url"
                   value={formImage}
                   onChange={(e) => setFormImage(e.target.value)}
                   placeholder="https://..."
-                  className="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:border-blue-500"
+                  
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-border">
                 <button
                   type="button"
                   onClick={() => setIsCreateModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-colors"
+                  className="px-4 py-2 text-xs font-semibold rounded-xl border border-border bg-card hover:bg-muted text-foreground transition-colors"
                 >
                   Hủy bỏ
                 </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 text-xs font-bold rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-colors"
-                >
+                <Button type="submit">
                   Gửi yêu cầu
-                </button>
+                </Button>
               </div>
             </form>
           </div>
@@ -844,17 +831,17 @@ export const MaintenancePage: React.FC = () => {
       {/* MODAL 2: EDIT TICKET (U in CRUD) */}
       {isEditModalOpen && activeTicket && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 my-8">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+          <div className="bg-card rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-border my-8">
+            <div className="flex items-center justify-between border-b border-border pb-3 mb-4">
               <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center">
-                  <Edit2 className="h-4 w-4" />
+                <div className="h-8 w-8 rounded-lg bg-muted text-foreground flex items-center justify-center">
+                  <Pencil className="h-4 w-4" />
                 </div>
-                <h3 className="font-bold text-slate-900 text-base">Chỉnh sửa phiếu {activeTicket.id}</h3>
+                <h3 className="font-bold text-foreground text-base">Chỉnh sửa phiếu {activeTicket.id}</h3>
               </div>
               <button
                 onClick={() => setIsEditModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700 p-1 rounded-lg"
+                className="text-muted-foreground hover:text-foreground p-1 rounded-lg"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -862,35 +849,35 @@ export const MaintenancePage: React.FC = () => {
 
             <form onSubmit={handleEditSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Tiêu đề sự cố</label>
-                <input
+                <label className="block text-xs font-bold text-foreground mb-1">Tiêu đề sự cố</label>
+                <Input
                   type="text"
                   required
                   value={formTitle}
                   onChange={(e) => setFormTitle(e.target.value)}
-                  className="w-full px-3.5 py-2 text-sm rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:border-blue-500"
+                  
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Mức độ ưu tiên</label>
-                  <select
+                  <label className="block text-xs font-bold text-foreground mb-1">Mức độ ưu tiên</label>
+                  <Select
                     value={formUrgency}
                     onChange={(e) => setFormUrgency(e.target.value as MaintenanceUrgency)}
-                    className="w-full px-3 py-2 text-xs font-medium rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:border-blue-500"
+                    className="font-medium"
                   >
                     <option value="NORMAL">Bình thường</option>
                     <option value="EMERGENCY">Khẩn cấp</option>
-                  </select>
+                  </Select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Phân loại</label>
-                  <select
+                  <label className="block text-xs font-bold text-foreground mb-1">Phân loại</label>
+                  <Select
                     value={formCategory}
                     onChange={(e) => setFormCategory(e.target.value as MaintenanceCategory)}
-                    className="w-full px-3 py-2 text-xs font-medium rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:border-blue-500"
+                    className="font-medium"
                   >
                     <option value="ELECTRIC">Hệ thống Điện</option>
                     <option value="PLUMBING">Nước & Thiết bị WC</option>
@@ -898,34 +885,31 @@ export const MaintenancePage: React.FC = () => {
                     <option value="FURNITURE">Nội thất / Giường tủ</option>
                     <option value="NETWORK">Mạng Internet</option>
                     <option value="OTHER">Khác</option>
-                  </select>
+                  </Select>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Mô tả sự cố</label>
-                <textarea
+                <label className="block text-xs font-bold text-foreground mb-1">Mô tả sự cố</label>
+                <Textarea
                   rows={3}
                   value={formDescription}
                   onChange={(e) => setFormDescription(e.target.value)}
-                  className="w-full px-3.5 py-2 text-sm rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:border-blue-500"
-                ></textarea>
+                  
+                />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-border">
                 <button
                   type="button"
                   onClick={() => setIsEditModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-colors"
+                  className="px-4 py-2 text-xs font-semibold rounded-xl border border-border bg-card hover:bg-muted text-foreground transition-colors"
                 >
                   Hủy
                 </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 text-xs font-bold rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-colors"
-                >
+                <Button type="submit">
                   Lưu thay đổi
-                </button>
+                </Button>
               </div>
             </form>
           </div>
@@ -935,45 +919,45 @@ export const MaintenancePage: React.FC = () => {
       {/* MODAL 3: VIEW DETAILS (R in CRUD) */}
       {isViewModalOpen && activeTicket && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
-          <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 my-8">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+          <div className="bg-card rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-border my-8">
+            <div className="flex items-center justify-between border-b border-border pb-3 mb-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200">
+                  <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-muted text-foreground border border-border">
                     {activeTicket.id}
                   </span>
-                  <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-blue-50 text-blue-800 border border-blue-200">
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-primary-soft text-primary-soft-foreground border border-primary/20">
                     {activeTicket.status}
                   </span>
                 </div>
-                <h3 className="font-bold text-slate-900 text-lg mt-1">{activeTicket.title}</h3>
+                <h3 className="font-bold text-foreground text-lg mt-1">{activeTicket.title}</h3>
               </div>
               <button
                 onClick={() => setIsViewModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700 p-1 rounded-lg"
+                className="text-muted-foreground hover:text-foreground p-1 rounded-lg"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="space-y-4 text-sm text-slate-700">
+            <div className="space-y-4 text-sm text-foreground">
               <div>
-                <span className="text-xs font-semibold text-slate-500 uppercase">Mô tả sự cố</span>
-                <p className="mt-1 bg-slate-50 p-3 rounded-xl border border-slate-200 text-slate-800 text-xs leading-relaxed">
+                <span className="text-xs font-semibold text-muted-foreground uppercase">Mô tả sự cố</span>
+                <p className="mt-1 bg-muted p-3 rounded-xl border border-border text-foreground text-xs leading-relaxed">
                   {activeTicket.description}
                 </p>
               </div>
 
               {activeTicket.evidenceImages && activeTicket.evidenceImages.length > 0 && (
                 <div>
-                  <span className="text-xs font-semibold text-slate-500 uppercase">Ảnh hiện trường</span>
+                  <span className="text-xs font-semibold text-muted-foreground uppercase">Ảnh hiện trường</span>
                   <div className="mt-1.5 flex gap-2 overflow-x-auto">
                     {activeTicket.evidenceImages.map((img, i) => (
                       <img
                         key={i}
                         src={img}
                         alt="Evidence"
-                        className="h-28 w-40 object-cover rounded-xl border border-slate-200 shadow-2xs"
+                        className="h-28 w-40 object-cover rounded-xl border border-border shadow-2xs"
                       />
                     ))}
                   </div>
@@ -982,9 +966,9 @@ export const MaintenancePage: React.FC = () => {
 
               {/* Technician Info */}
               {activeTicket.assignedTechnician && (
-                <div className="p-3.5 bg-blue-50 border border-blue-200 rounded-xl">
-                  <span className="text-xs font-bold text-blue-900 block mb-1">Thông tin Kỹ thuật viên</span>
-                  <div className="grid grid-cols-2 gap-2 text-xs text-blue-800">
+                <div className="p-3.5 bg-primary-soft border border-primary/20 rounded-xl">
+                  <span className="text-xs font-bold text-primary-soft-foreground block mb-1">Thông tin Kỹ thuật viên</span>
+                  <div className="grid grid-cols-2 gap-2 text-xs text-primary-soft-foreground">
                     <div>Tên: <strong>{activeTicket.assignedTechnician.name}</strong></div>
                     <div>Điện thoại: <strong>{activeTicket.assignedTechnician.phone}</strong></div>
                     <div>Thời gian nhận: {activeTicket.assignedTechnician.assignedAt}</div>
@@ -995,20 +979,20 @@ export const MaintenancePage: React.FC = () => {
 
               {/* Resolution Info */}
               {activeTicket.resolution && (
-                <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl space-y-2">
-                  <span className="text-xs font-bold text-emerald-900 block">Biên bản nghiệm thu sửa chữa</span>
-                  <p className="text-xs text-emerald-800">{activeTicket.resolution.technicianNotes}</p>
+                <div className="p-3.5 bg-success-soft border border-success/25 rounded-xl space-y-2">
+                  <span className="text-xs font-bold text-success-soft-foreground block">Biên bản nghiệm thu sửa chữa</span>
+                  <p className="text-xs text-success-soft-foreground">{activeTicket.resolution.technicianNotes}</p>
                   {activeTicket.resolution.materials.length > 0 && (
                     <div className="mt-2 text-xs">
-                      <strong className="text-emerald-900 block mb-1">Vật tư thay thế:</strong>
-                      <ul className="list-disc pl-4 space-y-0.5 text-emerald-800">
+                      <strong className="text-success-soft-foreground block mb-1">Vật tư thay thế:</strong>
+                      <ul className="list-disc pl-4 space-y-0.5 text-success-soft-foreground">
                         {activeTicket.resolution.materials.map((m) => (
                           <li key={m.id}>
                             {m.name} x {m.quantity} = {m.unitCost.toLocaleString("vi-VN")} đ ({m.paidBy === "DORMITORY" ? "KTX chi trả" : "Sinh viên chi trả"})
                           </li>
                         ))}
                       </ul>
-                      <div className="mt-1.5 font-bold text-emerald-900">
+                      <div className="mt-1.5 font-bold text-success-soft-foreground">
                         Tổng chi phí: {activeTicket.resolution.totalMaterialCost.toLocaleString("vi-VN")} đ
                       </div>
                     </div>
@@ -1017,10 +1001,10 @@ export const MaintenancePage: React.FC = () => {
               )}
             </div>
 
-            <div className="mt-6 pt-3 border-t border-slate-100 flex justify-end">
+            <div className="mt-6 pt-3 border-t border-border flex justify-end">
               <button
                 onClick={() => setIsViewModalOpen(false)}
-                className="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-colors"
+                className="px-4 py-2 text-xs font-semibold rounded-xl bg-foreground text-white hover:bg-black transition-colors"
               >
                 Đóng
               </button>
@@ -1032,14 +1016,14 @@ export const MaintenancePage: React.FC = () => {
       {/* MODAL 4: ASSIGN TECHNICIAN */}
       {isAssignModalOpen && activeTicket && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
-            <h3 className="font-bold text-slate-900 text-base mb-1">Phân công Kỹ thuật viên</h3>
-            <p className="text-xs text-slate-500 mb-4">Gán thợ sửa chữa cho phiếu {activeTicket.id}</p>
+          <div className="bg-card rounded-2xl max-w-md w-full p-6 shadow-2xl border border-border">
+            <h3 className="font-bold text-foreground text-base mb-1">Phân công Kỹ thuật viên</h3>
+            <p className="text-xs text-muted-foreground mb-4">Gán thợ sửa chữa cho phiếu {activeTicket.id}</p>
 
             <form onSubmit={handleAssignSubmit} className="space-y-3.5">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Kỹ thuật viên phụ trách</label>
-                <select
+                <label className="block text-xs font-bold text-foreground mb-1">Kỹ thuật viên phụ trách</label>
+                <Select
                   value={assignTechName}
                   onChange={(e) => {
                     setAssignTechName(e.target.value)
@@ -1047,50 +1031,47 @@ export const MaintenancePage: React.FC = () => {
                     if (e.target.value === "Anh Lê Quốc Tuấn") setAssignTechPhone("0918 889 900")
                     if (e.target.value === "Anh Vũ Trọng Nghĩa") setAssignTechPhone("0934 567 890")
                   }}
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white text-slate-900"
+                  
                 >
                   <option value="Chú Đỗ Mạnh Hùng">Chú Đỗ Mạnh Hùng (Trưởng ban Điện lạnh)</option>
                   <option value="Anh Lê Quốc Tuấn">Anh Lê Quốc Tuấn (Kỹ thuật Điện dân dụng)</option>
                   <option value="Anh Vũ Trọng Nghĩa">Anh Vũ Trọng Nghĩa (Thợ nước & Vệ sinh)</option>
-                </select>
+                </Select>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Số điện thoại liên hệ</label>
-                <input
+                <label className="block text-xs font-bold text-foreground mb-1">Số điện thoại liên hệ</label>
+                <Input
                   type="text"
                   value={assignTechPhone}
                   onChange={(e) => setAssignTechPhone(e.target.value)}
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white text-slate-900 font-mono"
+                  className="font-mono"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Thời gian dự kiến có mặt (phút)</label>
-                <input
+                <label className="block text-xs font-bold text-foreground mb-1">Thời gian dự kiến có mặt (phút)</label>
+                <Input
                   type="number"
                   min={15}
                   max={240}
                   value={assignEtaMinutes}
                   onChange={(e) => setAssignEtaMinutes(Number(e.target.value))}
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white text-slate-900"
+                  
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-border">
                 <button
                   type="button"
                   onClick={() => setIsAssignModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold rounded-xl border border-slate-200 text-slate-700"
+                  className="px-4 py-2 text-xs font-semibold rounded-xl border border-border text-foreground"
                 >
                   Hủy
                 </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 text-xs font-bold rounded-xl bg-blue-600 text-white hover:bg-blue-700"
-                >
+                <Button type="submit">
                   Xác nhận phân công
-                </button>
+                </Button>
               </div>
             </form>
           </div>
@@ -1100,65 +1081,62 @@ export const MaintenancePage: React.FC = () => {
       {/* MODAL 5: COMPLETE TICKET */}
       {isCompleteModalOpen && activeTicket && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 my-8">
-            <h3 className="font-bold text-slate-900 text-base mb-1">Báo cáo hoàn thành sửa chữa</h3>
-            <p className="text-xs text-slate-500 mb-4">Nghiệm thu sự cố {activeTicket.id}</p>
+          <div className="bg-card rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-border my-8">
+            <h3 className="font-bold text-foreground text-base mb-1">Báo cáo hoàn thành sửa chữa</h3>
+            <p className="text-xs text-muted-foreground mb-4">Nghiệm thu sự cố {activeTicket.id}</p>
 
             <form onSubmit={handleCompleteSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Ghi chú xử lý kỹ thuật</label>
-                <textarea
+                <label className="block text-xs font-bold text-foreground mb-1">Ghi chú xử lý kỹ thuật</label>
+                <Textarea
                   rows={2}
                   required
                   value={completionNotes}
                   onChange={(e) => setCompletionNotes(e.target.value)}
                   placeholder="Đã thay thế linh kiện, đo nguồn điện ổn định..."
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white text-slate-900"
-                ></textarea>
+                  
+                />
               </div>
 
               {/* Material Logging */}
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                <span className="text-xs font-bold text-slate-800 block mb-2">Vật tư thay thế (nếu có)</span>
+              <div className="p-3 bg-muted rounded-xl border border-border">
+                <span className="text-xs font-bold text-foreground block mb-2">Vật tư thay thế (nếu có)</span>
                 <div className="grid grid-cols-3 gap-2 mb-2">
-                  <input
+                  <Input
                     type="text"
                     placeholder="Tên vật tư..."
                     value={newMatName}
                     onChange={(e) => setNewMatName(e.target.value)}
-                    className="col-span-2 px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 bg-white"
+                    className="col-span-2"
                   />
-                  <input
+                  <Input
                     type="number"
                     placeholder="SL"
                     value={newMatQty}
                     onChange={(e) => setNewMatQty(Number(e.target.value))}
-                    className="px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 bg-white"
+                    
                   />
                 </div>
                 <div className="flex gap-2 mb-2">
-                  <input
+                  <Input
                     type="number"
                     placeholder="Đơn giá (VNĐ)"
                     value={newMatCost}
                     onChange={(e) => setNewMatCost(Number(e.target.value))}
-                    className="flex-1 px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 bg-white"
+                    className="flex-1"
                   />
-                  <select
+                  <Select
                     value={newMatPayer}
-                    onChange={(e) => setNewMatPayer(e.target.value as any)}
-                    className="text-xs px-2 py-1.5 rounded-lg border border-slate-300 bg-white"
+                    onChange={(e) => setNewMatPayer(e.target.value as "DORMITORY" | "STUDENT")}
+                    
                   >
                     <option value="DORMITORY">KTX chi trả</option>
                     <option value="STUDENT">SV bồi thường</option>
-                  </select>
-                  <button
-                    type="button"
-                    onClick={handleAddMaterial}
-                    className="px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-600 text-white"
-                  >
+                  </Select>
+                  <Button type="button"
+                    onClick={handleAddMaterial}>
                     Thêm
-                  </button>
+                  </Button>
                 </div>
 
                 {materials.length > 0 && (
@@ -1166,7 +1144,7 @@ export const MaintenancePage: React.FC = () => {
                     {materials.map((m) => (
                       <div
                         key={m.id}
-                        className="flex items-center justify-between text-xs bg-white p-2 rounded-lg border border-slate-200"
+                        className="flex items-center justify-between text-xs bg-card p-2 rounded-lg border border-border"
                       >
                         <span>
                           {m.name} x {m.quantity} ({m.unitCost.toLocaleString("vi-VN")} đ)
@@ -1174,9 +1152,9 @@ export const MaintenancePage: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => handleRemoveMaterial(m.id)}
-                          className="text-rose-500 hover:text-rose-700 text-xs font-bold"
+                          className="text-danger hover:text-danger-soft-foreground text-xs font-bold"
                         >
-                          ✕
+                          <X className="h-4 w-4" />
                         </button>
                       </div>
                     ))}
@@ -1185,29 +1163,26 @@ export const MaintenancePage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Ảnh sau khi hoàn thành</label>
-                <input
+                <label className="block text-xs font-bold text-foreground mb-1">Ảnh sau khi hoàn thành</label>
+                <Input
                   type="url"
                   value={completionImage}
                   onChange={(e) => setCompletionImage(e.target.value)}
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white text-slate-900"
+                  
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-border">
                 <button
                   type="button"
                   onClick={() => setIsCompleteModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold rounded-xl border border-slate-200 text-slate-700"
+                  className="px-4 py-2 text-xs font-semibold rounded-xl border border-border text-foreground"
                 >
                   Hủy
                 </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 text-xs font-bold rounded-xl bg-emerald-600 text-white hover:bg-emerald-700"
-                >
+                <Button variant="success" className="hover:bg-success" type="submit">
                   Xác nhận hoàn thành
-                </button>
+                </Button>
               </div>
             </form>
           </div>
@@ -1217,12 +1192,12 @@ export const MaintenancePage: React.FC = () => {
       {/* MODAL 6: STUDENT REVIEW & STAR RATING */}
       {isReviewModalOpen && activeTicket && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 text-center">
-            <div className="h-12 w-12 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center mx-auto mb-3">
+          <div className="bg-card rounded-2xl max-w-md w-full p-6 shadow-2xl border border-border text-center">
+            <div className="h-12 w-12 rounded-full bg-primary-soft text-primary flex items-center justify-center mx-auto mb-3">
               <Star className="h-6 w-6 fill-current" />
             </div>
-            <h3 className="font-bold text-slate-900 text-base">Đánh giá chất lượng sửa chữa</h3>
-            <p className="text-xs text-slate-500 mt-1 mb-4">
+            <h3 className="font-bold text-foreground text-base">Đánh giá chất lượng sửa chữa</h3>
+            <p className="text-xs text-muted-foreground mt-1 mb-4">
               Ý kiến của bạn giúp cải thiện dịch vụ quản lý KTX tốt hơn.
             </p>
 
@@ -1237,7 +1212,7 @@ export const MaintenancePage: React.FC = () => {
                   >
                     <Star
                       className={`h-7 w-7 ${
-                        star <= ratingStars ? "text-amber-400 fill-amber-400" : "text-slate-300"
+                        star <= ratingStars ? "text-primary fill-primary" : "text-muted-foreground"
                       }`}
                     />
                   </button>
@@ -1245,29 +1220,26 @@ export const MaintenancePage: React.FC = () => {
               </div>
 
               <div>
-                <textarea
+                <Textarea
                   rows={3}
                   value={ratingComment}
                   onChange={(e) => setRatingComment(e.target.value)}
                   placeholder="Chia sẻ nhận xét về thời gian, thái độ của kỹ thuật viên..."
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white text-slate-900"
-                ></textarea>
+                  
+                />
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-2">
                 <button
                   type="button"
                   onClick={() => setIsReviewModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold rounded-xl border border-slate-200 text-slate-700"
+                  className="px-4 py-2 text-xs font-semibold rounded-xl border border-border text-foreground"
                 >
                   Bỏ qua
                 </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 text-xs font-bold rounded-xl bg-amber-500 hover:bg-amber-600 text-white"
-                >
+                <Button className="hover:bg-primary" type="submit">
                   Gửi đánh giá
-                </button>
+                </Button>
               </div>
             </form>
           </div>
@@ -1277,28 +1249,25 @@ export const MaintenancePage: React.FC = () => {
       {/* MODAL 7: DELETE CONFIRMATION (D in CRUD) */}
       {deleteConfirmTicketId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 text-center">
-            <div className="h-12 w-12 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-3">
+          <div className="bg-card rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-border text-center">
+            <div className="h-12 w-12 rounded-full bg-danger-soft text-danger-soft-foreground flex items-center justify-center mx-auto mb-3">
               <Trash2 className="h-6 w-6" />
             </div>
-            <h3 className="font-bold text-slate-900 text-base">Xác nhận xóa phiếu yêu cầu</h3>
-            <p className="text-xs text-slate-600 mt-2 mb-5">
+            <h3 className="font-bold text-foreground text-base">Xác nhận xóa phiếu yêu cầu</h3>
+            <p className="text-xs text-muted-foreground mt-2 mb-5">
               Bạn có chắc chắn muốn xóa vĩnh viễn phiếu <strong>{deleteConfirmTicketId}</strong> không? Hành động này không thể hoàn tác.
             </p>
 
             <div className="flex items-center justify-center gap-2">
               <button
                 onClick={() => setDeleteConfirmTicketId(null)}
-                className="px-4 py-2 text-xs font-semibold rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50"
+                className="px-4 py-2 text-xs font-semibold rounded-xl border border-border text-foreground hover:bg-muted"
               >
                 Hủy bỏ
               </button>
-              <button
-                onClick={() => handleDeleteTicket(deleteConfirmTicketId)}
-                className="px-4 py-2 text-xs font-bold rounded-xl bg-rose-600 hover:bg-rose-700 text-white"
-              >
+              <Button variant="destructive" className="hover:bg-danger" onClick={() => handleDeleteTicket(deleteConfirmTicketId)}>
                 Xóa phiếu
-              </button>
+              </Button>
             </div>
           </div>
         </div>

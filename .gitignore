@@ -29,3 +29,6 @@ dist-ssr
 .env
 .env.local
 .env.*.local
+
+# Local staging: source photos + URL notes (rebuild via scripts/build-fpt-dolly.py)
+staging-fpt-ktx/

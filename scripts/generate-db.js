@@ -126,8 +126,8 @@ for (let i = 1; i <= 5; i++) { // 5 floors
 
       for (let l = 1; l <= 6; l++) { // 6 beds per compartment
         const bedId = `bed${bedCounter++}`;
-        const bedName = `G0${l}`;
-        const fullCode = `${roomName}-${compName}-${bedName}`; // e.g. A205-B1-G03 (Well B1 is B-1? Wait, SRS says B-1 but B is enough. We'll use just B for zone)
+        const bedName = `G${String(l).padStart(2, "0")}`;
+        const fullCode = `${roomName}-${compName}1-${bedName}`; // [Phong]-[Buong]-[Giuong] e.g. A205-B1-G03
         
         db.beds.push({
           id: bedId,

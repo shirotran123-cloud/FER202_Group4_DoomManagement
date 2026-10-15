@@ -1,0 +1,26 @@
+{
+  "generator": "hand-built from 4 real FPT dorm photos (user-supplied links)",
+  "source": [
+    "daihoc.fpt.edu.vn 641494020 = Toan canh KTX (1024x575)",
+    "fbcdn 534951955 fpt4 = Khuon vien AI Campus (2048x1365)",
+    "fbcdn url5 fpt5 = Phong sinh hoat chung (2048x1365)",
+    "fbcdn 534827045 fpt6 = Buong 6 nguoi (2048x1365)"
+  ],
+  "method": "scripts/build-fpt-dolly.py: cover-fit 1920x1080 world, warm grade, 4 segments x24 dolly-in 1.0->1.25 centered, 8-frame crossfade joints",
+  "motion": "monotonic dolly-in per segment, crossfade joints (no hard cuts)",
+  "size": [
+    1280,
+    720
+  ],
+  "outputs": {
+    "scrub": "scrub-fpt/frame-001..096.jpg (q80)",
+    "clip": "dorm-dolly-fpt.mp4 (10s, 24fps, yuv420p faststart)",
+    "keyframes": "dorm-keyframe-fpt-1..4.jpg (q85)"
+  },
+  "usage": {
+    "gallery": "DormitoryGallerySlider 4 slides (dorm-keyframe-fpt-*)",
+    "scrub": "CinematicScrubStage 96 frames (scrub-fpt/), caption hien ten canh theo segment",
+    "cards": "DormDepthCards 4 (dorm-keyframe-fpt-*)",
+    "clip": "DormDollyClip -> dorm-dolly-fpt.mp4 (enhancement only, never video.currentTime seeks)"
+  }
+}
