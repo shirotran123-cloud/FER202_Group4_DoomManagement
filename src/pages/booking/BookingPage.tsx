@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react"
 import { useAuth } from "@/contexts/useAuth"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { useBooking } from "@/contexts/BookingContext"
-import { CheckCircle2, QrCode, Download, Check, Zap } from "lucide-react"
+import { CheckCircle2, QrCode, Download, Check, Zap, ChevronDown, DoorClosed, BedDouble } from "lucide-react"
 
 interface Bed {
   id: string
@@ -25,7 +24,7 @@ interface Compartment {
 
 export const BookingPage: React.FC = () => {
   const { user } = useAuth()
-  const { setBooking, confirmBooking } = useBooking()
+  const { setBooking } = useBooking()
 
   // Selection states
   const [selectedBuilding, setSelectedBuilding] = useState("b1")
@@ -201,9 +200,7 @@ export const BookingPage: React.FC = () => {
         <span className={`text-xs font-semibold ${isActive ? "text-primary dark:text-[#cee6ef]" : "text-muted-foreground"}`}>
           {summary}
         </span>
-        <span className={`material-symbols-outlined text-muted-foreground text-base transition-transform ${isActive ? "rotate-180" : ""}`}>
-          expand_more
-        </span>
+        <ChevronDown className={`text-muted-foreground h-4 w-4 transition-transform ${isActive ? "rotate-180" : ""}`} />
       </div>
     </button>
   )
@@ -342,7 +339,7 @@ export const BookingPage: React.FC = () => {
                   }`}
                 >
                   <div className="flex items-center gap-4">
-                    <span className={`material-symbols-outlined text-2xl ${selectedRoom === room.id ? "text-primary" : "text-muted-foreground"}`}>meeting_room</span>
+                    <DoorClosed className={`h-6 w-6 shrink-0 ${selectedRoom === room.id ? "text-primary" : "text-muted-foreground"}`} />
                     <div>
                       <p className="font-bold text-sm text-foreground">{room.label}</p>
                       <p className="text-[11px] text-muted-foreground">{room.desc}</p>
@@ -455,9 +452,11 @@ export const BookingPage: React.FC = () => {
                             : "bg-[#f4f4ee] dark:bg-[#1c262c] border-border cursor-not-allowed opacity-50"
                         }`}
                       >
-                        <span className={`material-symbols-outlined text-xl ${isPick ? "text-white" : isAvail ? "text-emerald-600" : "text-muted-foreground"}`}>
-                          {isPick ? "check_circle" : "single_bed"}
-                        </span>
+                        {isPick ? (
+                          <CheckCircle2 className="h-5 w-5 text-white" />
+                        ) : (
+                          <BedDouble className={`h-5 w-5 ${isAvail ? "text-[#679436]" : "text-muted-foreground"}`} />
+                        )}
                         <span className={`font-mono font-bold text-sm ${isPick ? "text-white" : "text-foreground"}`}>{bed.slot}</span>
                         <span className={`text-[10px] ${isPick ? "text-white/80" : "text-muted-foreground"}`}>
                           {bed.tier === "lower" ? "Tầng dưới" : "Tầng trên"}

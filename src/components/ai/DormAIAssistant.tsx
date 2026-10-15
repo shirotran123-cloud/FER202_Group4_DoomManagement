@@ -10,7 +10,6 @@ import {
   Settings,
   Key,
   ExternalLink,
-  CheckCircle2,
   AlertCircle,
   RotateCcw,
 } from "lucide-react"

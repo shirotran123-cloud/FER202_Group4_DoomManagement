@@ -17,6 +17,7 @@ import {
   LogIn,
   Sun,
   Moon,
+  Search,
 } from "lucide-react"
 import { useTheme } from "@/components/theme-provider"
 
@@ -96,13 +97,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
       <div className="flex items-center gap-2 sm:gap-4">
         {/* Search bar */}
         <div className="relative hidden md:block w-56 lg:w-64">
-          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-base">
-            search
-          </span>
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <input
             type="text"
             placeholder="Tìm phòng, sinh viên, đơn..."
-            className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-slate-100 text-slate-900 text-xs placeholder:text-slate-400 focus:outline-none focus:bg-white border border-slate-200 focus:border-blue-500 transition-all"
+            className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-muted text-foreground text-xs placeholder:text-muted-foreground focus:outline-hidden focus:bg-card border border-border focus:border-primary transition-all"
           />
         </div>
 

@@ -2,15 +2,42 @@ import React, { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
 import { AdminOverviewView } from "./AdminOverviewView"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Modal } from "@/components/ui/modal"
+import {
+  CheckCircle2,
+  DoorClosed,
+  QrCode,
+  Zap,
+  Building2,
+  Receipt,
+  Wrench,
+  Clock,
+  BedDouble,
+  Wifi,
+  Wind,
+  ShowerHead,
+  Shirt,
+  Radio,
+  PieChart,
+  Phone,
+  ShieldCheck,
+  AlertTriangle,
+  Calendar,
+  HeartPulse,
+  Droplets,
+} from "lucide-react"
 
 export const StudentOverviewPage: React.FC = () => {
   const { user } = useAuth()
 
-  // Nếu là Quản trị viên (Admin) hoặc Quản lý (Manager), hiển thị trang Overview Quản trị:
-  // Không có thông tin phòng riêng hay nộp đơn cho bản thân, mà xem danh sách sinh viên và các yêu cầu/đơn từ
+  // Nếu là Quản trị viên (Admin) hoặc Quản lý (Manager), hiển thị trang Overview Quản trị
   if (user?.role === "admin" || user?.role === "manager") {
     return <AdminOverviewView />
   }
+
   const [qrCountdown, setQrCountdown] = useState(15)
   const [showGateQrModal, setShowGateQrModal] = useState(false)
 
@@ -25,53 +52,59 @@ export const StudentOverviewPage: React.FC = () => {
   return (
     <div className="space-y-6 pb-12">
       {/* Hero Welcome Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-[#f4f4ee] border border-[#efeee8] p-6 sm:p-8 shadow-xs">
-        <div className="absolute -right-16 -top-16 w-80 h-80 rounded-full bg-[#cee6ef]/40 blur-3xl pointer-events-none" />
-        <div className="absolute right-40 -bottom-20 w-60 h-60 rounded-full bg-[#3a505b]/10 blur-2xl pointer-events-none" />
+      <div className="relative overflow-hidden rounded-2xl bg-card border border-border p-6 sm:p-8 shadow-xs">
+        <div className="absolute -right-16 -top-16 w-80 h-80 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
+        <div className="absolute right-40 -bottom-20 w-60 h-60 rounded-full bg-secondary/10 blur-2xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-800 border border-blue-200 text-xs uppercase tracking-wider font-semibold">
-                <span className="material-symbols-outlined text-sm">verified</span>
+              <Badge variant="available" className="gap-1.5 uppercase font-semibold">
+                <CheckCircle2 className="h-3.5 w-3.5" />
                 Verified Resident
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 text-xs font-semibold">
-                <span className="material-symbols-outlined text-sm">meeting_room</span>
-                Room A205 · Compartment B · Bed G03
-              </span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-mono border border-slate-200">
+              </Badge>
+              <Badge variant="outline" className="gap-1.5 font-semibold">
+                <DoorClosed className="h-3.5 w-3.5 text-primary" />
+                Phòng A205 · Buồng B · Giường G03
+              </Badge>
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-muted text-muted-foreground text-xs font-mono border border-border">
                 RFID: 8492-AX-01
               </span>
             </div>
 
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-[#1b1c19] tracking-tight flex items-center gap-2">
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight flex items-center gap-2">
                 Chào buổi sáng, {user?.fullName || "Nguyễn Hoàng Vinh"}{" "}
                 <span className="inline-block animate-bounce text-2xl">👋</span>
               </h1>
-              <p className="text-sm text-[#42474b] mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 Ký túc xá FPT University · Học kỳ Fall 2026 · Tòa A (High-Rise Hall)
               </p>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 self-start lg:self-center shrink-0">
-            <button
+            <Button
+              variant="outline"
+              size="lg"
               onClick={() => setShowGateQrModal(true)}
-              className="px-4 py-2.5 rounded-xl bg-white hover:bg-[#efeee8] text-[#1b1c19] text-xs font-semibold flex items-center gap-2 shadow-xs border border-[#efeee8] transition-all"
+              className="gap-2 font-semibold shadow-xs"
             >
-              <span className="material-symbols-outlined text-base">qr_code_2</span>
+              <QrCode className="h-4 w-4 text-primary" />
               <span>Mã Cửa Ra Vào</span>
-            </button>
+            </Button>
 
-            <Link
-              to="/billing"
-              className="px-5 py-2.5 rounded-xl bg-[#233944] hover:bg-[#3a505b] text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all"
+            <Button
+              variant="default"
+              size="lg"
+              asChild
+              className="gap-2 font-semibold shadow-sm"
             >
-              <span className="material-symbols-outlined text-base">bolt</span>
-              <span>VietQR Quickpay</span>
-            </Link>
+              <Link to="/billing">
+                <Zap className="h-4 w-4 text-accent" />
+                <span>VietQR Quickpay</span>
+              </Link>
+            </Button>
           </div>
         </div>
       </div>
@@ -79,120 +112,122 @@ export const StudentOverviewPage: React.FC = () => {
       {/* Top KPI 4-Card Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
         {/* Card 1: Current Room */}
-        <div className="rounded-xl bg-white p-5 sm:p-6 shadow-xs border border-[#efeee8] flex flex-col justify-between hover:shadow-md transition-shadow">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-[11px] uppercase tracking-wider text-[#73787b] font-bold">
+        <Card className="flex flex-col justify-between hover:shadow-md transition-shadow">
+          <CardHeader className="p-5 pb-2">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold">
                 Phòng Hiện Tại
               </span>
-              <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-700">
-                <span className="material-symbols-outlined text-base">domain</span>
+              <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                <Building2 className="h-4 w-4" />
               </div>
             </div>
-            <div className="text-lg font-bold text-[#1b1c19]">Tòa A · Tầng 2 · A205</div>
-            <div className="text-xs text-[#42474b] mt-1">Buồng B · Giường tầng dưới G03</div>
-          </div>
+            <CardTitle className="text-lg font-bold">Tòa A · Tầng 2 · A205</CardTitle>
+            <p className="text-xs text-muted-foreground mt-0.5">Buồng B · Giường tầng dưới G03</p>
+          </CardHeader>
 
-          <div className="mt-5 pt-3 space-y-2 bg-[#f4f4ee]/70 rounded-lg p-3">
-            <div className="flex items-center justify-between gap-2 text-xs">
-              <span className="text-[#42474b] whitespace-nowrap">Hợp đồng:</span>
-              <span className="font-semibold text-emerald-600 truncate text-right">Hiệu lực (Kỳ 1)</span>
+          <CardContent className="p-5 pt-0">
+            <div className="mt-4 pt-3 space-y-2 bg-muted/50 rounded-lg p-3 border border-border/50">
+              <div className="flex items-center justify-between gap-2 text-xs">
+                <span className="text-muted-foreground whitespace-nowrap">Hợp đồng:</span>
+                <span className="font-semibold text-primary truncate text-right">Hiệu lực (Kỳ 1)</span>
+              </div>
+              <div className="flex items-center justify-between gap-2 text-xs">
+                <span className="text-muted-foreground whitespace-nowrap">Mật độ phòng:</span>
+                <span className="font-bold text-foreground whitespace-nowrap">18 / 24 Giường</span>
+              </div>
             </div>
-            <div className="flex items-center justify-between gap-2 text-xs">
-              <span className="text-[#42474b] whitespace-nowrap">Mật độ phòng:</span>
-              <span className="font-bold text-[#233944] whitespace-nowrap">18 / 24 Giường</span>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Card 2: Monthly Ledger */}
-        <div className="rounded-xl bg-white p-5 sm:p-6 shadow-xs border border-[#efeee8] flex flex-col justify-between hover:shadow-md transition-shadow">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-[11px] uppercase tracking-wider text-[#73787b] font-bold">
+        <Card className="flex flex-col justify-between hover:shadow-md transition-shadow">
+          <CardHeader className="p-5 pb-2">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold">
                 Công Nợ Tháng 09
               </span>
-              <div className="w-8 h-8 rounded-lg bg-[#ffdad6]/60 flex items-center justify-center text-[#ba1a1a]">
-                <span className="material-symbols-outlined text-base">receipt_long</span>
+              <div className="w-8 h-8 rounded-lg bg-destructive/15 flex items-center justify-center text-destructive">
+                <Receipt className="h-4 w-4" />
               </div>
             </div>
             <div className="flex items-baseline gap-2">
-              <div className="text-2xl font-bold text-[#1b1c19] tracking-tight">₫420,000</div>
-              <span className="text-xs text-[#73787b] font-semibold">VND</span>
+              <div className="text-2xl font-bold text-foreground tracking-tight">₫420,000</div>
+              <span className="text-xs text-muted-foreground font-semibold">VND</span>
             </div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#ffdad6] text-[#93000a] text-xs mt-2 font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#ba1a1a]"></span>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-destructive/15 text-destructive text-xs mt-2 font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-destructive animate-pulse"></span>
               Hạn nộp: Còn 3 ngày (05/10)
             </div>
-          </div>
+          </CardHeader>
 
-          <div className="mt-5">
-            <Link
-              to="/billing"
-              className="w-full py-2.5 px-4 rounded-lg bg-[#233944] text-white text-xs font-semibold flex items-center justify-center gap-2 hover:bg-[#3a505b] transition-colors shadow-xs"
-            >
-              <span className="material-symbols-outlined text-base">payments</span>
-              <span>Thanh Toán VietQR</span>
-            </Link>
-          </div>
-        </div>
+          <CardContent className="p-5 pt-0">
+            <Button variant="secondary" size="default" asChild className="w-full mt-4 gap-2">
+              <Link to="/billing">
+                <Receipt className="h-4 w-4" />
+                <span>Thanh Toán VietQR</span>
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
 
         {/* Card 3: Maintenance */}
-        <div className="rounded-xl bg-white p-5 sm:p-6 shadow-xs border border-[#efeee8] flex flex-col justify-between hover:shadow-md transition-shadow">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-[11px] uppercase tracking-wider text-[#73787b] font-bold">
+        <Card className="flex flex-col justify-between hover:shadow-md transition-shadow">
+          <CardHeader className="p-5 pb-2">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold">
                 Bảo Trì Kỹ Thuật
               </span>
-              <div className="w-8 h-8 rounded-lg bg-[#e9e8e3] flex items-center justify-center text-[#42474b]">
-                <span className="material-symbols-outlined text-base">build</span>
+              <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-foreground">
+                <Wrench className="h-4 w-4" />
               </div>
             </div>
-            <div className="text-lg font-bold text-[#1b1c19]">2 Yêu Cầu Đang Xử Lý</div>
-            <div className="text-xs text-[#ba1a1a] font-medium mt-1 flex items-center gap-1">
-              <span className="material-symbols-outlined text-sm">warning</span>
+            <CardTitle className="text-lg font-bold">2 Yêu Cầu Đang Xử Lý</CardTitle>
+            <div className="text-xs text-destructive font-medium mt-1 flex items-center gap-1">
+              <AlertTriangle className="h-3.5 w-3.5" />
               1 Khẩn: Ổ cắm buồng B-G03
             </div>
-          </div>
+          </CardHeader>
 
-          <div className="mt-5 bg-[#f4f4ee]/70 rounded-lg p-3">
-            <div className="text-[10px] uppercase text-[#73787b] tracking-wider font-bold">Trạng thái</div>
-            <div className="text-xs font-semibold text-[#1b1c19] mt-0.5 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#4c6269]"></span>
-              Kỹ thuật viên: Nguyễn Văn An
+          <CardContent className="p-5 pt-0">
+            <div className="mt-4 bg-muted/50 rounded-lg p-3 border border-border/50">
+              <div className="text-[10px] uppercase text-muted-foreground tracking-wider font-bold">Trạng thái</div>
+              <div className="text-xs font-semibold text-foreground mt-0.5 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-primary"></span>
+                Kỹ thuật viên: Nguyễn Văn An
+              </div>
+              <div className="text-[11px] text-muted-foreground mt-0.5">Lịch hẹn: Hôm nay 14:30</div>
             </div>
-            <div className="text-[11px] text-[#73787b] mt-0.5">Lịch hẹn: Hôm nay 14:30</div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Card 4: Night Curfew Policy */}
-        <div className="rounded-xl bg-white p-5 sm:p-6 shadow-xs border border-[#efeee8] flex flex-col justify-between hover:shadow-md transition-shadow">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-[11px] uppercase tracking-wider text-[#73787b] font-bold">
+        <Card className="flex flex-col justify-between hover:shadow-md transition-shadow">
+          <CardHeader className="p-5 pb-2">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold">
                 Giờ Giới Nghiêm
               </span>
-              <div className="w-8 h-8 rounded-lg bg-[#cee6ef]/50 flex items-center justify-center text-[#4c6269]">
-                <span className="material-symbols-outlined text-base">lock_clock</span>
+              <div className="w-8 h-8 rounded-lg bg-secondary/15 flex items-center justify-center text-secondary">
+                <Clock className="h-4 w-4" />
               </div>
             </div>
-            <div className="text-lg font-bold text-[#1b1c19]">23:00 Khóa Cổng Trục Xoay</div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 text-xs mt-2 font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            <CardTitle className="text-lg font-bold">23:00 Khóa Cổng Trục Xoay</CardTitle>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/15 text-primary text-xs mt-2 font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
               Đã điểm danh / Trong phòng
             </div>
-          </div>
+          </CardHeader>
 
-          <div className="mt-5">
-            <Link
-              to="/curfew"
-              className="w-full py-2.5 px-4 rounded-lg bg-[#f4f4ee] hover:bg-[#e9e8e3] text-[#1b1c19] text-xs font-semibold flex items-center justify-center gap-2 transition-colors border border-[#efeee8]"
-            >
-              <span className="material-symbols-outlined text-base">more_time</span>
-              <span>Nộp Đơn Về Muộn</span>
-            </Link>
-          </div>
-        </div>
+          <CardContent className="p-5 pt-0">
+            <Button variant="outline" size="default" asChild className="w-full mt-4 gap-2">
+              <Link to="/curfew">
+                <Calendar className="h-4 w-4" />
+                <span>Nộp Đơn Về Muộn</span>
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Main Desktop 2-Column Layout */}
@@ -200,35 +235,35 @@ export const StudentOverviewPage: React.FC = () => {
         {/* LEFT COLUMN (8 cols) */}
         <div className="lg:col-span-8 space-y-6 sm:space-y-8">
           {/* Current Room Occupancy Blueprint Card */}
-          <div className="rounded-xl bg-white p-6 sm:p-7 shadow-xs border border-[#efeee8]">
+          <Card className="p-6 sm:p-7">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
               <div>
                 <div className="flex items-center gap-2">
-                  <h2 className="text-lg font-bold text-[#1b1c19]">
+                  <h2 className="text-lg font-bold text-foreground">
                     Sơ Đồ Phân Bổ Giường Phòng A205
                   </h2>
-                  <span className="px-2.5 py-0.5 rounded-full bg-[#efeee8] text-[#1b1c19] text-[11px] font-semibold">
+                  <Badge variant="outline" className="font-semibold">
                     Chuẩn Mô Hình 24B
-                  </span>
+                  </Badge>
                 </div>
-                <p className="text-xs text-[#73787b] mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   4 Buồng riêng (A, B, C, D) · 6 Giường/buồng · 18 Đã ở, 6 Giường trống
                 </p>
               </div>
 
               {/* Legend */}
-              <div className="flex flex-wrap items-center gap-3 bg-[#f4f4ee] px-3 py-1.5 rounded-lg text-xs">
+              <div className="flex flex-wrap items-center gap-3 bg-muted/60 px-3 py-1.5 rounded-lg text-xs border border-border">
                 <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded bg-[#233944]" />
-                  <span className="font-semibold text-[#1b1c19]">Giường bạn</span>
+                  <span className="w-3 h-3 rounded bg-primary" />
+                  <span className="font-semibold text-foreground">Giường bạn</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded bg-[#e3e3dd]" />
-                  <span className="text-[#42474b]">Đã ở</span>
+                  <span className="w-3 h-3 rounded bg-muted-foreground/30" />
+                  <span className="text-muted-foreground">Đã ở</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded bg-[#cee6ef] border border-[#b3cad3]" />
-                  <span className="text-emerald-700 font-semibold">Trống</span>
+                  <span className="w-3 h-3 rounded bg-accent/40 border border-accent" />
+                  <span className="text-foreground font-semibold">Trống</span>
                 </div>
               </div>
             </div>
@@ -236,315 +271,261 @@ export const StudentOverviewPage: React.FC = () => {
             {/* 4-Compartment Blueprint Matrix */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Compartment A */}
-              <div className="p-4 rounded-xl bg-[#f4f4ee]/70 border border-[#efeee8] space-y-3">
+              <div className="p-4 rounded-xl bg-muted/30 border border-border space-y-3">
                 <div className="flex items-center justify-between gap-1.5">
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="font-bold text-xs text-[#1b1c19] whitespace-nowrap shrink-0">Buồng A</span>
-                    <span className="text-[11px] text-[#73787b] whitespace-nowrap truncate">Hướng Ban Công</span>
+                    <span className="font-bold text-xs text-foreground whitespace-nowrap shrink-0">Buồng A</span>
+                    <span className="text-[11px] text-muted-foreground whitespace-nowrap truncate">Hướng Ban Công</span>
                   </div>
-                  <span className="text-[11px] px-2 py-0.5 rounded bg-[#e9e8e3] text-[#1b1c19] font-semibold whitespace-nowrap shrink-0">
+                  <span className="text-[11px] px-2 py-0.5 rounded bg-muted text-foreground font-semibold whitespace-nowrap shrink-0">
                     5/6 Giường
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
-                    <span className="font-bold text-[#1b1c19]">G01 · Dưới</span>
-                    <span className="text-[11px] text-[#42474b] truncate">H. Long</span>
-                    <span className="text-[9px] text-[#73787b]">Đã ở</span>
+                  <div className="p-2 rounded-lg bg-card border border-border flex flex-col justify-between h-16">
+                    <span className="font-bold text-foreground">G01 · Dưới</span>
+                    <span className="text-[11px] text-muted-foreground truncate">H. Long</span>
+                    <span className="text-[9px] text-muted-foreground/70">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
-                    <span className="font-bold text-[#1b1c19]">G02 · Trên</span>
-                    <span className="text-[11px] text-[#42474b] truncate">T. Tuấn</span>
-                    <span className="text-[9px] text-[#73787b]">Đã ở</span>
+                  <div className="p-2 rounded-lg bg-card border border-border flex flex-col justify-between h-16">
+                    <span className="font-bold text-foreground">G02 · Trên</span>
+                    <span className="text-[11px] text-muted-foreground truncate">T. Tuấn</span>
+                    <span className="text-[9px] text-muted-foreground/70">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-emerald-50 text-emerald-900 flex flex-col justify-between h-16 border border-emerald-200 shadow-2xs">
+                  <div className="p-2 rounded-lg bg-accent/15 text-foreground flex flex-col justify-between h-16 border border-accent/40 shadow-2xs">
                     <span className="font-bold text-[11px]">G03 · Dưới</span>
-                    <span className="material-symbols-outlined text-sm mx-auto">bed</span>
-                    <span className="text-[9px] font-bold text-emerald-700">TRỐNG</span>
+                    <BedDouble className="h-4 w-4 mx-auto text-primary" />
+                    <span className="text-[9px] font-bold text-primary">TRỐNG</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
-                    <span className="font-bold text-[#1b1c19]">G04 · Trên</span>
-                    <span className="text-[11px] text-[#42474b] truncate">P. Quang</span>
-                    <span className="text-[9px] text-[#73787b]">Đã ở</span>
+                  <div className="p-2 rounded-lg bg-card border border-border flex flex-col justify-between h-16">
+                    <span className="font-bold text-foreground">G04 · Trên</span>
+                    <span className="text-[11px] text-muted-foreground truncate">P. Quang</span>
+                    <span className="text-[9px] text-muted-foreground/70">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
-                    <span className="font-bold text-[#1b1c19]">G05 · Dưới</span>
-                    <span className="text-[11px] text-[#42474b] truncate">Đ. Khoa</span>
-                    <span className="text-[9px] text-[#73787b]">Đã ở</span>
+                  <div className="p-2 rounded-lg bg-card border border-border flex flex-col justify-between h-16">
+                    <span className="font-bold text-foreground">G05 · Dưới</span>
+                    <span className="text-[11px] text-muted-foreground truncate">Đ. Khoa</span>
+                    <span className="text-[9px] text-muted-foreground/70">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
-                    <span className="font-bold text-[#1b1c19]">G06 · Trên</span>
-                    <span className="text-[11px] text-[#42474b] truncate">M. Đức</span>
-                    <span className="text-[9px] text-[#73787b]">Đã ở</span>
+                  <div className="p-2 rounded-lg bg-card border border-border flex flex-col justify-between h-16">
+                    <span className="font-bold text-foreground">G06 · Trên</span>
+                    <span className="text-[11px] text-muted-foreground truncate">M. Đức</span>
+                    <span className="text-[9px] text-muted-foreground/70">Đã ở</span>
                   </div>
                 </div>
               </div>
 
               {/* Compartment B (User's Compartment) */}
-              <div className="p-4 rounded-xl bg-[#f4f4ee] border-2 border-[#233944]/30 space-y-3 relative overflow-hidden">
+              <div className="p-4 rounded-xl bg-card border-2 border-primary/50 space-y-3 relative overflow-hidden shadow-xs">
                 <div className="flex items-center justify-between gap-1.5 relative z-10">
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="font-bold text-xs text-[#1b1c19] whitespace-nowrap shrink-0">Buồng B</span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#233944] text-white font-bold whitespace-nowrap shrink-0">
+                    <span className="font-bold text-xs text-foreground whitespace-nowrap shrink-0">Buồng B</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary text-primary-foreground font-bold whitespace-nowrap shrink-0">
                       BUỒNG CỦA BẠN
                     </span>
                   </div>
-                  <span className="text-[11px] px-2 py-0.5 rounded bg-[#e9e8e3] text-[#1b1c19] font-semibold whitespace-nowrap shrink-0">
+                  <span className="text-[11px] px-2 py-0.5 rounded bg-muted text-foreground font-semibold whitespace-nowrap shrink-0">
                     5/6 Giường
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-center text-xs relative z-10">
-                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
-                    <span className="font-bold text-[#1b1c19]">G01 · Dưới</span>
-                    <span className="text-[11px] text-[#42474b] truncate">B. Trần</span>
-                    <span className="text-[9px] text-[#73787b]">Đã ở</span>
+                  <div className="p-2 rounded-lg bg-muted/40 border border-border flex flex-col justify-between h-16">
+                    <span className="font-bold text-foreground">G01 · Dưới</span>
+                    <span className="text-[11px] text-muted-foreground truncate">B. Trần</span>
+                    <span className="text-[9px] text-muted-foreground/70">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
-                    <span className="font-bold text-[#1b1c19]">G02 · Trên</span>
-                    <span className="text-[11px] text-[#42474b] truncate">L. Nam</span>
-                    <span className="text-[9px] text-[#73787b]">Đã ở</span>
+                  <div className="p-2 rounded-lg bg-muted/40 border border-border flex flex-col justify-between h-16">
+                    <span className="font-bold text-foreground">G02 · Trên</span>
+                    <span className="text-[11px] text-muted-foreground truncate">L. Nam</span>
+                    <span className="text-[9px] text-muted-foreground/70">Đã ở</span>
                   </div>
                   {/* Assigned Bed for User */}
-                  <div className="p-2 rounded-lg bg-[#233944] text-white flex flex-col justify-between h-16 shadow-md ring-2 ring-[#3a505b]">
+                  <div className="p-2 rounded-lg bg-primary text-primary-foreground flex flex-col justify-between h-16 shadow-md ring-2 ring-primary/40">
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-[11px]">G03</span>
-                      <span className="px-1 py-0.2 rounded bg-[#cee6ef] text-[#233944] text-[8px] font-extrabold">
+                      <span className="px-1 py-0.2 rounded bg-accent text-accent-foreground text-[8px] font-extrabold">
                         BẠN
                       </span>
                     </div>
-                    <span className="font-bold text-[10px] truncate text-[#cee6ef]">
+                    <span className="font-bold text-[10px] truncate">
                       {user?.fullName?.split(" ").slice(-1)[0] || "Vinh"}
                     </span>
-                    <span className="text-[9px] text-[#bac9cd]">Tầng dưới</span>
+                    <span className="text-[9px] text-primary-foreground/80">Tầng dưới</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
-                    <span className="font-bold text-[#1b1c19]">G04 · Trên</span>
-                    <span className="text-[11px] text-[#42474b] truncate">V. Thanh</span>
-                    <span className="text-[9px] text-[#73787b]">Đã ở</span>
+                  <div className="p-2 rounded-lg bg-muted/40 border border-border flex flex-col justify-between h-16">
+                    <span className="font-bold text-foreground">G04 · Trên</span>
+                    <span className="text-[11px] text-muted-foreground truncate">V. Thanh</span>
+                    <span className="text-[9px] text-muted-foreground/70">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
-                    <span className="font-bold text-[#1b1c19]">G05 · Dưới</span>
-                    <span className="text-[11px] text-[#42474b] truncate">N. Huy</span>
-                    <span className="text-[9px] text-[#73787b]">Đã ở</span>
+                  <div className="p-2 rounded-lg bg-muted/40 border border-border flex flex-col justify-between h-16">
+                    <span className="font-bold text-foreground">G05 · Dưới</span>
+                    <span className="text-[11px] text-muted-foreground truncate">N. Huy</span>
+                    <span className="text-[9px] text-muted-foreground/70">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-emerald-50 text-emerald-900 flex flex-col justify-between h-16 border border-emerald-200 shadow-2xs">
+                  <div className="p-2 rounded-lg bg-accent/15 text-foreground flex flex-col justify-between h-16 border border-accent/40 shadow-2xs">
                     <span className="font-bold text-[11px]">G06 · Trên</span>
-                    <span className="material-symbols-outlined text-sm mx-auto">bed</span>
-                    <span className="text-[9px] font-bold text-emerald-700">TRỐNG</span>
+                    <BedDouble className="h-4 w-4 mx-auto text-primary" />
+                    <span className="text-[9px] font-bold text-primary">TRỐNG</span>
                   </div>
                 </div>
               </div>
 
               {/* Compartment C */}
-              <div className="p-4 rounded-xl bg-[#f4f4ee]/70 border border-[#efeee8] space-y-3">
+              <div className="p-4 rounded-xl bg-muted/30 border border-border space-y-3">
                 <div className="flex items-center justify-between gap-1.5">
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="font-bold text-xs text-[#1b1c19] whitespace-nowrap shrink-0">Buồng C</span>
-                    <span className="text-[11px] text-[#73787b] whitespace-nowrap truncate">Góc Tự Học</span>
+                    <span className="font-bold text-xs text-foreground whitespace-nowrap shrink-0">Buồng C</span>
+                    <span className="text-[11px] text-muted-foreground whitespace-nowrap truncate">Góc Tự Học</span>
                   </div>
-                  <span className="text-[11px] px-2 py-0.5 rounded bg-[#e9e8e3] text-[#1b1c19] font-semibold whitespace-nowrap shrink-0">
+                  <span className="text-[11px] px-2 py-0.5 rounded bg-muted text-foreground font-semibold whitespace-nowrap shrink-0">
                     4/6 Giường
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
-                    <span className="font-bold text-[#1b1c19]">G01 · Dưới</span>
-                    <span className="text-[11px] text-[#42474b] truncate">K. Minh</span>
-                    <span className="text-[9px] text-[#73787b]">Đã ở</span>
+                  <div className="p-2 rounded-lg bg-card border border-border flex flex-col justify-between h-16">
+                    <span className="font-bold text-foreground">G01 · Dưới</span>
+                    <span className="text-[11px] text-muted-foreground truncate">K. Minh</span>
+                    <span className="text-[9px] text-muted-foreground/70">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-emerald-50 text-emerald-900 flex flex-col justify-between h-16 border border-emerald-200 shadow-2xs">
+                  <div className="p-2 rounded-lg bg-accent/15 text-foreground flex flex-col justify-between h-16 border border-accent/40 shadow-2xs">
                     <span className="font-bold text-[11px]">G02 · Trên</span>
-                    <span className="material-symbols-outlined text-sm mx-auto">bed</span>
-                    <span className="text-[9px] font-bold text-emerald-700">TRỐNG</span>
+                    <BedDouble className="h-4 w-4 mx-auto text-primary" />
+                    <span className="text-[9px] font-bold text-primary">TRỐNG</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
-                    <span className="font-bold text-[#1b1c19]">G03 · Dưới</span>
-                    <span className="text-[11px] text-[#42474b] truncate">P. Linh</span>
-                    <span className="text-[9px] text-[#73787b]">Đã ở</span>
+                  <div className="p-2 rounded-lg bg-card border border-border flex flex-col justify-between h-16">
+                    <span className="font-bold text-foreground">G03 · Dưới</span>
+                    <span className="text-[11px] text-muted-foreground truncate">P. Linh</span>
+                    <span className="text-[9px] text-muted-foreground/70">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
-                    <span className="font-bold text-[#1b1c19]">G04 · Trên</span>
-                    <span className="text-[11px] text-[#42474b] truncate">T. Dung</span>
-                    <span className="text-[9px] text-[#73787b]">Đã ở</span>
+                  <div className="p-2 rounded-lg bg-card border border-border flex flex-col justify-between h-16">
+                    <span className="font-bold text-foreground">G04 · Trên</span>
+                    <span className="text-[11px] text-muted-foreground truncate">T. Dung</span>
+                    <span className="text-[9px] text-muted-foreground/70">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-emerald-50 text-emerald-900 flex flex-col justify-between h-16 border border-emerald-200 shadow-2xs">
+                  <div className="p-2 rounded-lg bg-accent/15 text-foreground flex flex-col justify-between h-16 border border-accent/40 shadow-2xs">
                     <span className="font-bold text-[11px]">G05 · Dưới</span>
-                    <span className="material-symbols-outlined text-sm mx-auto">bed</span>
-                    <span className="text-[9px] font-bold text-emerald-700">TRỐNG</span>
+                    <BedDouble className="h-4 w-4 mx-auto text-primary" />
+                    <span className="text-[9px] font-bold text-primary">TRỐNG</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
-                    <span className="font-bold text-[#1b1c19]">G06 · Trên</span>
-                    <span className="text-[11px] text-[#42474b] truncate">S. Sơn</span>
-                    <span className="text-[9px] text-[#73787b]">Đã ở</span>
+                  <div className="p-2 rounded-lg bg-card border border-border flex flex-col justify-between h-16">
+                    <span className="font-bold text-foreground">G06 · Trên</span>
+                    <span className="text-[11px] text-muted-foreground truncate">S. Sơn</span>
+                    <span className="text-[9px] text-muted-foreground/70">Đã ở</span>
                   </div>
                 </div>
               </div>
 
               {/* Compartment D */}
-              <div className="p-4 rounded-xl bg-[#f4f4ee]/70 border border-[#efeee8] space-y-3">
+              <div className="p-4 rounded-xl bg-muted/30 border border-border space-y-3">
                 <div className="flex items-center justify-between gap-1.5">
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="font-bold text-xs text-[#1b1c19] whitespace-nowrap shrink-0">Buồng D</span>
-                    <span className="text-[11px] text-[#73787b] whitespace-nowrap truncate">Cửa Ra Vào & WC</span>
+                    <span className="font-bold text-xs text-foreground whitespace-nowrap shrink-0">Buồng D</span>
+                    <span className="text-[11px] text-muted-foreground whitespace-nowrap truncate">Cửa Ra Vào & WC</span>
                   </div>
-                  <span className="text-[11px] px-2 py-0.5 rounded bg-[#e9e8e3] text-[#1b1c19] font-semibold whitespace-nowrap shrink-0">
+                  <span className="text-[11px] px-2 py-0.5 rounded bg-muted text-foreground font-semibold whitespace-nowrap shrink-0">
                     4/6 Giường
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
-                    <span className="font-bold text-[#1b1c19]">G01 · Dưới</span>
-                    <span className="text-[11px] text-[#42474b] truncate">A. Hiền</span>
-                    <span className="text-[9px] text-[#73787b]">Đã ở</span>
+                  <div className="p-2 rounded-lg bg-card border border-border flex flex-col justify-between h-16">
+                    <span className="font-bold text-foreground">G01 · Dưới</span>
+                    <span className="text-[11px] text-muted-foreground truncate">A. Hiền</span>
+                    <span className="text-[9px] text-muted-foreground/70">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
-                    <span className="font-bold text-[#1b1c19]">G02 · Trên</span>
-                    <span className="text-[11px] text-[#42474b] truncate">V. Khôi</span>
-                    <span className="text-[9px] text-[#73787b]">Đã ở</span>
+                  <div className="p-2 rounded-lg bg-card border border-border flex flex-col justify-between h-16">
+                    <span className="font-bold text-foreground">G02 · Trên</span>
+                    <span className="text-[11px] text-muted-foreground truncate">V. Khôi</span>
+                    <span className="text-[9px] text-muted-foreground/70">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-emerald-50 text-emerald-900 flex flex-col justify-between h-16 border border-emerald-200 shadow-2xs">
+                  <div className="p-2 rounded-lg bg-accent/15 text-foreground flex flex-col justify-between h-16 border border-accent/40 shadow-2xs">
                     <span className="font-bold text-[11px]">G03 · Dưới</span>
-                    <span className="material-symbols-outlined text-sm mx-auto">bed</span>
-                    <span className="text-[9px] font-bold text-emerald-700">TRỐNG</span>
+                    <BedDouble className="h-4 w-4 mx-auto text-primary" />
+                    <span className="text-[9px] font-bold text-primary">TRỐNG</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-emerald-50 text-emerald-900 flex flex-col justify-between h-16 border border-emerald-200 shadow-2xs">
+                  <div className="p-2 rounded-lg bg-accent/15 text-foreground flex flex-col justify-between h-16 border border-accent/40 shadow-2xs">
                     <span className="font-bold text-[11px]">G04 · Trên</span>
-                    <span className="material-symbols-outlined text-sm mx-auto">bed</span>
-                    <span className="text-[9px] font-bold text-emerald-700">TRỐNG</span>
+                    <BedDouble className="h-4 w-4 mx-auto text-primary" />
+                    <span className="text-[9px] font-bold text-primary">TRỐNG</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
-                    <span className="font-bold text-[#1b1c19]">G05 · Dưới</span>
-                    <span className="text-[11px] text-[#42474b] truncate">H. Phúc</span>
-                    <span className="text-[9px] text-[#73787b]">Đã ở</span>
+                  <div className="p-2 rounded-lg bg-card border border-border flex flex-col justify-between h-16">
+                    <span className="font-bold text-foreground">G05 · Dưới</span>
+                    <span className="text-[11px] text-muted-foreground truncate">H. Phúc</span>
+                    <span className="text-[9px] text-muted-foreground/70">Đã ở</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 flex flex-col justify-between h-16">
-                    <span className="font-bold text-[#1b1c19]">G06 · Trên</span>
-                    <span className="text-[11px] text-[#42474b] truncate">Q. Thắng</span>
-                    <span className="text-[9px] text-[#73787b]">Đã ở</span>
+                  <div className="p-2 rounded-lg bg-card border border-border flex flex-col justify-between h-16">
+                    <span className="font-bold text-foreground">G06 · Trên</span>
+                    <span className="text-[11px] text-muted-foreground truncate">Q. Thắng</span>
+                    <span className="text-[9px] text-muted-foreground/70">Đã ở</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Room Facilities Specs Footer */}
-            <div className="mt-6 pt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 bg-[#f4f4ee]/60 rounded-xl p-4 border border-[#efeee8]">
+            <div className="mt-6 pt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 bg-muted/40 rounded-xl p-4 border border-border">
               <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-[#73787b]">wifi</span>
+                <Wifi className="h-5 w-5 text-secondary" />
                 <div>
-                  <div className="text-[10px] text-[#73787b] uppercase font-bold">Hall Wi-Fi</div>
-                  <div className="text-xs font-bold text-[#1b1c19]">KTX-A205-5G</div>
+                  <div className="text-[10px] text-muted-foreground uppercase font-bold">Hall Wi-Fi</div>
+                  <div className="text-xs font-bold text-foreground">KTX-A205-5G</div>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-[#73787b]">ac_unit</span>
+                <Wind className="h-5 w-5 text-secondary" />
                 <div>
-                  <div className="text-[10px] text-[#73787b] uppercase font-bold">Điều Hòa</div>
-                  <div className="text-xs font-bold text-[#1b1c19]">Daikin Inverter 2HP</div>
+                  <div className="text-[10px] text-muted-foreground uppercase font-bold">Điều Hòa</div>
+                  <div className="text-xs font-bold text-foreground">Daikin Inverter 2HP</div>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-[#73787b]">shower</span>
+                <ShowerHead className="h-5 w-5 text-secondary" />
                 <div>
-                  <div className="text-[10px] text-[#73787b] uppercase font-bold">Phòng Tắm</div>
-                  <div className="text-xs font-bold text-[#1b1c19]">2 Nhà Tắm Khép Kín</div>
+                  <div className="text-[10px] text-muted-foreground uppercase font-bold">Phòng Tắm</div>
+                  <div className="text-xs font-bold text-foreground">2 Nhà Tắm Khép Kín</div>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-[#73787b]">local_laundry_service</span>
+                <Shirt className="h-5 w-5 text-secondary" />
                 <div>
-                  <div className="text-[10px] text-[#73787b] uppercase font-bold">Khu Giặt Ủi</div>
-                  <div className="text-xs font-bold text-[#1b1c19]">Sảnh 2F Phía Đông</div>
+                  <div className="text-[10px] text-muted-foreground uppercase font-bold">Khu Giặt Ủi</div>
+                  <div className="text-xs font-bold text-foreground">Sảnh 2F Phía Đông</div>
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Quick Operations Bar */}
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-base font-bold text-[#1b1c19]">Thao Tác Nhanh (Quick Actions)</h2>
-              <span className="text-xs text-[#73787b]">Dịch vụ sinh viên thường dùng</span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-              <Link
-                to="/maintenance"
-                className="p-4 rounded-xl bg-white hover:bg-[#f4f4ee] transition-all border border-[#efeee8] shadow-xs group"
-              >
-                <div className="w-10 h-10 rounded-lg bg-[#f4f4ee] flex items-center justify-center text-[#233944] group-hover:bg-[#233944] group-hover:text-white transition-colors mb-3">
-                  <span className="material-symbols-outlined text-xl">build</span>
-                </div>
-                <div className="text-xs font-bold text-[#1b1c19]">Báo Hỏng Thiết Bị</div>
-                <div className="text-[11px] text-[#73787b] mt-1">Báo sửa điện, điều hòa, nước</div>
-              </Link>
-
-              <Link
-                to="/curfew"
-                className="p-4 rounded-xl bg-white hover:bg-[#f4f4ee] transition-all border border-[#efeee8] shadow-xs group"
-              >
-                <div className="w-10 h-10 rounded-lg bg-[#f4f4ee] flex items-center justify-center text-[#233944] group-hover:bg-[#233944] group-hover:text-white transition-colors mb-3">
-                  <span className="material-symbols-outlined text-xl">schedule</span>
-                </div>
-                <div className="text-xs font-bold text-[#1b1c19]">Xin Giấy Về Muộn</div>
-                <div className="text-[11px] text-[#73787b] mt-1">Nộp đơn ra vào sau 23:00</div>
-              </Link>
-
-              <Link
-                to="/my-room"
-                className="p-4 rounded-xl bg-white hover:bg-[#f4f4ee] transition-all border border-[#efeee8] shadow-xs group"
-              >
-                <div className="w-10 h-10 rounded-lg bg-[#f4f4ee] flex items-center justify-center text-[#233944] group-hover:bg-[#233944] group-hover:text-white transition-colors mb-3">
-                  <span className="material-symbols-outlined text-xl">assignment</span>
-                </div>
-                <div className="text-xs font-bold text-[#1b1c19]">Biên Bản Bàn Giao</div>
-                <div className="text-[11px] text-[#73787b] mt-1">Kiểm tra tài sản và hoàn cọc</div>
-              </Link>
-
-              <Link
-                to="/my-room"
-                className="p-4 rounded-xl bg-white hover:bg-[#f4f4ee] transition-all border border-[#efeee8] shadow-xs group"
-              >
-                <div className="w-10 h-10 rounded-lg bg-[#f4f4ee] flex items-center justify-center text-[#233944] group-hover:bg-[#233944] group-hover:text-white transition-colors mb-3">
-                  <span className="material-symbols-outlined text-xl">group</span>
-                </div>
-                <div className="text-xs font-bold text-[#1b1c19]">Danh Bạ Cùng Buồng</div>
-                <div className="text-[11px] text-[#73787b] mt-1">Liên hệ 5 bạn cùng buồng B</div>
-              </Link>
-            </div>
-          </div>
+          </Card>
         </div>
 
         {/* RIGHT COLUMN (4 cols) */}
         <div className="lg:col-span-4 space-y-6 sm:space-y-8">
           {/* Digital Key & Turnstile Gate QR Widget */}
-          <div className="rounded-xl bg-[#233944] text-[#cee6ef] p-6 shadow-md relative overflow-hidden">
-            <div className="absolute -right-8 -bottom-8 w-36 h-36 rounded-full bg-[#3a505b]/40 pointer-events-none" />
+          <div className="rounded-2xl bg-secondary text-secondary-foreground p-6 shadow-md relative overflow-hidden">
+            <div className="absolute -right-8 -bottom-8 w-36 h-36 rounded-full bg-white/10 pointer-events-none" />
 
             <div className="relative z-10">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[#cee6ef]">nfc</span>
-                  <span className="text-[11px] uppercase tracking-wider text-[#bac9cd] font-bold">
+                  <Radio className="h-4 w-4 text-accent" />
+                  <span className="text-[11px] uppercase tracking-wider text-secondary-foreground/80 font-bold">
                     Cổng Kiểm Soát Tòa A
                   </span>
                 </div>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#cee6ef]/20 text-[#cee6ef] font-bold">
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/20 text-white font-bold">
                   Dynamic NFC
                 </span>
               </div>
 
-              <div className="bg-white rounded-xl p-5 text-[#1b1c19] flex flex-col items-center shadow-xs">
+              <div className="bg-card rounded-xl p-5 text-card-foreground flex flex-col items-center shadow-xs border border-border/50">
                 {/* Simulated QR Code */}
-                <div className="w-44 h-44 bg-[#f4f4ee] rounded-lg p-3 flex flex-col items-center justify-center relative border border-[#efeee8]">
-                  <svg className="w-full h-full text-[#233944]" fill="none" viewBox="0 0 100 100">
+                <div className="w-44 h-44 bg-muted/50 rounded-lg p-3 flex flex-col items-center justify-center relative border border-border">
+                  <svg className="w-full h-full text-foreground" fill="none" viewBox="0 0 100 100">
                     <rect fill="currentColor" height="28" rx="4" width="28" x="5" y="5"></rect>
-                    <rect fill="white" height="18" rx="2" width="18" x="10" y="10"></rect>
+                    <rect fill="var(--card)" height="18" rx="2" width="18" x="10" y="10"></rect>
                     <rect fill="currentColor" height="10" width="10" x="14" y="14"></rect>
                     <rect fill="currentColor" height="28" rx="4" width="28" x="67" y="5"></rect>
-                    <rect fill="white" height="18" rx="2" width="18" x="72" y="10"></rect>
+                    <rect fill="var(--card)" height="18" rx="2" width="18" x="72" y="10"></rect>
                     <rect fill="currentColor" height="10" width="10" x="76" y="14"></rect>
                     <rect fill="currentColor" height="28" rx="4" width="28" x="5" y="67"></rect>
-                    <rect fill="white" height="18" rx="2" width="18" x="10" y="72"></rect>
+                    <rect fill="var(--card)" height="18" rx="2" width="18" x="10" y="72"></rect>
                     <rect fill="currentColor" height="10" width="10" x="14" y="76"></rect>
                     <circle cx="48" cy="20" fill="currentColor" r="3"></circle>
                     <circle cx="48" cy="32" fill="currentColor" r="3"></circle>
@@ -557,230 +538,214 @@ export const StudentOverviewPage: React.FC = () => {
                     <rect fill="currentColor" height="6" rx="2" width="14" x="64" y="82"></rect>
                   </svg>
                   {/* Scanning bar */}
-                  <div className="absolute inset-x-3 top-3 h-0.5 bg-emerald-500 shadow-[0_0_8px_#10b981] animate-pulse" />
+                  <div className="absolute inset-x-3 top-3 h-0.5 bg-primary shadow-[0_0_8px_#679436] animate-pulse" />
                 </div>
 
                 <div className="mt-4 text-center">
-                  <div className="text-xs font-bold text-[#1b1c19]">
+                  <div className="text-xs font-bold text-foreground">
                     {user?.fullName || "Nguyễn Hoàng Vinh"}
                   </div>
-                  <div className="font-mono text-[10px] text-[#73787b] tracking-wider mt-0.5">
+                  <div className="font-mono text-[10px] text-muted-foreground tracking-wider mt-0.5">
                     TOKEN: #GATE-8492-2026A
                   </div>
-                  <div className="text-[11px] text-emerald-700 font-medium mt-1 flex items-center justify-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                  <div className="text-[11px] text-primary font-medium mt-1 flex items-center justify-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
                     Tự làm mới sau <span className="font-bold">{qrCountdown}s</span>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-3 flex items-center justify-between gap-2 text-[#bac9cd] text-xs px-1">
+              <div className="mt-3 flex items-center justify-between gap-2 text-secondary-foreground/80 text-xs px-1">
                 <span className="truncate">Chạm NFC hoặc quét mã QR</span>
-                <span className="font-semibold text-white shrink-0 whitespace-nowrap">&lt; 5cm</span>
+                <span className="font-semibold text-secondary-foreground shrink-0 whitespace-nowrap">&lt; 5cm</span>
               </div>
             </div>
           </div>
 
           {/* Monthly Utility Snapshot Card */}
-          <div className="rounded-xl bg-white p-6 shadow-xs border border-[#efeee8]">
+          <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-[#1b1c19]">Điện Nước Tháng 09</h3>
-                <span className="text-[11px] text-[#73787b]">T09/2026</span>
+                <h3 className="text-sm font-bold text-foreground">Điện Nước Tháng 09</h3>
+                <span className="text-[11px] text-muted-foreground">T09/2026</span>
               </div>
-              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-800 border border-blue-200 font-semibold">
+              <Badge variant="outline" className="font-semibold">
                 Auto-Split Matrix
-              </span>
+              </Badge>
             </div>
 
             <div className="space-y-4">
               {/* Electricity */}
-              <div className="p-3.5 rounded-xl bg-[#f4f4ee]">
+              <div className="p-3.5 rounded-xl bg-muted/40 border border-border/50">
                 <div className="flex items-center justify-between mb-1.5">
                   <div className="flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-[#233944] text-base">
-                      electric_meter
-                    </span>
-                    <span className="text-xs font-bold text-[#1b1c19]">Công Tơ Điện</span>
+                    <Zap className="h-4 w-4 text-secondary" />
+                    <span className="text-xs font-bold text-foreground">Công Tơ Điện</span>
                   </div>
-                  <span className="text-xs font-semibold text-[#1b1c19]">170 kWh</span>
+                  <span className="text-xs font-semibold text-foreground">170 kWh</span>
                 </div>
-                <div className="w-full bg-[#e3e3dd] h-2 rounded-full overflow-hidden">
-                  <div className="bg-[#233944] h-full rounded-full" style={{ width: "68%" }} />
+                <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
+                  <div className="bg-secondary h-full rounded-full" style={{ width: "68%" }} />
                 </div>
-                <div className="flex items-center justify-between mt-1.5 text-[11px] text-[#73787b]">
+                <div className="flex items-center justify-between mt-1.5 text-[11px] text-muted-foreground">
                   <span>Chỉ số: 12,450 → 12,620</span>
-                  <span className="font-semibold text-[#1b1c19]">₫425,000 tổng</span>
+                  <span className="font-semibold text-foreground">₫425,000 tổng</span>
                 </div>
               </div>
 
               {/* Water */}
-              <div className="p-3.5 rounded-xl bg-[#f4f4ee]">
+              <div className="p-3.5 rounded-xl bg-muted/40 border border-border/50">
                 <div className="flex items-center justify-between mb-1.5">
                   <div className="flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-[#4c6269] text-base">
-                      water_drop
-                    </span>
-                    <span className="text-xs font-bold text-[#1b1c19]">Đồng Hồ Nước</span>
+                    <Droplets className="h-4 w-4 text-primary" />
+                    <span className="text-xs font-bold text-foreground">Đồng Hồ Nước</span>
                   </div>
-                  <span className="text-xs font-semibold text-[#1b1c19]">14 m³</span>
+                  <span className="text-xs font-semibold text-foreground">14 m³</span>
                 </div>
-                <div className="w-full bg-[#e3e3dd] h-2 rounded-full overflow-hidden">
-                  <div className="bg-[#4c6269] h-full rounded-full" style={{ width: "52%" }} />
+                <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
+                  <div className="bg-primary h-full rounded-full" style={{ width: "52%" }} />
                 </div>
-                <div className="flex items-center justify-between mt-1.5 text-[11px] text-[#73787b]">
+                <div className="flex items-center justify-between mt-1.5 text-[11px] text-muted-foreground">
                   <span>Chỉ số: 840 → 854</span>
-                  <span className="font-semibold text-[#1b1c19]">₫252,000 tổng</span>
+                  <span className="font-semibold text-foreground">₫252,000 tổng</span>
                 </div>
               </div>
 
               {/* Per-Resident Split Apportionment */}
-              <div className="p-3.5 rounded-xl bg-[#e9e8e3]/60 space-y-2 border border-[#efeee8]">
-                <div className="text-[10px] uppercase tracking-wider text-[#73787b] font-bold">
+              <div className="p-3.5 rounded-xl bg-muted/60 space-y-2 border border-border">
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
                   Chia đều cho phòng (6 sinh viên)
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[#42474b]">Phần điện nước tiêu thụ:</span>
-                  <span className="font-semibold text-[#1b1c19]">₫112,833</span>
+                  <span className="text-muted-foreground">Phần điện nước tiêu thụ:</span>
+                  <span className="font-semibold text-foreground">₫112,833</span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[#42474b]">Wi-Fi & phí vệ sinh:</span>
-                  <span className="font-semibold text-[#1b1c19]">₫20,000</span>
+                  <span className="text-muted-foreground">Wi-Fi & phí vệ sinh:</span>
+                  <span className="font-semibold text-foreground">₫20,000</span>
                 </div>
-                <div className="pt-2 border-t border-[#c2c7cb]/40 flex items-center justify-between">
-                  <span className="text-xs font-bold text-[#1b1c19]">Tiền thực đóng:</span>
-                  <span className="text-base font-bold text-[#233944]">₫420,000 VND</span>
+                <div className="pt-2 border-t border-border flex items-center justify-between">
+                  <span className="text-xs font-bold text-foreground">Tiền thực đóng:</span>
+                  <span className="text-base font-bold text-primary">₫420,000 VND</span>
                 </div>
               </div>
 
-              <Link
-                to="/billing"
-                className="w-full py-2.5 rounded-lg bg-[#f4f4ee] hover:bg-[#e9e8e3] text-[#1b1c19] text-xs font-semibold flex items-center justify-center gap-2 transition-colors border border-[#efeee8]"
-              >
-                <span className="material-symbols-outlined text-base">pie_chart</span>
-                <span>Xem Chi Tiết Hóa Đơn & VietQR</span>
-              </Link>
+              <Button variant="outline" size="default" asChild className="w-full gap-2 font-semibold">
+                <Link to="/billing">
+                  <PieChart className="h-4 w-4" />
+                  <span>Xem Chi Tiết Hóa Đơn & VietQR</span>
+                </Link>
+              </Button>
             </div>
-          </div>
+          </Card>
 
           {/* Dormitory Warden & Emergency Support */}
-          <div className="rounded-xl bg-white p-6 shadow-xs border border-[#efeee8] space-y-4">
+          <Card className="p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-[#1b1c19]">Ban Quản Lý & Cấp Cứu</h3>
-              <span className="text-[10px] px-2 py-0.5 rounded bg-[#efeee8] text-[#1b1c19]">
-                Tòa A
-              </span>
+              <h3 className="text-sm font-bold text-foreground">Ban Quản Lý & Cấp Cứu</h3>
+              <Badge variant="outline">Tòa A</Badge>
             </div>
 
             {/* Warden Profile */}
-            <div className="p-3.5 rounded-xl bg-[#f4f4ee] flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#233944] text-white flex items-center justify-center text-xs font-bold shrink-0">
+            <div className="p-3.5 rounded-xl bg-muted/40 border border-border/50 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold shrink-0">
                 LQ
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-xs font-bold text-[#1b1c19] truncate">Thầy Lê Quang</div>
-                <div className="text-[10px] text-[#73787b]">Trưởng BQL Ký túc xá Tòa A</div>
-                <div className="font-mono text-xs text-[#233944] font-semibold mt-0.5">
+                <div className="text-xs font-bold text-foreground truncate">Thầy Lê Quang</div>
+                <div className="text-[10px] text-muted-foreground">Trưởng BQL Ký túc xá Tòa A</div>
+                <div className="font-mono text-xs text-primary font-semibold mt-0.5">
                   0912 345 678
                 </div>
               </div>
               <a
                 href="tel:0912345678"
-                className="w-8 h-8 rounded-lg bg-white hover:bg-[#233944] hover:text-white text-[#1b1c19] flex items-center justify-center transition-colors border border-[#efeee8]"
+                className="w-8 h-8 rounded-lg bg-card hover:bg-primary hover:text-primary-foreground text-foreground flex items-center justify-center transition-colors border border-border"
               >
-                <span className="material-symbols-outlined text-base">call</span>
+                <Phone className="h-4 w-4" />
               </a>
             </div>
 
             <div className="space-y-2 text-xs">
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#f4f4ee]">
+              <div className="flex items-center justify-between p-2.5 rounded-lg bg-muted/40 border border-border/50">
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-base text-[#233944]">
-                    shield_person
-                  </span>
-                  <span>Phòng An Ninh Cổng Trực</span>
+                  <ShieldCheck className="h-4 w-4 text-primary" />
+                  <span className="text-foreground">Phòng An Ninh Cổng Trực</span>
                 </div>
-                <span className="font-mono font-bold text-[#233944] bg-white px-2 py-0.5 rounded border border-[#efeee8]">
+                <span className="font-mono font-bold text-primary bg-card px-2 py-0.5 rounded border border-border">
                   Ext #201
                 </span>
               </div>
 
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#f4f4ee]">
+              <div className="flex items-center justify-between p-2.5 rounded-lg bg-muted/40 border border-border/50">
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-base text-[#ba1a1a]">
-                    medical_services
-                  </span>
-                  <span>Phòng Y Tế Sơ Cứu 24/7</span>
+                  <HeartPulse className="h-4 w-4 text-destructive" />
+                  <span className="text-foreground">Phòng Y Tế Sơ Cứu 24/7</span>
                 </div>
-                <span className="font-mono font-bold text-[#ba1a1a] bg-white px-2 py-0.5 rounded border border-[#efeee8]">
+                <span className="font-mono font-bold text-destructive bg-card px-2 py-0.5 rounded border border-border">
                   Ext #115
                 </span>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       </div>
 
-      {/* NFC Gate Key QR Modal */}
-      {showGateQrModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
-          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-[#efeee8] pb-3">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[#233944]">qr_code_2</span>
-                <span className="text-sm font-bold text-[#1b1c19]">Mã Thẻ Cửa Ra Vào Tòa A</span>
-              </div>
-              <button
-                onClick={() => setShowGateQrModal(false)}
-                className="text-[#73787b] hover:text-[#1b1c19]"
-              >
-                ✕
-              </button>
-            </div>
+      {/* NFC Gate Key QR Modal with reusable Modal component */}
+      <Modal
+        isOpen={showGateQrModal}
+        onClose={() => setShowGateQrModal(false)}
+        maxWidth="sm"
+        title={
+          <div className="flex items-center gap-2">
+            <QrCode className="h-5 w-5 text-primary" />
+            <span className="text-sm font-bold text-foreground">Mã Thẻ Cửa Ra Vào Tòa A</span>
+          </div>
+        }
+        footer={
+          <Button
+            variant="default"
+            onClick={() => setShowGateQrModal(false)}
+            className="w-full font-bold"
+          >
+            Đóng
+          </Button>
+        }
+      >
+        <div className="bg-muted/40 p-4 rounded-xl flex flex-col items-center justify-center border border-border">
+          <div className="w-48 h-48 bg-card p-3 rounded-lg shadow-xs flex items-center justify-center border border-border">
+            <svg className="w-full h-full text-foreground" fill="none" viewBox="0 0 100 100">
+              <rect fill="currentColor" height="28" rx="4" width="28" x="5" y="5"></rect>
+              <rect fill="var(--card)" height="18" rx="2" width="18" x="10" y="10"></rect>
+              <rect fill="currentColor" height="10" width="10" x="14" y="14"></rect>
+              <rect fill="currentColor" height="28" rx="4" width="28" x="67" y="5"></rect>
+              <rect fill="var(--card)" height="18" rx="2" width="18" x="72" y="10"></rect>
+              <rect fill="currentColor" height="10" width="10" x="76" y="14"></rect>
+              <rect fill="currentColor" height="28" rx="4" width="28" x="5" y="67"></rect>
+              <rect fill="var(--card)" height="18" rx="2" width="18" x="10" y="72"></rect>
+              <rect fill="currentColor" height="10" width="10" x="14" y="76"></rect>
+              <circle cx="48" cy="20" fill="currentColor" r="3"></circle>
+              <circle cx="48" cy="32" fill="currentColor" r="3"></circle>
+              <circle cx="56" cy="20" fill="currentColor" r="3"></circle>
+              <circle cx="42" cy="48" fill="currentColor" r="4"></circle>
+              <circle cx="58" cy="48" fill="currentColor" r="3"></circle>
+              <rect fill="currentColor" height="6" rx="2" width="12" x="44" y="64"></rect>
+              <rect fill="currentColor" height="16" rx="2" width="8" x="70" y="50"></rect>
+              <rect fill="currentColor" height="10" rx="2" width="10" x="82" y="70"></rect>
+              <rect fill="currentColor" height="6" rx="2" width="14" x="64" y="82"></rect>
+            </svg>
+          </div>
 
-            <div className="bg-[#f4f4ee] p-4 rounded-xl flex flex-col items-center justify-center">
-              <div className="w-48 h-48 bg-white p-3 rounded-lg shadow-xs flex items-center justify-center">
-                <svg className="w-full h-full text-[#233944]" fill="none" viewBox="0 0 100 100">
-                  <rect fill="currentColor" height="28" rx="4" width="28" x="5" y="5"></rect>
-                  <rect fill="white" height="18" rx="2" width="18" x="10" y="10"></rect>
-                  <rect fill="currentColor" height="10" width="10" x="14" y="14"></rect>
-                  <rect fill="currentColor" height="28" rx="4" width="28" x="67" y="5"></rect>
-                  <rect fill="white" height="18" rx="2" width="18" x="72" y="10"></rect>
-                  <rect fill="currentColor" height="10" width="10" x="76" y="14"></rect>
-                  <rect fill="currentColor" height="28" rx="4" width="28" x="5" y="67"></rect>
-                  <rect fill="white" height="18" rx="2" width="18" x="10" y="72"></rect>
-                  <rect fill="currentColor" height="10" width="10" x="14" y="76"></rect>
-                  <circle cx="48" cy="20" fill="currentColor" r="3"></circle>
-                  <circle cx="48" cy="32" fill="currentColor" r="3"></circle>
-                  <circle cx="56" cy="20" fill="currentColor" r="3"></circle>
-                  <circle cx="42" cy="48" fill="currentColor" r="4"></circle>
-                  <circle cx="58" cy="48" fill="currentColor" r="3"></circle>
-                  <rect fill="currentColor" height="6" rx="2" width="12" x="44" y="64"></rect>
-                  <rect fill="currentColor" height="16" rx="2" width="8" x="70" y="50"></rect>
-                  <rect fill="currentColor" height="10" rx="2" width="10" x="82" y="70"></rect>
-                  <rect fill="currentColor" height="6" rx="2" width="14" x="64" y="82"></rect>
-                </svg>
-              </div>
-
-              <div className="mt-3 text-center">
-                <span className="text-xs font-bold text-[#1b1c19]">
-                  {user?.fullName || "Nguyễn Hoàng Vinh"} · Phòng A205
-                </span>
-                <p className="text-[11px] text-[#73787b] mt-0.5">
-                  Đưa lại gần đầu đọc quang học tại cổng an ninh
-                </p>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setShowGateQrModal(false)}
-              className="w-full py-2.5 rounded-xl bg-[#233944] text-white text-xs font-bold hover:bg-[#3a505b] transition-colors"
-            >
-              Đóng
-            </button>
+          <div className="mt-3 text-center">
+            <span className="text-xs font-bold text-foreground">
+              {user?.fullName || "Nguyễn Hoàng Vinh"} · Phòng A205
+            </span>
+            <p className="text-[11px] text-muted-foreground mt-0.5">
+              Đưa lại gần đầu đọc quang học tại cổng an ninh
+            </p>
           </div>
         </div>
-      )}
+      </Modal>
     </div>
   )
 }

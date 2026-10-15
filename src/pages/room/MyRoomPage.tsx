@@ -186,7 +186,7 @@ const CompartmentSlide: React.FC = () => {
 
         {/* Dot indicators */}
         <div className="flex items-center justify-center gap-2 mt-4">
-          {COMPARTMENTS.map((c, i) => (
+          {COMPARTMENTS.map((_, i) => (
             <button
               key={i}
               onClick={() => setCurrent(i)}
