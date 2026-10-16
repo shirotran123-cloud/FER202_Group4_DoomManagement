@@ -5,11 +5,17 @@ import { PageHeader, SectionCard, EmptyState } from "@/components/ui/shared";
 import { Button } from "@/components/ui/button";
 import { ImageUpload } from "@/components/ui/image-upload";
 import type { PhotoRecord } from "@/lib/photo-upload";
+import { useAuth } from "@/contexts/useAuth";
+import { canPostCommunity, isManagerOrAdmin } from "@/lib/role-access";
 
 const MKT_KEY = "dms_marketplace_v1";
 const LAF_KEY = "dms_lostfound_v1";
 
 export const MarketplacePage: React.FC = () => {
+  const { user } = useAuth();
+  // Chợ sinh viên: sinh viên đăng bài; quản lý/admin kiểm duyệt (xóa bài vi phạm).
+  const canPost = canPostCommunity(user?.role);
+  const canModerate = isManagerOrAdmin(user?.role);
   const [tab, setTab] = useState<"MARKET" | "LOST">("MARKET");
   const [listings, setListings] = useState<MarketplaceListing[]>(() => {
     try {
@@ -42,6 +48,10 @@ export const MarketplacePage: React.FC = () => {
   const submitMarket = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    if (!canPost) {
+      setError("Chỉ sinh viên mới được đăng bán.");
+      return;
+    }
     try {
       const l = createMarketplaceListing("QE202049", title, price, "DO_CU", photos.map((p) => p.id));
       setListings([l, ...listings]);
@@ -55,6 +65,10 @@ export const MarketplacePage: React.FC = () => {
   const submitLost = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    if (!canPost) {
+      setError("Chỉ sinh viên mới được đăng tin thất lạc.");
+      return;
+    }
     try {
       const p = createLostFoundPost("QE202049", kind, item, "KTX", photos.map((ph) => ph.id));
       setPosts([p, ...posts]);
@@ -74,37 +88,55 @@ export const MarketplacePage: React.FC = () => {
       </div>
       {tab === "MARKET" ? (
         <SectionCard title="Đăng bán đồ cũ">
-          <form onSubmit={submitMarket} className="grid gap-3">
-            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Quạt cây cũ còn tốt"  required />
-            <Input type="number" min={0} value={price} onChange={(e) => setPrice(Number(e.target.value))}  aria-label="Gia ban" />
-            <ImageUpload storageKey="dms_market_photos" label="Ảnh món đồ" value={photos} onChange={setPhotos} />
-            <div><Button type="submit">Đăng bán</Button></div>
-          </form>
+          {canPost ? (
+            <form onSubmit={submitMarket} className="grid gap-3">
+              <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Quạt cây cũ còn tốt"  required />
+              <Input type="number" min={0} value={price} onChange={(e) => setPrice(Number(e.target.value))}  aria-label="Gia ban" />
+              <ImageUpload storageKey="dms_market_photos" label="Ảnh món đồ" value={photos} onChange={setPhotos} />
+              <div><Button type="submit">Đăng bán</Button></div>
+            </form>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              Vai trò của bạn chỉ xem và kiểm duyệt. Sinh viên đăng bán đồ cũ của mình.
+            </p>
+          )}
           {error && <p className="mt-2 text-xs text-danger-soft-foreground" role="alert">{error}</p>}
           <div className="mt-4 space-y-2">
             {listings.length === 0 ? <EmptyState title="Chưa có tin bán" /> : listings.map((l) => (
-              <div key={l.id} className="rounded-xl border border-border p-3 text-xs">
+              <div key={l.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border p-3 text-xs">
                 <p className="font-bold">{l.title} · {l.price.toLocaleString()}đ · {l.photoIds.length} ảnh</p>
+                {canModerate && (
+                  <Button size="sm" variant="outline" onClick={() => setListings(listings.filter((x) => x.id !== l.id))}>Gỡ bài</Button>
+                )}
               </div>
             ))}
           </div>
         </SectionCard>
       ) : (
         <SectionCard title="Báo mất / nhặt được">
-          <form onSubmit={submitLost} className="grid gap-3">
-            <div className="flex gap-2">
-              <Button type="button" variant={kind === "LOST" ? "default" : "outline"} onClick={() => setKind("LOST")}>Mất đồ</Button>
-              <Button type="button" variant={kind === "FOUND" ? "default" : "outline"} onClick={() => setKind("FOUND")}>Nhặt được</Button>
-            </div>
-            <Input value={item} onChange={(e) => setItem(e.target.value)} placeholder="Ví da màu đen, khu sân A"  required />
-            <ImageUpload storageKey="dms_lostfound_photos" label="Ảnh minh chứng" value={photos} onChange={setPhotos} />
-            <div><Button type="submit">Đăng tin</Button></div>
-          </form>
+          {canPost ? (
+            <form onSubmit={submitLost} className="grid gap-3">
+              <div className="flex gap-2">
+                <Button type="button" variant={kind === "LOST" ? "default" : "outline"} onClick={() => setKind("LOST")}>Mất đồ</Button>
+                <Button type="button" variant={kind === "FOUND" ? "default" : "outline"} onClick={() => setKind("FOUND")}>Nhặt được</Button>
+              </div>
+              <Input value={item} onChange={(e) => setItem(e.target.value)} placeholder="Ví da màu đen, khu sân A"  required />
+              <ImageUpload storageKey="dms_lostfound_photos" label="Ảnh minh chứng" value={photos} onChange={setPhotos} />
+              <div><Button type="submit">Đăng tin</Button></div>
+            </form>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              Vai trò của bạn chỉ xem và kiểm duyệt. Sinh viên báo mất hoặc nhặt được đồ.
+            </p>
+          )}
           {error && <p className="mt-2 text-xs text-danger-soft-foreground" role="alert">{error}</p>}
           <div className="mt-4 space-y-2">
             {posts.length === 0 ? <EmptyState title="Chưa có tin thất lạc" /> : posts.map((p) => (
-              <div key={p.id} className="rounded-xl border border-border p-3 text-xs">
+              <div key={p.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border p-3 text-xs">
                 <p className="font-bold">[{p.kind}] {p.item} · {p.location}</p>
+                {canModerate && (
+                  <Button size="sm" variant="outline" onClick={() => setPosts(posts.filter((x) => x.id !== p.id))}>Gỡ tin</Button>
+                )}
               </div>
             ))}
           </div>

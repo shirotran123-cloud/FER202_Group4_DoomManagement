@@ -10,6 +10,7 @@ import { Receipt, Zap, Users, QrCode, Download, Printer, Calendar, CircleCheck, 
 import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { canRecordMeter } from "@/lib/role-access"
 export const BillingPage: React.FC = () => {
   const { user } = useAuth()
   const [hasPaid, setHasPaid] = useState(false)
@@ -23,7 +24,7 @@ export const BillingPage: React.FC = () => {
   const [waterNew, setWaterNew] = useState(854)
   const [recordedSuccess, setRecordedSuccess] = useState(false)
 
-  const isTechnicianOrManager = user?.role === "technician" || user?.role === "manager" || user?.role === "admin"
+  const isTechnicianOrManager = canRecordMeter(user?.role)
 
   // Tiered invoice (dorm-ops): dien bac thang + nuoc + wifi + ve sinh, chia deu dau nguoi
   const invoice = buildMonthlyInvoice({

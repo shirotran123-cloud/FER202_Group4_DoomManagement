@@ -3,6 +3,7 @@ import { useAuth } from "@/contexts/useAuth"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { suggestRoomAllocation } from "@/lib/dorm-ops"
+import { canBookBed } from "@/lib/role-access"
 import { Building, CircleCheck, Clock, QrCode, Download, Check, Zap, Sun, Compass, BedDouble, DoorOpen, ChevronDown, Snowflake, Wifi, LayoutGrid, X } from "lucide-react"
 
 import { Select } from "@/components/ui/select"
@@ -28,6 +29,9 @@ interface Compartment {
 
 export const BookingPage: React.FC = () => {
   const { user } = useAuth()
+  // Chỉ sinh viên (và admin hỗ trợ) được giữ giường + thanh toán.
+  // Quản lý giám sát qua engine tự động duyệt, không giữ giường tay.
+  const canBook = canBookBed(user?.role)
 
   // Selection states
   const [selectedBuilding, setSelectedBuilding] = useState("b1")
@@ -137,9 +141,9 @@ export const BookingPage: React.FC = () => {
     },
   ]
 
-  // Handle bed selection
+  // Handle bed selection — chặn giữ giường nếu không đủ quyền.
   const handleSelectBed = (bed: Bed, compId: string) => {
-    if (bed.status !== "available") return
+    if (!canBook || bed.status !== "available") return
     setSelectedBed(bed)
     setSelectedCompartment(compId)
     setTimeLeft(15 * 60)
@@ -148,6 +152,7 @@ export const BookingPage: React.FC = () => {
 
   // Trigger checkout & simulate auto-approval
   const handleStartCheckout = () => {
+    if (!canBook) return
     setShowCheckoutModal(true)
     setCheckoutStep("qr")
   }

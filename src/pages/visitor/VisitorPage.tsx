@@ -3,10 +3,17 @@ import React, { useEffect, useState } from "react";
 import { registerVisitor, checkInVisitor, checkOutVisitor, detectVisitorOverstay, type VisitorRecord } from "@/lib/dorm-ops";
 import { PageHeader, SectionCard, EmptyState } from "@/components/ui/shared";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/useAuth";
+import { canPostCommunity, canScanGate } from "@/lib/role-access";
 
 const KEY = "dms_visitors_v1";
 
 export const VisitorPage: React.FC = () => {
+  const { user } = useAuth();
+  // Sinh viên đăng ký khách của mình; bảo vệ check-in/out tại cổng;
+  // quản lý giám sát toàn bộ.
+  const canRegister = canPostCommunity(user?.role);
+  const canCheckGate = canScanGate(user?.role);
   const [visitors, setVisitors] = useState<VisitorRecord[]>(() => {
     try {
       return JSON.parse(localStorage.getItem(KEY) || "[]");
@@ -26,6 +33,10 @@ export const VisitorPage: React.FC = () => {
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    if (!canRegister) {
+      setError("Chỉ sinh viên mới được đăng ký khách thăm.");
+      return;
+    }
     try {
       const v = registerVisitor("QE202049", name, citizenId, new Date().toISOString().slice(0, 10), minutes);
       setVisitors([v, ...visitors]);
@@ -49,7 +60,8 @@ export const VisitorPage: React.FC = () => {
         actions={<Button onClick={tickOverstay} variant="outline">Quét quá giờ</Button>}
       />
       <SectionCard title="Đăng ký khách mới" desc="Thời gian tối thiểu 15 phút">
-        <form onSubmit={submit} className="grid gap-3 sm:grid-cols-3">
+        {canRegister ? (
+          <form onSubmit={submit} className="grid gap-3 sm:grid-cols-3">
           <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Họ tên khách"  required />
           <Input
             value={citizenId}
@@ -66,7 +78,12 @@ export const VisitorPage: React.FC = () => {
           <div className="sm:col-span-3">
             <Button type="submit">Đăng ký khách</Button>
           </div>
-        </form>
+          </form>
+        ) : (
+          <p className="text-xs text-muted-foreground">
+            Vai trò của bạn chỉ theo dõi và check-in khách tại cổng. Sinh viên đăng ký khách thăm của mình.
+          </p>
+        )}
         {error && <p className="mt-2 text-xs font-semibold text-danger-soft-foreground" role="alert">{error}</p>}
       </SectionCard>
       <SectionCard title={`Danh sách khách (${visitors.length})`} desc="Check-in khi tới cổng, check-out khi rời đi">
@@ -81,8 +98,8 @@ export const VisitorPage: React.FC = () => {
                   <p className="text-muted-foreground">{v.id} · Dự kiến {v.expectedMinutes} phút · Trạng thái: <strong>{v.status}</strong></p>
                 </div>
                 <div className="flex gap-2">
-                  {v.status === "PRE_REGISTERED" && <Button size="sm" onClick={() => setVisitors(visitors.map((x) => (x.id === v.id ? checkInVisitor(x, new Date().toISOString()) : x)))}>Check-in</Button>}
-                  {(v.status === "CHECKED_IN" || v.status === "OVERSTAY") && (
+                  {canCheckGate && v.status === "PRE_REGISTERED" && <Button size="sm" onClick={() => setVisitors(visitors.map((x) => (x.id === v.id ? checkInVisitor(x, new Date().toISOString()) : x)))}>Check-in</Button>}
+                  {canCheckGate && (v.status === "CHECKED_IN" || v.status === "OVERSTAY") && (
                     <Button size="sm" variant="outline" onClick={() => setVisitors(visitors.map((x) => (x.id === v.id ? checkOutVisitor(x, new Date().toISOString()) : x)))}>Check-out</Button>
                   )}
                   {v.status === "OVERSTAY" && <span className="rounded-full bg-danger-soft px-2 py-1 text-[11px] font-bold text-danger-soft-foreground">Quá giờ</span>}

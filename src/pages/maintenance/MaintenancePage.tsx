@@ -16,11 +16,14 @@ import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
+import { canEditTicket, isManagerOrAdmin as isManagerOrAdminRole } from "@/lib/role-access"
 const STORAGE_KEY_TICKETS = "dms_maintenance_tickets_v1"
 
 export const MaintenancePage: React.FC = () => {
   const { user } = useAuth()
-  const isManagerOrAdmin = user?.role === "manager" || user?.role === "admin"
+  const isManagerOrAdmin = isManagerOrAdminRole(user?.role)
+  // Kỹ thuật xử lý ticket + bảo vệ quét cổng đều dùng vai technician;
+  // chỉ quản lý/admin phân công thợ.
   const isTechnician = user?.role === "technician" || isManagerOrAdmin
 
   // Tickets state with localStorage persistence
@@ -621,25 +624,29 @@ export const MaintenancePage: React.FC = () => {
                       <span>Chi tiết</span>
                     </button>
 
-                    {/* Edit Ticket (U in CRUD) */}
-                    <button
-                      onClick={() => handleOpenEdit(ticket)}
-                      className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-border bg-card hover:bg-muted text-foreground transition-colors"
-                      title="Sửa phiếu"
-                    >
-                      <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
-                      <span>Sửa</span>
-                    </button>
+                    {/* Edit: chủ phiếu (khi còn chờ) hoặc quản lý/admin */}
+                    {canEditTicket(user?.role, ticket.studentId, user?.studentId) && isPending && (
+                      <button
+                        onClick={() => handleOpenEdit(ticket)}
+                        className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-border bg-card hover:bg-muted text-foreground transition-colors"
+                        title="Sửa phiếu"
+                      >
+                        <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
+                        <span>Sửa</span>
+                      </button>
+                    )}
 
-                    {/* Delete Ticket (D in CRUD) */}
-                    <button
-                      onClick={() => setDeleteConfirmTicketId(ticket.id)}
-                      className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-danger/25 bg-danger-soft hover:bg-danger-soft text-danger-soft-foreground transition-colors"
-                      title="Xóa phiếu"
-                    >
-                      <Trash2 className="h-3.5 w-3.5 text-danger-soft-foreground" />
-                      <span>Xóa</span>
-                    </button>
+                    {/* Delete: chủ phiếu (khi còn chờ) hoặc quản lý/admin */}
+                    {canEditTicket(user?.role, ticket.studentId, user?.studentId) && isPending && (
+                      <button
+                        onClick={() => setDeleteConfirmTicketId(ticket.id)}
+                        className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-danger/25 bg-danger-soft hover:bg-danger-soft text-danger-soft-foreground transition-colors"
+                        title="Xóa phiếu"
+                      >
+                        <Trash2 className="h-3.5 w-3.5 text-danger-soft-foreground" />
+                        <span>Xóa</span>
+                      </button>
+                    )}
                   </div>
 
                   {/* Contextual Workflow Action Buttons */}

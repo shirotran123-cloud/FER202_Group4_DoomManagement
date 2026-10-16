@@ -5,6 +5,7 @@ import { createNotice, filterActiveNotices, type DormNotice } from "@/lib/dorm-o
 import { PageHeader, SectionCard, EmptyState } from "@/components/ui/shared";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/useAuth";
+import { isManagerOrAdmin } from "@/lib/role-access";
 
 const KEY = "dms_notices_v1";
 const SYS_KEY = "dms_notifications_v1";
@@ -33,8 +34,8 @@ const SEED: DormNotice[] = [
 
 export const NoticesPage: React.FC = () => {
   const { user } = useAuth();
-  // Only Ban Quản lý / Admin publish notices; students and technicians read-only.
-  const canPublish = user?.role === "manager" || user?.role === "admin";
+  // Chỉ Ban Quản lý / Admin đăng bảng tin; sinh viên và kỹ thuật chỉ xem.
+  const canPublish = isManagerOrAdmin(user?.role);
   const [notices, setNotices] = useState<DormNotice[]>(() => {
     try {
       const raw = localStorage.getItem(KEY);

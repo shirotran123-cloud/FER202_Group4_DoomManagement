@@ -16,6 +16,7 @@ import {
   INITIAL_STUDENT_DEMERIT_SUMMARIES,
 } from "@/data/mockCurfew"
 import { buildGateQrPayload, findOverdueAbsentees } from "@/lib/dorm-ops"
+import { canApproveCurfew, canScanGate, isStaff } from "@/lib/role-access"
 import { ClockAlert, ShieldCheck, FileText, CircleAlert, Scan, CircleCheck, TriangleAlert, Sparkles, History, Shield, UserX } from "lucide-react"
 
 import { Input } from "@/components/ui/input"
@@ -30,7 +31,10 @@ const STORAGE_KEY_DEMERITS = "dms_student_demerits_v1"
 
 export const CurfewPage: React.FC = () => {
   const { user } = useAuth()
-  const isGuardOrManager = user?.role === "technician" || user?.role === "manager" || user?.role === "admin"
+  const isGuardOrManager = isStaff(user?.role)
+  // Bảo vệ quét cổng + điểm danh nhưng không duyệt đơn; chỉ quản lý/admin duyệt.
+  const canApprove = canApproveCurfew(user?.role)
+  const canScan = canScanGate(user?.role)
 
   // 1. Curfew Requests State
   const [requests, setRequests] = useState<CurfewRequest[]>(() => {
@@ -156,8 +160,12 @@ export const CurfewPage: React.FC = () => {
     },
   }
 
-  // Xử lý quét MSSV tại cổng
+  // Xử lý quét MSSV tại cổng — chỉ bảo vệ/quản lý/admin được quét.
   const handleScanCard = (mssvToScan?: string) => {
+    if (!canScan) {
+      showToast("Chỉ bảo vệ trực cổng và quản lý được quét thẻ.")
+      return
+    }
     const targetMssv = (mssvToScan || scanInputMssv).trim().toUpperCase()
     if (!targetMssv) {
       showToast("Vui lòng nhập hoặc quẹt mã thẻ sinh viên!")
@@ -360,8 +368,12 @@ export const CurfewPage: React.FC = () => {
     showToast(`Đã gửi đơn ${newReq.id}! Ban Quản lý sẽ xét duyệt trước 22:30.`)
   }
 
-  // Handle Approve / Reject Request
+  // Handle Approve / Reject Request — chỉ quản lý/admin duyệt.
   const handleReviewRequest = (requestId: string, newStatus: "APPROVED" | "REJECTED") => {
+    if (!canApprove) {
+      showToast("Chỉ Ban Quản lý được duyệt đơn về muộn.")
+      return
+    }
     const updated = requests.map((r) => {
       if (r.id === requestId) {
         return {
@@ -400,6 +412,10 @@ export const CurfewPage: React.FC = () => {
 
   const handleCreateDisciplineReport = (e: React.FormEvent) => {
     e.preventDefault()
+    if (!canApprove) {
+      showToast("Chỉ Ban Quản lý được lập biên bản kỷ luật.")
+      return
+    }
     const student = registeredStudents[vioStudentId]
     if (!student) return
 
@@ -1024,8 +1040,8 @@ export const CurfewPage: React.FC = () => {
                       <span>Ngày: <strong>{req.date}</strong></span> • <span>Dự kiến về: <strong>{req.expectedReturnTime}</strong></span> • <span>Phụ huynh: {req.parentPhone}</span>
                     </div>
 
-                    {/* Review Actions: ONLY FOR BQL/MANAGER/GUARD */}
-                    {isGuardOrManager && req.status === "PENDING" && (
+                    {/* Review Actions: chỉ quản lý/admin duyệt. Bảo vệ chỉ quét cổng. */}
+                    {canApprove && req.status === "PENDING" && (
                       <div className="flex gap-1.5 mt-1 sm:mt-0">
                         <Button variant="success" className="py-1 hover:bg-success" onClick={() => handleReviewRequest(req.id, "APPROVED")}>
                           Duyệt đơn
@@ -1156,7 +1172,7 @@ export const CurfewPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Form to create infraction report: ONLY for Guard / Manager / Admin */}
+          {/* Form lập biên bản: bảo vệ ghi nhận tuần tra, chỉ quản lý duyệt kỷ luật */}
           {isGuardOrManager ? (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
               <div className="rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-xs space-y-4">
