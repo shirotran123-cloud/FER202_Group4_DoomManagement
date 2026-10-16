@@ -28,7 +28,7 @@ export const INITIAL_CURFEW_REQUESTS: CurfewRequest[] = [
   },
   {
     id: "REQ-2026-090",
-    studentId: "QE200002",
+    studentId: "QE200047",
     studentName: "Trần Thanh Nguyên",
     room: "A205",
     phone: "0905 111 222",
@@ -48,7 +48,7 @@ export const INITIAL_CURFEW_REQUESTS: CurfewRequest[] = [
   },
   {
     id: "REQ-2026-091",
-    studentId: "QE200004",
+    studentId: "QE200286",
     studentName: "Huỳnh Gia Kim",
     room: "A205",
     phone: "0982 777 666",
@@ -65,7 +65,7 @@ export const INITIAL_CURFEW_REQUESTS: CurfewRequest[] = [
   },
   {
     id: "REQ-2026-088",
-    studentId: "QE200003",
+    studentId: "QE200123",
     studentName: "Văn Thái Trung",
     room: "A205",
     phone: "0934 999 888",
@@ -100,7 +100,7 @@ export const INITIAL_GATE_LOGS: GateAccessLog[] = [
   },
   {
     id: "LOG-102",
-    studentId: "QE200005",
+    studentId: "QE200158",
     studentName: "Lê Minh Tuấn",
     room: "A204",
     timestamp: "2026-10-10T23:45:20",
@@ -112,7 +112,7 @@ export const INITIAL_GATE_LOGS: GateAccessLog[] = [
   },
   {
     id: "LOG-103",
-    studentId: "QE200006",
+    studentId: "QE200094",
     studentName: "Phạm Quốc Bảo",
     room: "A203",
     timestamp: "2026-10-10T22:45:00",
@@ -123,7 +123,7 @@ export const INITIAL_GATE_LOGS: GateAccessLog[] = [
   },
   {
     id: "LOG-104",
-    studentId: "QE200007",
+    studentId: "QE200231",
     studentName: "Vũ Đức Anh",
     room: "A202",
     timestamp: "2026-10-10T22:52:10",
@@ -137,7 +137,7 @@ export const INITIAL_GATE_LOGS: GateAccessLog[] = [
 export const INITIAL_DISCIPLINE_RECORDS: DisciplineRecord[] = [
   {
     id: "VIO-2026-042",
-    studentId: "QE200005",
+    studentId: "QE200158",
     studentName: "Lê Minh Tuấn",
     room: "A204",
     date: "2026-10-10",
@@ -150,7 +150,7 @@ export const INITIAL_DISCIPLINE_RECORDS: DisciplineRecord[] = [
   },
   {
     id: "VIO-2026-041",
-    studentId: "QE200005",
+    studentId: "QE200158",
     studentName: "Lê Minh Tuấn",
     room: "A204",
     date: "2026-10-04",
@@ -164,7 +164,7 @@ export const INITIAL_DISCIPLINE_RECORDS: DisciplineRecord[] = [
   },
   {
     id: "VIO-2026-040",
-    studentId: "QE200008",
+    studentId: "QE200175",
     studentName: "Đoàn Gia Bảo",
     room: "A201",
     date: "2026-10-02",
@@ -177,7 +177,7 @@ export const INITIAL_DISCIPLINE_RECORDS: DisciplineRecord[] = [
   },
   {
     id: "VIO-2026-039",
-    studentId: "QE200009",
+    studentId: "QE200309",
     studentName: "Ngô Văn Khải",
     room: "A302",
     date: "2026-09-25",
@@ -191,7 +191,7 @@ export const INITIAL_DISCIPLINE_RECORDS: DisciplineRecord[] = [
   },
   {
     id: "VIO-2026-038",
-    studentId: "QE200009",
+    studentId: "QE200309",
     studentName: "Ngô Văn Khải",
     room: "A302",
     date: "2026-09-18",
@@ -216,7 +216,7 @@ export const INITIAL_STUDENT_DEMERIT_SUMMARIES: StudentDemeritSummary[] = [
     violationCount: 0,
   },
   {
-    studentId: "QE200002",
+    studentId: "QE200047",
     studentName: "Trần Thanh Nguyên",
     room: "A205",
     initialPoints: 100,
@@ -226,7 +226,7 @@ export const INITIAL_STUDENT_DEMERIT_SUMMARIES: StudentDemeritSummary[] = [
     violationCount: 0,
   },
   {
-    studentId: "QE200005",
+    studentId: "QE200158",
     studentName: "Lê Minh Tuấn",
     room: "A204",
     initialPoints: 100,
@@ -236,7 +236,7 @@ export const INITIAL_STUDENT_DEMERIT_SUMMARIES: StudentDemeritSummary[] = [
     violationCount: 2,
   },
   {
-    studentId: "QE200008",
+    studentId: "QE200175",
     studentName: "Đoàn Gia Bảo",
     room: "A201",
     initialPoints: 100,
@@ -246,7 +246,7 @@ export const INITIAL_STUDENT_DEMERIT_SUMMARIES: StudentDemeritSummary[] = [
     violationCount: 1,
   },
   {
-    studentId: "QE200009",
+    studentId: "QE200309",
     studentName: "Ngô Văn Khải",
     room: "A302",
     initialPoints: 100,

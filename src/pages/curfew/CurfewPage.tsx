@@ -122,37 +122,37 @@ export const CurfewPage: React.FC = () => {
       phone: "0912 345 678",
       parentPhone: "0903 123 456",
     },
-    QE200002: {
+    QE200047: {
       name: "Trần Thanh Nguyên",
       room: "A205",
       phone: "0905 111 222",
       parentPhone: "0905 888 999",
     },
-    QE200003: {
+    QE200123: {
       name: "Văn Thái Trung",
       room: "A205",
       phone: "0934 999 888",
       parentPhone: "0918 333 444",
     },
-    QE200004: {
+    QE200286: {
       name: "Huỳnh Gia Kim",
       room: "A205",
       phone: "0982 777 666",
       parentPhone: "0983 456 789",
     },
-    QE200005: {
+    QE200158: {
       name: "Lê Minh Tuấn",
       room: "A204",
       phone: "0961 223 344",
       parentPhone: "0962 111 333",
     },
-    QE200006: {
+    QE200094: {
       name: "Phạm Quốc Bảo",
       room: "A203",
       phone: "0971 445 566",
       parentPhone: "0972 555 777",
     },
-    QE200009: {
+    QE200309: {
       name: "Ngô Văn Khải",
       room: "A302",
       phone: "0943 222 111",
@@ -396,7 +396,7 @@ export const CurfewPage: React.FC = () => {
   // ==========================================
   // State form biên bản kỷ luật
   // ==========================================
-  const [vioStudentId, setVioStudentId] = useState("QE200005")
+  const [vioStudentId, setVioStudentId] = useState("QE200158")
   const [vioType, setVioType] = useState<InfractionType>("UNAUTHORIZED_COOKING")
   const [vioDescription, setVioDescription] = useState("")
 
@@ -678,22 +678,22 @@ export const CurfewPage: React.FC = () => {
                   <span>QE200001 (Nguyễn Hoàng Vinh - Có đơn duyệt hợp lệ)</span>
                 </button>
                 <button
-                  onClick={() => handleScanCard("QE200005")}
+                  onClick={() => handleScanCard("QE200158")}
                   className="rounded-xl border border-danger/25 bg-danger/10 hover:bg-danger/20 px-3 py-1.5 text-xs font-semibold text-danger-soft-foreground flex items-center gap-1.5"
                 >
-                  <span>QE200005 (Lê Minh Tuấn - KHÔNG CÓ ĐƠN ➔ Vi phạm)</span>
+                  <span>QE200158 (Lê Minh Tuấn - KHÔNG CÓ ĐƠN ➔ Vi phạm)</span>
                 </button>
                 <button
-                  onClick={() => handleScanCard("QE200002")}
+                  onClick={() => handleScanCard("QE200047")}
                   className="rounded-xl border border-primary/25 bg-primary/10 hover:bg-primary/20 px-3 py-1.5 text-xs font-semibold text-primary-soft-foreground flex items-center gap-1.5"
                 >
-                  <span>QE200002 (Trần Thanh Nguyên - Về quê qua đêm)</span>
+                  <span>QE200047 (Trần Thanh Nguyên - Về quê qua đêm)</span>
                 </button>
                 <button
-                  onClick={() => handleScanCard("QE200006")}
+                  onClick={() => handleScanCard("QE200094")}
                   className="rounded-xl border border-border bg-muted/60 hover:bg-muted px-3 py-1.5 text-xs font-semibold text-foreground flex items-center gap-1.5"
                 >
-                  <span>QE200006 (Phạm Quốc Bảo - Phòng A203)</span>
+                  <span>QE200094 (Phạm Quốc Bảo - Phòng A203)</span>
                 </button>
               </div>
             </div>
@@ -702,7 +702,7 @@ export const CurfewPage: React.FC = () => {
             <p className="text-[11px] text-muted-foreground">
               Mã QR chuẩn cổng: <code className="font-mono">{buildGateQrPayload("QE200001", new Date().toISOString().slice(0, 16))}</code> ·
               Logic đối chiếu dùng <code className="font-mono">evaluateGateScan()</code> (trước 23:00 hợp lệ, sau 23:00 cần đơn duyệt).
-              Vắng mặt quá giờ: <code className="font-mono">{findOverdueAbsentees(gateLogs.map((g) => ({ studentId: g.studentId, scanHour: 22 })), ["QE200001", "QE200002"], simulatedHour).join(", ") || "không có"}</code>
+              Vắng mặt quá giờ: <code className="font-mono">{findOverdueAbsentees(gateLogs.map((g) => ({ studentId: g.studentId, scanHour: 22 })), ["QE200001", "QE200047"], simulatedHour).join(", ") || "không có"}</code>
             </p>
             <div className="flex gap-2">
               <div className="relative flex-1">
@@ -1191,9 +1191,9 @@ export const CurfewPage: React.FC = () => {
                     onChange={(e) => setVioStudentId(e.target.value)}
                     className="mt-1"
                   >
-                    <option value="QE200005">QE200005 - Lê Minh Tuấn (A204)</option>
-                    <option value="QE200008">QE200008 - Đoàn Gia Bảo (A201)</option>
-                    <option value="QE200009">QE200009 - Ngô Văn Khải (A302)</option>
+                    <option value="QE200158">QE200158 - Lê Minh Tuấn (A204)</option>
+                    <option value="QE200175">QE200175 - Đoàn Gia Bảo (A201)</option>
+                    <option value="QE200309">QE200309 - Ngô Văn Khải (A302)</option>
                     <option value="QE200001">QE200001 - Nguyễn Hoàng Vinh (A205)</option>
                   </Select>
                 </div>

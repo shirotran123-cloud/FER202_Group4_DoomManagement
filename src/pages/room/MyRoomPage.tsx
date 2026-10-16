@@ -32,7 +32,7 @@ export const MyRoomPage: React.FC = () => {
     },
     {
       name: "Trần Công Tiến",
-      mssv: "QE200010",
+      mssv: "QE200062",
       bed: "B-G01 tầng dưới",
       major: "Thiết kế Đồ họa",
       phone: "0934 112 233",
@@ -41,7 +41,7 @@ export const MyRoomPage: React.FC = () => {
     },
     {
       name: "Văn Thái Trung",
-      mssv: "QE200011",
+      mssv: "QE200297",
       bed: "B-G04 tầng trên",
       major: "Khoa học Máy tính",
       phone: "0977 445 566",
@@ -50,7 +50,7 @@ export const MyRoomPage: React.FC = () => {
     },
     {
       name: "Đinh Thanh Trung",
-      mssv: "QE200012",
+      mssv: "QE200204",
       bed: "B-G05 tầng dưới",
       major: "An toàn thông tin",
       phone: "0988 990 011",
