@@ -31,7 +31,16 @@ export function securityHeaders(req, res, next) {
 
 /* ---------- Rate limit theo IP & loại endpoint ---------- */
 const WINDOW_MS = 60_000
-const LIMITS = { public: 300, sensitive: 30 }
+/**
+ * Hạn mức mỗi phút cho một IP. Đọc từ biến môi trường để môi trường kiểm thử
+ * có thể nới ra mà không phải sửa code; giá trị mặc định vẫn chặt cho thật.
+ *   DMS_RATE_LIMIT_SENSITIVE=0  -> tắt hẳn (chỉ dùng khi chạy bộ test)
+ */
+const LIMITS = {
+  public: Number(process.env.DMS_RATE_LIMIT_PUBLIC ?? 300),
+  sensitive: Number(process.env.DMS_RATE_LIMIT_SENSITIVE ?? 30),
+}
+const RATE_LIMIT_DISABLED = process.env.DMS_DISABLE_RATE_LIMIT === "1"
 const buckets = new Map()
 
 setInterval(() => {
@@ -41,6 +50,7 @@ setInterval(() => {
 
 export function rateLimit(kind = "public") {
   return (req, res, next) => {
+    if (RATE_LIMIT_DISABLED || LIMITS[kind] <= 0) return next()
     const key = `${kind}:${req.ip}`
     const now = Date.now()
     const entry = buckets.get(key) || { count: 0, resetAt: now + WINDOW_MS }
@@ -54,6 +64,7 @@ export function rateLimit(kind = "public") {
     res.setHeader("X-RateLimit-Limit", String(limit))
     res.setHeader("X-RateLimit-Remaining", String(Math.max(0, limit - entry.count)))
     if (entry.count > limit) {
+      res.setHeader("Retry-After", String(Math.ceil((entry.resetAt - now) / 1000)))
       return res.status(429).json({ success: false, message: "Quá nhiều yêu cầu, vui lòng thử lại sau." })
     }
     next()

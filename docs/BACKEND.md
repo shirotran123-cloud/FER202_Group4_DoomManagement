@@ -14,17 +14,45 @@ npm run db:seed       # sinh lại db.json
 ## Kiểm thử
 
 ```bash
-npm run check:frontend   # icon, import, MSSV (68 file)
-npm run check:parity     # quyền frontend ↔ backend (43 assertions)
-npm run check:domain     # luật nghiệp vụ thuần (69 assertions)
-npm run check:contract   # shape khớp src/types (30 assertions)
-npm run test:api         # phân quyền 4 vai trò (58 assertions)
-npm run test:flows       # 11 luồng end-to-end (92 assertions)
-npm run check:all        # chạy tất cả (2 bộ đầu không cần backend)
+npm run check:frontend    # icon, import, MSSV (69 file)
+npm run check:parity      # quyền frontend ↔ backend (43 assertions)
+npm run check:client      # endpoint client ↔ route backend (85 assertions)
+npm run check:domain      # luật nghiệp vụ thuần (69 assertions)
+npm run check:contract    # shape khớp src/types (30 assertions)
+npm run test:api          # phân quyền 4 vai trò (58 assertions)
+npm run test:flows        # 11 luồng end-to-end (92 assertions)
+npm run test:client-live  # gọi thật mọi endpoint client (58 assertions)
+npm run check:all         # chạy tất cả
 API_BASE=http://localhost:3101 npm run check:all
 ```
 
+Bộ test gọi API dồn dập nên dễ chạm rate limit. Khi chạy toàn bộ, khởi động
+backend đã nới hạn mức:
+
+```bash
+DMS_DISABLE_RATE_LIMIT=1 node server/index.js     # Linux/macOS
+$env:DMS_DISABLE_RATE_LIMIT="1"; node server/index.js   # PowerShell
+```
+
 Windows: `start.bat` mở backend :3101 + frontend :5173 (proxy `/api` sang backend).
+
+## Dùng từ frontend
+
+`src/lib/api.ts` là client duy nhất, gọi qua proxy `/api` nên không cần cấu
+hình cổng khi dev:
+
+```ts
+import { ticketApi, billingApi, isBackendUp } from "@/lib/api"
+
+if (await isBackendUp()) {
+  const tickets = await ticketApi.list({ status: "PENDING" })
+  const invoice = await billingApi.calculate({ room: "A205", month: "2026-09", /* ... */ })
+}
+```
+
+Client tự gắn header vai trò từ phiên đăng nhập (`localStorage`), có timeout
+12 giây, và ném `ApiError` kèm thông điệp tiếng Việt từ backend để UI hiển thị
+thẳng. Mọi tham số động và query string đều được xử lý sẵn.
 
 ## Cấu trúc
 

@@ -1368,8 +1368,8 @@
       "compartmentName": "A1",
       "name": "G01",
       "fullCode": "A101-A1-G01",
-      "status": "AVAILABLE",
-      "studentId": null,
+      "status": "HOLDING",
+      "studentId": "QE200001",
       "tier": "lower",
       "price": 950000
     },
@@ -4548,8 +4548,8 @@
       "compartmentName": "A1",
       "name": "G02",
       "fullCode": "A206-A1-G02",
-      "status": "AVAILABLE",
-      "studentId": null,
+      "status": "OCCUPIED",
+      "studentId": "usr_qe200001",
       "tier": "upper",
       "price": 950000
     },
@@ -4560,8 +4560,8 @@
       "compartmentName": "A1",
       "name": "G03",
       "fullCode": "A206-A1-G03",
-      "status": "AVAILABLE",
-      "studentId": null,
+      "status": "OCCUPIED",
+      "studentId": "usr_qe200001",
       "tier": "lower",
       "price": 950000
     },
@@ -4572,8 +4572,8 @@
       "compartmentName": "A1",
       "name": "G04",
       "fullCode": "A206-A1-G04",
-      "status": "AVAILABLE",
-      "studentId": null,
+      "status": "OCCUPIED",
+      "studentId": "usr_qe200001",
       "tier": "upper",
       "price": 950000
     },
@@ -10035,7 +10035,7 @@
       "defaultCompartmentSize": 6,
       "depositAmount": 1000000,
       "note": "kiểm thử",
-      "updatedAt": "2026-10-16T11:16:18.141Z",
+      "updatedAt": "2026-10-16T11:26:08.134Z",
       "updatedBy": "Ban Quản trị Hệ thống DMS"
     }
   ],
@@ -10056,6 +10056,57 @@
       "createdAt": "2026-10-16T11:16:17.913Z",
       "paidAt": "2026-10-16T11:16:17.925Z",
       "approvedAt": "2026-10-16T11:16:17.929Z"
+    },
+    {
+      "id": "BK-858771",
+      "userId": "usr_qe200001",
+      "studentId": "QE200001",
+      "bedId": "bed266",
+      "bedCode": "A206-A1-G02",
+      "room": "A206",
+      "deposit": 1000000,
+      "roomFee": 950000,
+      "total": 2150000,
+      "status": "APPROVED",
+      "paymentMethod": "vietqr",
+      "qrContent": "DORM_BOOKING_A206-A1-G02_QE200001_2150000",
+      "createdAt": "2026-10-16T11:24:18.771Z",
+      "paidAt": "2026-10-16T11:24:18.777Z",
+      "approvedAt": "2026-10-16T11:24:18.780Z"
+    },
+    {
+      "id": "BK-967171",
+      "userId": "usr_qe200001",
+      "studentId": "QE200001",
+      "bedId": "bed267",
+      "bedCode": "A206-A1-G03",
+      "room": "A206",
+      "deposit": 1000000,
+      "roomFee": 950000,
+      "total": 2150000,
+      "status": "APPROVED",
+      "paymentMethod": "vietqr",
+      "qrContent": "DORM_BOOKING_A206-A1-G03_QE200001_2150000",
+      "createdAt": "2026-10-16T11:26:07.171Z",
+      "paidAt": "2026-10-16T11:26:07.177Z",
+      "approvedAt": "2026-10-16T11:26:07.179Z"
+    },
+    {
+      "id": "BK-968025",
+      "userId": "usr_qe200001",
+      "studentId": "QE200001",
+      "bedId": "bed268",
+      "bedCode": "A206-A1-G04",
+      "room": "A206",
+      "deposit": 1000000,
+      "roomFee": 950000,
+      "total": 2150000,
+      "status": "APPROVED",
+      "paymentMethod": "vietqr",
+      "qrContent": "DORM_BOOKING_A206-A1-G04_QE200001_2150000",
+      "createdAt": "2026-10-16T11:26:08.025Z",
+      "paidAt": "2026-10-16T11:26:08.029Z",
+      "approvedAt": "2026-10-16T11:26:08.031Z"
     }
   ],
   "bedHolds": [
@@ -10068,6 +10119,76 @@
       "status": "CONVERTED",
       "createdAt": "2026-10-16T11:16:17.891Z",
       "expiresAt": "2026-10-16T11:31:17.891Z"
+    },
+    {
+      "id": "HOLD-831264",
+      "studentId": "QE200001",
+      "bedId": "bed1",
+      "bedCode": "A101-A1-G01",
+      "room": "A101",
+      "status": "RELEASED",
+      "createdAt": "2026-10-16T11:23:51.264Z",
+      "expiresAt": "2026-10-16T11:38:51.264Z"
+    },
+    {
+      "id": "HOLD-858757",
+      "studentId": "QE200001",
+      "bedId": "bed266",
+      "bedCode": "A206-A1-G02",
+      "room": "A206",
+      "status": "CONVERTED",
+      "createdAt": "2026-10-16T11:24:18.757Z",
+      "expiresAt": "2026-10-16T11:39:18.757Z"
+    },
+    {
+      "id": "HOLD-943183",
+      "studentId": "QE200001",
+      "bedId": "bed1",
+      "bedCode": "A101-A1-G01",
+      "room": "A101",
+      "status": "RELEASED",
+      "createdAt": "2026-10-16T11:25:43.183Z",
+      "expiresAt": "2026-10-16T11:40:43.183Z"
+    },
+    {
+      "id": "HOLD-967029",
+      "studentId": "QE200001",
+      "bedId": "bed2",
+      "bedCode": "A101-A1-G02",
+      "room": "A101",
+      "status": "RELEASED",
+      "createdAt": "2026-10-16T11:26:07.029Z",
+      "expiresAt": "2026-10-16T11:41:07.029Z"
+    },
+    {
+      "id": "HOLD-967161",
+      "studentId": "QE200001",
+      "bedId": "bed267",
+      "bedCode": "A206-A1-G03",
+      "room": "A206",
+      "status": "CONVERTED",
+      "createdAt": "2026-10-16T11:26:07.161Z",
+      "expiresAt": "2026-10-16T11:41:07.161Z"
+    },
+    {
+      "id": "HOLD-968017",
+      "studentId": "QE200001",
+      "bedId": "bed268",
+      "bedCode": "A206-A1-G04",
+      "room": "A206",
+      "status": "CONVERTED",
+      "createdAt": "2026-10-16T11:26:08.017Z",
+      "expiresAt": "2026-10-16T11:41:08.017Z"
+    },
+    {
+      "id": "HOLD-968369",
+      "studentId": "QE200001",
+      "bedId": "bed1",
+      "bedCode": "A101-A1-G01",
+      "room": "A101",
+      "status": "ACTIVE",
+      "createdAt": "2026-10-16T11:26:08.369Z",
+      "expiresAt": "2026-10-16T11:41:08.369Z"
     }
   ],
   "contracts": [
@@ -10084,6 +10205,48 @@
       "endDate": "2027-01-15",
       "createdAt": "2026-10-16T11:16:17.929Z",
       "closedAt": "2026-10-16T11:16:18.080Z"
+    },
+    {
+      "id": "CTR-858780",
+      "bookingId": "BK-858771",
+      "userId": "usr_qe200001",
+      "studentId": "QE200001",
+      "bedCode": "A206-A1-G02",
+      "room": "A206",
+      "deposit": 1000000,
+      "status": "CLOSED",
+      "startDate": "2026-10-16",
+      "endDate": "2027-01-15",
+      "createdAt": "2026-10-16T11:24:18.780Z",
+      "closedAt": "2026-10-16T11:24:18.864Z"
+    },
+    {
+      "id": "CTR-967179",
+      "bookingId": "BK-967171",
+      "userId": "usr_qe200001",
+      "studentId": "QE200001",
+      "bedCode": "A206-A1-G03",
+      "room": "A206",
+      "deposit": 1000000,
+      "status": "CLOSED",
+      "startDate": "2026-10-16",
+      "endDate": "2027-01-15",
+      "createdAt": "2026-10-16T11:26:07.179Z",
+      "closedAt": "2026-10-16T11:26:07.256Z"
+    },
+    {
+      "id": "CTR-968031",
+      "bookingId": "BK-968025",
+      "userId": "usr_qe200001",
+      "studentId": "QE200001",
+      "bedCode": "A206-A1-G04",
+      "room": "A206",
+      "deposit": 1000000,
+      "status": "CLOSED",
+      "startDate": "2026-10-16",
+      "endDate": "2027-01-15",
+      "createdAt": "2026-10-16T11:26:08.031Z",
+      "closedAt": "2026-10-16T11:26:08.101Z"
     }
   ],
   "roomSwitchRequests": [
@@ -10097,6 +10260,42 @@
       "createdAt": "2026-10-16T11:16:18.070Z",
       "reviewedBy": "Thầy Vũ Thành Nam",
       "reviewedAt": "2026-10-16T11:16:18.077Z",
+      "reviewNotes": "Chưa có giường trống phù hợp."
+    },
+    {
+      "id": "RSW-858856",
+      "studentId": "QE200001",
+      "fromRoom": "A205",
+      "toRoom": "A203",
+      "reason": "Muốn ở gần bạn cùng lớp.",
+      "status": "REJECTED",
+      "createdAt": "2026-10-16T11:24:18.856Z",
+      "reviewedBy": "Thầy Vũ Thành Nam",
+      "reviewedAt": "2026-10-16T11:24:18.860Z",
+      "reviewNotes": "Chưa có giường trống phù hợp."
+    },
+    {
+      "id": "RSW-967247",
+      "studentId": "QE200001",
+      "fromRoom": "A205",
+      "toRoom": "A203",
+      "reason": "Muốn ở gần bạn cùng lớp.",
+      "status": "REJECTED",
+      "createdAt": "2026-10-16T11:26:07.247Z",
+      "reviewedBy": "Thầy Vũ Thành Nam",
+      "reviewedAt": "2026-10-16T11:26:07.252Z",
+      "reviewNotes": "Chưa có giường trống phù hợp."
+    },
+    {
+      "id": "RSW-968091",
+      "studentId": "QE200001",
+      "fromRoom": "A205",
+      "toRoom": "A203",
+      "reason": "Muốn ở gần bạn cùng lớp.",
+      "status": "REJECTED",
+      "createdAt": "2026-10-16T11:26:08.091Z",
+      "reviewedBy": "Thầy Vũ Thành Nam",
+      "reviewedAt": "2026-10-16T11:26:08.096Z",
       "reviewNotes": "Chưa có giường trống phù hợp."
     }
   ],
@@ -10123,7 +10322,20 @@
       "waterNew": 314,
       "meterPhotoIds": [],
       "recordedBy": "usr_manager_01",
-      "recordedAt": "2026-10-16 11:16",
+      "recordedAt": "2026-10-16 11:26",
+      "warnings": []
+    },
+    {
+      "id": "util_A205_2026-11",
+      "room": "A205",
+      "month": "2026-11",
+      "elecOld": 12000,
+      "elecNew": 12180,
+      "waterOld": 800,
+      "waterNew": 815,
+      "meterPhotoIds": [],
+      "recordedBy": "usr_manager_01",
+      "recordedAt": "2026-10-16 11:26",
       "warnings": []
     }
   ],
@@ -10208,10 +10420,37 @@
       ],
       "status": "PAID",
       "dueDate": "2027-01-05",
-      "issuedAt": "2026-10-16 11:16",
+      "issuedAt": "2026-10-16 11:26",
       "vietQrContent": "DIENNUOC_A206_QE200001",
       "warnings": [],
-      "paidAt": "2026-10-16T11:16:18.058Z"
+      "paidAt": "2026-10-16T11:26:08.082Z"
+    },
+    {
+      "id": "INV-2026-11-A205",
+      "invoiceCode": "INV-2026-11-A205",
+      "room": "A205",
+      "month": "2026-11",
+      "deltaElec": 180,
+      "deltaWater": 15,
+      "elecCost": 408000,
+      "waterCost": 270000,
+      "sharedFees": 180000,
+      "roomTotal": 1900000,
+      "grandTotal": 2758000,
+      "perStudentUtility": 429000,
+      "perStudentTotal": 1379000,
+      "numStudents": 2,
+      "vatRate": 0.08,
+      "utilityRecordId": "util_A205_2026-11",
+      "studentIds": [
+        "QE200001",
+        "QE200047"
+      ],
+      "status": "ISSUED",
+      "dueDate": "2026-12-05",
+      "issuedAt": "2026-10-16 11:26",
+      "vietQrContent": "DIENNUOC_A205_QE200001",
+      "warnings": []
     }
   ],
   "payments": [
@@ -10243,6 +10482,93 @@
       "reason": "Chỉ số điện tháng này cao bất thường, đề nghị kiểm tra lại.",
       "status": "PENDING",
       "createdAt": "2026-10-16T11:16:18.067Z"
+    },
+    {
+      "id": "PAY-858777",
+      "bookingId": "BK-858771",
+      "studentId": "QE200001",
+      "amount": 1000000,
+      "content": "DORM_BOOKING_A206-A1-G02_QE200001_2150000",
+      "method": "vietqr",
+      "status": "CONFIRMED",
+      "paidAt": "2026-10-16T11:24:18.777Z"
+    },
+    {
+      "id": "PAY-858847",
+      "invoiceId": "INV-2026-12-A206",
+      "studentId": "QE200001",
+      "amount": 1790000,
+      "content": "DIENNUOC_A206_QE200001",
+      "method": "vietqr",
+      "status": "CONFIRMED",
+      "paidAt": "2026-10-16T11:24:18.847Z"
+    },
+    {
+      "id": "DSP-858852",
+      "invoiceId": "INV-2026-09-A205",
+      "studentId": "QE200001",
+      "kind": "DISPUTE",
+      "reason": "Chỉ số điện tháng này cao bất thường, đề nghị kiểm tra lại.",
+      "status": "PENDING",
+      "createdAt": "2026-10-16T11:24:18.852Z"
+    },
+    {
+      "id": "PAY-967177",
+      "bookingId": "BK-967171",
+      "studentId": "QE200001",
+      "amount": 1000000,
+      "content": "DORM_BOOKING_A206-A1-G03_QE200001_2150000",
+      "method": "vietqr",
+      "status": "CONFIRMED",
+      "paidAt": "2026-10-16T11:26:07.177Z"
+    },
+    {
+      "id": "PAY-967238",
+      "invoiceId": "INV-2026-12-A206",
+      "studentId": "QE200001",
+      "amount": 1790000,
+      "content": "DIENNUOC_A206_QE200001",
+      "method": "vietqr",
+      "status": "CONFIRMED",
+      "paidAt": "2026-10-16T11:26:07.238Z"
+    },
+    {
+      "id": "DSP-967243",
+      "invoiceId": "INV-2026-09-A205",
+      "studentId": "QE200001",
+      "kind": "DISPUTE",
+      "reason": "Chỉ số điện tháng này cao bất thường, đề nghị kiểm tra lại.",
+      "status": "PENDING",
+      "createdAt": "2026-10-16T11:26:07.243Z"
+    },
+    {
+      "id": "PAY-968029",
+      "bookingId": "BK-968025",
+      "studentId": "QE200001",
+      "amount": 1000000,
+      "content": "DORM_BOOKING_A206-A1-G04_QE200001_2150000",
+      "method": "vietqr",
+      "status": "CONFIRMED",
+      "paidAt": "2026-10-16T11:26:08.029Z"
+    },
+    {
+      "id": "PAY-968082",
+      "invoiceId": "INV-2026-12-A206",
+      "studentId": "QE200001",
+      "amount": 1790000,
+      "content": "DIENNUOC_A206_QE200001",
+      "method": "vietqr",
+      "status": "CONFIRMED",
+      "paidAt": "2026-10-16T11:26:08.082Z"
+    },
+    {
+      "id": "DSP-968087",
+      "invoiceId": "INV-2026-09-A205",
+      "studentId": "QE200001",
+      "kind": "DISPUTE",
+      "reason": "Chỉ số điện tháng này cao bất thường, đề nghị kiểm tra lại.",
+      "status": "PENDING",
+      "createdAt": "2026-10-16T11:26:08.087Z"
     }
   ],
   "tickets": [
@@ -10430,6 +10756,165 @@
         "comment": "Nhanh, sạch sẽ.",
         "isSatisfied": true
       }
+    },
+    {
+      "id": "TKT-858789",
+      "title": "Luồng test — bóng đèn buồng B cháy",
+      "scope": "COMPARTMENT_PRIVATE",
+      "building": "Tòa A",
+      "room": "A205",
+      "compartment": "B1",
+      "bedCode": "A205-B1-G03",
+      "category": "ELECTRIC",
+      "urgency": "NORMAL",
+      "description": "Đã bổ sung: bóng cháy kèm mùi khét.",
+      "studentId": "QE200001",
+      "studentName": "Nguyễn Hoàng Vinh",
+      "studentPhone": "0999 888 777",
+      "evidenceImages": [],
+      "status": "CLOSED",
+      "createdAt": "2026-10-16 11:24",
+      "assignedTechnician": {
+        "id": "tech_1792149858799",
+        "name": "Chú Đỗ Mạnh Hùng",
+        "phone": "0977 112 233",
+        "assignedAt": "2026-10-16 11:24",
+        "etaMinutes": 90
+      },
+      "resolution": {
+        "completedAt": "2026-10-16 11:24",
+        "technicianNotes": "Đã thay bóng LED 18W.",
+        "completionImages": [],
+        "materials": [
+          {
+            "id": "m1",
+            "name": "Bóng LED 18W",
+            "quantity": 1,
+            "unitCost": 45000,
+            "paidBy": "DORMITORY"
+          },
+          {
+            "id": "m2",
+            "name": "Đui đèn",
+            "quantity": 1,
+            "unitCost": 20000,
+            "paidBy": "DORMITORY"
+          }
+        ],
+        "totalMaterialCost": 65000
+      },
+      "review": {
+        "rating": 5,
+        "reviewedAt": "2026-10-16 11:24",
+        "comment": "Nhanh, sạch sẽ.",
+        "isSatisfied": true
+      }
+    },
+    {
+      "id": "TKT-967185",
+      "title": "Luồng test — bóng đèn buồng B cháy",
+      "scope": "COMPARTMENT_PRIVATE",
+      "building": "Tòa A",
+      "room": "A205",
+      "compartment": "B1",
+      "bedCode": "A205-B1-G03",
+      "category": "ELECTRIC",
+      "urgency": "NORMAL",
+      "description": "Đã bổ sung: bóng cháy kèm mùi khét.",
+      "studentId": "QE200001",
+      "studentName": "Nguyễn Hoàng Vinh",
+      "studentPhone": "0999 888 777",
+      "evidenceImages": [],
+      "status": "CLOSED",
+      "createdAt": "2026-10-16 11:26",
+      "assignedTechnician": {
+        "id": "tech_1792149967194",
+        "name": "Chú Đỗ Mạnh Hùng",
+        "phone": "0977 112 233",
+        "assignedAt": "2026-10-16 11:26",
+        "etaMinutes": 90
+      },
+      "resolution": {
+        "completedAt": "2026-10-16 11:26",
+        "technicianNotes": "Đã thay bóng LED 18W.",
+        "completionImages": [],
+        "materials": [
+          {
+            "id": "m1",
+            "name": "Bóng LED 18W",
+            "quantity": 1,
+            "unitCost": 45000,
+            "paidBy": "DORMITORY"
+          },
+          {
+            "id": "m2",
+            "name": "Đui đèn",
+            "quantity": 1,
+            "unitCost": 20000,
+            "paidBy": "DORMITORY"
+          }
+        ],
+        "totalMaterialCost": 65000
+      },
+      "review": {
+        "rating": 5,
+        "reviewedAt": "2026-10-16 11:26",
+        "comment": "Nhanh, sạch sẽ.",
+        "isSatisfied": true
+      }
+    },
+    {
+      "id": "TKT-968038",
+      "title": "Luồng test — bóng đèn buồng B cháy",
+      "scope": "COMPARTMENT_PRIVATE",
+      "building": "Tòa A",
+      "room": "A205",
+      "compartment": "B1",
+      "bedCode": "A205-B1-G03",
+      "category": "ELECTRIC",
+      "urgency": "NORMAL",
+      "description": "Đã bổ sung: bóng cháy kèm mùi khét.",
+      "studentId": "QE200001",
+      "studentName": "Nguyễn Hoàng Vinh",
+      "studentPhone": "0999 888 777",
+      "evidenceImages": [],
+      "status": "CLOSED",
+      "createdAt": "2026-10-16 11:26",
+      "assignedTechnician": {
+        "id": "tech_1792149968043",
+        "name": "Chú Đỗ Mạnh Hùng",
+        "phone": "0977 112 233",
+        "assignedAt": "2026-10-16 11:26",
+        "etaMinutes": 90
+      },
+      "resolution": {
+        "completedAt": "2026-10-16 11:26",
+        "technicianNotes": "Đã thay bóng LED 18W.",
+        "completionImages": [],
+        "materials": [
+          {
+            "id": "m1",
+            "name": "Bóng LED 18W",
+            "quantity": 1,
+            "unitCost": 45000,
+            "paidBy": "DORMITORY"
+          },
+          {
+            "id": "m2",
+            "name": "Đui đèn",
+            "quantity": 1,
+            "unitCost": 20000,
+            "paidBy": "DORMITORY"
+          }
+        ],
+        "totalMaterialCost": 65000
+      },
+      "review": {
+        "rating": 5,
+        "reviewedAt": "2026-10-16 11:26",
+        "comment": "Nhanh, sạch sẽ.",
+        "isSatisfied": true
+      }
     }
   ],
   "visitors": [
@@ -10454,6 +10939,75 @@
       "status": "CHECKED_OUT",
       "checkInAt": "2026-10-16T11:16:18.007Z",
       "checkOutAt": "2026-10-16T11:16:18.012Z",
+      "gateOfficer": "Chú Đỗ Mạnh Hùng"
+    },
+    {
+      "id": "VST-858566",
+      "studentId": "QE200001",
+      "fullName": "Khách Test API",
+      "citizenId": "079204018293",
+      "visitDate": "2026-10-16",
+      "expectedMinutes": 0,
+      "status": "PRE_REGISTERED",
+      "checkInAt": null,
+      "checkOutAt": null
+    },
+    {
+      "id": "VST-858834",
+      "studentId": "QE200001",
+      "fullName": "Nguyễn Thị Khách",
+      "citizenId": "079204019988",
+      "visitDate": "2026-10-16",
+      "expectedMinutes": 0,
+      "status": "CHECKED_OUT",
+      "checkInAt": "2026-10-16T11:24:18.837Z",
+      "checkOutAt": "2026-10-16T11:24:18.840Z",
+      "gateOfficer": "Chú Đỗ Mạnh Hùng"
+    },
+    {
+      "id": "VST-966697",
+      "studentId": "QE200001",
+      "fullName": "Khách Test API",
+      "citizenId": "079204018293",
+      "visitDate": "2026-10-16",
+      "expectedMinutes": 0,
+      "status": "PRE_REGISTERED",
+      "checkInAt": null,
+      "checkOutAt": null
+    },
+    {
+      "id": "VST-967224",
+      "studentId": "QE200001",
+      "fullName": "Nguyễn Thị Khách",
+      "citizenId": "079204019988",
+      "visitDate": "2026-10-16",
+      "expectedMinutes": 0,
+      "status": "CHECKED_OUT",
+      "checkInAt": "2026-10-16T11:26:07.227Z",
+      "checkOutAt": "2026-10-16T11:26:07.231Z",
+      "gateOfficer": "Chú Đỗ Mạnh Hùng"
+    },
+    {
+      "id": "VST-967792",
+      "studentId": "QE200001",
+      "fullName": "Khách Test API",
+      "citizenId": "079204018293",
+      "visitDate": "2026-10-16",
+      "expectedMinutes": 0,
+      "status": "PRE_REGISTERED",
+      "checkInAt": null,
+      "checkOutAt": null
+    },
+    {
+      "id": "VST-968069",
+      "studentId": "QE200001",
+      "fullName": "Nguyễn Thị Khách",
+      "citizenId": "079204019988",
+      "visitDate": "2026-10-16",
+      "expectedMinutes": 0,
+      "status": "CHECKED_OUT",
+      "checkInAt": "2026-10-16T11:26:08.072Z",
+      "checkOutAt": "2026-10-16T11:26:08.074Z",
       "gateOfficer": "Chú Đỗ Mạnh Hùng"
     }
   ],
@@ -10480,7 +11034,8 @@
       "body": "Điện 180 kWh, nước 14 m³. Mỗi sinh viên đóng 1.790.000đ.",
       "audience": "ROOM",
       "startsAt": "2026-10-16",
-      "endsAt": "2027-01-05"
+      "endsAt": "2027-01-05",
+      "deletedAt": "2026-10-16T11:23:51.267Z"
     },
     {
       "id": "NTC-378106",
@@ -10491,6 +11046,117 @@
       "endsAt": "2026-12-31",
       "publishedBy": "Thầy Vũ Thành Nam",
       "publishedAt": "2026-10-16T11:16:18.106Z"
+    },
+    {
+      "id": "NTC-858588",
+      "title": "Hóa đơn tháng 2026-11 phòng A205 đã phát hành",
+      "body": "Điện 180 kWh, nước 15 m³. Mỗi sinh viên đóng 1.379.000đ.",
+      "audience": "ROOM",
+      "startsAt": "2026-10-16",
+      "endsAt": "2026-12-05"
+    },
+    {
+      "id": "NTC-858593",
+      "title": "Thông báo test",
+      "body": "Nội dung test",
+      "audience": "ALL",
+      "startsAt": "2026-01-01",
+      "endsAt": "2026-12-31",
+      "publishedBy": "Thầy Vũ Thành Nam",
+      "publishedAt": "2026-10-16T11:24:18.593Z"
+    },
+    {
+      "id": "NTC-858844",
+      "title": "Hóa đơn tháng 2026-12 phòng A206 đã phát hành",
+      "body": "Điện 180 kWh, nước 14 m³. Mỗi sinh viên đóng 1.790.000đ.",
+      "audience": "ROOM",
+      "startsAt": "2026-10-16",
+      "endsAt": "2027-01-05",
+      "deletedAt": "2026-10-16T11:25:43.189Z"
+    },
+    {
+      "id": "NTC-858885",
+      "title": "Lịch cắt nước",
+      "body": "Cắt nước 8:00–10:00 ngày 20/10.",
+      "audience": "ALL",
+      "startsAt": "2026-10-01",
+      "endsAt": "2026-12-31",
+      "publishedBy": "Thầy Vũ Thành Nam",
+      "publishedAt": "2026-10-16T11:24:18.885Z"
+    },
+    {
+      "id": "NTC-966728",
+      "title": "Hóa đơn tháng 2026-11 phòng A205 đã phát hành",
+      "body": "Điện 180 kWh, nước 15 m³. Mỗi sinh viên đóng 1.379.000đ.",
+      "audience": "ROOM",
+      "startsAt": "2026-10-16",
+      "endsAt": "2026-12-05",
+      "deletedAt": "2026-10-16T11:26:07.032Z"
+    },
+    {
+      "id": "NTC-966780",
+      "title": "Thông báo test",
+      "body": "Nội dung test",
+      "audience": "ALL",
+      "startsAt": "2026-01-01",
+      "endsAt": "2026-12-31",
+      "publishedBy": "Thầy Vũ Thành Nam",
+      "publishedAt": "2026-10-16T11:26:06.780Z"
+    },
+    {
+      "id": "NTC-967235",
+      "title": "Hóa đơn tháng 2026-12 phòng A206 đã phát hành",
+      "body": "Điện 180 kWh, nước 14 m³. Mỗi sinh viên đóng 1.790.000đ.",
+      "audience": "ROOM",
+      "startsAt": "2026-10-16",
+      "endsAt": "2027-01-05"
+    },
+    {
+      "id": "NTC-967274",
+      "title": "Lịch cắt nước",
+      "body": "Cắt nước 8:00–10:00 ngày 20/10.",
+      "audience": "ALL",
+      "startsAt": "2026-10-01",
+      "endsAt": "2026-12-31",
+      "publishedBy": "Thầy Vũ Thành Nam",
+      "publishedAt": "2026-10-16T11:26:07.274Z"
+    },
+    {
+      "id": "NTC-967818",
+      "title": "Hóa đơn tháng 2026-11 phòng A205 đã phát hành",
+      "body": "Điện 180 kWh, nước 15 m³. Mỗi sinh viên đóng 1.379.000đ.",
+      "audience": "ROOM",
+      "startsAt": "2026-10-16",
+      "endsAt": "2026-12-05"
+    },
+    {
+      "id": "NTC-967823",
+      "title": "Thông báo test",
+      "body": "Nội dung test",
+      "audience": "ALL",
+      "startsAt": "2026-01-01",
+      "endsAt": "2026-12-31",
+      "publishedBy": "Thầy Vũ Thành Nam",
+      "publishedAt": "2026-10-16T11:26:07.823Z"
+    },
+    {
+      "id": "NTC-968078",
+      "title": "Hóa đơn tháng 2026-12 phòng A206 đã phát hành",
+      "body": "Điện 180 kWh, nước 14 m³. Mỗi sinh viên đóng 1.790.000đ.",
+      "audience": "ROOM",
+      "startsAt": "2026-10-16",
+      "endsAt": "2027-01-05",
+      "deletedAt": "2026-10-16T11:26:08.372Z"
+    },
+    {
+      "id": "NTC-968119",
+      "title": "Lịch cắt nước",
+      "body": "Cắt nước 8:00–10:00 ngày 20/10.",
+      "audience": "ALL",
+      "startsAt": "2026-10-01",
+      "endsAt": "2026-12-31",
+      "publishedBy": "Thầy Vũ Thành Nam",
+      "publishedAt": "2026-10-16T11:26:08.119Z"
     }
   ],
   "marketplace": [
@@ -10501,7 +11167,7 @@
       "price": 150000,
       "category": "DO_CU",
       "photoIds": [],
-      "status": "ACTIVE"
+      "status": "SOLD"
     },
     {
       "id": "MKT-378087",
@@ -10513,6 +11179,39 @@
       "photoIds": [],
       "status": "SOLD",
       "createdAt": "2026-10-16T11:16:18.087Z"
+    },
+    {
+      "id": "MKT-858869",
+      "sellerId": "QE200001",
+      "sellerName": "Nguyễn Hoàng Vinh",
+      "title": "Quạt tích điện cũ",
+      "price": 250000,
+      "category": "DO_CU",
+      "photoIds": [],
+      "status": "SOLD",
+      "createdAt": "2026-10-16T11:24:18.869Z"
+    },
+    {
+      "id": "MKT-967262",
+      "sellerId": "QE200001",
+      "sellerName": "Nguyễn Hoàng Vinh",
+      "title": "Quạt tích điện cũ",
+      "price": 250000,
+      "category": "DO_CU",
+      "photoIds": [],
+      "status": "SOLD",
+      "createdAt": "2026-10-16T11:26:07.262Z"
+    },
+    {
+      "id": "MKT-968107",
+      "sellerId": "QE200001",
+      "sellerName": "Nguyễn Hoàng Vinh",
+      "title": "Quạt tích điện cũ",
+      "price": 250000,
+      "category": "DO_CU",
+      "photoIds": [],
+      "status": "SOLD",
+      "createdAt": "2026-10-16T11:26:08.107Z"
     }
   ],
   "lostFound": [
@@ -10535,6 +11234,39 @@
       "photoIds": [],
       "status": "OPEN",
       "createdAt": "2026-10-16T11:16:18.100Z"
+    },
+    {
+      "id": "LAF-858876",
+      "reporterId": "QE200001",
+      "reporterName": "Nguyễn Hoàng Vinh",
+      "kind": "LOST",
+      "item": "Ví da màu đen",
+      "location": "Sân A",
+      "photoIds": [],
+      "status": "OPEN",
+      "createdAt": "2026-10-16T11:24:18.876Z"
+    },
+    {
+      "id": "LAF-967270",
+      "reporterId": "QE200001",
+      "reporterName": "Nguyễn Hoàng Vinh",
+      "kind": "LOST",
+      "item": "Ví da màu đen",
+      "location": "Sân A",
+      "photoIds": [],
+      "status": "OPEN",
+      "createdAt": "2026-10-16T11:26:07.270Z"
+    },
+    {
+      "id": "LAF-968116",
+      "reporterId": "QE200001",
+      "reporterName": "Nguyễn Hoàng Vinh",
+      "kind": "LOST",
+      "item": "Ví da màu đen",
+      "location": "Sân A",
+      "photoIds": [],
+      "status": "OPEN",
+      "createdAt": "2026-10-16T11:26:08.116Z"
     }
   ],
   "curfewRequests": [
@@ -10593,6 +11325,66 @@
       "status": "APPROVED",
       "reviewedBy": "Thầy Vũ Thành Nam",
       "reviewedAt": "2026-10-16 11:16",
+      "reviewNotes": "Đã đối chiếu thông tin phụ huynh và phê duyệt hợp lệ."
+    },
+    {
+      "id": "REQ-858817",
+      "studentId": "QE200001",
+      "studentName": "Nguyễn Hoàng Vinh",
+      "room": "A205",
+      "phone": "0999 888 777",
+      "requestType": "LATE_RETURN",
+      "date": "2026-10-20",
+      "expectedReturnTime": "23:30",
+      "reasonCategory": "STUDY",
+      "reasonDetail": "Họp nhóm đồ án tại thư viện.",
+      "parentPhone": "0903 123 456",
+      "parentConfirmed": true,
+      "submittedAt": "2026-10-16 11:24",
+      "isSubmittedBefore2100": true,
+      "status": "APPROVED",
+      "reviewedBy": "Thầy Vũ Thành Nam",
+      "reviewedAt": "2026-10-16 11:24",
+      "reviewNotes": "Đã đối chiếu thông tin phụ huynh và phê duyệt hợp lệ."
+    },
+    {
+      "id": "REQ-967209",
+      "studentId": "QE200001",
+      "studentName": "Nguyễn Hoàng Vinh",
+      "room": "A205",
+      "phone": "0999 888 777",
+      "requestType": "LATE_RETURN",
+      "date": "2026-10-20",
+      "expectedReturnTime": "23:30",
+      "reasonCategory": "STUDY",
+      "reasonDetail": "Họp nhóm đồ án tại thư viện.",
+      "parentPhone": "0903 123 456",
+      "parentConfirmed": true,
+      "submittedAt": "2026-10-16 11:26",
+      "isSubmittedBefore2100": true,
+      "status": "APPROVED",
+      "reviewedBy": "Thầy Vũ Thành Nam",
+      "reviewedAt": "2026-10-16 11:26",
+      "reviewNotes": "Đã đối chiếu thông tin phụ huynh và phê duyệt hợp lệ."
+    },
+    {
+      "id": "REQ-968056",
+      "studentId": "QE200001",
+      "studentName": "Nguyễn Hoàng Vinh",
+      "room": "A205",
+      "phone": "0999 888 777",
+      "requestType": "LATE_RETURN",
+      "date": "2026-10-20",
+      "expectedReturnTime": "23:30",
+      "reasonCategory": "STUDY",
+      "reasonDetail": "Họp nhóm đồ án tại thư viện.",
+      "parentPhone": "0903 123 456",
+      "parentConfirmed": true,
+      "submittedAt": "2026-10-16 11:26",
+      "isSubmittedBefore2100": true,
+      "status": "APPROVED",
+      "reviewedBy": "Thầy Vũ Thành Nam",
+      "reviewedAt": "2026-10-16 11:26",
       "reviewNotes": "Đã đối chiếu thông tin phụ huynh và phê duyệt hợp lệ."
     }
   ],
@@ -10655,6 +11447,114 @@
       "penaltyPointsDeducted": 10,
       "guardNotes": "Về muộn sau 23:00 không có đơn xin phép trên hệ thống.",
       "guardName": "Chú Hùng"
+    },
+    {
+      "id": "LOG-858579",
+      "studentId": "QE200001",
+      "studentName": "Nguyễn Hoàng Vinh",
+      "room": "A205",
+      "timestamp": "2026-10-16T11:24:18.579Z",
+      "scanTimeFormatted": "18:24:18",
+      "curfewStatus": "APPROVED_LATE",
+      "matchedRequestId": "REQ-2026-089",
+      "guardNotes": "Đối chiếu đơn REQ-2026-089: có phép hợp lệ.",
+      "guardName": "Chú Đỗ Mạnh Hùng"
+    },
+    {
+      "id": "LOG-858823",
+      "studentId": "QE200001",
+      "studentName": "Nguyễn Hoàng Vinh",
+      "room": "A205",
+      "timestamp": "2026-10-16T11:24:18.823Z",
+      "scanTimeFormatted": "18:24:18",
+      "curfewStatus": "APPROVED_LATE",
+      "matchedRequestId": "REQ-2026-089",
+      "guardNotes": "Đối chiếu đơn REQ-2026-089: có phép hợp lệ.",
+      "guardName": "Chú Đỗ Mạnh Hùng"
+    },
+    {
+      "id": "LOG-858825",
+      "studentId": "QE200094",
+      "studentName": "Phạm Quốc Bảo",
+      "room": "A203",
+      "timestamp": "2026-10-16T11:24:18.825Z",
+      "scanTimeFormatted": "18:24:18",
+      "curfewStatus": "UNAUTHORIZED_LATE",
+      "penaltyPointsDeducted": 10,
+      "guardNotes": "Về muộn sau 23:00 không có đơn xin phép trên hệ thống.",
+      "guardName": "Chú Hùng"
+    },
+    {
+      "id": "LOG-966713",
+      "studentId": "QE200001",
+      "studentName": "Nguyễn Hoàng Vinh",
+      "room": "A205",
+      "timestamp": "2026-10-16T11:26:06.713Z",
+      "scanTimeFormatted": "18:26:06",
+      "curfewStatus": "APPROVED_LATE",
+      "matchedRequestId": "REQ-2026-089",
+      "guardNotes": "Đối chiếu đơn REQ-2026-089: có phép hợp lệ.",
+      "guardName": "Chú Đỗ Mạnh Hùng"
+    },
+    {
+      "id": "LOG-967215",
+      "studentId": "QE200001",
+      "studentName": "Nguyễn Hoàng Vinh",
+      "room": "A205",
+      "timestamp": "2026-10-16T11:26:07.215Z",
+      "scanTimeFormatted": "18:26:07",
+      "curfewStatus": "APPROVED_LATE",
+      "matchedRequestId": "REQ-2026-089",
+      "guardNotes": "Đối chiếu đơn REQ-2026-089: có phép hợp lệ.",
+      "guardName": "Chú Đỗ Mạnh Hùng"
+    },
+    {
+      "id": "LOG-967217",
+      "studentId": "QE200094",
+      "studentName": "Phạm Quốc Bảo",
+      "room": "A203",
+      "timestamp": "2026-10-16T11:26:07.217Z",
+      "scanTimeFormatted": "18:26:07",
+      "curfewStatus": "UNAUTHORIZED_LATE",
+      "penaltyPointsDeducted": 10,
+      "guardNotes": "Về muộn sau 23:00 không có đơn xin phép trên hệ thống.",
+      "guardName": "Chú Hùng"
+    },
+    {
+      "id": "LOG-967807",
+      "studentId": "QE200001",
+      "studentName": "Nguyễn Hoàng Vinh",
+      "room": "A205",
+      "timestamp": "2026-10-16T11:26:07.807Z",
+      "scanTimeFormatted": "18:26:07",
+      "curfewStatus": "APPROVED_LATE",
+      "matchedRequestId": "REQ-2026-089",
+      "guardNotes": "Đối chiếu đơn REQ-2026-089: có phép hợp lệ.",
+      "guardName": "Chú Đỗ Mạnh Hùng"
+    },
+    {
+      "id": "LOG-968061",
+      "studentId": "QE200001",
+      "studentName": "Nguyễn Hoàng Vinh",
+      "room": "A205",
+      "timestamp": "2026-10-16T11:26:08.061Z",
+      "scanTimeFormatted": "18:26:08",
+      "curfewStatus": "APPROVED_LATE",
+      "matchedRequestId": "REQ-2026-089",
+      "guardNotes": "Đối chiếu đơn REQ-2026-089: có phép hợp lệ.",
+      "guardName": "Chú Đỗ Mạnh Hùng"
+    },
+    {
+      "id": "LOG-968063",
+      "studentId": "QE200094",
+      "studentName": "Phạm Quốc Bảo",
+      "room": "A203",
+      "timestamp": "2026-10-16T11:26:08.063Z",
+      "scanTimeFormatted": "18:26:08",
+      "curfewStatus": "UNAUTHORIZED_LATE",
+      "penaltyPointsDeducted": 10,
+      "guardNotes": "Về muộn sau 23:00 không có đơn xin phép trên hệ thống.",
+      "guardName": "Chú Hùng"
     }
   ],
   "disciplineRecords": [
@@ -10696,6 +11596,84 @@
       "description": "Phát hiện pod trong buồng.",
       "officerName": "Thầy Vũ Thành Nam",
       "status": "RECORDED"
+    },
+    {
+      "id": "VIO-858825",
+      "studentId": "QE200094",
+      "studentName": "Phạm Quốc Bảo",
+      "room": "A203",
+      "date": "2026-10-16",
+      "infractionType": "CURFEW_VIOLATION",
+      "infractionTitle": "Vi phạm giờ giới nghiêm 23:00 không phép",
+      "pointsDeducted": 10,
+      "description": "Quét cổng lúc 18:24:18 không có đơn xin phép.",
+      "officerName": "Chú Hùng",
+      "status": "RECORDED"
+    },
+    {
+      "id": "VIO-858829",
+      "studentId": "QE200158",
+      "studentName": "Lê Minh Tuấn",
+      "room": "A204",
+      "date": "2026-10-16",
+      "infractionType": "SMOKING_VAPING",
+      "infractionTitle": "Hút thuốc lá / thuốc lá điện tử trong buồng phòng",
+      "pointsDeducted": 20,
+      "description": "Phát hiện pod trong buồng.",
+      "officerName": "Thầy Vũ Thành Nam",
+      "status": "RECORDED"
+    },
+    {
+      "id": "VIO-967217",
+      "studentId": "QE200094",
+      "studentName": "Phạm Quốc Bảo",
+      "room": "A203",
+      "date": "2026-10-16",
+      "infractionType": "CURFEW_VIOLATION",
+      "infractionTitle": "Vi phạm giờ giới nghiêm 23:00 không phép",
+      "pointsDeducted": 10,
+      "description": "Quét cổng lúc 18:26:07 không có đơn xin phép.",
+      "officerName": "Chú Hùng",
+      "status": "RECORDED"
+    },
+    {
+      "id": "VIO-967221",
+      "studentId": "QE200158",
+      "studentName": "Lê Minh Tuấn",
+      "room": "A204",
+      "date": "2026-10-16",
+      "infractionType": "SMOKING_VAPING",
+      "infractionTitle": "Hút thuốc lá / thuốc lá điện tử trong buồng phòng",
+      "pointsDeducted": 20,
+      "description": "Phát hiện pod trong buồng.",
+      "officerName": "Thầy Vũ Thành Nam",
+      "status": "RECORDED"
+    },
+    {
+      "id": "VIO-968063",
+      "studentId": "QE200094",
+      "studentName": "Phạm Quốc Bảo",
+      "room": "A203",
+      "date": "2026-10-16",
+      "infractionType": "CURFEW_VIOLATION",
+      "infractionTitle": "Vi phạm giờ giới nghiêm 23:00 không phép",
+      "pointsDeducted": 10,
+      "description": "Quét cổng lúc 18:26:08 không có đơn xin phép.",
+      "officerName": "Chú Hùng",
+      "status": "RECORDED"
+    },
+    {
+      "id": "VIO-968066",
+      "studentId": "QE200158",
+      "studentName": "Lê Minh Tuấn",
+      "room": "A204",
+      "date": "2026-10-16",
+      "infractionType": "SMOKING_VAPING",
+      "infractionTitle": "Hút thuốc lá / thuốc lá điện tử trong buồng phòng",
+      "pointsDeducted": 20,
+      "description": "Phát hiện pod trong buồng.",
+      "officerName": "Thầy Vũ Thành Nam",
+      "status": "RECORDED"
     }
   ],
   "demeritSummaries": [
@@ -10704,10 +11682,10 @@
       "studentName": "Lê Minh Tuấn",
       "room": "A204",
       "initialPoints": 100,
-      "totalDeducted": 30,
-      "remainingPoints": 70,
-      "status": "WARNING",
-      "violationCount": 2
+      "totalDeducted": 90,
+      "remainingPoints": 10,
+      "status": "SUSPENDED",
+      "violationCount": 5
     },
     {
       "studentId": "QE200158",
@@ -10735,10 +11713,10 @@
       "studentName": "Phạm Quốc Bảo",
       "room": "A203",
       "initialPoints": 100,
-      "totalDeducted": 10,
-      "remainingPoints": 90,
-      "status": "NORMAL",
-      "violationCount": 1
+      "totalDeducted": 40,
+      "remainingPoints": 60,
+      "status": "SUSPENDED",
+      "violationCount": 4
     }
   ],
   "notifications": []
