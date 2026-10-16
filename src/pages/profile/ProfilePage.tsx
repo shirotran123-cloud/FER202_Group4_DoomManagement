@@ -3,17 +3,27 @@ import { useAuth } from "@/contexts/useAuth"
 import { Avatar } from "@/components/ui/avatar"
 import type { UserProfile } from "@/types/auth"
 import { User, Phone, Mail, Shield, BedDouble, CircleAlert, CircleCheck, Pencil, Save, X, FileDown, HeartHandshake } from "lucide-react"
+import { generateContractPDF } from "@/lib/pdfGenerator"
+import { DEFAULT_ROOM_FEE_PER_STUDENT } from "@/lib/invoicePdf"
 
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
+
+type ToastTone = "success" | "error"
+
+/** Tiền cọc giữ quỹ KTX cho một chỗ ở (khớp màn hình Trả phòng & quyết toán). */
+const CONTRACT_DEPOSIT = 1000000
+
 interface ProfileFormProps {
   user: UserProfile
   onSave: (phone: string, emergency: { parentName: string; phone: string; relationship: string; address: string }) => void
+  onNotify: (message: string, tone?: ToastTone) => void
 }
 
-const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => {
+const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave, onNotify }) => {
   const [isEditing, setIsEditing] = useState(false)
+  const [isGeneratingContract, setIsGeneratingContract] = useState(false)
   const [phone, setPhone] = useState(user.phone || "")
   const [parentName, setParentName] = useState(user.emergencyContact?.parentName || "")
   const [parentPhone, setParentPhone] = useState(user.emergencyContact?.phone || "")
@@ -31,10 +41,32 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
     setIsEditing(false)
   }
 
-  const handleDownloadContract = () => {
-    alert(
-      `[Tạo hợp đồng PDF]:\nĐang tạo và tải xuống bản sao hợp đồng lưu trú điện tử cho sinh viên ${user.fullName} (Mã giường: ${user.dormitoryStatus?.bedCode || "N/A"}).`
-    )
+  const handleDownloadContract = async () => {
+    if (isGeneratingContract) return
+    setIsGeneratingContract(true)
+    try {
+      const dorm = user.dormitoryStatus
+      await generateContractPDF({
+        contractId: `HDKTX-${dorm?.room ?? "NA"}-${user.studentId ?? user.id}`,
+        studentName: user.fullName,
+        mssv: user.studentId ?? user.id,
+        bedCode: dorm?.bedCode ?? "...",
+        building: dorm?.building,
+        room: dorm?.room,
+        citizenId: user.citizenId,
+        phone: user.phone,
+        roomFee: DEFAULT_ROOM_FEE_PER_STUDENT,
+        deposit: CONTRACT_DEPOSIT,
+        startDate: dorm?.contractStart,
+        endDate: dorm?.contractEnd,
+        createdAt: dorm?.checkInDate ?? new Date().toISOString(),
+      })
+      onNotify("Đã tải hợp đồng lưu trú PDF (giữ nguyên dấu tiếng Việt).")
+    } catch (error) {
+      onNotify(error instanceof Error ? error.message : "Không tạo được hợp đồng PDF.", "error")
+    } finally {
+      setIsGeneratingContract(false)
+    }
   }
 
   return (
@@ -103,10 +135,11 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
             {user.dormitoryStatus && (
               <button
                 onClick={handleDownloadContract}
-                className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-xs font-semibold text-foreground hover:bg-muted"
+                disabled={isGeneratingContract}
+                className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-xs font-semibold text-foreground hover:bg-muted disabled:pointer-events-none disabled:opacity-60"
               >
-                <FileDown className="h-3.5 w-3.5 text-primary-soft-foreground" />
-                <span>e-Contract PDF</span>
+                <FileDown className="h-3.5 w-3.5 text-primary-soft-foreground shrink-0" />
+                <span>{isGeneratingContract ? "Đang tạo PDF..." : "e-Contract PDF"}</span>
               </button>
             )}
           </div>
@@ -355,7 +388,7 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
               <Shield className="h-4 w-4 text-primary-soft-foreground" />
               <span>Chính sách Bảo mật Dữ liệu</span>
             </span>
-            <p className="text-muted-foreground text-[11px] leading-relaxed">
+            <p className="prose text-muted-foreground text-[11px] leading-relaxed">
               Dữ liệu CCCD và thông tin gia đình được mã hóa tuân thủ theo Nghị định 13/2023/NĐ-CP về Bảo vệ dữ liệu cá nhân.
             </p>
           </div>
@@ -368,6 +401,13 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
 export const ProfilePage: React.FC = () => {
   const { user, updateProfile, logout } = useAuth()
   const [toastMessage, setToastMessage] = useState<string | null>(null)
+  const [toastTone, setToastTone] = useState<ToastTone>("success")
+
+  const showToast = (message: string, tone: ToastTone = "success") => {
+    setToastMessage(message)
+    setToastTone(tone)
+    setTimeout(() => setToastMessage(null), 4000)
+  }
 
   if (!user) {
     return (
@@ -387,21 +427,24 @@ export const ProfilePage: React.FC = () => {
       phone,
       emergencyContact: emergency,
     })
-    setToastMessage("Đã cập nhật thông tin hồ sơ và người liên hệ khẩn cấp thành công!")
-    setTimeout(() => setToastMessage(null), 4000)
+    showToast("Đã cập nhật thông tin hồ sơ và người liên hệ khẩn cấp thành công!")
   }
 
   return (
     <div className="w-full space-y-6 pb-12">
       {toastMessage && (
-        <div className="fixed top-20 right-6 z-50 flex items-center gap-2.5 rounded-xl border border-success/25 bg-success px-4 py-3 text-xs font-semibold text-white shadow-xl">
-          <CircleCheck className="h-4 w-4" />
-          <span>{toastMessage}</span>
+        <div
+          className={`fixed top-20 right-6 z-50 flex items-center gap-2.5 rounded-xl border px-4 py-3 text-xs font-semibold text-white shadow-xl ${
+            toastTone === "error" ? "border-danger/25 bg-danger" : "border-success/25 bg-success"
+          }`}
+        >
+          {toastTone === "error" ? <CircleAlert className="h-4 w-4 shrink-0" /> : <CircleCheck className="h-4 w-4 shrink-0" />}
+          <span className="one-line">{toastMessage}</span>
         </div>
       )}
 
       {/* Keyed by user.id so state automatically resets when switching roles without useEffect */}
-      <ProfileDetailsAndForm key={user.id} user={user} onSave={handleSave} />
+      <ProfileDetailsAndForm key={user.id} user={user} onSave={handleSave} onNotify={showToast} />
 
       <div className="rounded-2xl border border-border bg-card p-5 text-center">
         <button

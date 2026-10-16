@@ -8,7 +8,7 @@ export const ManagerDashboardStubPage: React.FC = () => {
       <PageHeader
         eyebrow="Quản trị · Tổng quan"
         title="Tổng quan quản lý đang hoàn thiện"
-        desc="Phân hệ dashboard công suất phòng và báo cáo đang được hoàn thiện."
+        desc="Dashboard công suất phòng và báo cáo đang được hoàn thiện."
       />
       <EmptyState
         title="Phân hệ quản lý đang hoàn thiện"

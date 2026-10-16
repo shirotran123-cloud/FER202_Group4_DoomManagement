@@ -11,6 +11,11 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
+  // jsqr chỉ phát hành UMD (không có field `module`/`exports`), nên phải để Vite
+  // tiền-bundle nó; nếu không, dev server sẽ lỗi khi import mặc định.
+  optimizeDeps: {
+    include: ["jsqr", "qrcode", "write-excel-file/browser", "jspdf"],
+  },
   server: {
     // Proxy /api sang backend DMS (npm run server). Đổi cổng qua VITE_API_PROXY.
     proxy: {

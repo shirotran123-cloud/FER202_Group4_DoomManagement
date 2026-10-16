@@ -32,7 +32,7 @@ export const DormDepthCards: React.FC = () => {
     <section aria-label="Khong gian KTX chieu sau" style={{ padding: "80px 24px", maxWidth: 1180, margin: "0 auto" }}>
       <Badge variant="info" className="mb-3">Chiều sâu 3D</Badge>
       <h2 className="font-display text-2xl font-extrabold tracking-tight sm:text-3xl">KTX trong chiều sâu</h2>
-      <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+      <p className="prose mt-2 max-w-2xl text-sm text-muted-foreground">
         Ảnh thật KTX FPT Quy Nhơn — thẻ giữa sắc nét, hai bên lùi sâu, mờ nhẹ. Vuốt, dùng phím mũi tên hoặc nút bấm.
       </p>
       <div

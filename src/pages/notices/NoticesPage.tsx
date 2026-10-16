@@ -65,7 +65,7 @@ export const NoticesPage: React.FC = () => {
 
   return (
     <div className="w-full space-y-6 pb-12">
-      <PageHeader eyebrow="Cộng đồng · Bảng tin" title="Thông báo KTX" desc="BQL gửi lịch cắt điện/nước, họp KTX. Thông báo tự động khi có hóa đơn mới." />
+      <PageHeader eyebrow="Cộng đồng · Bảng tin" title="Thông báo KTX" desc="Cắt điện/nước, họp KTX và tự động báo hóa đơn mới" />
       {canPublish ? (
         <SectionCard title="Đăng thông báo" desc="Tiêu đề + nội dung bắt buộc, có hiệu lực tới 31/12">
           <form onSubmit={submit} className="grid gap-3">
@@ -75,7 +75,7 @@ export const NoticesPage: React.FC = () => {
           </form>
         </SectionCard>
       ) : (
-        <SectionCard title="Bảng tin Ban Quản lý" desc="Chỉ BQL và Admin được đăng thông báo. Sinh viên theo dõi tại đây.">
+        <SectionCard title="Bảng tin Ban Quản lý" desc="Chỉ BQL và Admin được đăng. Sinh viên theo dõi tại đây.">
           <p className="text-xs text-muted-foreground">
             Bạn đang xem với quyền độc giả. Cần đăng thông báo? Liên hệ Ban Quản lý KTX.
           </p>

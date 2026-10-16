@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useMemo } from "react"
 import { Link } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
 import { AdminOverviewView } from "./AdminOverviewView"
 import { StatCard, SectionCard } from "@/components/ui/shared"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { QrCodeImage } from "@/components/ui/qr-code"
+import { buildGateQrPayload } from "@/lib/dorm-ops"
 import { QrCode, Receipt, Wrench, MoonStar, BedDouble, Building2, Zap, Droplets, Wifi, Snowflake, ShowerHead, WashingMachine, FileText, Users, ShieldCheck, Nfc, Phone, Siren, HeartPulse, X } from "lucide-react"
 
 type Bed = { code: string; pos: string; name: string; mine?: boolean; empty?: boolean }
@@ -71,9 +73,23 @@ export const StudentOverviewPage: React.FC = () => {
   const displayName = user?.fullName || "Nguyễn Hoàng Vinh"
   const shortName = user?.fullName?.split(" ").slice(-1)[0] || "Vinh"
 
+  // Mã QR qua cổng phải là mã THẬT theo định dạng `DMS-GATE|<MSSV>|<issuedAt>` mà
+  // bảo vệ quét được, và phải đổi token sau mỗi 15 giây để không dùng lại ảnh chụp màn hình.
+  const studentId = user?.studentId || "QE200001"
+  const [qrIssuedAt, setQrIssuedAt] = useState(() => new Date().toISOString().slice(0, 19))
+  const gateQrPayload = buildGateQrPayload(studentId, qrIssuedAt)
+  const gateQrToken = useMemo(() => gateQrPayload.split("|")[2] || "", [gateQrPayload])
+
   useEffect(() => {
     const timer = setInterval(() => {
-      setQrCountdown((prev) => (prev <= 1 ? 15 : prev - 1))
+      setQrCountdown((prev) => {
+        if (prev <= 1) {
+          // Hết chu kỳ: phát hành token mới, đúng lúc đồng hồ quay lại 15.
+          setQrIssuedAt(new Date().toISOString().slice(0, 19))
+          return 15
+        }
+        return prev - 1
+      })
     }, 1000)
     return () => clearInterval(timer)
   }, [])
@@ -291,11 +307,7 @@ export const StudentOverviewPage: React.FC = () => {
               </div>
               <div className="flex flex-col items-center rounded-xl bg-white p-2 text-foreground">
                 <div className="relative mx-auto w-44 overflow-hidden rounded-lg bg-white">
-                  <img
-                    src="https://api.qrserver.com/v1/create-qr-code/?size=480x480&margin=0&data=GATE-A205-QE200001-NguyenHoangVinh-8492-2026A"
-                    alt="QR cong A"
-                    className="block aspect-square h-44 w-44 scale-[1.08]"
-                  />
+                  <QrCodeImage value={gateQrPayload} size={176} alt={`Mã QR qua cổng của ${displayName}`} />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-base font-black text-white shadow-md">
                       D
@@ -304,8 +316,8 @@ export const StudentOverviewPage: React.FC = () => {
                 </div>
                 <div className="mt-2 text-center">
                   <div className="text-xs font-bold">{displayName}</div>
-                  <div className="mt-0.5 font-mono text-[10px] tracking-wider text-muted-foreground">TOKEN: #GATE-8492-2026A</div>
-                  <div className="mt-1 flex items-center justify-center gap-1 text-[11px] font-medium text-success-soft-foreground">
+                  <div className="mt-0.5 max-w-44 truncate font-mono text-[10px] tracking-wider whitespace-nowrap text-muted-foreground">TOKEN: #{gateQrToken}</div>
+                  <div className="mt-1 flex items-center justify-center gap-1 text-[11px] font-medium whitespace-nowrap text-success-soft-foreground">
                     <span className="h-1.5 w-1.5 animate-ping rounded-full bg-success" />
                     Tự làm mới sau <span className="font-bold">{qrCountdown}s</span>
                   </div>
@@ -428,11 +440,7 @@ export const StudentOverviewPage: React.FC = () => {
             </div>
             <div className="flex flex-col items-center justify-center rounded-xl bg-muted/70 p-4">
               <div className="relative w-full max-w-64 overflow-hidden rounded-lg bg-white shadow-xs">
-                <img
-                  src="https://api.qrserver.com/v1/create-qr-code/?size=480x480&margin=0&data=GATE-A205-QE200001-NguyenHoangVinh-8492-2026A"
-                  alt="QR cong A"
-                  className="aspect-square w-full object-cover"
-                />
+                <QrCodeImage value={gateQrPayload} size={256} className="w-full" alt={`Mã QR qua cổng của ${displayName}`} />
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-lg font-black text-white shadow-md">
                     D
@@ -440,8 +448,8 @@ export const StudentOverviewPage: React.FC = () => {
                 </div>
               </div>
               <div className="mt-3 text-center">
-                <span className="text-xs font-bold">{displayName} · Phòng A205</span>
-                <p className="mt-0.5 text-[11px] text-muted-foreground">Đưa lại gần đầu đọc quang học tại cổng an ninh</p>
+                <span className="text-xs font-bold whitespace-nowrap">{displayName} · Phòng A205</span>
+                <p className="mt-0.5 truncate text-[11px] whitespace-nowrap text-muted-foreground">Đưa lại gần đầu đọc quang học tại cổng an ninh</p>
               </div>
             </div>
             <Button onClick={() => setShowGateQrModal(false)} className="w-full bg-primary text-white hover:bg-primary/90">

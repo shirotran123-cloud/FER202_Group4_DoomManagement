@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json",
     "preview": "vite preview",
     "server": "node server/index.js",
     "server:dev": "node --watch server/index.js",
@@ -16,13 +16,20 @@
     "test:api": "node scripts/test-api.mjs",
     "test:flows": "node scripts/test-flows.mjs",
     "test:client-live": "node scripts/test-client-live.mjs",
+    "test:backend-qr": "node scripts/test-backend-qr.mjs",
+    "test:backend-export": "node scripts/test-backend-export.mjs",
     "check:domain": "node scripts/check-domain.mjs",
     "check:contract": "node scripts/check-contract.mjs",
     "check:frontend": "node scripts/check-frontend.mjs",
     "check:parity": "node scripts/check-parity.mjs",
     "check:client": "node scripts/check-client.mjs",
-    "check:backend": "npm run check:domain && npm run check:contract && npm run test:api && npm run test:flows && npm run test:client-live",
-    "check:all": "npm run check:frontend && npm run check:parity && npm run check:client && npm run typecheck && npm run check:backend"
+    "check:nowrap": "node scripts/check-nowrap.mjs",
+    "check:text-length": "node scripts/check-text-length.mjs",
+    "check:pdf": "node scripts/check-pdf.mjs",
+    "fix:text-length": "node scripts/fix-text-length.mjs",
+    "check:ui": "npm run check:nowrap && npm run check:text-length && npm run check:frontend && npm run check:parity && npm run check:client",
+    "check:backend": "npm run check:domain && npm run check:contract && npm run test:api && npm run test:flows && npm run test:client-live && npm run test:backend-qr && npm run test:backend-export",
+    "check:all": "npm run check:ui && npm run check:pdf && npm run typecheck && npm run check:backend"
   },
   "dependencies": {
     "@fontsource-variable/roboto": "^5.3.0",
@@ -31,8 +38,10 @@
     "class-variance-authority": "^0.7.1",
     "cn": "^0.4.0",
     "gsap": "^3.15.0",
+    "jsqr": "^1.4.0",
     "lenis": "^1.3.26",
     "lucide-react": "^1.52.0",
+    "qrcode": "^1.5.4",
     "radix-ui": "^1.6.7",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
@@ -40,7 +49,8 @@
     "shadcn": "^4.21.0",
     "tailwindcss": "^4",
     "three": "^0.186.1",
-    "tw-animate-css": "^1.4.0"
+    "tw-animate-css": "^1.4.0",
+    "write-excel-file": "^4.1.1"
   },
   "devDependencies": {
     "@eslint/js": "^10",

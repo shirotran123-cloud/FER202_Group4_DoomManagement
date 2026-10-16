@@ -168,7 +168,12 @@ async function main() {
   const decide = await api("POST", `/api/curfew/requests/${reqId}/decide`, { role: "manager", body: { approve: true } })
   ok("quản lý duyệt đơn", decide.status === 200 && decide.data?.data?.status === "APPROVED")
 
-  const scanLate = await api("POST", "/api/curfew/gate/scan", { role: "technician", body: { studentId, scanHour: 23 } })
+  // Đơn nộp cho ngày 2026-10-20, nên lượt quét phải khai đúng ngày đó — backend
+  // chỉ chấp nhận đơn APPROVED trùng ngày quét (chống dùng lại đơn cũ).
+  const scanLate = await api("POST", "/api/curfew/gate/scan", {
+    role: "technician",
+    body: { studentId, scanHour: 23, scanDate: "2026-10-20" },
+  })
   ok("quét 23:00 có đơn -> APPROVED_LATE", scanLate.data?.data?.status === "APPROVED_LATE")
   ok("có đơn hợp lệ không bị trừ điểm", scanLate.data?.data?.log?.penaltyPointsDeducted === undefined)
   ok("không lập biên bản khi có phép", scanLate.data?.data?.discipline === null)

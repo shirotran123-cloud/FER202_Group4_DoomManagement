@@ -427,7 +427,7 @@ export const DormAIAssistant: React.FC = () => {
                     </button>
                   </div>
 
-                  <p className="text-[11px] leading-relaxed text-muted-foreground">
+                  <p className="prose text-[11px] leading-relaxed text-muted-foreground">
                     Nhập API Key để kích hoạt Gemini trả lời thông minh theo thời gian thực (lưu trên trình duyệt của bạn).
                   </p>
 
@@ -525,7 +525,7 @@ export const DormAIAssistant: React.FC = () => {
                       </div>
 
                       <div
-                        className={`whitespace-pre-line rounded-2xl p-3 text-[13px] leading-relaxed ${
+                        className={`prose prose-pre whitespace-pre-line rounded-2xl p-3 text-[13px] leading-relaxed ${
                           msg.sender === "user"
                             ? "bg-primary text-white"
                             : "border border-border bg-card"

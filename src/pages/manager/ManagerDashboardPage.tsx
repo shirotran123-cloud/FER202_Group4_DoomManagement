@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { useAuth } from "@/contexts/useAuth"
+import { ApiError, dashboardApi } from "@/lib/api"
 import {
   MOCK_OCCUPANCY_STATS,
   MOCK_MONTHLY_REVENUE,
@@ -7,7 +8,7 @@ import {
   MOCK_RESIDENTS_REGISTRY,
   MOCK_OVERDUE_DEBTS,
 } from "@/data/mockDashboard"
-import { exportToExcelXml, exportToCsv, type ExportColumn } from "@/lib/excelExport"
+import { exportToExcel, exportToCsv, type ExportColumn } from "@/lib/excelExport"
 import type { ResidentTemporaryRecord, OverdueDebtRecord } from "@/types/dashboard"
 import { LayoutDashboard, FileSpreadsheet, ChartPie, TrendingUp, Download, Search, Building, DollarSign, Zap, Droplets, TriangleAlert, Users, Sparkles, FileDown } from "lucide-react"
 
@@ -21,47 +22,99 @@ export const ManagerDashboardPage: React.FC = () => {
   )
   const [searchReportQuery, setSearchReportQuery] = useState("")
   const [toastMessage, setToastMessage] = useState<string | null>(null)
+  /**
+   * Khoá nút đang xuất để tránh người dùng bấm liên tục sinh ra nhiều file trùng nhau.
+   */
+  const [exportingKind, setExportingKind] = useState<
+    "RESIDENTS_XLSX" | "RESIDENTS_CSV" | "DEBTS_XLSX" | null
+  >(null)
 
   const showToast = (msg: string) => {
     setToastMessage(msg)
     setTimeout(() => setToastMessage(null), 4500)
   }
 
-  // Export 1: Resident Temporary Residence for Local Police (Excel XML)
-  const handleExportResidenceExcel = () => {
-    const columns: ExportColumn<ResidentTemporaryRecord>[] = [
-      { header: "STT", key: "stt", width: 50 },
-      { header: "Mã Hợp Đồng", key: "contractCode", width: 110 },
-      { header: "Họ và Tên Sinh Viên", key: "fullName", width: 160 },
-      { header: "MSSV", key: "studentId", width: 90 },
-      { header: "Giới Tính", key: "gender", width: 70 },
-      { header: "Số CCCD", key: "citizenId", width: 120 },
-      { header: "Ngày Sinh", key: "dob", width: 90 },
-      { header: "Quê Quán", key: "hometown", width: 120 },
-      { header: "Số Điện Thoại", key: "phone", width: 100 },
-      { header: "Tòa Nhà", key: "building", width: 110 },
-      { header: "Phòng", key: "room", width: 70 },
-      { header: "Mã Giường", key: "bedCode", width: 110 },
-      { header: "Ngày Bắt Đầu Ở", key: "startDate", width: 100 },
-      { header: "Hạn Hợp Đồng", key: "endDate", width: 100 },
-      { header: "Họ Tên Phụ Huynh", key: "parentName", width: 150 },
-      { header: "SĐT Phụ Huynh", key: "parentPhone", width: 110 },
-    ]
-
-    exportToExcelXml({
-      filename: `Danh_Sach_Tam_Tru_KTX_FPT_${new Date().toISOString().substring(0, 10)}.xlsx`,
-      sheetName: "DS Sinh Viên Tạm Trú",
-      title: "DANH SÁCH SINH VIÊN LƯU TRÚ KÝ TÚC XÁ - KHAI BÁO TẠM TRÚ CÔNG AN",
-      subtitle: `Trường Đại học FPT • Ban Quản lý KTX • Cán bộ phụ trách: ${user?.fullName || "Thầy Vũ Thành Nam"} • Ngày xuất: ${new Date().toLocaleDateString("vi-VN")}`,
-      columns,
-      data: MOCK_RESIDENTS_REGISTRY,
-    })
-
-    showToast("Đã xuất file Excel Danh_Sach_Tam_Tru_KTX_FPT.xlsx thành công!")
+  /**
+   * Lấy dữ liệu báo cáo THẬT từ backend (`/api/dashboard/reports/*`).
+   *
+   * DỰ PHÒNG: nếu backend tắt/lỗi, hàm trả về dữ liệu mẫu (`MOCK_*`) để bản demo
+   * vẫn xuất được file, đồng thời hiện toast nói rõ đang dùng dữ liệu mẫu — tuyệt đối
+   * không im lặng giả vờ là dữ liệu thật.
+   */
+  const loadReportRows = async <T,>(
+    fetcher: () => Promise<T[]>,
+    fallback: T[],
+    label: string,
+  ): Promise<{ rows: T[]; usedFallback: boolean }> => {
+    try {
+      const rows = await fetcher()
+      return { rows: Array.isArray(rows) ? rows : [], usedFallback: false }
+    } catch (error) {
+      const detail = error instanceof ApiError ? error.message : "Lỗi không xác định"
+      showToast(`⚠️ Không lấy được ${label} từ máy chủ (${detail}). Đang dùng dữ liệu mẫu.`)
+      return { rows: fallback, usedFallback: true }
+    }
   }
 
-  // Export CSV alternative
-  const handleExportResidenceCsv = () => {
+  // Export 1: Resident Temporary Residence for Local Police — .xlsx THẬT từ backend
+  const handleExportResidenceExcel = async () => {
+    const columns: ExportColumn<ResidentTemporaryRecord>[] = [
+      { header: "STT", key: "stt", width: 50, align: "center" },
+      { header: "Mã Hợp Đồng", key: "contractCode", width: 110 },
+      { header: "Họ và Tên Sinh Viên", key: "fullName", width: 160 },
+      { header: "MSSV", key: "studentId", width: 90, align: "center" },
+      { header: "Giới Tính", key: "gender", width: 70, align: "center" },
+      { header: "Số CCCD", key: "citizenId", width: 120, align: "center" },
+      { header: "Ngày Sinh", key: "dob", width: 90, align: "center" },
+      { header: "Quê Quán", key: "hometown", width: 120 },
+      { header: "Số Điện Thoại", key: "phone", width: 100, align: "center" },
+      { header: "Tòa Nhà", key: "building", width: 110 },
+      { header: "Phòng", key: "room", width: 70, align: "center" },
+      { header: "Mã Giường", key: "bedCode", width: 110, align: "center" },
+      { header: "Ngày Bắt Đầu Ở", key: "startDate", width: 100, align: "center" },
+      { header: "Hạn Hợp Đồng", key: "endDate", width: 100, align: "center" },
+      { header: "Họ Tên Phụ Huynh", key: "parentName", width: 150 },
+      { header: "SĐT Phụ Huynh", key: "parentPhone", width: 110, align: "center" },
+    ]
+
+    const filename = `Danh_Sach_Tam_Tru_KTX_FPT_${new Date().toISOString().substring(0, 10)}.xlsx`
+    setExportingKind("RESIDENTS_XLSX")
+    try {
+      const { rows, usedFallback } = await loadReportRows<ResidentTemporaryRecord>(
+        () => dashboardApi.residents() as Promise<ResidentTemporaryRecord[]>,
+        MOCK_RESIDENTS_REGISTRY,
+        "danh sách tạm trú",
+      )
+
+      if (rows.length === 0) {
+        showToast("⚠️ Không có dữ liệu tạm trú để xuất file.")
+        return
+      }
+
+      await exportToExcel({
+        filename,
+        sheetName: "DS Sinh Viên Tạm Trú",
+        title: "DANH SÁCH SINH VIÊN LƯU TRÚ KÝ TÚC XÁ - KHAI BÁO TẠM TRÚ CÔNG AN",
+        subtitle: `Trường Đại học FPT • Ban Quản lý KTX • Cán bộ phụ trách: ${user?.fullName || "Thầy Vũ Thành Nam"} • Ngày xuất: ${new Date().toLocaleDateString("vi-VN")}`,
+        columns,
+        data: rows,
+      })
+
+      showToast(
+        usedFallback
+          ? `⚠️ Đã xuất ${filename} từ DỮ LIỆU MẪU (backend không phản hồi).`
+          : `✅ Đã xuất file Excel thật ${filename} (${rows.length} sinh viên).`,
+      )
+    } catch (error) {
+      const detail = error instanceof ApiError ? error.message : (error as Error).message
+      showToast(`❌ Xuất file Excel tạm trú thất bại: ${detail}`)
+    } finally {
+      setExportingKind(null)
+    }
+  }
+
+  // Export CSV alternative — cùng nguồn dữ liệu backend
+  const handleExportResidenceCsv = async () => {
     const columns: ExportColumn<ResidentTemporaryRecord>[] = [
       { header: "STT", key: "stt" },
       { header: "Mã Hợp Đồng", key: "contractCode" },
@@ -79,59 +132,111 @@ export const ManagerDashboardPage: React.FC = () => {
       { header: "Kết Thúc", key: "endDate" },
     ]
 
-    exportToCsv({
-      filename: `Danh_Sach_Tam_Tru_${new Date().toISOString().substring(0, 10)}.csv`,
-      columns,
-      data: MOCK_RESIDENTS_REGISTRY,
-    })
+    const filename = `Danh_Sach_Tam_Tru_${new Date().toISOString().substring(0, 10)}.csv`
+    setExportingKind("RESIDENTS_CSV")
+    try {
+      const { rows, usedFallback } = await loadReportRows<ResidentTemporaryRecord>(
+        () => dashboardApi.residents() as Promise<ResidentTemporaryRecord[]>,
+        MOCK_RESIDENTS_REGISTRY,
+        "danh sách tạm trú",
+      )
 
-    showToast("📄 Đã xuất file CSV (UTF-8 BOM) Danh Sách Tạm Trú thành công!")
+      if (rows.length === 0) {
+        showToast("⚠️ Không có dữ liệu tạm trú để xuất file CSV.")
+        return
+      }
+
+      exportToCsv({ filename, columns, data: rows })
+
+      showToast(
+        usedFallback
+          ? `⚠️ Đã xuất ${filename} từ DỮ LIỆU MẪU (backend không phản hồi).`
+          : `📄 Đã xuất file CSV (UTF-8 BOM) ${filename} thành công!`,
+      )
+    } catch (error) {
+      const detail = error instanceof ApiError ? error.message : (error as Error).message
+      showToast(`❌ Xuất file CSV thất bại: ${detail}`)
+    } finally {
+      setExportingKind(null)
+    }
   }
 
-  // Export 2: Overdue Debt & Utility Registry
-  const handleExportOverdueDebtsExcel = () => {
+  // Export 2: Overdue Debt & Utility Registry — .xlsx THẬT, tiền là ô SỐ có định dạng
+  const handleExportOverdueDebtsExcel = async () => {
+    /**
+     * Tiền nợ dùng `numberFormat` thay vì `formatter` trả chuỗi "1.085.667":
+     * giá trị ghi vào ô vẫn là number nên Excel cộng/sắp xếp được, chỉ hiển thị theo định dạng.
+     */
+    const vnd = '#,##0" đ"'
     const columns: ExportColumn<OverdueDebtRecord>[] = [
-      { header: "STT", key: "stt", width: 50 },
+      { header: "STT", key: "stt", width: 50, align: "center" },
       { header: "Mã Hóa Đơn", key: "invoiceCode", width: 130 },
-      { header: "MSSV", key: "studentId", width: 90 },
+      { header: "MSSV", key: "studentId", width: 90, align: "center" },
       { header: "Họ và Tên", key: "fullName", width: 160 },
-      { header: "Phòng Ở", key: "room", width: 70 },
-      { header: "Mã Giường", key: "bedCode", width: 110 },
-      { header: "Kỳ Tính Cước", key: "billingPeriod", width: 140 },
+      { header: "Phòng Ở", key: "room", width: 70, align: "center" },
+      { header: "Mã Giường", key: "bedCode", width: 110, align: "center" },
+      { header: "Kỳ Tính Cước", key: "billingPeriod", width: 140, align: "center" },
       {
         header: "Tiền phòng nợ VNĐ",
         key: "roomDebt",
-        formatter: (v) => Number(v).toLocaleString("vi-VN"),
+        formatter: (v) => Number(v),
+        numberFormat: vnd,
         width: 130,
       },
       {
         header: "Tiền điện nước nợ VNĐ",
         key: "utilityDebt",
-        formatter: (v) => Number(v).toLocaleString("vi-VN"),
+        formatter: (v) => Number(v),
+        numberFormat: vnd,
         width: 140,
       },
       {
         header: "Tổng nợ VNĐ",
         key: "totalDebt",
-        formatter: (v) => Number(v).toLocaleString("vi-VN"),
+        formatter: (v) => Number(v),
+        numberFormat: vnd,
         width: 130,
       },
-      { header: "Hạn Thanh Toán", key: "dueDate", width: 100 },
-      { header: "Số Ngày Quá Hạn", key: "overdueDays", width: 100 },
-      { header: "Trạng Thái Cảnh Báo", key: "status", width: 140 },
-      { header: "SĐT Liên Hệ", key: "phone", width: 110 },
+      { header: "Hạn Thanh Toán", key: "dueDate", width: 100, align: "center" },
+      { header: "Số Ngày Quá Hạn", key: "overdueDays", width: 100, align: "center" },
+      { header: "Trạng Thái Cảnh Báo", key: "status", width: 140, align: "center" },
+      { header: "SĐT Liên Hệ", key: "phone", width: 110, align: "center" },
     ]
 
-    exportToExcelXml({
-      filename: `Danh_Sach_Cong_No_Qua_Han_${new Date().toISOString().substring(0, 10)}.xlsx`,
-      sheetName: "Công Nợ Quá Hạn",
-      title: "BÁO CÁO CÔNG NỢ QUÁ HẠN TIỀN PHÒNG & ĐIỆN NƯỚC KÝ TÚC XÁ",
-      subtitle: `Ban Quản lý KTX FPT • Người lập: ${user?.fullName || "Thầy Vũ Thành Nam"} • Ngày xuất: ${new Date().toLocaleDateString("vi-VN")}`,
-      columns,
-      data: MOCK_OVERDUE_DEBTS,
-    })
+    const filename = `Danh_Sach_Cong_No_Qua_Han_${new Date().toISOString().substring(0, 10)}.xlsx`
+    setExportingKind("DEBTS_XLSX")
+    try {
+      const { rows, usedFallback } = await loadReportRows<OverdueDebtRecord>(
+        () => dashboardApi.debts() as Promise<OverdueDebtRecord[]>,
+        MOCK_OVERDUE_DEBTS,
+        "danh sách công nợ",
+      )
 
-    showToast("Đã xuất file Excel Danh_Sach_Cong_No_Qua_Han.xlsx thành công!")
+      if (rows.length === 0) {
+        showToast("⚠️ Không có dữ liệu công nợ quá hạn để xuất file.")
+        return
+      }
+
+      await exportToExcel({
+        filename,
+        sheetName: "Công Nợ Quá Hạn",
+        title: "BÁO CÁO CÔNG NỢ QUÁ HẠN TIỀN PHÒNG & ĐIỆN NƯỚC KÝ TÚC XÁ",
+        subtitle: `Ban Quản lý KTX FPT • Người lập: ${user?.fullName || "Thầy Vũ Thành Nam"} • Ngày xuất: ${new Date().toLocaleDateString("vi-VN")}`,
+        columns,
+        data: rows,
+      })
+
+      showToast(
+        usedFallback
+          ? `⚠️ Đã xuất ${filename} từ DỮ LIỆU MẪU (backend không phản hồi).`
+          : `✅ Đã xuất file Excel thật ${filename} (${rows.length} hóa đơn).`,
+      )
+    } catch (error) {
+      const detail = error instanceof ApiError ? error.message : (error as Error).message
+      showToast(`❌ Xuất file Excel công nợ thất bại: ${detail}`)
+    } finally {
+      setExportingKind(null)
+    }
   }
 
   // Filtered resident list for preview table
@@ -295,12 +400,12 @@ export const ManagerDashboardPage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
             {/* Donut Chart: Bed Occupancy State */}
             <div className="rounded-3xl border border-border bg-card p-6 shadow-xs flex flex-col justify-between space-y-4">
-              <div className="flex items-center justify-between border-b border-border pb-3">
-                <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
-                  <ChartPie className="h-4 w-4 text-primary-soft-foreground" />
-                  Cơ Cấu Trạng Thái Giường (Tòa A)
+              <div className="flex items-center justify-between gap-3 border-b border-border pb-3">
+                <h3 className="font-bold text-sm text-foreground flex min-w-0 items-center gap-2 whitespace-nowrap">
+                  <ChartPie className="h-4 w-4 shrink-0 text-primary-soft-foreground" />
+                  <span className="truncate">Cơ Cấu Trạng Thái Giường (Tòa A)</span>
                 </h3>
-                <span className="text-xs font-mono font-bold text-muted-foreground">240 Giường</span>
+                <span className="shrink-0 text-xs font-mono font-bold whitespace-nowrap text-muted-foreground">240 Giường</span>
               </div>
 
               {/* Interactive SVG Donut */}
@@ -409,7 +514,7 @@ export const ManagerDashboardPage: React.FC = () => {
                     Biểu Đồ Xu Hướng Doanh Thu 6 Tháng Gần Nhất
                   </h3>
                   <p className="text-[11px] text-muted-foreground">
-                    Phân tách: Doanh thu tiền phòng & Hóa đơn điện nước dịch vụ
+                    Doanh thu tiền phòng & hóa đơn điện nước dịch vụ
                   </p>
                 </div>
                 <div className="flex items-center gap-3 text-xs">
@@ -570,22 +675,33 @@ export const ManagerDashboardPage: React.FC = () => {
 
               {/* Big Export Buttons */}
               <div className="flex flex-wrap items-center gap-2">
-                <Button variant="success" className="hover:bg-success flex" onClick={handleExportResidenceExcel}>
+                <Button
+                  variant="success"
+                  className="hover:bg-success flex"
+                  onClick={handleExportResidenceExcel}
+                  disabled={exportingKind !== null}
+                >
                   <Download className="h-4 w-4" />
-                  <span>Xuất Excel Tạm Trú (.xlsx)</span>
+                  <span>{exportingKind === "RESIDENTS_XLSX" ? "Đang xuất..." : "Xuất Excel Tạm Trú (.xlsx)"}</span>
                 </Button>
 
                 <button
                   onClick={handleExportResidenceCsv}
-                  className="rounded-2xl border border-success/25 bg-success/10 hover:bg-success/20 text-success-soft-foreground px-3.5 py-2.5 text-xs font-bold shadow-xs flex items-center gap-1.5 transition-colors"
+                  disabled={exportingKind !== null}
+                  className="rounded-2xl border border-success/25 bg-success/10 hover:bg-success/20 text-success-soft-foreground px-3.5 py-2.5 text-xs font-bold shadow-xs flex items-center gap-1.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <FileDown className="h-4 w-4" />
-                  <span>Xuất CSV (UTF-8)</span>
+                  <span>{exportingKind === "RESIDENTS_CSV" ? "Đang xuất..." : "Xuất CSV (UTF-8)"}</span>
                 </button>
 
-                <Button variant="destructive" className="hover:bg-danger flex" onClick={handleExportOverdueDebtsExcel}>
+                <Button
+                  variant="destructive"
+                  className="hover:bg-danger flex"
+                  onClick={handleExportOverdueDebtsExcel}
+                  disabled={exportingKind !== null}
+                >
                   <Download className="h-4 w-4" />
-                  <span>Xuất Excel Công Nợ (.xlsx)</span>
+                  <span>{exportingKind === "DEBTS_XLSX" ? "Đang xuất..." : "Xuất Excel Công Nợ (.xlsx)"}</span>
                 </Button>
               </div>
             </div>
@@ -641,7 +757,8 @@ export const ManagerDashboardPage: React.FC = () => {
                 </div>
                 <button
                   onClick={handleExportResidenceExcel}
-                  className="text-xs text-success-soft-foreground hover:text-success-soft-foreground font-bold flex items-center gap-1"
+                  disabled={exportingKind !== null}
+                  className="text-xs text-success-soft-foreground hover:text-success-soft-foreground font-bold flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Download className="h-3.5 w-3.5" /> Tải về file Excel
                 </button>
@@ -703,7 +820,8 @@ export const ManagerDashboardPage: React.FC = () => {
                 </div>
                 <button
                   onClick={handleExportOverdueDebtsExcel}
-                  className="text-xs text-danger-soft-foreground hover:text-danger-soft-foreground font-bold flex items-center gap-1"
+                  disabled={exportingKind !== null}
+                  className="text-xs text-danger-soft-foreground hover:text-danger-soft-foreground font-bold flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Download className="h-3.5 w-3.5" /> Tải về file Excel
                 </button>

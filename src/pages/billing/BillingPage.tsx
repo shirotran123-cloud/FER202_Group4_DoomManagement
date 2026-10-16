@@ -3,6 +3,8 @@ import { useAuth } from "@/contexts/useAuth"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { buildMonthlyInvoice, buildVietQrContent, reconcilePayment } from "@/lib/dorm-ops"
+import { generateInvoicePdf } from "@/lib/invoicePdf"
+import { QrCodeImage } from "@/components/ui/qr-code"
 import { ImageUpload } from "@/components/ui/image-upload"
 import type { PhotoRecord } from "@/lib/photo-upload"
 import { Receipt, Zap, Users, QrCode, Download, Printer, Calendar, CircleCheck, TriangleAlert, Clock, ExternalLink, ShieldCheck, X } from "lucide-react"
@@ -60,6 +62,98 @@ export const BillingPage: React.FC = () => {
   const [ocrHint, setOcrHint] = useState<string | null>(null)
   const vietqrContent = buildVietQrContent("A205", user?.studentId || "QE200001", netDue, "DIENNUOC")
   const [reconcileMsg, setReconcileMsg] = useState<string | null>(null)
+
+  /**
+   * Tải biên lai PDF cho một kỳ đã thanh toán trong lịch sử.
+   *
+   * Bảng lịch sử chỉ lưu sẵn số tiền đã đóng dạng chuỗi hiển thị (ví dụ
+   * "₫410,500"), nên số này được tách ngược thành số thực để ghi vào biên lai.
+   * Chỉ số công tơ của kỳ cũ không còn lưu nên để 0 — biên lai vẫn đúng về số
+   * phải trả và giữ nguyên dấu tiếng Việt.
+   */
+  const handleDownloadHistoryReceipt = async (monthLabel: string, amountLabel: string, paidDate: string) => {
+    if (pdfBusy) return
+    setPdfBusy(true)
+    try {
+      const amount = Number(amountLabel.replace(/[^\d]/g, "")) || 0
+      await generateInvoicePdf({
+        invoiceCode: `INV-${monthLabel.replace(/\D/g, "-")}-A205`,
+        billingMonth: monthLabel,
+        issueDate: paidDate,
+        dueDate: paidDate,
+        // Số tiền đã đóng thay cho phần tiện ích tính lại của kỳ cũ.
+        payableAmount: amount,
+        student: {
+          fullName: user?.fullName || "Nguyễn Hoàng Vinh",
+          mssv: user?.studentId || "QE200001",
+          room: "A205",
+          bedCode: user?.dormitoryStatus?.bedCode || "A205-B1-G03",
+          phone: user?.phone,
+          building: user?.dormitoryStatus?.building || "Tòa A",
+        },
+        meter: { elecOld: 0, elecNew: 0, waterOld: 0, waterNew: 0 },
+        tariff: {
+          roomFeePerStudent: 950000,
+          wifiFeeTotal: 120000,
+          cleaningFeeTotal: 60000,
+          numStudents: 6,
+        },
+        note: `Biên lai kỳ ${monthLabel} đã thanh toán ngày ${paidDate}.`,
+      })
+      setOcrHint(`Đã tải biên lai ${monthLabel}.`)
+    } catch (err) {
+      setOcrHint(
+        err instanceof Error
+          ? `Không tạo được biên lai PDF: ${err.message}`
+          : "Không tạo được biên lai PDF, vui lòng thử lại.",
+      )
+    } finally {
+      setPdfBusy(false)
+    }
+  }
+  /** Trạng thái tải PDF để khoá nút, tránh bấm liên tiếp sinh nhiều tệp. */
+  const [pdfBusy, setPdfBusy] = useState(false)
+
+  /**
+   * Tải hóa đơn PDF thật (font Roboto nhúng nên tiếng Việt giữ nguyên dấu).
+   * Mọi số liệu lấy từ `invoice` đã tính ở trên, không nhập lại công thức.
+   */
+  const handleDownloadInvoicePdf = async () => {
+    if (pdfBusy) return
+    setPdfBusy(true)
+    try {
+      await generateInvoicePdf({
+        invoiceCode: `INV-2026-09-A205`,
+        billingMonth: "2026-09",
+        dueDate: "2026-10-05",
+        student: {
+          fullName: user?.fullName || "Nguyễn Hoàng Vinh",
+          mssv: user?.studentId || "QE200001",
+          room: "A205",
+          bedCode: user?.dormitoryStatus?.bedCode || "A205-B1-G03",
+          phone: user?.phone,
+          building: user?.dormitoryStatus?.building || "Tòa A",
+        },
+        meter: { elecOld, elecNew, waterOld, waterNew },
+        tariff: {
+          roomFeePerStudent: 950000,
+          wifiFeeTotal: 120000,
+          cleaningFeeTotal: 60000,
+          numStudents: 6,
+        },
+        invoice,
+      })
+      setOcrHint("Đã tải hóa đơn PDF về máy.")
+    } catch (err) {
+      setOcrHint(
+        err instanceof Error
+          ? `Không tạo được hóa đơn PDF: ${err.message}`
+          : "Không tạo được hóa đơn PDF, vui lòng thử lại.",
+      )
+    } finally {
+      setPdfBusy(false)
+    }
+  }
   const confirmPaidWithReconcile = () => {
     const r = reconcilePayment({ expectedAmount: netDue, expectedContent: vietqrContent, actualAmount: netDue, actualContent: vietqrContent })
     setReconcileMsg(r.matched ? `Đối soát khớp: ${r.reason} · ${vietqrContent}` : `Lệch: ${r.reason}`)
@@ -113,11 +207,12 @@ export const BillingPage: React.FC = () => {
             <span>In Bảng Kê</span>
           </Button>
           <Button
-            onClick={() => alert("Đang xuất tệp hóa đơn điện tử e-Invoice PDF...")}
+            onClick={handleDownloadInvoicePdf}
+            disabled={pdfBusy}
             className="text-xs h-9 gap-1.5 bg-primary hover:bg-primary/90 text-white whitespace-nowrap shrink-0"
           >
             <Download className="h-4 w-4 shrink-0" />
-            <span>Tải Hóa Đơn (PDF)</span>
+            <span>{pdfBusy ? "Đang tạo PDF…" : "Tải Hóa Đơn (PDF)"}</span>
           </Button>
         </div>
       </div>
@@ -437,9 +532,11 @@ export const BillingPage: React.FC = () => {
                       </td>
                       <td className="whitespace-nowrap px-1.5 py-2.5 align-middle text-right">
                         <button
-                          onClick={() => alert(`Đang tải biên lai ${inv.month}...`)}
-                          className="p-1 rounded text-primary hover:bg-muted/70"
-                          title="Tải PDF"
+                          onClick={() => void handleDownloadHistoryReceipt(inv.month, inv.amount, inv.date)}
+                          disabled={pdfBusy}
+                          className="p-1 rounded text-primary hover:bg-muted/70 disabled:opacity-50"
+                          title={`Tải biên lai PDF ${inv.month}`}
+                          aria-label={`Tải biên lai PDF ${inv.month}`}
                         >
                           <Download className="h-3.5 w-3.5 inline" />
                         </button>
@@ -492,14 +589,10 @@ export const BillingPage: React.FC = () => {
               </div>
             ) : (
               <>
-                {/* QR Code graphic */}
+                {/* QR Code graphic — sinh tại chỗ, không gọi dịch vụ ảnh ngoài */}
                 <div className="flex flex-col items-center justify-center p-4 bg-white rounded-xl border border-border shadow-2xs">
                   <div className="relative p-2 bg-white rounded-xl shadow-xs border border-border">
-                    <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=2|99|09182391024|KY_TUC_XA_FPT|${netDue}|DIENNUOC_A205_${user?.studentId || "QE200001"}`}
-                      alt="VietQR Bill Payment"
-                      className="w-60 h-60 rounded-lg"
-                    />
+                    <QrCodeImage value={vietqrContent} size={240} alt="Mã VietQR thanh toán hóa đơn điện nước phòng A205" />
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                       <div className="w-9 h-9 rounded-full bg-white shadow-md flex items-center justify-center p-1 border">
                         <span className="font-black text-[8px] text-primary">VIETQR</span>
@@ -507,7 +600,7 @@ export const BillingPage: React.FC = () => {
                     </div>
                   </div>
 
-                  <p className="text-xs font-bold text-foreground mt-2">
+                  <p className="text-xs font-bold whitespace-nowrap text-foreground mt-2">
                     Mở App Ngân Hàng Hoặc Ví Để Quét Mã
                   </p>
                 </div>
@@ -579,7 +672,7 @@ export const BillingPage: React.FC = () => {
                 <ImageUpload
                   storageKey="dms_meter_photos_A205"
                   label="Ảnh chụp đồng hồ"
-                  hint="Chụp rõ mặt số công tơ điện/nước. AI/OCR stub sẽ gợi ý số đọc, kỹ thuật viên xác nhận lại."
+                  hint="Chụp rõ mặt số công tơ để OCR gợi ý số đọc."
                   value={meterPhotos}
                   onChange={(next) => {
                     setMeterPhotos(next)

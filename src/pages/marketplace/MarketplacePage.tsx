@@ -81,7 +81,7 @@ export const MarketplacePage: React.FC = () => {
 
   return (
     <div className="w-full space-y-6 pb-12">
-      <PageHeader eyebrow="Cộng đồng · Chợ & thất lạc" title="Chợ đồ cũ & Tìm đồ thất lạc" desc="Nhượng tủ lạnh, quạt, sách vở. Báo mất/nhặt được đồ trong KTX, kèm ảnh upload." />
+      <PageHeader eyebrow="Cộng đồng · Chợ & thất lạc" title="Chợ đồ cũ & Tìm đồ thất lạc" desc="Nhượng tủ lạnh, quạt, sách vở · Báo mất/nhặt đồ KTX" />
       <div className="flex gap-2">
         <Button variant={tab === "MARKET" ? "default" : "outline"} onClick={() => setTab("MARKET")}>Chợ đồ cũ ({listings.length})</Button>
         <Button variant={tab === "LOST" ? "default" : "outline"} onClick={() => setTab("LOST")}>Thất lạc ({posts.length})</Button>

@@ -225,8 +225,8 @@ export const CinematicScrubStage: React.FC = () => {
             }}
           />
           <div ref={captionRef} style={{ position: "absolute", left: "50%", bottom: "12vh", transform: "translateX(-50%)", maxWidth: 720, width: "calc(100% - 48px)", textAlign: "center" }}>
-            <h2 style={{ fontSize: "clamp(24px,4vw,40px)", fontWeight: 800, color: "#ffffff", textShadow: "0 2px 18px rgba(0,0,0,.65)" }} />
-            <p style={{ marginTop: 12, color: "#dfe2ff", fontSize: 15, textShadow: "0 1px 12px rgba(0,0,0,.6)" }} />
+            <h2 className="prose" style={{ fontSize: "clamp(24px,4vw,40px)", fontWeight: 800, color: "#ffffff", textShadow: "0 2px 18px rgba(0,0,0,.65)" }} />
+            <p className="prose" style={{ marginTop: 12, color: "#dfe2ff", fontSize: 15, textShadow: "0 1px 12px rgba(0,0,0,.6)" }} />
           </div>
           <div style={{ position: "absolute", left: "50%", bottom: 26, transform: "translateX(-50%)", fontSize: 12, letterSpacing: ".2em", color: "#c3c9e0" }}>
             CUỘN ĐỂ KHÁM PHÁ

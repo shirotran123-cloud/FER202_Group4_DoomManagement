@@ -15,7 +15,7 @@ export const NotFoundPage: React.FC = () => {
             Lỗi 404 • Không tìm thấy trang
           </span>
           <h1 className="text-2xl font-black text-foreground">Trang Không Tồn Tại</h1>
-          <p className="text-xs text-muted-foreground leading-relaxed">
+          <p className="prose text-xs text-muted-foreground leading-relaxed">
             Đường dẫn bạn yêu cầu không tồn tại hoặc đã được thay đổi trong hệ thống Ký túc xá.
           </p>
         </div>

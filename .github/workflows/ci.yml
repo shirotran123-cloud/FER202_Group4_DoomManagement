@@ -14,13 +14,27 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+
+      # --- Luật giao diện: không dòng chữ nào được xuống hàng ---
+      - run: npm run check:nowrap
+      - run: npm run check:text-length
+
+      # --- Nhất quán frontend ↔ backend ---
       - run: npm run check:frontend
       - run: npm run check:parity
       - run: npm run check:client
+
+      # --- Biên dịch ---
       - run: npm run typecheck
       - run: npm run lint
+      - run: npm run build
+
+      # --- Luật nghiệp vụ thuần (không cần backend) ---
       - run: node --experimental-strip-types scripts/verify-dorm-ops.mjs
       - run: npm run check:domain
+      - run: npm run test:backend-qr
+
+      # --- Cần backend đang chạy ---
       - run: npm run db:seed
       - name: Khởi động backend
         run: |
@@ -33,4 +47,7 @@ jobs:
       - run: npm run test:api
       - run: npm run test:flows
       - run: npm run test:client-live
-      - run: npm run build
+      - run: npm run test:backend-export
+
+      # --- PDF: xác minh font Unicode nhúng ở mức byte ---
+      - run: npm run check:pdf

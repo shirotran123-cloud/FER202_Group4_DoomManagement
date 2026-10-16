@@ -107,7 +107,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
                   <div className="mt-2 space-y-2 text-xs">
                     <div className="rounded-xl border border-primary/30 bg-primary-soft p-3">
                       <p className="font-bold">Giới nghiêm 23:00</p>
-                      <p className="mt-0.5 text-muted-foreground">Nộp đơn về muộn trước 21:00 nếu có lịch học, làm thêm.</p>
+                      <p className="mt-0.5 text-muted-foreground">Nộp đơn trước 21:00 nếu có lịch học, làm thêm.</p>
                     </div>
                     <div className="rounded-xl border border-border bg-muted/60 p-3">
                       <p className="font-bold">Hóa đơn tháng 09</p>

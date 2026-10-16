@@ -4,10 +4,20 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { suggestRoomAllocation } from "@/lib/dorm-ops"
 import { canBookBed } from "@/lib/role-access"
-import { Building, CircleCheck, Clock, QrCode, Download, Check, Zap, Sun, Compass, BedDouble, DoorOpen, ChevronDown, Snowflake, Wifi, LayoutGrid, X } from "lucide-react"
+import { QrCodeImage } from "@/components/ui/qr-code"
+import { generateContractPDF } from "@/lib/pdfGenerator"
+import { Building, CircleCheck, CircleAlert, Clock, QrCode, Download, Check, Zap, Sun, Compass, BedDouble, DoorOpen, ChevronDown, Snowflake, Wifi, LayoutGrid, X } from "lucide-react"
 
 import { Select } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
+
+/** Dữ liệu hợp đồng sinh ra ở bước xác nhận giữ chỗ (xem khối "success"). */
+const BOOKING_CONTRACT_ID = "CTR-2026-A205-B03"
+const BOOKING_BUILDING = "Tòa A (Nam)"
+const BOOKING_START_DATE = "2026-09-05"
+const BOOKING_END_DATE = "2027-01-15"
+/** Tiền cọc giữ chỗ (khớp số tiền VietQR 2.150.000 VNĐ của modal thanh toán). */
+const BOOKING_DEPOSIT = 2150000
 interface Bed {
   id: string
   code: string
@@ -58,6 +68,15 @@ export const BookingPage: React.FC = () => {
   const [showCheckoutModal, setShowCheckoutModal] = useState(false)
   const [checkoutStep, setCheckoutStep] = useState<"qr" | "verifying" | "success">("qr")
   const [autoApprovalProgress, setAutoApprovalProgress] = useState(0)
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
+  const [toastTone, setToastTone] = useState<"success" | "error">("success")
+  const [isGeneratingContract, setIsGeneratingContract] = useState(false)
+
+  const showToast = (message: string, tone: "success" | "error" = "success") => {
+    setToastMessage(message)
+    setToastTone(tone)
+    setTimeout(() => setToastMessage(null), 4000)
+  }
 
   // Countdown timer effect
   useEffect(() => {
@@ -168,8 +187,54 @@ export const BookingPage: React.FC = () => {
     }, 2200)
   }
 
+  const buildingLabel =
+    selectedBuilding === "b2" ? "Tòa B (Nữ)" : BOOKING_BUILDING
+
+  /** Tải hợp đồng điện tử thật cho giường vừa giữ chỗ (font Unicode nhúng). */
+  const handleDownloadContract = async () => {
+    if (isGeneratingContract) return
+    setIsGeneratingContract(true)
+    try {
+      await generateContractPDF({
+        contractId: BOOKING_CONTRACT_ID,
+        studentName: user?.fullName ?? "Nguyễn Hoàng Vinh",
+        mssv: user?.studentId ?? "QE200001",
+        bedCode: selectedBed.code,
+        building: buildingLabel,
+        room: `${selectedRoom} - Buồng ${selectedCompartment}`,
+        citizenId: user?.citizenId,
+        phone: user?.phone,
+        roomFee: selectedBed.price,
+        deposit: BOOKING_DEPOSIT,
+        startDate: BOOKING_START_DATE,
+        endDate: BOOKING_END_DATE,
+        createdAt: new Date().toISOString(),
+      })
+      showToast("Đã tải hợp đồng điện tử PDF cho giường " + selectedBed.code + ".")
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "Không tạo được hợp đồng điện tử.", "error")
+    } finally {
+      setIsGeneratingContract(false)
+    }
+  }
+
   return (
     <div className="w-full space-y-6 pb-12">
+      {toastMessage && (
+        <div
+          className={`fixed top-20 right-6 z-[60] flex items-center gap-2.5 rounded-xl border px-4 py-3 text-xs font-semibold text-white shadow-xl ${
+            toastTone === "error" ? "border-danger/25 bg-danger" : "border-success/25 bg-success"
+          }`}
+        >
+          {toastTone === "error" ? (
+            <CircleAlert className="h-4 w-4 shrink-0" />
+          ) : (
+            <CircleCheck className="h-4 w-4 shrink-0" />
+          )}
+          <span className="one-line">{toastMessage}</span>
+        </div>
+      )}
+
       {/* 01. STEP PROGRESS HIERARCHY BANNER */}
       <div className="dms-card w-full p-4">
         <div className="flex items-center justify-between gap-3 overflow-x-auto pb-1 text-xs">
@@ -397,7 +462,7 @@ export const BookingPage: React.FC = () => {
             </div>
             <div className="min-w-0">
               <p className="font-bold text-xs text-foreground whitespace-nowrap">Khu A205 · Chuẩn 2026</p>
-              <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2">
+              <p className="text-[11px] text-muted-foreground truncate" title="Tiêu âm cao cấp, rèm kháng khuẩn từng giường, khóa số.">
                 Tiêu âm cao cấp, rèm che kháng khuẩn từng giường, khóa số thông minh.
               </p>
             </div>
@@ -769,12 +834,12 @@ export const BookingPage: React.FC = () => {
               {checkoutStep === "qr" && (
                 <>
                   <div className="flex flex-col items-center justify-center p-4 bg-card rounded-xl border border-border">
-                    {/* Dynamic QR Code graphic */}
+                    {/* Dynamic QR Code graphic — sinh tại chỗ, không gọi dịch vụ ảnh ngoài */}
                     <div className="relative p-2 bg-white rounded-xl shadow-xs border border-border">
-                      <img
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=DORM_BOOKING_${selectedBed.code}_${user?.studentId || "QE200001"}_2150000`}
-                        alt="Mã thanh toán VietQR"
-                        className="w-60 h-60 rounded-lg"
+                      <QrCodeImage
+                        value={`DORM_BOOKING_${selectedBed.code}_${user?.studentId || "QE200001"}_2150000`}
+                        size={240}
+                        alt={`Mã thanh toán giữ giường ${selectedBed.code}`}
                       />
                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <div className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center p-1 border">
@@ -784,7 +849,7 @@ export const BookingPage: React.FC = () => {
                     </div>
 
                     <div className="mt-3 text-center space-y-1">
-                      <span className="text-xs font-bold text-primary dark:text-primary">
+                      <span className="text-xs font-bold whitespace-nowrap text-primary dark:text-primary">
                         Quét mã bằng app ngân hàng bất kỳ
                       </span>
                       <p className="text-[11px] text-muted-foreground font-mono">
@@ -891,16 +956,19 @@ export const BookingPage: React.FC = () => {
 
                   <div className="flex gap-2 w-full">
                     <Button
-                      onClick={() => alert("Hợp đồng điện tử đã được tải xuống máy!")}
-                      className="flex-1 bg-primary text-white text-xs font-bold flex items-center justify-center gap-1.5"
+                      onClick={handleDownloadContract}
+                      disabled={isGeneratingContract}
+                      className="flex-1 min-w-0 bg-primary text-white text-xs font-bold flex items-center justify-center gap-1.5"
                     >
-                      <Download className="h-4 w-4" />
-                      <span>Tải hợp đồng</span>
+                      <Download className="h-4 w-4 shrink-0" />
+                      <span className="one-line">
+                        {isGeneratingContract ? "Đang tạo PDF..." : "Tải hợp đồng"}
+                      </span>
                     </Button>
                     <Button
                       variant="outline"
                       onClick={() => setShowCheckoutModal(false)}
-                      className="text-xs"
+                      className="text-xs shrink-0"
                     >
                       Đóng
                     </Button>

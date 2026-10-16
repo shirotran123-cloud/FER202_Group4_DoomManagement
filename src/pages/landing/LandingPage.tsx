@@ -81,7 +81,7 @@ function Faq() {
               </button>
               <div className={`grid transition-all ${isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
                 <div className="overflow-hidden">
-                  <p className="px-5 pb-4 text-[13.5px] leading-relaxed text-muted-foreground">{item.answer}</p>
+                  <p className="prose px-5 pb-4 text-[13.5px] leading-relaxed text-muted-foreground">{item.answer}</p>
                 </div>
               </div>
             </div>
@@ -111,7 +111,7 @@ export const LandingPage: React.FC = () => {
             </span>{" "}
             mỗi ngày.
           </h1>
-          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
+          <p className="prose mt-4 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
             Đặt giường 1:4:6, hóa đơn điện nước chia tự động, báo hỏng kèm ảnh, QR qua cổng 23:00 — tất cả trong một nơi.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
@@ -150,7 +150,7 @@ export const LandingPage: React.FC = () => {
       <section id="mo-hinh" className="scroll-mt-24">
         <p className="whitespace-nowrap text-xs font-bold uppercase tracking-[0.14em] text-primary">Mô hình 1:4:6</p>
         <h2 className="mt-1 font-display text-2xl font-extrabold tracking-tight sm:text-3xl">Một phòng, bốn buồng riêng</h2>
-        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+        <p className="prose mt-2 max-w-2xl text-sm text-muted-foreground">
           1 phòng lớn chia 4 buồng A–B–C–D, mỗi buồng 6 giường. Riêng tư từng giường nhưng vẫn sinh hoạt chung thoải mái.
         </p>
         <div className="mt-6"><DormitoryGallerySlider /></div>
@@ -169,7 +169,7 @@ export const LandingPage: React.FC = () => {
       <section aria-label="Clip dolly KTX" className="scroll-mt-24">
         <p className="whitespace-nowrap text-xs font-bold uppercase tracking-[0.14em] text-primary">Chuyển động</p>
         <h2 className="mt-1 font-display text-2xl font-extrabold tracking-tight sm:text-3xl">Clip dolly KTX FPT Quy Nhơn</h2>
-        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+        <p className="prose mt-2 max-w-2xl text-sm text-muted-foreground">
           Clip dựng tay từ đúng 4 ảnh gallery: Toàn cảnh → Sinh hoạt chung → Buồng 6 người → Nhà vệ sinh. Trang scrub qua ảnh tĩnh để tránh giật; clip chỉ phát tuyến tính khi bạn bấm play.
         </p>
         <DormDollyClip />
@@ -186,7 +186,7 @@ export const LandingPage: React.FC = () => {
                 <f.icon className="h-5 w-5" />
               </div>
               <p className="mt-3.5 font-display text-[15px] font-bold">{f.title}</p>
-              <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">{f.desc}</p>
+              <p className="prose mt-1 text-[13px] leading-relaxed text-muted-foreground">{f.desc}</p>
             </div>
           ))}
         </div>
@@ -229,7 +229,7 @@ export const LandingPage: React.FC = () => {
           ].map(([t, d]) => (
             <div key={t} className="rounded-2xl border border-border bg-card p-5">
               <p className="font-display text-[15px] font-bold">{t}</p>
-              <p className="mt-1 text-[13px] text-muted-foreground">{d}</p>
+              <p className="prose mt-1 text-[13px] text-muted-foreground">{d}</p>
             </div>
           ))}
         </div>
@@ -240,7 +240,7 @@ export const LandingPage: React.FC = () => {
       {/* CTA */}
       <section className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-primary to-primary px-6 py-12 text-center text-primary-foreground sm:py-16">
         <h2 className="mx-auto max-w-xl font-display text-2xl font-black sm:text-4xl">Sẵn sàng dọn vào phòng mới?</h2>
-        <p className="mx-auto mt-2 max-w-md text-sm opacity-80">Chọn giường, giữ chỗ 15 phút, thanh toán VietQR — xong trong 5 phút.</p>
+        <p className="prose mx-auto mt-2 max-w-md text-sm opacity-80">Chọn giường, giữ chỗ 15 phút, thanh toán VietQR — xong trong 5 phút.</p>
         <Link
           to={isAuthenticated ? "/booking" : "/login?mode=login"}
           className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-card px-7 py-3.5 text-sm font-bold whitespace-nowrap text-foreground transition-transform hover:scale-[1.03]"

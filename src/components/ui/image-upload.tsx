@@ -31,7 +31,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ storageKey, label = "�
     setError(null);
     const { records: added, rejected } = await filesToPhotoRecords(Array.from(files), records.length);
     if (added.length > 0) commit([...added, ...records]);
-    if (rejected.length > 0) setError(`Không nhận ${rejected.join(", ")}. Chỉ nhận JPG/PNG/WebP, mỗi ảnh ≤ 5MB, tối đa 5 ảnh.`);
+    if (rejected.length > 0) setError(`Không nhận ${rejected.join(", ")}. Chỉ nhận JPG/PNG/WebP, ≤ 5MB, tối đa 5 ảnh.`);
     if (inputRef.current) inputRef.current.value = "";
   };
 

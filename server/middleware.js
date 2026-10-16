@@ -89,27 +89,170 @@ export function cacheDel(prefix) {
   for (const key of cache.keys()) if (key.startsWith(prefix)) cache.delete(key)
 }
 
-/* ---------- Job queue in-memory ---------- */
-const jobs = []
-const jobResults = new Map()
-export function enqueueJob(type, payload) {
+/* ---------- Hàng đợi tác vụ nền (in-memory) ---------- */
+
+/**
+ * Hàng đợi tác vụ thật: mỗi tác vụ chạy một hàm async và giữ artifact trong
+ * bộ nhớ để tải về qua HTTP.
+ *
+ * Vòng đời: QUEUED -> RUNNING -> DONE | FAILED.
+ *
+ * Bộ nhớ không được phép phình vô hạn:
+ *  - Mọi tác vụ đã kết thúc được đánh dấu `expiresAt` (mặc định +10 phút).
+ *  - Một timer quét định kỳ xoá tác vụ hết hạn kèm buffer của nó.
+ *  - Số tác vụ giữ lại bị chặn trần bởi JOB_MAX_RETAINED (xoá cũ nhất trước).
+ */
+
+/** Thời gian giữ một tác vụ đã xong trước khi bị dọn (ms). */
+export const JOB_TTL_MS = Number(process.env.DMS_JOB_TTL_MS ?? 10 * 60 * 1000)
+/** Trần số tác vụ giữ trong bộ nhớ. */
+export const JOB_MAX_RETAINED = Number(process.env.DMS_JOB_MAX ?? 50)
+/** Chu kỳ quét dọn tác vụ hết hạn (ms). */
+const JOB_SWEEP_MS = Number(process.env.DMS_JOB_SWEEP_MS ?? 60 * 1000)
+
+/** id -> metadata tác vụ (KHÔNG chứa buffer). */
+const jobs = new Map()
+/** id -> { buffer, filename, contentType } của tác vụ đã xong. */
+const jobArtifacts = new Map()
+
+function nowIso() {
+  return new Date().toISOString()
+}
+
+/** Xoá một tác vụ và artifact kèm theo. */
+function dropJob(id) {
+  jobArtifacts.delete(id)
+  return jobs.delete(id)
+}
+
+/** Dọn tác vụ đã kết thúc và quá hạn; sau đó chặn trần số lượng. */
+export function sweepJobs(now = Date.now()) {
+  let removed = 0
+  for (const [id, job] of jobs) {
+    const finished = job.status === "DONE" || job.status === "FAILED"
+    if (finished && job.expiresAt && Date.parse(job.expiresAt) <= now) {
+      dropJob(id)
+      removed++
+    }
+  }
+  if (jobs.size > JOB_MAX_RETAINED) {
+    // Cũ nhất theo createdAt bị xoá trước, ưu tiên tác vụ đã kết thúc.
+    const ordered = [...jobs.values()].sort((a, b) => {
+      const aDone = a.status === "DONE" || a.status === "FAILED" ? 0 : 1
+      const bDone = b.status === "DONE" || b.status === "FAILED" ? 0 : 1
+      if (aDone !== bDone) return aDone - bDone
+      return String(a.createdAt).localeCompare(String(b.createdAt))
+    })
+    while (jobs.size > JOB_MAX_RETAINED && ordered.length) {
+      dropJob(ordered.shift().id)
+      removed++
+    }
+  }
+  return removed
+}
+
+const jobSweeper = setInterval(() => {
+  try {
+    sweepJobs()
+  } catch (err) {
+    console.error("[jobs] dọn tác vụ lỗi:", err.message)
+  }
+}, JOB_SWEEP_MS)
+jobSweeper.unref?.()
+
+/**
+ * Xếp một tác vụ nền vào hàng đợi.
+
+ * @param {string} type Nhãn loại tác vụ (ví dụ `export-residents`).
+ * @param {object} payload Tham số kèm theo, trả lại nguyên vẹn trong job.
+ * @param {(job: object) => Promise<{ filename: string, contentType: string, buffer: Buffer|Uint8Array }>} [task]
+ *        Hàm async sinh artifact thật. Bỏ trống thì tác vụ chỉ đánh dấu DONE
+ *        (đường cũ vẫn chạy được nhưng không có file để tải).
+ * @returns {object} Bản ghi job (status QUEUED) để trả ngay cho client.
+ */
+export function enqueueJob(type, payload, task) {
+  const id = `job_${Date.now()}_${Math.floor(Math.random() * 1e6)}`
   const job = {
-    id: `job_${Date.now()}_${Math.floor(Math.random() * 1e4)}`,
+    id,
     type,
     payload,
     status: "QUEUED",
-    createdAt: new Date().toISOString(),
+    createdAt: nowIso(),
+    startedAt: null,
+    finishedAt: null,
+    expiresAt: null,
+    filename: null,
+    contentType: null,
+    bytes: 0,
+    error: null,
   }
-  jobs.push(job)
-  setTimeout(() => {
-    job.status = "DONE"
-    job.finishedAt = new Date().toISOString()
-    jobResults.set(job.id, job)
-  }, 50)
-  return job
+  jobs.set(id, job)
+  sweepJobs()
+
+  // Chạy ở tick sau để response POST luôn thấy trạng thái QUEUED.
+  setImmediate(() => {
+    runJob(job, task)
+  })
+
+  return { ...job }
 }
+
+/** Thực thi tác vụ rồi ghi lại kết quả hoặc lỗi. */
+async function runJob(job, task) {
+  if (typeof task !== "function") {
+    job.status = "DONE"
+    job.finishedAt = nowIso()
+    job.expiresAt = new Date(Date.now() + JOB_TTL_MS).toISOString()
+    return
+  }
+  job.status = "RUNNING"
+  job.startedAt = nowIso()
+  try {
+    const artifact = await task(job)
+    const buffer = artifact?.buffer
+    if (!buffer) throw new Error("Tác vụ không tạo được nội dung tệp")
+    const filename = artifact.filename || `${job.type}.bin`
+    const contentType = artifact.contentType || "application/octet-stream"
+    jobArtifacts.set(job.id, {
+      buffer: Buffer.isBuffer(buffer) ? buffer : Buffer.from(buffer),
+      filename,
+      contentType,
+    })
+    job.filename = filename
+    job.contentType = contentType
+    job.bytes = jobArtifacts.get(job.id).buffer.length
+    job.status = "DONE"
+  } catch (err) {
+    job.status = "FAILED"
+    job.error = err?.message || "Tác vụ thất bại"
+    console.error(`[jobs] ${job.id} (${job.type}) lỗi:`, job.error)
+  } finally {
+    job.finishedAt = nowIso()
+    job.expiresAt = new Date(Date.now() + JOB_TTL_MS).toISOString()
+    // Dọn ngay nếu vượt trần (ví dụ một loạt job nhỏ vừa xong).
+    sweepJobs()
+  }
+}
+
+/** Lấy metadata tác vụ, null nếu không có / đã bị dọn. */
 export function getJob(id) {
-  return jobResults.get(id) || jobs.find((j) => j.id === id) || null
+  const job = jobs.get(id)
+  return job ? { ...job } : null
+}
+
+/** Lấy artifact của tác vụ đã DONE, null nếu chưa xong hoặc không còn. */
+export function getJobArtifact(id) {
+  return jobArtifacts.get(id) || null
+}
+
+/** Số tác vụ đang giữ trong bộ nhớ (dùng cho test/chẩn đoán). */
+export function jobCount() {
+  return jobs.size
+}
+
+/** Xoá một tác vụ theo id; trả true nếu có xoá. */
+export function clearJob(id) {
+  return dropJob(id)
 }
 
 /* ---------- SSE realtime ---------- */

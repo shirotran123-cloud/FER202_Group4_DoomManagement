@@ -69,7 +69,7 @@ export const VisitorPage: React.FC = () => {
       </SectionCard>
       <SectionCard title={`Danh sách khách (${visitors.length})`} desc="Bảo vệ check-in tại cổng" descClassName="truncate whitespace-nowrap">
         {visitors.length === 0 ? (
-          <EmptyState title="Chưa có khách nào" desc="Đăng ký khách thăm đầu tiên để bảo vệ đối chiếu tại cổng." />
+          <EmptyState title="Chưa có khách nào" desc="Đăng ký khách đầu tiên để bảo vệ đối chiếu." />
         ) : (
           <div className="space-y-2">
             {visitors.map((v) => (

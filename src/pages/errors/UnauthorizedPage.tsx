@@ -27,7 +27,7 @@ export const UnauthorizedPage: React.FC = () => {
           <h1 className="text-xl sm:text-2xl font-black text-foreground">
             Từ Chối Quyền Truy Cập
           </h1>
-          <p className="text-xs text-muted-foreground leading-relaxed">
+          <p className="prose text-xs text-muted-foreground leading-relaxed">
             Tài khoản hiện tại của bạn đang có vai trò{" "}
             <strong className="text-foreground">{user?.roleTitle || "Chưa xác thực"}</strong>, không có quyền truy cập vào đường dẫn{" "}
             <code className="rounded bg-muted px-1.5 py-0.5 text-foreground font-mono">{attemptedPath}</code>.

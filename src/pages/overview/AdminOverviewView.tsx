@@ -121,7 +121,7 @@ export const AdminOverviewView: React.FC = () => {
                 Tổng Quan Điều Hành Ký Túc Xá
               </h1>
               <p className="text-sm text-muted-foreground mt-1 max-w-2xl leading-relaxed">
-                Tra cứu danh bạ sinh viên nội trú, giám sát tình trạng lưu trú và trực tiếp phê duyệt đơn từ, yêu cầu học viên toàn trường.
+                Tra cứu danh bạ nội trú, giám sát lưu trú và duyệt đơn từ toàn trường.
               </p>
             </div>
           </div>

@@ -8,7 +8,7 @@ export const MaintenanceStubPage: React.FC = () => {
       <PageHeader
         eyebrow="Kỹ thuật · Bảo trì"
         title="Bảo trì đang hoàn thiện"
-        desc="Phân hệ phiếu báo hỏng và điều phối kỹ thuật đang được hoàn thiện."
+        desc="Phiếu báo hỏng và điều phối kỹ thuật đang được hoàn thiện."
       />
       <EmptyState
         title="Phân hệ bảo trì đang hoàn thiện"

@@ -8,7 +8,7 @@ export const CurfewStubPage: React.FC = () => {
       <PageHeader
         eyebrow="An ninh · Giới nghiêm"
         title="Giới nghiêm đang hoàn thiện"
-        desc="Phân hệ đơn về muộn và quét thẻ cổng 23:00 đang được hoàn thiện."
+        desc="Đơn về muộn và quét thẻ cổng 23:00 đang được hoàn thiện."
       />
       <EmptyState
         title="Phân hệ giới nghiêm đang hoàn thiện"

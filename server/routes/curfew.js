@@ -17,7 +17,10 @@ import {
   buildDisciplineRecord,
   summarizeDemerits,
   findOverdueAbsentees,
+  findApprovedRequestForScan,
+  verifyGateQrPayload,
   GATE_STATUS,
+  GATE_QR_TTL_MINUTES,
 } from "../domain/curfew.js"
 import { INFRACTION_POINTS, INFRACTION_TITLES } from "../config.js"
 
@@ -114,27 +117,76 @@ router.post(
 /* ---------- Quét cổng ---------- */
 
 /**
- * POST /api/curfew/gate/scan — bảo vệ quét thẻ.
- * body: { studentId, scanHour, guardName, matchedRequestId? }
+ * POST /api/curfew/gate/scan — bảo vệ quét thẻ / mã QR tại cổng.
+ *
+ * body:
+ *   {
+ *     qrPayload?,     // ƯU TIÊN: `DMS-GATE|<MSSV>|<issuedAt>` do thẻ sinh viên phát hành.
+ *                     //   Backend tự bóc payload, tự lấy MSSV và tự kiểm hạn dùng
+ *                     //   (mặc định 5 phút, xem GATE_QR_TTL_MINUTES). Sai định dạng,
+ *                     //   sai tiền tố hoặc hết hạn -> 400 kèm thông điệp tiếng Việt.
+ *     studentId?,     // Đường cũ, chỉ dùng khi KHÔNG có qrPayload (nhập tay MSSV).
+ *     scanHour,       // Bắt buộc. Giữ nguyên để test được mọi mốc giờ trong ngày.
+ *     scanDate?,      // `YYYY-MM-DD` — ngày quét dùng để đối chiếu đơn. Mặc định hôm nay.
+ *     guardName?,     // Tên bảo vệ trực cổng.
+ *     matchedRequestId?, // Bảo vệ chỉ định tay một đơn; VẪN phải thoả quy tắc ngày.
+ *   }
+ *
+ * Quy tắc ngày (sửa lỗi cũ): chỉ đơn APPROVED có `date` khớp ngày quét mới
+ * được coi là hợp lệ; đơn về muộn cũ của ngày khác KHÔNG còn hợp thức hoá
+ * lượt quét muộn đêm nay. Đơn OVERNIGHT được coi là phủ cả đêm nên cũng hợp
+ * lệ cho lượt về sau nửa đêm (xem isRequestValidForScanDate / curfewNightOf).
+ *
+ * Trả về: { log, discipline, demerit, status } — giữ nguyên shape cũ.
  */
 router.post(
   "/gate/scan",
   rateLimit("public"),
   asyncHandler((req, res) => {
     assertCan(req.actor?.role, "gate:scan")
-    const { studentId, scanHour, guardName, matchedRequestId } = req.body || {}
-    if (!studentId || scanHour === undefined) {
-      return res.status(400).json({ success: false, message: "Cần studentId và scanHour" })
+    const { qrPayload, studentId: rawStudentId, scanHour, scanDate, guardName, matchedRequestId } = req.body || {}
+    if (scanHour === undefined || scanHour === null || scanHour === "") {
+      return res.status(400).json({ success: false, message: "Cần scanHour" })
     }
-    const student =
-      find("users", (u) => (u.mssv || u.studentId) === String(studentId).toUpperCase()) || null
 
-    const approvedRequest =
-      find("curfewRequests", (r) => r.studentId === studentId && r.status === "APPROVED") ||
-      (matchedRequestId ? find("curfewRequests", (r) => r.id === matchedRequestId) : null)
+    const now = new Date()
+    // Ngày mà lượt quét thuộc về: ưu tiên body (test), nếu không lấy từ giờ hệ thống.
+    const effectiveScanDate = String(scanDate || now.toISOString().slice(0, 10)).trim()
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(effectiveScanDate)) {
+      return res.status(400).json({ success: false, message: "scanDate phải có định dạng YYYY-MM-DD" })
+    }
+
+    // ---- Ưu tiên payload QR: bóc và kiểm hạn NGAY TẠI BACKEND ----
+    let studentId
+    let qrInfo = null
+    if (qrPayload !== undefined && qrPayload !== null && String(qrPayload).trim() !== "") {
+      const verified = verifyGateQrPayload(String(qrPayload), now, GATE_QR_TTL_MINUTES)
+      if (!verified.ok) {
+        return res.status(400).json({ success: false, message: verified.reason })
+      }
+      studentId = verified.studentId
+      qrInfo = { issuedAt: verified.issuedAt, ageMinutes: Number(verified.ageMinutes.toFixed(2)) }
+    } else if (rawStudentId) {
+      // Đường cũ: MSSV nhập tay, không có mã QR để kiểm hạn.
+      studentId = String(rawStudentId).trim().toUpperCase()
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "Cần qrPayload (mã QR trên thẻ) hoặc studentId (nhập tay)",
+      })
+    }
+
+    const student = find("users", (u) => String(u.mssv || u.studentId).toUpperCase() === studentId) || null
+
+    // Chỉ đơn APPROVED ĐÚNG NGÀY quét mới hợp lệ (OVERNIGHT phủ cả đêm).
+    const approvedRequest = findApprovedRequestForScan(all("curfewRequests"), {
+      studentId,
+      scanDate: effectiveScanDate,
+      scanHour: Number(scanHour),
+      matchedRequestId,
+    })
 
     const status = evaluateGateScan(Number(scanHour), Boolean(approvedRequest))
-    const now = new Date()
     const log = insert("gateLogs", {
       id: nextId("gateLogs", "LOG"),
       studentId,
@@ -142,14 +194,17 @@ router.post(
       room: student?.room || "",
       timestamp: now.toISOString(),
       scanTimeFormatted: now.toTimeString().slice(0, 8),
+      scanDate: effectiveScanDate,
       curfewStatus: status,
       matchedRequestId: approvedRequest?.id,
+      qrIssuedAt: qrInfo?.issuedAt,
+      qrVerified: Boolean(qrInfo),
       penaltyPointsDeducted: status === GATE_STATUS.UNAUTHORIZED_LATE ? INFRACTION_POINTS.CURFEW_VIOLATION : undefined,
       guardNotes: status === GATE_STATUS.ON_TIME
         ? "Về trước 23:00, thẻ sinh viên hợp lệ."
         : approvedRequest
-          ? `Đối chiếu đơn ${approvedRequest.id}: có phép hợp lệ.`
-          : "Về muộn sau 23:00 không có đơn xin phép trên hệ thống.",
+          ? `Đối chiếu đơn ${approvedRequest.id} (${approvedRequest.date}): có phép hợp lệ.`
+          : `Về muộn sau 23:00 không có đơn xin phép hợp lệ cho ngày ${effectiveScanDate}.`,
       guardName: guardName || req.actor?.fullName || "Bảo vệ trực cổng",
     })
 
@@ -171,7 +226,7 @@ router.post(
       broadcastEvent("CURFEW_VIOLATION", `${log.studentName} vi phạm giới nghiêm`)
     }
 
-    res.json({ success: true, data: { log, discipline, demerit, status } })
+    res.json({ success: true, data: { log, discipline, demerit, status, qr: qrInfo } })
   }),
 )
 

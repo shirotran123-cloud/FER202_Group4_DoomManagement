@@ -158,7 +158,7 @@ export const DormitoryGallerySlider: React.FC = () => {
               {currentSlide.title}
             </h3>
 
-            <p className="max-w-xl text-xs leading-relaxed text-white/85 drop-shadow-sm sm:text-sm lg:text-base">
+            <p className="prose max-w-xl text-xs leading-relaxed text-white/85 drop-shadow-sm sm:text-sm lg:text-base">
               {currentSlide.subtitle}
             </p>
 

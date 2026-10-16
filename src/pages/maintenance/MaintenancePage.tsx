@@ -343,7 +343,7 @@ export const MaintenancePage: React.FC = () => {
             <h1 className="text-xl sm:text-2xl font-bold text-foreground">Quản lý Báo hỏng & Sửa chữa</h1>
           </div>
           <p className="text-sm text-muted-foreground">
-            Theo dõi, điều phối kỹ thuật và nghiệm thu sửa chữa cơ sở vật chất KTX FPT
+            Điều phối kỹ thuật, nghiệm thu sửa chữa KTX FPT
           </p>
         </div>
 
@@ -549,9 +549,9 @@ export const MaintenancePage: React.FC = () => {
                     </span>
                   </div>
 
-                  {/* Title & Description */}
-                  <h3 className="font-bold text-base text-foreground line-clamp-1">{ticket.title}</h3>
-                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed">
+                  {/* Title & Description — mỗi dòng một dòng duy nhất, dài thì cắt bằng dấu ba chấm */}
+                  <h3 className="font-bold text-base text-foreground truncate">{ticket.title}</h3>
+                  <p className="text-xs text-muted-foreground mt-1 truncate" title={ticket.description}>
                     {ticket.description}
                   </p>
 
@@ -790,7 +790,7 @@ export const MaintenancePage: React.FC = () => {
                   rows={3}
                   value={formDescription}
                   onChange={(e) => setFormDescription(e.target.value)}
-                  placeholder="Mô tả cụ thể hiện trạng hư hỏng, vị trí hoặc dấu hiệu bất thường..."
+                  placeholder="Mô tả hiện trạng hư hỏng, vị trí hoặc dấu hiệu bất thường..."
                   
                 />
               </div>
@@ -799,7 +799,7 @@ export const MaintenancePage: React.FC = () => {
                 <ImageUpload
                   storageKey="dms_maintenance_create_photos"
                   label="Ảnh chụp hiện trường"
-                  hint="JPG/PNG/WebP, mỗi ảnh ≤ 5MB, tối đa 5 ảnh. Ảnh được lưu kèm phiếu."
+                  hint="JPG/PNG/WebP, mỗi ảnh ≤ 5MB, tối đa 5 ảnh, lưu kèm phiếu."
                   value={formPhotos}
                   onChange={setFormPhotos}
                 />
@@ -1159,7 +1159,7 @@ export const MaintenancePage: React.FC = () => {
               <ImageUpload
                 storageKey="dms_maintenance_complete_photos"
                 label="Ảnh sau khi hoàn thành"
-                hint="Chụp rõ hạng mục đã sửa. JPG/PNG/WebP, mỗi ảnh ≤ 5MB, tối đa 5 ảnh."
+                hint="Chụp rõ hạng mục đã sửa. Tối đa 5 ảnh JPG/PNG/WebP ≤ 5MB."
                 value={completionPhotos}
                 onChange={setCompletionPhotos}
               />

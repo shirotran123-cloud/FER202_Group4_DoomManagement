@@ -67,7 +67,7 @@ export const DormRoomTour: React.FC = () => {
       <h2 className="font-display text-2xl font-extrabold tracking-tight sm:text-3xl">
         Chọn phòng, bước vào xem
       </h2>
-      <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+      <p className="prose mt-2 max-w-2xl text-sm text-muted-foreground">
         Cuộn dừng ở hành lang — rê chuột sáng cửa, nhấp để vào. Trong buồng 6 người: giường, bàn học, vệ sinh. Quay lại chọn phòng khác bất cứ lúc nào.
       </p>
 

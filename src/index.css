@@ -156,23 +156,123 @@
     outline-offset: 2px;
     border-radius: 6px;
   }
-  /* Controls never wrap: a label broken across two lines inside a button, chip or
-     table header is always a layout bug, not intended prose. Multi-line text stays
-     opt-in via `whitespace-normal` (or by using a <p>, which is unaffected). */
+  /* ------------------------------------------------------------------
+     Single-line contract.
+
+     Every piece of UI chrome in this app must occupy exactly one line. This
+     is a hard product rule: a label that breaks mid-phrase, a table cell that
+     spills onto a second row, or a stat value that wraps all read as bugs.
+
+     The rule has TWO halves and both are required:
+
+       1. white-space: nowrap   — forbids the line break.
+       2. overflow: hidden +
+          text-overflow: ellipsis — turns the overflow into an ellipsis.
+
+     Only doing (1) is strictly worse than doing nothing: long text stops
+     wrapping and instead paints over the neighbouring column. So the two
+     always travel together here.
+
+     Prose that is *meant* to run to several lines opts out explicitly with
+     the `.prose` class (see the utilities layer). That keeps marketing copy,
+     legal text and chat bubbles readable while everything else stays rigid.
+     ------------------------------------------------------------------ */
   button,
   [role="button"],
   label,
   th,
-  summary {
+  td,
+  summary,
+  dt,
+  dd,
+  figcaption,
+  legend,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  li,
+  blockquote,
+  cite,
+  address {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /*
+   * Inline-level elements get the no-wrap guarantee but NOT `overflow: hidden`.
+   *
+   * Two reasons. First, `overflow` is ignored on a genuinely inline box, so
+   * adding it buys nothing. Second — and this is why they are split out — a
+   * <span>/<a> is very often a flex item here (icon + label rows), and a flex
+   * item *is* a block container. Putting `overflow: hidden` on it would clip
+   * the focus ring of any focusable child, which is an accessibility
+   * regression for links. They still never wrap; where a long label genuinely
+   * needs an ellipsis the `.one-line` utility below supplies it explicitly.
+   */
+  span,
+  a,
+  strong,
+  em,
+  code,
+  small,
+  time,
+  abbr {
     white-space: nowrap;
   }
   th,
   td {
     vertical-align: middle;
   }
-  th,
-  td {
-    vertical-align: middle;
+  /* Inline elements only honour `overflow`/`text-overflow` once they generate a
+     block container, so labels rendered as <span> get inline-block purely to make
+     the ellipsis actually apply. `max-width: 100%` stops them from pushing their
+     row wider than the parent. Opt in with this class where a long inline label
+     must ellipsise rather than merely refuse to wrap. */
+  .one-line {
+    display: inline-block;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: bottom;
+  }
+  /* Form controls that legitimately contain multi-line content must not be
+     clipped by the rule above. */
+  textarea,
+  select,
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="search"] {
+    text-overflow: ellipsis;
+  }
+  textarea,
+  select {
+    white-space: normal;
+    overflow: auto;
+  }
+  /* Print is a deliberate exception: paper has no scrollbar, so an ellipsis
+     would silently drop data from a printed statement. Let everything expand. */
+  @media print {
+    button,
+    label,
+    th,
+    td,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    .truncate {
+      overflow: visible !important;
+      text-overflow: clip !important;
+      white-space: normal !important;
+    }
   }
 }
 
@@ -196,6 +296,21 @@
      and only opt back in where prose is expected. */
   .nowrap {
     white-space: nowrap;
+  }
+  /* Prose opt-out. Anything that is genuinely a paragraph — marketing copy on
+     the landing page, legal text (Nghị định 13/2023), the dorm regulations box,
+     AI chat bubbles — carries this class and is therefore allowed to run to as
+     many lines as it needs. Everything else stays on one line. */
+  .prose,
+  .prose * {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+  /* Chat bubbles and notices preserve author line breaks; `.prose` alone would
+     collapse them, so this companion keeps `white-space` intact. */
+  .prose-pre {
+    white-space: pre-line !important;
   }
   .bleed-x-5 { margin-inline: -0.75rem; }
   .bleed-x-5 table :is(th, td):first-child { padding-left: 0.75rem; }

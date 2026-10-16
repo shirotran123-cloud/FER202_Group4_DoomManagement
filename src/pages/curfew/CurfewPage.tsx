@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { useAuth } from "@/contexts/useAuth"
 import type {
   CurfewRequest,
@@ -15,15 +15,47 @@ import {
   INITIAL_DISCIPLINE_RECORDS,
   INITIAL_STUDENT_DEMERIT_SUMMARIES,
 } from "@/data/mockCurfew"
-import { buildGateQrPayload, findOverdueAbsentees } from "@/lib/dorm-ops"
+import { buildGateQrPayload, findOverdueAbsentees, parseGateQrPayload } from "@/lib/dorm-ops"
 import { canApproveCurfew, canScanGate, isStaff } from "@/lib/role-access"
-import { ClockAlert, ShieldCheck, FileText, CircleAlert, Scan, CircleCheck, TriangleAlert, Sparkles, History, Shield, UserX } from "lucide-react"
+import { ClockAlert, ShieldCheck, FileText, CircleAlert, Scan, CircleCheck, TriangleAlert, Sparkles, History, Shield, UserX, QrCode } from "lucide-react"
 
 import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
+import { QrScannerDialog } from "@/components/ui/qr-scanner-dialog"
+import { ApiError, curfewApi } from "@/lib/api"
+
+type GateScanStatus = "ON_TIME" | "APPROVED_LATE" | "UNAUTHORIZED_LATE"
+
+/** Kết quả một lượt quét cổng hiển thị trên băng kết quả. */
+interface GateScanResult {
+  status: GateScanStatus
+  studentName: string
+  studentId: string
+  room: string
+  details: string
+  timestamp: string
+}
+
+/** Trạng thái đồng bộ lượt quét lên máy chủ (localStorage là đường dự phòng). */
+type GateSyncState = "IDLE" | "SYNCING" | "SYNCED" | "OFFLINE"
+
+/** Phần dữ liệu UI thực dùng của `POST /api/curfew/gate/scan`. */
+interface GateScanServerResult {
+  status?: string
+  discipline?: { id?: string; pointsDeducted?: number } | null
+  demerit?: { remainingPoints?: number; totalDeducted?: number; status?: string } | null
+}
+
+/** Chuẩn hoá `status` máy chủ trả về; giá trị lạ -> null (coi như chưa đồng bộ). */
+function toGateScanStatus(value: unknown): GateScanStatus | null {
+  return value === "ON_TIME" || value === "APPROVED_LATE" || value === "UNAUTHORIZED_LATE"
+    ? value
+    : null
+}
+
 const STORAGE_KEY_CURFEW_REQS = "dms_curfew_requests_v1"
 const STORAGE_KEY_GATE_LOGS = "dms_gate_logs_v1"
 const STORAGE_KEY_DISCIPLINE = "dms_discipline_records_v1"
@@ -102,14 +134,10 @@ export const CurfewPage: React.FC = () => {
   const [simulatedHour, setSimulatedHour] = useState(23)
   const [simulatedMinute, setSimulatedMinute] = useState(35)
   const [scanInputMssv, setScanInputMssv] = useState("")
-  const [scanResult, setScanResult] = useState<{
-    status: "ON_TIME" | "APPROVED_LATE" | "UNAUTHORIZED_LATE"
-    studentName: string
-    studentId: string
-    room: string
-    details: string
-    timestamp: string
-  } | null>(null)
+  const [scanResult, setScanResult] = useState<GateScanResult | null>(null)
+  // Hộp thoại quét QR bằng camera + trạng thái đồng bộ máy chủ của lượt quét gần nhất.
+  const [qrScannerOpen, setQrScannerOpen] = useState(false)
+  const [scanSyncState, setScanSyncState] = useState<GateSyncState>("IDLE")
 
   // Students database for scanning
   const registeredStudents: Record<
@@ -160,6 +188,82 @@ export const CurfewPage: React.FC = () => {
     },
   }
 
+  /**
+   * Mở hộp thoại quét mã QR bằng camera (chỉ vai trò được quét cổng).
+   * Nhập tay vẫn giữ nguyên: camera lỗi hay không có thiết bị thì ô MSSV vẫn dùng được.
+   */
+  const openQrScanner = () => {
+    if (!canScan) {
+      showToast("Chỉ bảo vệ trực cổng và quản lý được quét thẻ.")
+      return
+    }
+    setQrScannerOpen(true)
+  }
+
+  // Định danh ổn định: QrScannerDialog khởi động lại camera khi `onClose` đổi tham chiếu.
+  const closeQrScanner = useCallback(() => setQrScannerOpen(false), [])
+
+  /**
+   * Đồng bộ lượt quét lên máy chủ — máy chủ là nguồn chân lý cho kỷ luật và điểm rèn luyện.
+   * Vì sao vẫn giữ đường cục bộ (localStorage)? Vì console cổng phải chạy được cả khi backend
+   * tắt (demo, thao tác mạng chập chờn). Khi máy chủ trả lời, kết quả máy chủ ghi đè băng kết quả;
+   * khi lỗi, kết quả cục bộ vẫn hiển thị kèm cảnh báo "tạm tính" — không bao giờ nuốt lỗi im lặng.
+   */
+  const syncGateScanWithServer = async (
+    studentId: string,
+    scanHour: number,
+    localResult: GateScanResult,
+  ) => {
+    setScanSyncState("SYNCING")
+    try {
+      // Chữ ký mới của `curfewApi.scan` nhận một object `GateScanInput`.
+      // Đường nhập tay/MSSV: gửi `studentId`; mã QR đã được bóc và kiểm định dạng ngay trên
+      // trang này trước khi tới đây (xem `handleQrDecoded`).
+      const data = (await curfewApi.scan({
+        studentId,
+        scanHour,
+        guardName: user?.fullName,
+      })) as GateScanServerResult | null
+      const serverStatus = toGateScanStatus(data?.status)
+      if (!serverStatus) {
+        setScanSyncState("OFFLINE")
+        showToast("Chưa đồng bộ được với máy chủ (phản hồi thiếu trạng thái). Kết quả là tạm tính.")
+        return
+      }
+      const deducted = data?.discipline?.pointsDeducted
+      const remaining = data?.demerit?.remainingPoints
+      setScanResult({
+        ...localResult,
+        status: serverStatus,
+        details: `${localResult.details} · Máy chủ xác nhận ${serverStatus}${
+          deducted ? `, đã trừ ${deducted} điểm` : ""
+        }${typeof remaining === "number" ? `, còn ${remaining}/100đ` : ""}.`,
+      })
+      setScanSyncState("SYNCED")
+    } catch (error) {
+      // Backend tắt/timeout/lỗi quyền -> giữ nguyên kết quả cục bộ, báo rõ là tạm tính.
+      setScanSyncState("OFFLINE")
+      const serverMessage = error instanceof ApiError ? `: ${error.message}` : ""
+      showToast(
+        `Chưa đồng bộ được với máy chủ${serverMessage}. Kết quả trên màn hình là tạm tính từ dữ liệu cục bộ.`,
+      )
+    }
+  }
+
+  /**
+   * Nhận nội dung thô từ camera. Chỉ chấp nhận payload chuẩn `DMS-GATE|<MSSV>|<issuedAt>`;
+   * mã lạ (VietQR, link, mã cửa hàng…) bị từ chối trước khi chạm vào nghiệp vụ quét cổng.
+   */
+  const handleQrDecoded = (rawText: string) => {
+    const parsed = parseGateQrPayload(rawText)
+    if (!parsed) {
+      showToast("Mã QR không đúng định dạng thẻ cổng KTX (cần dạng DMS-GATE|MSSV|thời gian). Vui lòng quét lại hoặc nhập MSSV thủ công.")
+      return
+    }
+    showToast(`Đã đọc mã QR: MSSV ${parsed.studentId}. Đang đối chiếu giới nghiêm…`)
+    handleScanCard(parsed.studentId)
+  }
+
   // Xử lý quét MSSV tại cổng — chỉ bảo vệ/quản lý/admin được quét.
   const handleScanCard = (mssvToScan?: string) => {
     if (!canScan) {
@@ -174,6 +278,7 @@ export const CurfewPage: React.FC = () => {
 
     const studentInfo = registeredStudents[targetMssv]
     if (!studentInfo) {
+      // Không có hồ sơ -> không gọi máy chủ, tránh tạo nhật ký rác cho MSSV lạ.
       showToast(`Không tìm thấy hồ sơ sinh viên với MSSV: ${targetMssv}!`)
       return
     }
@@ -188,61 +293,67 @@ export const CurfewPage: React.FC = () => {
       (r) => r.studentId === targetMssv && r.status === "APPROVED"
     )
 
-    if (!isPastCurfew) {
-      // 1. BEFORE 23:00 -> ON TIME
-      const resultObj = {
-        status: "ON_TIME" as const,
-        studentName: studentInfo.name,
-        studentId: targetMssv,
-        room: studentInfo.room,
-        details: `Check-in lúc ${scanTimeFormatted}. Về trước 23:00 - Hợp lệ an toàn.`,
-        timestamp: scanTimeFormatted,
-      }
-      setScanResult(resultObj)
+    const resolvedResult: GateScanResult = (() => {
+      if (!isPastCurfew) {
+        // 1. BEFORE 23:00 -> ON TIME
+        const resultObj: GateScanResult = {
+          status: "ON_TIME",
+          studentName: studentInfo.name,
+          studentId: targetMssv,
+          room: studentInfo.room,
+          details: `Check-in lúc ${scanTimeFormatted}. Về trước 23:00 - Hợp lệ an toàn.`,
+          timestamp: scanTimeFormatted,
+        }
+        setScanResult(resultObj)
 
-      const newLog: GateAccessLog = {
-        id: `LOG-${Date.now().toString().slice(-4)}`,
-        studentId: targetMssv,
-        studentName: studentInfo.name,
-        room: studentInfo.room,
-        timestamp: new Date().toISOString(),
-        scanTimeFormatted: scanTimeFormatted,
-        curfewStatus: "ON_TIME",
-        guardNotes: "Check-in trước 23:00 an toàn.",
-        guardName: user?.fullName || "Chú Đỗ Mạnh Hùng",
+        const newLog: GateAccessLog = {
+          id: `LOG-${Date.now().toString().slice(-4)}`,
+          studentId: targetMssv,
+          studentName: studentInfo.name,
+          room: studentInfo.room,
+          timestamp: new Date().toISOString(),
+          scanTimeFormatted: scanTimeFormatted,
+          curfewStatus: "ON_TIME",
+          guardNotes: "Check-in trước 23:00 an toàn.",
+          guardName: user?.fullName || "Chú Đỗ Mạnh Hùng",
+        }
+        setGateLogs([newLog, ...gateLogs])
+        showToast(`HỢP LỆ: Sinh viên ${studentInfo.name} về đúng giờ!`)
+        return resultObj
       }
-      setGateLogs([newLog, ...gateLogs])
-      showToast(`HỢP LỆ: Sinh viên ${studentInfo.name} về đúng giờ!`)
-    } else if (approvedRequest) {
-      // 2. AFTER 23:00 WITH APPROVED REQUEST -> APPROVED LATE
-      const resultObj = {
-        status: "APPROVED_LATE" as const,
-        studentName: studentInfo.name,
-        studentId: targetMssv,
-        room: studentInfo.room,
-        details: `Check-in lúc ${scanTimeFormatted}. Có đơn duyệt ${approvedRequest.id} · ${approvedRequest.reasonDetail}. Cho phép vào cổng.`,
-        timestamp: scanTimeFormatted,
-      }
-      setScanResult(resultObj)
 
-      const newLog: GateAccessLog = {
-        id: `LOG-${Date.now().toString().slice(-4)}`,
-        studentId: targetMssv,
-        studentName: studentInfo.name,
-        room: studentInfo.room,
-        timestamp: new Date().toISOString(),
-        scanTimeFormatted: scanTimeFormatted,
-        curfewStatus: "APPROVED_LATE",
-        matchedRequestId: approvedRequest.id,
-        guardNotes: `Đối chiếu đơn ${approvedRequest.id} hợp lệ. Cho vào an toàn.`,
-        guardName: user?.fullName || "Chú Đỗ Mạnh Hùng",
+      if (approvedRequest) {
+        // 2. AFTER 23:00 WITH APPROVED REQUEST -> APPROVED LATE
+        const resultObj: GateScanResult = {
+          status: "APPROVED_LATE",
+          studentName: studentInfo.name,
+          studentId: targetMssv,
+          room: studentInfo.room,
+          details: `Check-in lúc ${scanTimeFormatted}. Có đơn duyệt ${approvedRequest.id} · ${approvedRequest.reasonDetail}. Cho phép vào cổng.`,
+          timestamp: scanTimeFormatted,
+        }
+        setScanResult(resultObj)
+
+        const newLog: GateAccessLog = {
+          id: `LOG-${Date.now().toString().slice(-4)}`,
+          studentId: targetMssv,
+          studentName: studentInfo.name,
+          room: studentInfo.room,
+          timestamp: new Date().toISOString(),
+          scanTimeFormatted: scanTimeFormatted,
+          curfewStatus: "APPROVED_LATE",
+          matchedRequestId: approvedRequest.id,
+          guardNotes: `Đối chiếu đơn ${approvedRequest.id} hợp lệ. Cho vào an toàn.`,
+          guardName: user?.fullName || "Chú Đỗ Mạnh Hùng",
+        }
+        setGateLogs([newLog, ...gateLogs])
+        showToast(`HỢP LỆ THEO ĐƠN: ${studentInfo.name} có đơn duyệt ${approvedRequest.id}!`)
+        return resultObj
       }
-      setGateLogs([newLog, ...gateLogs])
-      showToast(`HỢP LỆ THEO ĐƠN: ${studentInfo.name} có đơn duyệt ${approvedRequest.id}!`)
-    } else {
+
       // 3. Sau 23:00 không đơn -> vi phạm không phép
-      const resultObj = {
-        status: "UNAUTHORIZED_LATE" as const,
+      const resultObj: GateScanResult = {
+        status: "UNAUTHORIZED_LATE",
         studentName: studentInfo.name,
         studentId: targetMssv,
         room: studentInfo.room,
@@ -317,9 +428,14 @@ export const CurfewPage: React.FC = () => {
       })
 
       showToast(`CẢNH BÁO VI PHẠM: Đã trừ 10 điểm rèn luyện của sinh viên ${studentInfo.name}!`)
-    }
+      return resultObj
+    })()
 
     setScanInputMssv("")
+
+    // Máy chủ là nguồn chân lý; đường cục bộ ở trên chỉ là kết quả tạm tính khi backend không tới được.
+    // `scanHour` lấy từ đồng hồ giả lập nên các nút test 22:30 / 23:35 vẫn hoạt động.
+    void syncGateScanWithServer(targetMssv, simulatedHour, resolvedResult)
   }
 
   // ==========================================
@@ -704,9 +820,9 @@ export const CurfewPage: React.FC = () => {
               Logic đối chiếu dùng <code className="font-mono">evaluateGateScan()</code> (trước 23:00 hợp lệ, sau 23:00 cần đơn duyệt).
               Vắng mặt quá giờ: <code className="font-mono">{findOverdueAbsentees(gateLogs.map((g) => ({ studentId: g.studentId, scanHour: 22 })), ["QE200001", "QE200047"], simulatedHour).join(", ") || "không có"}</code>
             </p>
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Scan className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground" />
+            <div className="flex flex-wrap items-stretch gap-2">
+              <div className="relative min-w-0 flex-1 basis-48">
+                <Scan className="absolute left-3.5 top-3 h-4 w-4 shrink-0 text-muted-foreground" />
                 <Input
                   type="text"
                   value={scanInputMssv}
@@ -716,9 +832,13 @@ export const CurfewPage: React.FC = () => {
                   className="rounded-2xl pl-10 pr-4 font-mono uppercase focus:outline-hidden focus:ring-danger/30"
                 />
               </div>
-              <Button variant="destructive" className="hover:bg-danger flex" onClick={() => handleScanCard()}>
-                <Scan className="h-4 w-4" />
-                <span>Quẹt Thẻ Cổng (Scan)</span>
+              <Button variant="destructive" className="shrink-0 hover:bg-danger" onClick={() => handleScanCard()}>
+                <Scan className="h-4 w-4 shrink-0" />
+                <span className="truncate">Quẹt Thẻ Cổng (Scan)</span>
+              </Button>
+              <Button variant="outline" className="shrink-0" onClick={openQrScanner}>
+                <QrCode className="h-4 w-4 shrink-0" />
+                <span className="truncate">Quét mã QR</span>
               </Button>
             </div>
 
@@ -757,12 +877,26 @@ export const CurfewPage: React.FC = () => {
                         {scanResult.status === "UNAUTHORIZED_LATE" &&
                           "CẢNH BÁO AN NINH: VI PHẠM GIỜ GIỚI NGHIÊM 23:00!"}
                       </span>
-                      <span className="font-mono text-xs font-bold px-2.5 py-0.5 rounded-full bg-background/80">
+                      <span className="font-mono text-xs font-bold px-2.5 py-0.5 rounded-full bg-background/80 shrink-0">
                         {scanResult.timestamp}
+                      </span>
+                      <span
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
+                          scanSyncState === "SYNCED"
+                            ? "bg-success/15 text-success-soft-foreground"
+                            : scanSyncState === "OFFLINE"
+                            ? "bg-danger/15 text-danger-soft-foreground"
+                            : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {scanSyncState === "SYNCED" && "Đã đồng bộ máy chủ"}
+                        {scanSyncState === "OFFLINE" && "Chưa đồng bộ · tạm tính"}
+                        {scanSyncState === "SYNCING" && "Đang đồng bộ…"}
+                        {scanSyncState === "IDLE" && "Chưa gửi máy chủ"}
                       </span>
                     </div>
 
-                    <p className="text-xs">
+                    <p className="text-xs truncate">
                       Sinh viên: <strong>{scanResult.studentName}</strong> • MSSV:{" "}
                       <strong>{scanResult.studentId}</strong> • Phòng: <strong>{scanResult.room}</strong>
                     </p>
@@ -855,9 +989,9 @@ export const CurfewPage: React.FC = () => {
             </div>
 
             <div className="p-3 rounded-2xl bg-primary/10 border border-primary/25 text-[11px] leading-relaxed text-primary-soft-foreground">
-              <p className="flex items-start gap-1.5">
+              <p className="prose flex items-start gap-1.5">
                 <CircleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                <span><strong>Quy định nộp đơn:</strong> Đơn phải nộp <strong>trước 21:00</strong> ngày vắng mặt. Nộp sau 21:00 hệ thống sẽ gắn cờ nộp muộn và có thể bị từ chối.</span>
+                <span><strong>Quy định nộp đơn:</strong> Đơn phải nộp <strong>trước 21:00</strong> ngày vắng mặt. Nộp sau 21:00 sẽ bị gắn cờ nộp muộn.</span>
               </p>
             </div>
 
@@ -1281,13 +1415,21 @@ export const CurfewPage: React.FC = () => {
                 <ShieldCheck className="h-4 w-4" />
                 Quy Chế Khen Thưởng & Kỷ Luật Sinh Viên Nội Trú
               </h4>
-              <p className="text-muted-foreground leading-relaxed">
+              <p className="prose text-muted-foreground leading-relaxed">
                 Mỗi sinh viên bắt đầu học kỳ với 100 điểm rèn luyện. Việc chấp hành đúng giờ giới nghiêm 23:00 và bảo quản tốt trang thiết bị phòng ở sẽ giúp duy trì điểm số tối đa, làm căn cứ ưu tiên xét chọn phòng và giường ở các học kỳ tiếp theo.
               </p>
             </div>
           )}
         </div>
       )}
+
+      {/* Camera QR scanner — dùng chung cho quầy trực cổng, tự tắt camera khi đóng. */}
+      <QrScannerDialog
+        open={qrScannerOpen}
+        onClose={closeQrScanner}
+        onDetected={handleQrDecoded}
+        title="Quét mã QR thẻ cổng KTX"
+      />
     </div>
   )
 }

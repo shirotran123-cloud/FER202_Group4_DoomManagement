@@ -192,13 +192,48 @@ export const ticketApi = {
 
 /* ==================== Giới nghiêm ==================== */
 
+/** Kết quả một lượt quét cổng (POST /api/curfew/gate/scan). */
+export interface GateScanResult {
+  log: Record<string, unknown>
+  discipline: Record<string, unknown> | null
+  demerit: Record<string, unknown> | null
+  status: "ON_TIME" | "APPROVED_LATE" | "UNAUTHORIZED_LATE"
+  /** Thông tin mã QR đã xác thực ở backend; `null` khi quét bằng MSSV nhập tay. */
+  qr: { issuedAt: string; ageMinutes: number } | null
+}
+
+/** Tham số quét cổng bằng mã QR (`DMS-GATE|<MSSV>|<issuedAt>`). */
+export interface GateScanInput {
+  /** Ưu tiên: payload QR thô; backend tự bóc và kiểm hạn dùng (5 phút). */
+  qrPayload?: string
+  /** Đường cũ: nhập tay MSSV khi không quét được mã. */
+  studentId?: string
+  scanHour: number
+  /** `YYYY-MM-DD`; mặc định hôm nay. Dùng để đối chiếu đơn về muộn theo ngày. */
+  scanDate?: string
+  guardName?: string
+  matchedRequestId?: string
+}
+
 export const curfewApi = {
   requests: (status?: string) => request<unknown[]>(`/curfew/requests${toQuery({ status })}`),
   createRequest: (input: Record<string, unknown>) => request<unknown>("/curfew/requests", { method: "POST", body: input }),
   decide: (id: string, approve: boolean, notes?: string) =>
     request<unknown>(`/curfew/requests/${id}/decide`, { method: "POST", body: { approve, notes } }),
-  scan: (studentId: string, scanHour: number, guardName?: string) =>
-    request<unknown>("/curfew/gate/scan", { method: "POST", body: { studentId, scanHour, guardName } }),
+  /**
+   * Quét cổng. Truyền `qrPayload` để backend xác thực mã QR (khuyến nghị), hoặc
+   * `studentId` khi bảo vệ nhập tay MSSV.
+   */
+  scan: (input: GateScanInput) => request<GateScanResult>("/curfew/gate/scan", { method: "POST", body: input }),
+  /** Tương thích ngược: quét theo chữ ký cũ (studentId, scanHour, guardName). */
+  scanLegacy: (studentId: string, scanHour: number, guardName?: string) =>
+    request<GateScanResult>("/curfew/gate/scan", { method: "POST", body: { studentId, scanHour, guardName } }),
+  /** Tiện ích: quét thẳng bằng payload QR thô. */
+  scanQr: (qrPayload: string, scanHour: number, extra: Omit<GateScanInput, "qrPayload" | "scanHour"> = {}) =>
+    request<GateScanResult>("/curfew/gate/scan", {
+      method: "POST",
+      body: { qrPayload, scanHour, ...extra },
+    }),
   gateLogs: (params?: { studentId?: string; date?: string }) => request<unknown[]>(`/curfew/gate/logs${toQuery(params)}`),
   overdue: (hour?: number) => request<string[]>(`/curfew/gate/overdue${toQuery({ hour })}`),
   discipline: () => request<unknown[]>("/curfew/discipline"),
@@ -240,13 +275,44 @@ export const communityApi = {
 
 /* ==================== Dashboard & hệ thống ==================== */
 
+/** Loại báo cáo xuất được. */
+export type ReportKind = "residents" | "debts"
+/** Định dạng tệp xuất: `.xlsx` (OOXML thật) hoặc `.csv` (UTF-8 kèm BOM). */
+export type ReportFormat = "xlsx" | "csv"
+
+/**
+ * Tác vụ xuất báo cáo chạy nền.
+ *
+ * Vòng đời `status`: `QUEUED` → `RUNNING` → `DONE` | `FAILED`.
+ * Tác vụ đã kết thúc bị dọn khỏi bộ nhớ sau ~10 phút (`expiresAt`), sau đó
+ * `downloadUrl` trả 404 — client nên tải ngay khi thấy `DONE`.
+ */
+export interface ExportJob {
+  id: string
+  type: string
+  status: "QUEUED" | "RUNNING" | "DONE" | "FAILED"
+  payload?: Record<string, unknown>
+  createdAt: string
+  startedAt: string | null
+  finishedAt: string | null
+  expiresAt: string | null
+  filename: string | null
+  contentType: string | null
+  bytes: number
+  error: string | null
+  /** Chỉ có khi `status === "DONE"` — đường dẫn tải tệp thật. */
+  downloadUrl?: string
+}
+
 export const dashboardApi = {
   overview: () => request<Record<string, unknown>>("/dashboard/overview"),
   residents: () => request<unknown[]>("/dashboard/reports/residents"),
   debts: () => request<unknown[]>("/dashboard/reports/debts"),
-  exportReport: (kind: "residents" | "debts", format = "xlsx") =>
-    request<{ id: string; status: string }>("/dashboard/reports/export", { method: "POST", body: { kind, format } }),
-  exportStatus: (jobId: string) => request<{ id: string; status: string }>(`/dashboard/reports/export/${jobId}`),
+  exportReport: (kind: ReportKind, format: ReportFormat = "xlsx") =>
+    request<ExportJob>("/dashboard/reports/export", { method: "POST", body: { kind, format } }),
+  exportStatus: (jobId: string) => request<ExportJob>(`/dashboard/reports/export/${jobId}`),
+  /** URL tải tệp (ghép thẳng vào href/`window.open`; backend đã set Content-Disposition). */
+  exportDownloadUrl: (jobId: string) => `${BASE}/dashboard/reports/export/${jobId}/download` as string,
   settings: () => request<Record<string, unknown>>("/dashboard/settings"),
   updateSettings: (patch: Record<string, unknown>) => request<unknown>("/dashboard/settings", { method: "PUT", body: patch }),
   simulateBilling: (month?: string) => request<Record<string, unknown>>("/dashboard/simulate/billing", { method: "POST", body: { month } }),
