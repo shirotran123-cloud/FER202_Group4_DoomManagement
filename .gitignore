@@ -32,3 +32,7 @@ dist-ssr
 
 # Local staging: source photos + URL notes (rebuild via scripts/build-fpt-dolly.py)
 staging-fpt-ktx/
+
+# Scratch space for one-off verification scripts; never part of the deliverable.
+tmp/
+tmp-*/
