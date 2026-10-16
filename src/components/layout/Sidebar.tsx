@@ -66,9 +66,7 @@ function navFor(role: UserRole | undefined, isAuthed: boolean): { group: string;
           { title: "Điện nước", to: "/billing", icon: <Receipt className={ICON_CLS} /> },
           { title: "Bảo trì", to: "/maintenance", icon: <Wrench className={ICON_CLS} /> },
           { title: "Giới nghiêm", to: "/curfew", icon: <MoonStar className={ICON_CLS} /> },
-          { title: "Khách thăm", to: "/visitor", icon: <Users className={ICON_CLS} /> },
           { title: "Bảng tin", to: "/notices", icon: <Megaphone className={ICON_CLS} /> },
-          { title: "Chợ & thất lạc", to: "/marketplace", icon: <Store className={ICON_CLS} /> },
         ],
       },
       { group: "Cá nhân", items: [{ title: "Hồ sơ", to: "/profile", icon: <UserRound className={ICON_CLS} /> }] },
@@ -94,6 +92,8 @@ function navFor(role: UserRole | undefined, isAuthed: boolean): { group: string;
         items: [
           { title: "Phòng của tôi", to: "/my-room", icon: <BedDouble className={ICON_CLS} /> },
           { title: "Đặt giường", to: "/booking", icon: <Sparkles className={ICON_CLS} /> },
+          { title: "Khách thăm", to: "/visitor", icon: <Users className={ICON_CLS} /> },
+          { title: "Chợ & thất lạc", to: "/marketplace", icon: <Store className={ICON_CLS} /> },
         ],
       },
       { group: "Cá nhân", items: [{ title: "Hồ sơ", to: "/profile", icon: <UserRound className={ICON_CLS} /> }] },
@@ -105,7 +105,6 @@ function navFor(role: UserRole | undefined, isAuthed: boolean): { group: string;
       items: [
         { title: "Hàng đợi sửa chữa", to: "/maintenance", icon: <Wrench className={ICON_CLS} /> },
         { title: "Trực cổng", to: "/curfew", icon: <MoonStar className={ICON_CLS} /> },
-        { title: "Khách thăm", to: "/visitor", icon: <Users className={ICON_CLS} /> },
         { title: "Bảng tin", to: "/notices", icon: <Megaphone className={ICON_CLS} /> },
       ],
     },

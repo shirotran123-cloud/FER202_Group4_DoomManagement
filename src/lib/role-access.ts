@@ -43,12 +43,12 @@ export const ROUTE_ROLES: Record<AppRouteKey, UserRole[]> = {
   curfew: ["student", "manager", "technician", "admin"],
   // Dashboard vận hành + báo cáo: quản lý + admin.
   manager: ["manager", "admin"],
-  // Khách thăm: sinh viên đăng ký; bảo vệ check-in/out; quản lý giám sát.
-  visitor: ["student", "manager", "technician", "admin"],
+  // Khách thăm: chỉ sinh viên (đăng ký + theo dõi khách của mình).
+  visitor: ["student", "admin"],
   // Bảng tin: mọi vai trò xem; chỉ manager/admin đăng (guard trong trang).
   notices: ["student", "manager", "technician", "admin"],
-  // Chợ & thất lạc: cộng đồng sinh viên; quản lý/admin kiểm duyệt.
-  marketplace: ["student", "manager", "admin"],
+  // Chợ & thất lạc: chỉ sinh viên.
+  marketplace: ["student", "admin"],
   // Hồ sơ: mọi vai trò đã đăng nhập.
   profile: ["student", "manager", "technician", "admin"],
 }
@@ -64,7 +64,7 @@ export const isManagerOrAdmin = (role: UserRole | undefined): boolean =>
 export const isStaff = (role: UserRole | undefined): boolean =>
   role === "manager" || role === "technician" || role === "admin"
 
-/** Sinh viên (và admin đóng vai) mới được đăng bài chợ / đăng ký khách. */
+/** Chỉ sinh viên (và admin hỗ trợ) đăng ký khách thăm, đăng bài chợ. */
 export const canPostCommunity = (role: UserRole | undefined): boolean =>
   role === "student" || role === "admin"
 

@@ -1,19 +1,16 @@
 import { Input } from "@/components/ui/input"
 import React, { useEffect, useState } from "react";
-import { registerVisitor, checkInVisitor, checkOutVisitor, detectVisitorOverstay, type VisitorRecord } from "@/lib/dorm-ops";
+import { registerVisitor, VISITOR_LATEST_HOUR, type VisitorRecord } from "@/lib/dorm-ops";
 import { PageHeader, SectionCard, EmptyState } from "@/components/ui/shared";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/useAuth";
-import { canPostCommunity, canScanGate } from "@/lib/role-access";
 
 const KEY = "dms_visitors_v1";
 
 export const VisitorPage: React.FC = () => {
   const { user } = useAuth();
-  // Sinh viên đăng ký khách của mình; bảo vệ check-in/out tại cổng;
-  // quản lý giám sát toàn bộ.
-  const canRegister = canPostCommunity(user?.role);
-  const canCheckGate = canScanGate(user?.role);
+  // Chỉ sinh viên dùng trang này (route đã chặn các vai khác).
+  const studentId = user?.studentId || "QE202049";
   const [visitors, setVisitors] = useState<VisitorRecord[]>(() => {
     try {
       return JSON.parse(localStorage.getItem(KEY) || "[]");
@@ -23,7 +20,6 @@ export const VisitorPage: React.FC = () => {
   });
   const [name, setName] = useState("");
   const [citizenId, setCitizenId] = useState("");
-  const [minutes, setMinutes] = useState(60);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -33,12 +29,8 @@ export const VisitorPage: React.FC = () => {
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (!canRegister) {
-      setError("Chỉ sinh viên mới được đăng ký khách thăm.");
-      return;
-    }
     try {
-      const v = registerVisitor("QE202049", name, citizenId, new Date().toISOString().slice(0, 10), minutes);
+      const v = registerVisitor(studentId, name, citizenId, new Date().toISOString().slice(0, 10));
       setVisitors([v, ...visitors]);
       setName("");
       setCitizenId("");
@@ -47,22 +39,16 @@ export const VisitorPage: React.FC = () => {
     }
   };
 
-  const tickOverstay = () => {
-    setVisitors((prev) => prev.map((v) => detectVisitorOverstay(v, 9999)));
-  };
-
   return (
     <div className="w-full space-y-6 pb-12">
       <PageHeader
         eyebrow="An ninh · Khách thăm"
         title="Đăng ký khách ghé thăm"
-        desc="Sinh viên đăng ký trước họ tên + CCCD + thời gian. Bảo vệ check-in/out tại cổng, tự động cảnh báo quá giờ."
-        actions={<Button onClick={tickOverstay} variant="outline">Quét quá giờ</Button>}
+        desc={`Sinh viên đăng ký trước họ tên + CCCD. Khách chỉ ở trong ngày, rời KTX trước ${VISITOR_LATEST_HOUR}:00, không lưu trú qua đêm.`}
       />
-      <SectionCard title="Đăng ký khách mới" desc="Thời gian tối thiểu 15 phút">
-        {canRegister ? (
-          <form onSubmit={submit} className="grid gap-3 sm:grid-cols-3">
-          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Họ tên khách"  required />
+      <SectionCard title="Đăng ký khách mới" desc={`Khách rời KTX trước ${VISITOR_LATEST_HOUR}:00 cùng ngày`}>
+        <form onSubmit={submit} className="grid gap-3 sm:grid-cols-2">
+          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Họ tên khách" className="whitespace-nowrap" required />
           <Input
             value={citizenId}
             onChange={(e) => setCitizenId(e.target.value.replace(/\D/g, "").slice(0, 12))}
@@ -71,38 +57,29 @@ export const VisitorPage: React.FC = () => {
             maxLength={12}
             pattern="\d{12}"
             title="CCCD gồm đúng 12 chữ số"
-            className="font-mono"
+            className="font-mono whitespace-nowrap"
             required
           />
-          <Input type="number" min={15} value={minutes} onChange={(e) => setMinutes(Number(e.target.value))}  aria-label="So phut du kien" />
-          <div className="sm:col-span-3">
-            <Button type="submit">Đăng ký khách</Button>
+          <div className="sm:col-span-2">
+            <Button type="submit" className="whitespace-nowrap">Đăng ký khách</Button>
           </div>
-          </form>
-        ) : (
-          <p className="text-xs text-muted-foreground">
-            Vai trò của bạn chỉ theo dõi và check-in khách tại cổng. Sinh viên đăng ký khách thăm của mình.
-          </p>
-        )}
+        </form>
         {error && <p className="mt-2 text-xs font-semibold text-danger-soft-foreground" role="alert">{error}</p>}
       </SectionCard>
-      <SectionCard title={`Danh sách khách (${visitors.length})`} desc="Check-in khi tới cổng, check-out khi rời đi">
+      <SectionCard title={`Danh sách khách (${visitors.length})`} desc={`Bảo vệ check-in tại cổng, khách rời trước ${VISITOR_LATEST_HOUR}:00`}>
         {visitors.length === 0 ? (
           <EmptyState title="Chưa có khách nào" desc="Đăng ký khách thăm đầu tiên để bảo vệ đối chiếu tại cổng." />
         ) : (
           <div className="space-y-2">
             {visitors.map((v) => (
               <div key={v.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border p-3 text-xs">
-                <div>
-                  <p className="font-bold text-foreground">{v.fullName} · {v.citizenId}</p>
-                  <p className="text-muted-foreground">{v.id} · Dự kiến {v.expectedMinutes} phút · Trạng thái: <strong>{v.status}</strong></p>
-                </div>
-                <div className="flex gap-2">
-                  {canCheckGate && v.status === "PRE_REGISTERED" && <Button size="sm" onClick={() => setVisitors(visitors.map((x) => (x.id === v.id ? checkInVisitor(x, new Date().toISOString()) : x)))}>Check-in</Button>}
-                  {canCheckGate && (v.status === "CHECKED_IN" || v.status === "OVERSTAY") && (
-                    <Button size="sm" variant="outline" onClick={() => setVisitors(visitors.map((x) => (x.id === v.id ? checkOutVisitor(x, new Date().toISOString()) : x)))}>Check-out</Button>
+                <p className="truncate font-bold whitespace-nowrap text-foreground">{v.fullName} · {v.citizenId} · {v.id}</p>
+                <div className="flex shrink-0 items-center gap-2">
+                  {v.status === "PRE_REGISTERED" && <span className="whitespace-nowrap rounded-full bg-primary-soft px-2 py-1 text-[11px] font-bold text-primary-soft-foreground">Chờ bảo vệ check-in</span>}
+                  {(v.status === "CHECKED_IN" || v.status === "OVERSTAY") && (
+                    <span className="whitespace-nowrap rounded-full bg-muted px-2 py-1 text-[11px] font-bold text-muted-foreground">Bảo vệ xử lý tại cổng</span>
                   )}
-                  {v.status === "OVERSTAY" && <span className="rounded-full bg-danger-soft px-2 py-1 text-[11px] font-bold text-danger-soft-foreground">Quá giờ</span>}
+                  {v.status === "OVERSTAY" && <span className="whitespace-nowrap rounded-full bg-danger-soft px-2 py-1 text-[11px] font-bold text-danger-soft-foreground">Quá 21:00</span>}
                 </div>
               </div>
             ))}

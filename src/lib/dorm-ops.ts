@@ -200,6 +200,9 @@ export function findOverdueAbsentees(logs: GateLogInput[], expectedStudentIds: s
 
 export type VisitorStatus = "PRE_REGISTERED" | "CHECKED_IN" | "CHECKED_OUT" | "OVERSTAY"
 
+/** Khách thăm chỉ được ở trong ngày, rời KTX trước 21:00, không lưu trú qua đêm. */
+export const VISITOR_LATEST_HOUR = 21
+
 export interface VisitorRecord {
   id: string
   studentId: string
@@ -212,7 +215,7 @@ export interface VisitorRecord {
   checkOutAt: string | null
 }
 
-export function registerVisitor(studentId: string, fullName: string, citizenId: string, visitDate: string, expectedMinutes: number): VisitorRecord {
+export function registerVisitor(studentId: string, fullName: string, citizenId: string, visitDate: string): VisitorRecord {
   if (!fullName.trim()) throw new Error("Vui lòng nhập họ tên khách")
   if (!/^\d{12}$/.test(citizenId.replace(/\s/g, ""))) throw new Error("Số CCCD phải gồm đúng 12 chữ số")
   return {
@@ -221,7 +224,7 @@ export function registerVisitor(studentId: string, fullName: string, citizenId: 
     fullName: fullName.trim(),
     citizenId: citizenId.replace(/\s/g, ""),
     visitDate,
-    expectedMinutes: Math.max(15, Math.floor(expectedMinutes)),
+    expectedMinutes: 0,
     status: "PRE_REGISTERED",
     checkInAt: null,
     checkOutAt: null,
@@ -238,9 +241,9 @@ export function checkOutVisitor(v: VisitorRecord, at: string): VisitorRecord {
   return { ...v, status: "CHECKED_OUT", checkOutAt: at }
 }
 
-export function detectVisitorOverstay(v: VisitorRecord, elapsedMinutes: number): VisitorRecord {
+export function detectVisitorOverstay(v: VisitorRecord, currentHour: number): VisitorRecord {
   if (v.status !== "CHECKED_IN") return v
-  if (elapsedMinutes > v.expectedMinutes) return { ...v, status: "OVERSTAY" }
+  if (currentHour >= VISITOR_LATEST_HOUR) return { ...v, status: "OVERSTAY" }
   return v
 }
 

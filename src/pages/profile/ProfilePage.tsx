@@ -296,11 +296,11 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
 
         <div className="space-y-6">
           {user.dormitoryStatus ? (
-            <div className="rounded-2xl border border-primary/25 bg-gradient-to-br from-card to-primary p-6 shadow-xs space-y-4">
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4">
               <div className="flex items-center justify-between border-b border-border pb-3">
                 <div className="flex items-center gap-2 font-bold text-sm text-foreground">
-                  <BedDouble className="h-4 w-4 text-primary-soft-foreground" />
-                  <span>Vị Trí Lưu Trú Hiện Tại</span>
+                  <BedDouble className="h-4 w-4 text-muted-foreground" />
+                  <span>Vị trí lưu trú hiện tại</span>
                 </div>
                 <span className="rounded-md bg-success/10 px-2 py-0.5 text-[10px] font-bold text-success-soft-foreground">
                   {user.dormitoryStatus.roomStatus}
@@ -310,7 +310,7 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
               <div className="space-y-3 text-xs">
                 <div className="rounded-xl border border-border bg-card p-3.5 space-y-2">
                   <p className="text-[11px] text-muted-foreground font-semibold">Mã định danh giường:</p>
-                  <p className="text-xl font-mono font-black text-primary-soft-foreground tracking-wider">
+                  <p className="text-xl font-mono font-black text-foreground tracking-wider">
                     {user.dormitoryStatus.bedCode}
                   </p>
                   <p className="text-[11px] text-muted-foreground">

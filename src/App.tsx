@@ -152,7 +152,7 @@ export function App() {
               <Route
                 path="/visitor"
                 element={
-                  <ProtectedRoute allowedRoles={["student", "manager", "technician", "admin"]}>
+                  <ProtectedRoute allowedRoles={["student", "admin"]}>
                     <VisitorPage />
                   </ProtectedRoute>
                 }
@@ -170,7 +170,7 @@ export function App() {
               <Route
                 path="/marketplace"
                 element={
-                  <ProtectedRoute allowedRoles={["student", "manager", "admin"]}>
+                  <ProtectedRoute allowedRoles={["student", "admin"]}>
                     <MarketplacePage />
                   </ProtectedRoute>
                 }
