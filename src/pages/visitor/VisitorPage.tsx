@@ -10,7 +10,7 @@ const KEY = "dms_visitors_v1";
 export const VisitorPage: React.FC = () => {
   const { user } = useAuth();
   // Chỉ sinh viên dùng trang này (route đã chặn các vai khác).
-  const studentId = user?.studentId || "QE202049";
+  const studentId = user?.studentId || "QE200001";
   const [visitors, setVisitors] = useState<VisitorRecord[]>(() => {
     try {
       return JSON.parse(localStorage.getItem(KEY) || "[]");

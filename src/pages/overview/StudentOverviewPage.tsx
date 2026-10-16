@@ -292,7 +292,7 @@ export const StudentOverviewPage: React.FC = () => {
               <div className="flex flex-col items-center rounded-xl bg-white p-2 text-foreground">
                 <div className="relative mx-auto w-44 overflow-hidden rounded-lg bg-white">
                   <img
-                    src="https://api.qrserver.com/v1/create-qr-code/?size=480x480&margin=0&data=GATE-A205-QE202049-NguyenHoangVinh-8492-2026A"
+                    src="https://api.qrserver.com/v1/create-qr-code/?size=480x480&margin=0&data=GATE-A205-QE200001-NguyenHoangVinh-8492-2026A"
                     alt="QR cong A"
                     className="block aspect-square h-44 w-44 scale-[1.08]"
                   />
@@ -429,7 +429,7 @@ export const StudentOverviewPage: React.FC = () => {
             <div className="flex flex-col items-center justify-center rounded-xl bg-muted/70 p-4">
               <div className="relative w-full max-w-64 overflow-hidden rounded-lg bg-white shadow-xs">
                 <img
-                  src="https://api.qrserver.com/v1/create-qr-code/?size=480x480&margin=0&data=GATE-A205-QE202049-NguyenHoangVinh-8492-2026A"
+                  src="https://api.qrserver.com/v1/create-qr-code/?size=480x480&margin=0&data=GATE-A205-QE200001-NguyenHoangVinh-8492-2026A"
                   alt="QR cong A"
                   className="aspect-square w-full object-cover"
                 />

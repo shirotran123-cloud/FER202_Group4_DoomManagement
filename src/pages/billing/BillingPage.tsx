@@ -58,7 +58,7 @@ export const BillingPage: React.FC = () => {
     }
   })
   const [ocrHint, setOcrHint] = useState<string | null>(null)
-  const vietqrContent = buildVietQrContent("A205", user?.studentId || "QE202049", netDue, "DIENNUOC")
+  const vietqrContent = buildVietQrContent("A205", user?.studentId || "QE200001", netDue, "DIENNUOC")
   const [reconcileMsg, setReconcileMsg] = useState<string | null>(null)
   const confirmPaidWithReconcile = () => {
     const r = reconcilePayment({ expectedAmount: netDue, expectedContent: vietqrContent, actualAmount: netDue, actualContent: vietqrContent })
@@ -496,7 +496,7 @@ export const BillingPage: React.FC = () => {
                 <div className="flex flex-col items-center justify-center p-4 bg-white rounded-xl border border-border shadow-2xs">
                   <div className="relative p-2 bg-white rounded-xl shadow-xs border border-border">
                     <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=2|99|09182391024|KY_TUC_XA_FPT|${netDue}|DIENNUOC_A205_${user?.studentId || "QE202049"}`}
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=2|99|09182391024|KY_TUC_XA_FPT|${netDue}|DIENNUOC_A205_${user?.studentId || "QE200001"}`}
                       alt="VietQR Bill Payment"
                       className="w-60 h-60 rounded-lg"
                     />

@@ -53,7 +53,7 @@ export const MarketplacePage: React.FC = () => {
       return;
     }
     try {
-      const l = createMarketplaceListing("QE202049", title, price, "DO_CU", photos.map((p) => p.id));
+      const l = createMarketplaceListing("QE200001", title, price, "DO_CU", photos.map((p) => p.id));
       setListings([l, ...listings]);
       setTitle("");
       setPhotos([]);
@@ -70,7 +70,7 @@ export const MarketplacePage: React.FC = () => {
       return;
     }
     try {
-      const p = createLostFoundPost("QE202049", kind, item, "KTX", photos.map((ph) => ph.id));
+      const p = createLostFoundPost("QE200001", kind, item, "KTX", photos.map((ph) => ph.id));
       setPosts([p, ...posts]);
       setItem("");
       setPhotos([]);

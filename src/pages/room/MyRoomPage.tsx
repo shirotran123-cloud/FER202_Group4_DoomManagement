@@ -23,7 +23,7 @@ export const MyRoomPage: React.FC = () => {
   const roommates = [
     {
       name: "Nguyễn Hoàng Vinh",
-      mssv: user?.studentId || "QE202049",
+      mssv: user?.studentId || "QE200001",
       bed: "B-G03 tầng dưới",
       major: "Kỹ thuật phần mềm",
       phone: "0912 345 678",
@@ -32,7 +32,7 @@ export const MyRoomPage: React.FC = () => {
     },
     {
       name: "Trần Công Tiến",
-      mssv: "QE203012",
+      mssv: "QE200010",
       bed: "B-G01 tầng dưới",
       major: "Thiết kế Đồ họa",
       phone: "0934 112 233",
@@ -41,7 +41,7 @@ export const MyRoomPage: React.FC = () => {
     },
     {
       name: "Văn Thái Trung",
-      mssv: "QE201954",
+      mssv: "QE200011",
       bed: "B-G04 tầng trên",
       major: "Khoa học Máy tính",
       phone: "0977 445 566",
@@ -50,7 +50,7 @@ export const MyRoomPage: React.FC = () => {
     },
     {
       name: "Đinh Thanh Trung",
-      mssv: "QE202881",
+      mssv: "QE200012",
       bed: "B-G05 tầng dưới",
       major: "An toàn thông tin",
       phone: "0988 990 011",
@@ -393,7 +393,7 @@ export const MyRoomPage: React.FC = () => {
               onSubmit={(e) => {
                 e.preventDefault()
                 try {
-                  const req = createRoomSwitchRequest(user?.studentId || "QE202049", "A205", toRoom, switchReason)
+                  const req = createRoomSwitchRequest(user?.studentId || "QE200001", "A205", toRoom, switchReason)
                   try {
                     const raw = localStorage.getItem("dms_room_switch_v1")
                     const list = raw ? JSON.parse(raw) : []

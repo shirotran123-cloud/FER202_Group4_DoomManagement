@@ -116,43 +116,43 @@ export const CurfewPage: React.FC = () => {
     string,
     { name: string; room: string; phone: string; parentPhone: string }
   > = {
-    QE202049: {
+    QE200001: {
       name: "Nguyễn Hoàng Vinh",
       room: "A205",
       phone: "0912 345 678",
       parentPhone: "0903 123 456",
     },
-    QE202050: {
+    QE200002: {
       name: "Trần Thanh Nguyên",
       room: "A205",
       phone: "0905 111 222",
       parentPhone: "0905 888 999",
     },
-    QE202051: {
+    QE200003: {
       name: "Văn Thái Trung",
       room: "A205",
       phone: "0934 999 888",
       parentPhone: "0918 333 444",
     },
-    QE202052: {
+    QE200004: {
       name: "Huỳnh Gia Kim",
       room: "A205",
       phone: "0982 777 666",
       parentPhone: "0983 456 789",
     },
-    QE202053: {
+    QE200005: {
       name: "Lê Minh Tuấn",
       room: "A204",
       phone: "0961 223 344",
       parentPhone: "0962 111 333",
     },
-    QE202054: {
+    QE200006: {
       name: "Phạm Quốc Bảo",
       room: "A203",
       phone: "0971 445 566",
       parentPhone: "0972 555 777",
     },
-    QE202057: {
+    QE200009: {
       name: "Ngô Văn Khải",
       room: "A302",
       phone: "0943 222 111",
@@ -347,7 +347,7 @@ export const CurfewPage: React.FC = () => {
 
     const newReq: CurfewRequest = {
       id: `REQ-2026-${String(requests.length + 1).padStart(3, "0")}`,
-      studentId: user?.studentId || "QE202049",
+      studentId: user?.studentId || "QE200001",
       studentName: user?.fullName || "Nguyễn Hoàng Vinh",
       room: user?.dormitoryStatus?.room || "A205",
       phone: user?.phone || "0912 345 678",
@@ -396,7 +396,7 @@ export const CurfewPage: React.FC = () => {
   // ==========================================
   // State form biên bản kỷ luật
   // ==========================================
-  const [vioStudentId, setVioStudentId] = useState("QE202053")
+  const [vioStudentId, setVioStudentId] = useState("QE200005")
   const [vioType, setVioType] = useState<InfractionType>("UNAUTHORIZED_COOKING")
   const [vioDescription, setVioDescription] = useState("")
 
@@ -672,37 +672,37 @@ export const CurfewPage: React.FC = () => {
               </span>
               <div className="flex flex-wrap gap-2">
                 <button
-                  onClick={() => handleScanCard("QE202049")}
+                  onClick={() => handleScanCard("QE200001")}
                   className="rounded-xl border border-primary/30 bg-primary/10 hover:bg-primary/20 px-3 py-1.5 text-xs font-semibold text-primary-soft-foreground dark:text-primary-soft-foreground flex items-center gap-1.5"
                 >
-                  <span>QE202049 (Nguyễn Hoàng Vinh - Có đơn duyệt hợp lệ)</span>
+                  <span>QE200001 (Nguyễn Hoàng Vinh - Có đơn duyệt hợp lệ)</span>
                 </button>
                 <button
-                  onClick={() => handleScanCard("QE202053")}
+                  onClick={() => handleScanCard("QE200005")}
                   className="rounded-xl border border-danger/25 bg-danger/10 hover:bg-danger/20 px-3 py-1.5 text-xs font-semibold text-danger-soft-foreground flex items-center gap-1.5"
                 >
-                  <span>QE202053 (Lê Minh Tuấn - KHÔNG CÓ ĐƠN ➔ Vi phạm)</span>
+                  <span>QE200005 (Lê Minh Tuấn - KHÔNG CÓ ĐƠN ➔ Vi phạm)</span>
                 </button>
                 <button
-                  onClick={() => handleScanCard("QE202050")}
+                  onClick={() => handleScanCard("QE200002")}
                   className="rounded-xl border border-primary/25 bg-primary/10 hover:bg-primary/20 px-3 py-1.5 text-xs font-semibold text-primary-soft-foreground flex items-center gap-1.5"
                 >
-                  <span>QE202050 (Trần Thanh Nguyên - Về quê qua đêm)</span>
+                  <span>QE200002 (Trần Thanh Nguyên - Về quê qua đêm)</span>
                 </button>
                 <button
-                  onClick={() => handleScanCard("QE202054")}
+                  onClick={() => handleScanCard("QE200006")}
                   className="rounded-xl border border-border bg-muted/60 hover:bg-muted px-3 py-1.5 text-xs font-semibold text-foreground flex items-center gap-1.5"
                 >
-                  <span>QE202054 (Phạm Quốc Bảo - Phòng A203)</span>
+                  <span>QE200006 (Phạm Quốc Bảo - Phòng A203)</span>
                 </button>
               </div>
             </div>
 
             {/* Card Scan Input Form */}
             <p className="text-[11px] text-muted-foreground">
-              Mã QR chuẩn cổng: <code className="font-mono">{buildGateQrPayload("QE202049", new Date().toISOString().slice(0, 16))}</code> ·
+              Mã QR chuẩn cổng: <code className="font-mono">{buildGateQrPayload("QE200001", new Date().toISOString().slice(0, 16))}</code> ·
               Logic đối chiếu dùng <code className="font-mono">evaluateGateScan()</code> (trước 23:00 hợp lệ, sau 23:00 cần đơn duyệt).
-              Vắng mặt quá giờ: <code className="font-mono">{findOverdueAbsentees(gateLogs.map((g) => ({ studentId: g.studentId, scanHour: 22 })), ["QE202049", "QE202050"], simulatedHour).join(", ") || "không có"}</code>
+              Vắng mặt quá giờ: <code className="font-mono">{findOverdueAbsentees(gateLogs.map((g) => ({ studentId: g.studentId, scanHour: 22 })), ["QE200001", "QE200002"], simulatedHour).join(", ") || "không có"}</code>
             </p>
             <div className="flex gap-2">
               <div className="relative flex-1">
@@ -973,7 +973,7 @@ export const CurfewPage: React.FC = () => {
               <h3 className="font-bold text-sm text-foreground">
                 {isGuardOrManager
                   ? `Danh Sách Đơn Cần Phê Duyệt (${requests.length})`
-                  : `Các Đơn Của Tôi Đã Nộp (${requests.filter((r) => r.studentId === (user?.studentId || "QE202049")).length})`}
+                  : `Các Đơn Của Tôi Đã Nộp (${requests.filter((r) => r.studentId === (user?.studentId || "QE200001")).length})`}
               </h3>
               <span className="text-[11px] text-muted-foreground">
                 {isGuardOrManager
@@ -985,7 +985,7 @@ export const CurfewPage: React.FC = () => {
             <div className="space-y-3">
               {(isGuardOrManager
                 ? requests
-                : requests.filter((r) => r.studentId === (user?.studentId || "QE202049"))
+                : requests.filter((r) => r.studentId === (user?.studentId || "QE200001"))
               ).map((req) => (
                 <div
                   key={req.id}
@@ -1063,7 +1063,7 @@ export const CurfewPage: React.FC = () => {
 
               {(isGuardOrManager
                 ? requests
-                : requests.filter((r) => r.studentId === (user?.studentId || "QE202049"))
+                : requests.filter((r) => r.studentId === (user?.studentId || "QE200001"))
               ).length === 0 && (
                 <div className="p-8 text-center text-muted-foreground text-xs rounded-2xl border border-dashed border-border bg-muted/10">
                   {isGuardOrManager
@@ -1098,7 +1098,7 @@ export const CurfewPage: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {(isGuardOrManager
                 ? demerits
-                : demerits.filter((d) => d.studentId === (user?.studentId || "QE202049"))
+                : demerits.filter((d) => d.studentId === (user?.studentId || "QE200001"))
               ).map((student) => {
                 const percent = student.remainingPoints
                 const isWarning = student.status === "WARNING"
@@ -1191,10 +1191,10 @@ export const CurfewPage: React.FC = () => {
                     onChange={(e) => setVioStudentId(e.target.value)}
                     className="mt-1"
                   >
-                    <option value="QE202053">QE202053 - Lê Minh Tuấn (A204)</option>
-                    <option value="QE202056">QE202056 - Đoàn Gia Bảo (A201)</option>
-                    <option value="QE202057">QE202057 - Ngô Văn Khải (A302)</option>
-                    <option value="QE202049">QE202049 - Nguyễn Hoàng Vinh (A205)</option>
+                    <option value="QE200005">QE200005 - Lê Minh Tuấn (A204)</option>
+                    <option value="QE200008">QE200008 - Đoàn Gia Bảo (A201)</option>
+                    <option value="QE200009">QE200009 - Ngô Văn Khải (A302)</option>
+                    <option value="QE200001">QE200001 - Nguyễn Hoàng Vinh (A205)</option>
                   </Select>
                 </div>
 

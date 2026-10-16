@@ -127,7 +127,7 @@ export const MaintenancePage: React.FC = () => {
       category: formCategory,
       urgency: formUrgency,
       description: formDescription.trim() || "Cần kỹ thuật kiểm tra và khắc phục sự cố.",
-      studentId: user?.studentId || "QE202049",
+      studentId: user?.studentId || "QE200001",
       studentName: user?.fullName || "Nguyễn Hoàng Vinh",
       studentPhone: "0912 345 678",
       evidenceImages: formPhotos.map((p) => p.dataUrl).slice(0, 5),

@@ -453,7 +453,7 @@ export const BookingPage: React.FC = () => {
                 <span className="text-muted-foreground">Bảo trì · 1</span>
               </div>
               <div className="ml-auto rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
-                AI gợi ý: {suggestRoomAllocation({ id: user?.studentId || "QE202049", faculty: user?.major || "CNTT", nightOwl: false, quiet: true }, [{ id: "A205", facultyMix: [user?.major || "CNTT"], nightOwlFriendly: false, quietZone: true, freeBeds: 6 }, { id: "A202", facultyMix: ["KETOAN"], nightOwlFriendly: true, quietZone: false, freeBeds: 2 }], 1)[0]?.id || "A205"} hợp thói quen yên tĩnh
+                AI gợi ý: {suggestRoomAllocation({ id: user?.studentId || "QE200001", faculty: user?.major || "CNTT", nightOwl: false, quiet: true }, [{ id: "A205", facultyMix: [user?.major || "CNTT"], nightOwlFriendly: false, quietZone: true, freeBeds: 6 }, { id: "A202", facultyMix: ["KETOAN"], nightOwlFriendly: true, quietZone: false, freeBeds: 2 }], 1)[0]?.id || "A205"} hợp thói quen yên tĩnh
               </div>
               <div className="flex items-center gap-1.5 ml-auto">
                 <span className="w-3 h-3 rounded-xs bg-primary ring-2 ring-primary ring-offset-1"></span>
@@ -592,7 +592,7 @@ export const BookingPage: React.FC = () => {
             </div>
 
             <p className="text-[11px] text-white/80 leading-normal pt-0.5">
-              Khóa độc quyền cho MSSV <strong>{user?.studentId || "QE202049"}</strong>, tự giải phóng sau 15 phút.
+              Khóa độc quyền cho MSSV <strong>{user?.studentId || "QE200001"}</strong>, tự giải phóng sau 15 phút.
             </p>
           </div>
 
@@ -772,7 +772,7 @@ export const BookingPage: React.FC = () => {
                     {/* Dynamic QR Code graphic */}
                     <div className="relative p-2 bg-white rounded-xl shadow-xs border border-border">
                       <img
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=DORM_BOOKING_${selectedBed.code}_${user?.studentId || "QE202049"}_2150000`}
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=DORM_BOOKING_${selectedBed.code}_${user?.studentId || "QE200001"}_2150000`}
                         alt="Mã thanh toán VietQR"
                         className="w-60 h-60 rounded-lg"
                       />
@@ -790,7 +790,7 @@ export const BookingPage: React.FC = () => {
                       <p className="text-[11px] text-muted-foreground font-mono">
                         Số tiền: <strong>2,150,000 VNĐ</strong> • Nội dung:{" "}
                         <span className="bg-muted px-1 py-0.5 rounded text-foreground font-semibold">
-                          KTX {user?.studentId || "QE202049"} {selectedBed.code}
+                          KTX {user?.studentId || "QE200001"} {selectedBed.code}
                         </span>
                       </p>
                     </div>

@@ -11,7 +11,7 @@ interface LocationState {
 }
 
 const DEMO_ACCOUNTS: { role: UserRole; name: string; detail: string; initials: string; tint: string }[] = [
-  { role: "student", name: "Nguyễn Hoàng Vinh", detail: "Sinh viên · QE202049", initials: "VH", tint: "bg-success/15 text-success-soft-foreground" },
+  { role: "student", name: "Nguyễn Hoàng Vinh", detail: "Sinh viên · QE200001", initials: "VH", tint: "bg-success/15 text-success-soft-foreground" },
   { role: "manager", name: "Thầy Vũ Thành Nam", detail: "Quản lý KTX · MGR-004", initials: "QL", tint: "bg-primary/15 text-primary-soft-foreground" },
   { role: "technician", name: "Chú Đỗ Mạnh Hùng", detail: "An ninh / Kỹ thuật · SEC-012", initials: "KT", tint: "bg-primary/15 text-primary-soft-foreground" },
   { role: "admin", name: "Quản trị viên", detail: "Quản trị hệ thống · ADM-001", initials: "AD", tint: "bg-primary/15 text-primary-soft-foreground" },
@@ -32,7 +32,7 @@ export const LoginPage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [regDone, setRegDone] = useState(false)
   const [regName, setRegName] = useState("Nguyễn Hoàng Vinh")
-  const [regCode, setRegCode] = useState("QE202049")
+  const [regCode, setRegCode] = useState("QE200001")
   const [regEmail, setRegEmail] = useState("hoangvinh.student@gmail.com")
 
   const locationState = location.state as LocationState | null
