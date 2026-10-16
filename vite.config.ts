@@ -11,4 +11,21 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
+  server: {
+    // Proxy /api sang backend DMS (npm run server). Đổi cổng qua VITE_API_PROXY.
+    proxy: {
+      "/api": {
+        target: process.env.VITE_API_PROXY ?? "http://localhost:3001",
+        changeOrigin: true,
+      },
+    },
+  },
+  preview: {
+    proxy: {
+      "/api": {
+        target: process.env.VITE_API_PROXY ?? "http://localhost:3001",
+        changeOrigin: true,
+      },
+    },
+  },
 })
