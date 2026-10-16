@@ -9,8 +9,19 @@ Backend Express phục vụ frontend DMS, khớp 1:1 công thức và shape dữ
 npm run server        # http://localhost:3001
 npm run server:dev    # tự nạp lại khi sửa code
 npm run db:seed       # sinh lại db.json
-npm run test:api      # kiểm thử API theo 4 vai trò (cần backend đang chạy)
-API_BASE=http://localhost:3101 npm run test:api
+```
+
+## Kiểm thử
+
+```bash
+npm run check:frontend   # icon, import, MSSV (68 file)
+npm run check:parity     # quyền frontend ↔ backend (43 assertions)
+npm run check:domain     # luật nghiệp vụ thuần (69 assertions)
+npm run check:contract   # shape khớp src/types (30 assertions)
+npm run test:api         # phân quyền 4 vai trò (58 assertions)
+npm run test:flows       # 11 luồng end-to-end (92 assertions)
+npm run check:all        # chạy tất cả (2 bộ đầu không cần backend)
+API_BASE=http://localhost:3101 npm run check:all
 ```
 
 Windows: `start.bat` mở backend :3101 + frontend :5173 (proxy `/api` sang backend).

@@ -30,4 +30,5 @@ jobs:
           done
       - run: npm run check:contract
       - run: npm run test:api
+      - run: npm run test:flows
       - run: npm run build
