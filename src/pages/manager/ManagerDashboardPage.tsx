@@ -9,6 +9,7 @@ import {
   MOCK_OVERDUE_DEBTS,
 } from "@/data/mockDashboard"
 import { exportToExcel, exportToCsv, type ExportColumn } from "@/lib/excelExport"
+import { INITIAL_MAINTENANCE_TICKETS } from "@/data/mockMaintenance"
 import type { ResidentTemporaryRecord, OverdueDebtRecord } from "@/types/dashboard"
 import { LayoutDashboard, FileSpreadsheet, ChartPie, TrendingUp, Download, Search, Building, DollarSign, Zap, Droplets, TriangleAlert, Users, Sparkles, FileDown } from "lucide-react"
 
@@ -257,16 +258,96 @@ export const ManagerDashboardPage: React.FC = () => {
       d.invoiceCode.toLowerCase().includes(searchReportQuery.toLowerCase())
   )
 
-  // Interactive Bed Occupancy Donut calculations
-  const stats = MOCK_OCCUPANCY_STATS
-  const total = stats.totalBeds // 240
-  const radius = 65
-  const circumference = 2 * Math.PI * radius // ~408.4
+  /* ------------------------------------------------------------------
+     Dữ liệu biểu đồ.
 
-  const occupiedStroke = (stats.occupiedBeds / total) * circumference
-  const availableStroke = (stats.availableBeds / total) * circumference
-  const holdingStroke = (stats.holdingBeds / total) * circumference
-  const maintenanceStroke = (stats.maintenanceBeds / total) * circumference
+     Trước đây các con số của biểu đồ được viết cứng rời rạc (trục 350 triệu,
+     tổng lũy kế 1.528,4 triệu) nên chúng KHÔNG khớp với dữ liệu thực sự vẽ
+     ra, và không ai phát hiện khi dữ liệu đổi. Dưới đây mọi thứ được suy ra
+     từ chính mảng dữ liệu: sửa dữ liệu thì biểu đồ tự đúng theo.
+     ------------------------------------------------------------------ */
+  const stats = MOCK_OCCUPANCY_STATS
+  const total = stats.totalBeds
+  const radius = 65
+  const circumference = 2 * Math.PI * radius
+
+  /** Tỷ lệ từng trạng thái giường (%, làm tròn 1 chữ số). */
+  const bedShare = (count: number) => (total > 0 ? Number(((count / total) * 100).toFixed(1)) : 0)
+  const strokeOf = (count: number) => (total > 0 ? (count / total) * circumference : 0)
+
+  /**
+   * Bốn cung của vòng donut, vẽ nối tiếp nhau.
+   * `offset` = tổng độ dài các cung đứng trước, lấy dấu âm để cung hiện tại
+   * bắt đầu đúng chỗ cung trước kết thúc.
+   */
+  let runningStroke = 0
+  const bedArcs = [
+    { key: "occupied", label: "Đang ở", count: stats.occupiedBeds, color: "var(--muted-foreground)" },
+    { key: "available", label: "Còn trống", count: stats.availableBeds, color: "var(--success)" },
+    { key: "holding", label: "Giữ chỗ 15p", count: stats.holdingBeds, color: "var(--primary)" },
+    { key: "maintenance", label: "Bảo trì", count: stats.maintenanceBeds, color: "var(--danger)" },
+  ].map((segment) => {
+    const dash = strokeOf(segment.count)
+    const arc = { ...segment, dash, offset: -runningStroke, share: bedShare(segment.count) }
+    runningStroke += dash
+    return arc
+  })
+
+  /* ---------- Biểu đồ cột doanh thu ---------- */
+
+  const revenueData = MOCK_MONTHLY_REVENUE
+  const revenueTotals = revenueData.map((m) => m.roomFee + m.utilityFee)
+  const revenuePeak = Math.max(1, ...revenueTotals)
+  /** Trục tung làm tròn lên bội số 50 triệu để nhãn trục là số đẹp, và không bao giờ cắt cột. */
+  const revenueAxisMax = Math.ceil(revenuePeak / 50_000_000) * 50_000_000
+  const revenueGrandTotal = revenueTotals.reduce((sum, v) => sum + v, 0)
+  /** Đổi giá trị (VNĐ) sang % chiều cao cột theo trục đã chọn. */
+  const revenuePct = (value: number) => (value / revenueAxisMax) * 100
+  /** Vạch chia ngang của trục tung, từ 100% xuống 0%. */
+  const revenueTicks = [1, 0.75, 0.5, 0.25, 0]
+
+  /* ---------- Đối chiếu tiêu thụ giữa các tòa ---------- */
+
+  const consumptionData = MOCK_BUILDING_CONSUMPTION
+  const maxKwh = Math.max(1, ...consumptionData.map((b) => b.electricityAvgKwh))
+  const maxWater = Math.max(1, ...consumptionData.map((b) => b.waterAvgM3))
+  /**
+   * Ngưỡng cảnh báo, thay cho việc dò chữ "tăng" trong câu mô tả.
+   * Dò chuỗi khiến cảnh báo phụ thuộc vào cách viết câu: chỉ cần sửa lại lời
+   * văn là mất cảnh báo dù số liệu không đổi. So với ngưỡng thì ổn định và
+   * giải thích được vì sao bị gắn cờ.
+   */
+  const KWH_WARN = 330
+  const WATER_WARN = 20
+  const consumptionAlerts = (b: (typeof consumptionData)[number]): string[] => {
+    const alerts: string[] = []
+    if (b.electricityAvgKwh >= KWH_WARN) alerts.push(`Điện từ ${KWH_WARN} kWh/phòng`)
+    if (b.waterAvgM3 >= WATER_WARN) alerts.push(`Nước từ ${WATER_WARN} m³/phòng`)
+    return alerts
+  }
+
+  /* ---------- Chỉ số KPI ở đầu trang ---------- */
+
+  /** Tháng gần nhất và tháng liền trước, dùng cho thẻ "Doanh thu tháng". */
+  const latestMonth = revenueData[revenueData.length - 1]
+  const previousMonth = revenueData[revenueData.length - 2]
+  const latestTotal = latestMonth ? latestMonth.roomFee + latestMonth.utilityFee : 0
+  const previousTotal = previousMonth ? previousMonth.roomFee + previousMonth.utilityFee : 0
+  /** Tăng trưởng tháng này so với tháng trước (%), null nếu chưa đủ dữ liệu. */
+  const revenueGrowth =
+    previousTotal > 0 ? Number((((latestTotal - previousTotal) / previousTotal) * 100).toFixed(1)) : null
+  /** Số sinh viên đang có công nợ quá hạn (khớp bảng công nợ bên dưới). */
+  const debtStudentCount = new Set(MOCK_OVERDUE_DEBTS.map((d) => d.studentId)).size
+  /** Tổng công nợ quá hạn. */
+  const totalDebt = MOCK_OVERDUE_DEBTS.reduce((sum, d) => sum + d.totalDebt, 0)
+  /**
+   * Số phiếu sự cố CHƯA xong. Đây là con số vận hành thật, lấy từ danh sách
+   * phiếu đang hiển thị ở phân hệ Sửa chữa — trước đây thẻ này ghi cứng "2 phiếu"
+   * kèm "1 ca khẩn cấp <2h" nên sai ngay khi có phiếu mới.
+   */
+  const openTicketCount = INITIAL_MAINTENANCE_TICKETS.filter(
+    (t) => t.status === "PENDING" || t.status === "IN_PROGRESS",
+  ).length
 
   return (
     <div className="w-full space-y-6 pb-12">
@@ -334,9 +415,13 @@ export const ManagerDashboardPage: React.FC = () => {
               <span>Doanh thu tháng 10</span>
               <TrendingUp className="h-4 w-4" />
             </div>
-            <p className="text-2xl font-black text-foreground mt-1">318.5 tr</p>
+            <p className="text-2xl font-black text-foreground mt-1">
+              {(latestTotal / 1_000_000).toFixed(1)} tr
+            </p>
             <span className="text-[10px] text-muted-foreground">
-              +2.1% so với tháng trước
+              {revenueGrowth === null
+                ? "Chưa đủ dữ liệu so sánh"
+                : `${revenueGrowth >= 0 ? "+" : ""}${revenueGrowth}% so với tháng trước`}
             </span>
           </div>
 
@@ -345,20 +430,19 @@ export const ManagerDashboardPage: React.FC = () => {
               <span>Sự cố đang xử lý</span>
               <Zap className="h-4 w-4" />
             </div>
-            <p className="text-2xl font-black text-foreground mt-1">2 phiếu</p>
+            <p className="text-2xl font-black text-foreground mt-1">{openTicketCount} phiếu</p>
             <span className="text-[10px] text-muted-foreground">
-              1 ca khẩn cấp &lt;2h
-            </span>
-          </div>
+              Cần theo dõi &amp; xử lý
+            </span>          </div>
 
           <div className="rounded-2xl border border-border bg-card/60 p-4">
             <div className="flex items-center justify-between text-muted-foreground text-[11px] font-medium">
               <span>Công nợ quá hạn</span>
               <DollarSign className="h-4 w-4" />
             </div>
-            <p className="text-2xl font-black text-foreground mt-1">3 sinh viên</p>
+            <p className="text-2xl font-black text-foreground mt-1">{debtStudentCount} sinh viên</p>
             <span className="text-[10px] text-muted-foreground">
-              Tổng 3,313,000 VNĐ
+              Tổng {totalDebt.toLocaleString("vi-VN")} VNĐ
             </span>
           </div>
         </div>
@@ -421,54 +505,26 @@ export const ManagerDashboardPage: React.FC = () => {
                     fill="transparent"
                     className="text-muted/40"
                   />
-                  {/* Occupied: 80% (Gray/Blue) */}
-                  <circle
-                    cx="90"
-                    cy="90"
-                    r={radius}
-                    stroke="var(--muted-foreground)"
-                    strokeWidth="20"
-                    fill="transparent"
-                    strokeDasharray={`${occupiedStroke} ${circumference}`}
-                    strokeDashoffset="0"
-                    strokeLinecap="round"
-                  />
-                  {/* Available: 12.5% (Green) */}
-                  <circle
-                    cx="90"
-                    cy="90"
-                    r={radius}
-                    stroke="var(--success)"
-                    strokeWidth="20"
-                    fill="transparent"
-                    strokeDasharray={`${availableStroke} ${circumference}`}
-                    strokeDashoffset={-occupiedStroke}
-                    strokeLinecap="round"
-                  />
-                  {/* Holding: 5% (Orange) */}
-                  <circle
-                    cx="90"
-                    cy="90"
-                    r={radius}
-                    stroke="var(--primary)"
-                    strokeWidth="20"
-                    fill="transparent"
-                    strokeDasharray={`${holdingStroke} ${circumference}`}
-                    strokeDashoffset={-(occupiedStroke + availableStroke)}
-                    strokeLinecap="round"
-                  />
-                  {/* Maintenance: 2.5% (Red) */}
-                  <circle
-                    cx="90"
-                    cy="90"
-                    r={radius}
-                    stroke="var(--danger)"
-                    strokeWidth="20"
-                    fill="transparent"
-                    strokeDasharray={`${maintenanceStroke} ${circumference}`}
-                    strokeDashoffset={-(occupiedStroke + availableStroke + holdingStroke)}
-                    strokeLinecap="round"
-                  />
+                  {/*
+                    Bốn cung trạng thái giường.
+                    KHÔNG dùng `strokeLinecap="round"`: đầu tròn làm mỗi cung phình
+                    ra thêm nửa bề rộng nét vẽ ở cả hai đầu, nên các cung chồng lên
+                    nhau và tổng hiển thị không còn khớp tỷ lệ thật. Nét bằng
+                    (`butt`, mặc định) mới cộng đúng 100%.
+                  */}
+                  {bedArcs.map((arc) => (
+                    <circle
+                      key={arc.key}
+                      cx="90"
+                      cy="90"
+                      r={radius}
+                      stroke={arc.color}
+                      strokeWidth="20"
+                      fill="transparent"
+                      strokeDasharray={`${arc.dash} ${circumference}`}
+                      strokeDashoffset={arc.offset}
+                    />
+                  ))}
                 </svg>
 
                 {/* Center Percentage Display */}
@@ -480,28 +536,17 @@ export const ManagerDashboardPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Legend & Breakdown */}
+              {/* Legend & Breakdown — tỷ lệ % tính từ chính số giường, không viết cứng */}
               <div className="grid grid-cols-2 gap-2 text-xs border-t border-border pt-3">
-                <div className="flex items-center gap-2">
-                  <span className="h-3 w-3 rounded-md bg-muted-foreground shrink-0" />
-                  <span className="text-muted-foreground">Đang ở (80%):</span>
-                  <strong className="text-foreground ml-auto">{stats.occupiedBeds}</strong>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="h-3 w-3 rounded-md bg-success shrink-0" />
-                  <span className="text-muted-foreground">Còn trống (12.5%):</span>
-                  <strong className="text-foreground ml-auto">{stats.availableBeds}</strong>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="h-3 w-3 rounded-md bg-primary shrink-0" />
-                  <span className="text-muted-foreground">Giữ chỗ 15p (5%):</span>
-                  <strong className="text-foreground ml-auto">{stats.holdingBeds}</strong>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="h-3 w-3 rounded-md bg-danger shrink-0" />
-                  <span className="text-muted-foreground">Bảo trì (2.5%):</span>
-                  <strong className="text-foreground ml-auto">{stats.maintenanceBeds}</strong>
-                </div>
+                {bedArcs.map((arc) => (
+                  <div key={arc.key} className="flex items-center gap-2 min-w-0">
+                    <span className="h-3 w-3 shrink-0 rounded-md" style={{ backgroundColor: arc.color }} />
+                    <span className="truncate text-muted-foreground">
+                      {arc.label} ({arc.share}%):
+                    </span>
+                    <strong className="ml-auto shrink-0 font-mono text-foreground">{arc.count}</strong>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -518,63 +563,95 @@ export const ManagerDashboardPage: React.FC = () => {
                   </p>
                 </div>
                 <div className="flex items-center gap-3 text-xs">
-                  <span className="flex items-center gap-1.5 text-primary-soft-foreground font-semibold">
-                    <span className="h-2.5 w-2.5 rounded bg-primary" /> Tiền phòng
-                  </span>
-                  <span className="flex items-center gap-1.5 text-primary-soft-foreground font-semibold">
-                    <span className="h-2.5 w-2.5 rounded bg-primary" /> Điện nước/DV
-                  </span>
-                </div>
-              </div>
-
-              {/* Interactive Bar Chart Visualization */}
-              <div className="py-2">
-                <div className="grid grid-cols-6 gap-3 sm:gap-6 items-end h-48 border-b border-border/80 pb-2">
-                  {MOCK_MONTHLY_REVENUE.map((item, idx) => {
-                    const maxVal = 350000000 // 350M max scale
-                    const roomHeightPercent = (item.roomFee / maxVal) * 100
-                    const utilHeightPercent = (item.utilityFee / maxVal) * 100
-
-                    return (
-                      <div key={idx} className="flex flex-col items-center h-full justify-end group">
-                        {/* Hover Tooltip */}
-                        <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-foreground text-background text-[10px] p-1.5 rounded-lg font-mono absolute -translate-y-28 shadow-lg pointer-events-none z-10 whitespace-nowrap">
-                          {item.month}: {(item.total / 1000000).toFixed(1)} tr VNĐ
-                        </div>
-
-                        {/* Stacked Bars */}
-                        <div className="w-full max-w-[36px] flex flex-col items-center justify-end h-full">
-                          {/* Utility Fee (Orange) */}
-                          <div
-                            style={{ height: `${utilHeightPercent}%` }}
-                            className="w-full bg-primary hover:bg-primary rounded-t-md transition-all"
-                          />
-                          {/* Room Fee (Blue) */}
-                          <div
-                            style={{ height: `${roomHeightPercent}%` }}
-                            className="w-full bg-primary hover:bg-primary/90 transition-all"
-                          />
-                        </div>
-
-                        {/* X-axis Label */}
-                        <span className="mt-2 text-[10px] text-muted-foreground font-semibold">
-                          {item.month.replace("Tháng ", "T")}
-                        </span>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-
-              {/* Bottom Total Summary */}
-              <div className="flex items-center justify-between text-xs bg-muted/30 p-3 rounded-2xl border border-border">
-                <span className="text-muted-foreground">Tổng thu lũy kế 6 tháng:</span>
-                <span className="font-bold text-foreground font-mono text-sm">
-                  1,528,400,000 VNĐ
+                {/* Hai chuỗi dữ liệu PHẢI khác màu, nếu không thì không đọc được biểu đồ.
+                    Dùng đúng hệ 3 màu của app: indigo = tiền phòng, emerald = điện nước/dịch vụ. */}
+                <span className="flex items-center gap-1.5 whitespace-nowrap font-semibold text-foreground">
+                  <span className="h-2.5 w-2.5 shrink-0 rounded bg-primary" /> Tiền phòng
+                </span>
+                <span className="flex items-center gap-1.5 whitespace-nowrap font-semibold text-foreground">
+                  <span className="h-2.5 w-2.5 shrink-0 rounded bg-success" /> Điện nước/DV
                 </span>
               </div>
             </div>
+
+            {/* Interactive Bar Chart Visualization */}
+            <div className="flex gap-2 py-2">
+              {/* Trục tung: nhãn sinh từ trục đã tính, không viết cứng */}
+              <div className="flex h-48 shrink-0 flex-col justify-between pb-0 text-right text-[9px] font-semibold text-muted-foreground">
+                {revenueTicks.map((t) => (
+                  <span key={t} className="font-mono leading-none">
+                    {Math.round((revenueAxisMax * t) / 1_000_000)}tr
+                  </span>
+                ))}
+              </div>
+
+              <div className="min-w-0 flex-1">
+                {/*
+                  Vùng vẽ cột: `h-48` là đúng 100% chiều cao trục, không chứa nhãn
+                  tháng (nhãn nằm ở hàng riêng bên dưới) nên chiều cao cột khớp
+                  tuyệt đối với nhãn trục bên trái.
+                */}
+                <div className="relative h-48 border-b border-border/80">
+                  {/* Vạch chia ngang ứng với từng nhãn trục */}
+                  {revenueTicks.slice(0, -1).map((t) => (
+                    <div
+                      key={t}
+                      aria-hidden
+                      className="pointer-events-none absolute inset-x-0 border-t border-dashed border-border/60"
+                      style={{ bottom: `${t * 100}%` }}
+                    />
+                  ))}
+
+                  <div className="grid h-full grid-cols-6 items-end gap-3 sm:gap-6">
+                    {revenueData.map((item, idx) => (
+                      <div key={item.month} className="group relative flex h-full flex-col items-center justify-end">
+                        {/*
+                          Tooltip: cha phải `relative` thì tooltip mới neo theo đúng cột.
+                          Trước đây cha không có `relative` nên tooltip định vị theo cả
+                          trang và bay ra ngoài thẻ.
+                        */}
+                        <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 -translate-x-1/2 whitespace-nowrap rounded-lg bg-foreground p-1.5 font-mono text-[10px] text-background opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
+                          {item.month}: {(revenueTotals[idx] / 1_000_000).toFixed(1)} tr VNĐ
+                        </div>
+
+                        {/* Stacked Bars — hai đoạn khác màu: tiền phòng (indigo) ở dưới, điện nước (emerald) ở trên */}
+                        <div className="flex h-full w-full max-w-[36px] flex-col items-center justify-end">
+                          <div
+                            style={{ height: `${revenuePct(item.utilityFee)}%` }}
+                            className="w-full rounded-t-md bg-success transition-all group-hover:brightness-95"
+                            title={`Điện nước/DV ${item.month}: ${item.utilityFee.toLocaleString("vi-VN")}đ`}
+                          />
+                          <div
+                            style={{ height: `${revenuePct(item.roomFee)}%` }}
+                            className="w-full bg-primary transition-all group-hover:brightness-95"
+                            title={`Tiền phòng ${item.month}: ${item.roomFee.toLocaleString("vi-VN")}đ`}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Nhãn trục hoành, căn đúng 6 cột như vùng vẽ */}
+                <div className="mt-2 grid grid-cols-6 gap-3 sm:gap-6">
+                  {revenueData.map((item) => (
+                    <span key={item.month} className="whitespace-nowrap text-center text-[10px] font-semibold text-muted-foreground">
+                      {item.month.replace("Tháng ", "T")}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Total Summary — cộng từ dữ liệu, không viết cứng */}
+            <div className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-muted/30 p-3 text-xs">
+              <span className="truncate text-muted-foreground">Tổng thu lũy kế {revenueData.length} tháng:</span>
+              <span className="shrink-0 whitespace-nowrap font-mono text-sm font-bold text-foreground">
+                {revenueGrandTotal.toLocaleString("vi-VN")} VNĐ
+              </span>
+            </div>
           </div>
+        </div>
 
           {/* Row 2: Building Energy & Water Consumption Comparison */}
           <div className="overflow-hidden rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-xs space-y-4">
@@ -594,57 +671,87 @@ export const ManagerDashboardPage: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {MOCK_BUILDING_CONSUMPTION.map((item, idx) => {
-                const isAnomaly = item.anomalyNote?.includes("tăng")
+              {consumptionData.map((item) => {
+                const alerts = consumptionAlerts(item)
+                const isAnomaly = alerts.length > 0
 
                 return (
                   <div
-                    key={idx}
+                    key={item.building}
                     className={`p-5 rounded-2xl border transition-all ${
                       isAnomaly
-                        ? "border-primary/25 bg-primary/5 shadow-xs"
+                        ? "border-danger/30 bg-danger/5 shadow-xs"
                         : "border-border bg-muted/20"
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-bold text-xs text-foreground flex items-center gap-1.5">
-                        <Building className="h-4 w-4 text-primary" />
-                        {item.building}
+                    <div className="flex items-center justify-between gap-2">
+                      <h4 className="flex min-w-0 items-center gap-1.5 text-xs font-bold text-foreground">
+                        <Building className="h-4 w-4 shrink-0 text-primary" />
+                        <span className="truncate">{item.building}</span>
                       </h4>
                       {isAnomaly && (
-                        <span className="text-[10px] font-bold text-primary-soft-foreground bg-primary/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <span className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-danger/15 px-2 py-0.5 text-[10px] font-bold text-danger-soft-foreground">
                           <TriangleAlert className="h-3 w-3" /> Cảnh báo
                         </span>
                       )}
                     </div>
 
-                    <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
-                      {/* Electricity */}
-                      <div className="bg-card p-3 rounded-xl border border-border space-y-1">
-                        <span className="text-muted-foreground flex items-center gap-1 text-[11px]">
-                          <Zap className="h-3.5 w-3.5 text-primary" /> Điện TB
-                        </span>
-                        <p className="text-lg font-black text-foreground font-mono">
-                          {item.electricityAvgKwh}{" "}
-                          <span className="text-[10px] font-normal text-muted-foreground">kWh/phòng</span>
-                        </p>
+                    {/*
+                      Điện và nước là hai đại lượng KHÁC ĐƠN VỊ (kWh vs m³) nên không
+                      thể so sánh trực tiếp với nhau. Mỗi chỉ số có thanh riêng, chuẩn
+                      hoá theo tòa cao nhất của chính nó — nhờ vậy nhìn ra ngay tòa nào
+                      đang cao hơn mặt bằng chung.
+                    */}
+                    <div className="mt-4 space-y-3 text-xs">
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="flex min-w-0 items-center gap-1 text-[11px] text-muted-foreground">
+                            <Zap className="h-3.5 w-3.5 shrink-0 text-primary" />
+                            <span className="truncate">Điện TB</span>
+                          </span>
+                          <span className="shrink-0 whitespace-nowrap font-mono text-sm font-black text-foreground">
+                            {item.electricityAvgKwh}
+                            <span className="ml-0.5 text-[10px] font-normal text-muted-foreground">kWh/phòng</span>
+                          </span>
+                        </div>
+                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                          <div
+                            className={`h-full rounded-full ${item.electricityAvgKwh >= KWH_WARN ? "bg-danger" : "bg-primary"}`}
+                            style={{ width: `${(item.electricityAvgKwh / maxKwh) * 100}%` }}
+                          />
+                        </div>
                       </div>
 
-                      {/* Water */}
-                      <div className="bg-card p-3 rounded-xl border border-border space-y-1">
-                        <span className="text-muted-foreground flex items-center gap-1 text-[11px]">
-                          <Droplets className="h-3.5 w-3.5 text-primary" /> Nước TB
-                        </span>
-                        <p className="text-lg font-black text-foreground font-mono">
-                          {item.waterAvgM3}{" "}
-                          <span className="text-[10px] font-normal text-muted-foreground">m³/phòng</span>
-                        </p>
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="flex min-w-0 items-center gap-1 text-[11px] text-muted-foreground">
+                            <Droplets className="h-3.5 w-3.5 shrink-0 text-primary" />
+                            <span className="truncate">Nước TB</span>
+                          </span>
+                          <span className="shrink-0 whitespace-nowrap font-mono text-sm font-black text-foreground">
+                            {item.waterAvgM3}
+                            <span className="ml-0.5 text-[10px] font-normal text-muted-foreground">m³/phòng</span>
+                          </span>
+                        </div>
+                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                          <div
+                            className={`h-full rounded-full ${item.waterAvgM3 >= WATER_WARN ? "bg-danger" : "bg-primary"}`}
+                            style={{ width: `${(item.waterAvgM3 / maxWater) * 100}%` }}
+                          />
+                        </div>
                       </div>
                     </div>
 
-                    <p className="mt-3 text-[11px] text-muted-foreground leading-relaxed italic">
-                      "{item.anomalyNote}"
-                    </p>
+                    {isAnomaly ? (
+                      <p className="mt-3 text-[11px] font-semibold text-danger-soft-foreground">
+                        Vượt ngưỡng: {alerts.join(" · ")}
+                      </p>
+                    ) : (
+                      <p className="mt-3 text-[11px] font-semibold text-success-soft-foreground">
+                        Trong ngưỡng an toàn
+                      </p>
+                    )}
+                    <p className="mt-1 text-[11px] text-muted-foreground">{item.anomalyNote}</p>
                   </div>
                 )
               })}

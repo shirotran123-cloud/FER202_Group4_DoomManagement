@@ -56,8 +56,7 @@ export const MOCK_MONTHLY_REVENUE: MonthlyRevenue[] = [
   },
 ]
 
-export const MOCK_BUILDING_CONSUMPTION: BuildingConsumption[] = [
-  {
+export const MOCK_BUILDING_CONSUMPTION: BuildingConsumption[] = [  {
     building: "Tòa A (Nam - 240 Giường)",
     electricityAvgKwh: 342,
     waterAvgM3: 18.5,

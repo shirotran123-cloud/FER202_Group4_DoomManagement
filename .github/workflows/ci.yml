@@ -19,6 +19,9 @@ jobs:
       - run: npm run check:nowrap
       - run: npm run check:text-length
 
+      # --- Tính đúng của biểu đồ: màu, trục, tổng, nhãn % ---
+      - run: npm run check:charts
+
       # --- Nhất quán frontend ↔ backend ---
       - run: npm run check:frontend
       - run: npm run check:parity

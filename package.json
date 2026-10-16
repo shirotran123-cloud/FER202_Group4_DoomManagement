@@ -25,9 +25,10 @@
     "check:client": "node scripts/check-client.mjs",
     "check:nowrap": "node scripts/check-nowrap.mjs",
     "check:text-length": "node scripts/check-text-length.mjs",
+    "check:charts": "node scripts/check-charts.mjs",
     "check:pdf": "node scripts/check-pdf.mjs",
     "fix:text-length": "node scripts/fix-text-length.mjs",
-    "check:ui": "npm run check:nowrap && npm run check:text-length && npm run check:frontend && npm run check:parity && npm run check:client",
+    "check:ui": "npm run check:nowrap && npm run check:text-length && npm run check:charts && npm run check:frontend && npm run check:parity && npm run check:client",
     "check:backend": "npm run check:domain && npm run check:contract && npm run test:api && npm run test:flows && npm run test:client-live && npm run test:backend-qr && npm run test:backend-export",
     "check:all": "npm run check:ui && npm run check:pdf && npm run typecheck && npm run check:backend"
   },
