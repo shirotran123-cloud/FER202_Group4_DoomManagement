@@ -10,7 +10,11 @@
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
-    "server": "node server.js"
+    "server": "node server/index.js",
+    "server:dev": "node --watch server/index.js",
+    "db:seed": "node scripts/generate-db.js",
+    "test:api": "node scripts/test-api.mjs",
+    "check:domain": "node scripts/check-domain.mjs"
   },
   "dependencies": {
     "@fontsource-variable/roboto": "^5.3.0",
