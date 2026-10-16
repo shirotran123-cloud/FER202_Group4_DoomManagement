@@ -196,11 +196,16 @@ router.get(
     const nowHour = req.query.hour !== undefined ? Number(req.query.hour) : new Date().getHours()
     const residentIds = all("beds")
       .filter((b) => b.status === "OCCUPIED" && b.studentId)
-      .map((b) => String(b.studentId))
+      .map((b) => {
+        const user =
+          find("users", (u) => u.id === b.studentId) ||
+          find("users", (u) => (u.mssv || u.studentId) === b.studentId)
+        return user?.mssv || user?.studentId || String(b.studentId)
+      })
     const today = new Date().toISOString().slice(0, 10)
     const todayLogs = all("gateLogs").filter((l) => String(l.timestamp).startsWith(today))
     const overdue = findOverdueAbsentees(todayLogs, residentIds, nowHour)
-    res.json({ success: true, data: overdue, data2: { nowHour } })
+    res.json({ success: true, data: overdue, meta: { nowHour, checked: residentIds.length } })
   }),
 )
 

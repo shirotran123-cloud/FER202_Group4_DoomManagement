@@ -9869,7 +9869,9 @@
     }
   ],
   "bookings": [],
+  "bedHolds": [],
   "contracts": [],
+  "roomSwitchRequests": [],
   "utilityRecords": [
     {
       "id": "util_a205_2026_09",
@@ -9882,6 +9884,19 @@
       "meterPhotoIds": [],
       "recordedBy": "usr_tech_01",
       "recordedAt": "2026-09-26 09:30"
+    },
+    {
+      "id": "util_A205_2026-11",
+      "room": "A205",
+      "month": "2026-11",
+      "elecOld": 12000,
+      "elecNew": 12180,
+      "waterOld": 800,
+      "waterNew": 815,
+      "meterPhotoIds": [],
+      "recordedBy": "usr_manager_01",
+      "recordedAt": "2026-10-16 11:00",
+      "warnings": []
     }
   ],
   "invoices": [
@@ -9942,8 +9957,36 @@
       "studentIds": [
         "QE200062"
       ]
+    },
+    {
+      "id": "INV-2026-11-A205",
+      "invoiceCode": "INV-2026-11-A205",
+      "room": "A205",
+      "month": "2026-11",
+      "deltaElec": 180,
+      "deltaWater": 15,
+      "elecCost": 408000,
+      "waterCost": 270000,
+      "sharedFees": 180000,
+      "roomTotal": 1900000,
+      "grandTotal": 2758000,
+      "perStudentUtility": 429000,
+      "perStudentTotal": 1379000,
+      "numStudents": 2,
+      "vatRate": 0.08,
+      "utilityRecordId": "util_A205_2026-11",
+      "studentIds": [
+        "QE200001",
+        "QE200047"
+      ],
+      "status": "ISSUED",
+      "dueDate": "2026-12-05",
+      "issuedAt": "2026-10-16 11:00",
+      "vietQrContent": "DIENNUOC_A205_QE200001",
+      "warnings": []
     }
   ],
+  "payments": [],
   "tickets": [
     {
       "id": "TKT-2026-001",
@@ -10089,6 +10132,17 @@
       "status": "PRE_REGISTERED",
       "checkInAt": null,
       "checkOutAt": null
+    },
+    {
+      "id": "VST-448828",
+      "studentId": "QE200001",
+      "fullName": "Khách Test API",
+      "citizenId": "079204018293",
+      "visitDate": "2026-10-16",
+      "expectedMinutes": 0,
+      "status": "PRE_REGISTERED",
+      "checkInAt": null,
+      "checkOutAt": null
     }
   ],
   "notices": [
@@ -10107,6 +10161,24 @@
       "audience": "ALL",
       "startsAt": "2026-10-01",
       "endsAt": "2026-10-31"
+    },
+    {
+      "id": "NTC-448847",
+      "title": "Hóa đơn tháng 2026-11 phòng A205 đã phát hành",
+      "body": "Điện 180 kWh, nước 15 m³. Mỗi sinh viên đóng 1.379.000đ.",
+      "audience": "ROOM",
+      "startsAt": "2026-10-16",
+      "endsAt": "2026-12-05"
+    },
+    {
+      "id": "NTC-448866",
+      "title": "Thông báo test",
+      "body": "Nội dung test",
+      "audience": "ALL",
+      "startsAt": "2026-01-01",
+      "endsAt": "2026-12-31",
+      "publishedBy": "Thầy Vũ Thành Nam",
+      "publishedAt": "2026-10-16T11:00:48.866Z"
     }
   ],
   "marketplace": [
@@ -10205,6 +10277,18 @@
       "curfewStatus": "ON_TIME",
       "guardNotes": "Về trước 23:00.",
       "guardName": "Chú Đỗ Mạnh Hùng"
+    },
+    {
+      "id": "LOG-448838",
+      "studentId": "QE200001",
+      "studentName": "Nguyễn Hoàng Vinh",
+      "room": "A205",
+      "timestamp": "2026-10-16T11:00:48.838Z",
+      "scanTimeFormatted": "18:00:48",
+      "curfewStatus": "APPROVED_LATE",
+      "matchedRequestId": "REQ-2026-089",
+      "guardNotes": "Đối chiếu đơn REQ-2026-089: có phép hợp lệ.",
+      "guardName": "Chú Đỗ Mạnh Hùng"
     }
   ],
   "disciplineRecords": [
@@ -10253,5 +10337,6 @@
       "status": "SUSPENDED",
       "violationCount": 3
     }
-  ]
+  ],
+  "notifications": []
 }
