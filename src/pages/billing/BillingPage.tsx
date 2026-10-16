@@ -318,20 +318,20 @@ export const BillingPage: React.FC = () => {
                 </span>
               </div>
 
-              <div className="p-2.5 rounded-lg bg-card border border-border flex flex-col md:flex-row md:items-center justify-between gap-2 text-xs">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <span className="font-bold text-foreground">Thuật toán:</span>
-                  <span>
+              <div className="p-2.5 rounded-lg bg-card border border-border flex flex-col md:flex-row md:items-center justify-between gap-2 text-[11px]">
+                <div className="flex min-w-0 items-center gap-2 whitespace-nowrap text-muted-foreground">
+                  <span className="shrink-0 font-bold text-foreground">Thuật toán:</span>
+                  <span className="truncate">
                     ₫{totalBill.toLocaleString()} ÷ 6 SV ={" "}
                     <strong className="text-primary dark:text-primary">
                       ₫{perStudentUtility.toLocaleString()}
                     </strong>{" "}
-                    tiền điện nước/người
+                    điện nước/người
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 font-semibold text-primary dark:text-primary">
-                  <span>+ Tiền phòng: ₫{baseAmenity.toLocaleString()}</span>
-                  <span>= ₫{netDue.toLocaleString()} Net</span>
+                <div className="flex shrink-0 items-center gap-1.5 whitespace-nowrap font-semibold text-primary dark:text-primary">
+                  <span>+ Phòng ₫{baseAmenity.toLocaleString()}</span>
+                  <span>= ₫{netDue.toLocaleString()}</span>
                 </div>
               </div>
             </div>

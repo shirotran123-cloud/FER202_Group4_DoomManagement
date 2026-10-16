@@ -141,9 +141,9 @@ export const StudentOverviewPage: React.FC = () => {
         </div>
         <div className="flex h-full flex-col gap-3">
           <StatCard className="flex-1" label="Bảo trì kỹ thuật" value="2 đang xử lý" hint="1 khẩn: ổ cắm buồng B-G03 · NV Nguyễn Văn An" tone="warn" icon={<Wrench className="h-5 w-5" />} />
-          <div className="dms-card mt-auto flex h-11 items-center justify-between gap-2 px-3 text-xs">
-            <span className="truncate font-semibold">Lịch hẹn: hôm nay 14:30</span>
-            <Link to="/maintenance" className="inline-flex shrink-0 items-center gap-1 font-semibold text-primary hover:underline">
+          <div className="dms-card mt-auto flex h-11 items-center justify-between gap-2 px-3 text-[11px]">
+            <span className="truncate whitespace-nowrap font-semibold">Lịch hẹn: hôm nay 14:30</span>
+            <Link to="/maintenance" className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap font-semibold text-primary hover:underline">
               <Wrench className="h-3.5 w-3.5" /> Theo dõi tiến độ
             </Link>
           </div>
