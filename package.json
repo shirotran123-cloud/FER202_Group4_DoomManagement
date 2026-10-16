@@ -17,8 +17,9 @@
     "check:domain": "node scripts/check-domain.mjs",
     "check:contract": "node scripts/check-contract.mjs",
     "check:frontend": "node scripts/check-frontend.mjs",
+    "check:parity": "node scripts/check-parity.mjs",
     "check:backend": "npm run check:domain && npm run check:contract && npm run test:api",
-    "check:all": "npm run check:frontend && npm run typecheck && npm run check:domain && npm run check:contract && npm run test:api"
+    "check:all": "npm run check:frontend && npm run check:parity && npm run typecheck && npm run check:domain && npm run check:contract && npm run test:api"
   },
   "dependencies": {
     "@fontsource-variable/roboto": "^5.3.0",
