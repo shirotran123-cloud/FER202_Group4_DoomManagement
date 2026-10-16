@@ -2,7 +2,7 @@ import React from "react";
 import { cn } from "cn";
 
 /** Page header — compact eyebrow + display title + optional actions. */
-export function PageHeader({ eyebrow, title, desc, actions }: { eyebrow?: string; title: string; desc?: string; actions?: React.ReactNode }) {
+export function PageHeader({ eyebrow, title, desc, descClassName, actions }: { eyebrow?: string; title: string; desc?: string; descClassName?: string; actions?: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0">
@@ -11,21 +11,21 @@ export function PageHeader({ eyebrow, title, desc, actions }: { eyebrow?: string
             {eyebrow}
           </p>
         )}
-        <h1 className="font-display text-[26px] leading-tight font-extrabold tracking-tight sm:text-[32px]">{title}</h1>
-        {desc && <p className="mt-1.5 max-w-2xl text-[13.5px] leading-relaxed text-muted-foreground">{desc}</p>}
+        <h1 className="font-display text-[26px] leading-tight font-extrabold tracking-tight whitespace-nowrap sm:text-[32px]">{title}</h1>
+        {desc && <p className={cn("mt-1.5 max-w-2xl text-[13.5px] leading-relaxed text-muted-foreground", descClassName)}>{desc}</p>}
       </div>
       {actions && <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>}
     </div>
   );
 }
 
-export function SectionCard({ title, desc, actions, children, className }: { title: string; desc?: string; actions?: React.ReactNode; children: React.ReactNode; className?: string }) {
+export function SectionCard({ title, desc, descClassName, actions, children, className }: { title: string; desc?: string; descClassName?: string; actions?: React.ReactNode; children: React.ReactNode; className?: string }) {
   return (
     <section className={cn("dms-card overflow-hidden", className)}>
       <div className="flex items-start justify-between gap-3 px-3 pt-3 sm:px-4 sm:pt-4">
         <div className="min-w-0">
-          <h2 className="font-display text-[16px] font-bold tracking-tight">{title}</h2>
-          {desc && <p className="mt-0.5 text-xs text-muted-foreground">{desc}</p>}
+          <h2 className="font-display text-[16px] font-bold tracking-tight whitespace-nowrap">{title}</h2>
+          {desc && <p className={cn("mt-0.5 text-xs text-muted-foreground", descClassName)}>{desc}</p>}
         </div>
         {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
       </div>
@@ -56,8 +56,8 @@ export function StatCard({ label, value, hint, tone = "neutral", icon, className
 export function EmptyState({ title, desc, action }: { title: string; desc?: string; action?: React.ReactNode }) {
   return (
     <div className="rounded-3xl border-2 border-dashed border-border bg-muted/40 p-10 text-center sm:p-14">
-      <p className="font-display text-[16px] font-bold">{title}</p>
-      {desc && <p className="mx-auto mt-1.5 max-w-md text-[13px] text-muted-foreground">{desc}</p>}
+      <p className="font-display text-[16px] font-bold whitespace-nowrap">{title}</p>
+      {desc && <p className="mx-auto mt-1.5 max-w-md truncate text-[13px] text-muted-foreground">{desc}</p>}
       {action && <div className="mt-5 flex justify-center">{action}</div>}
     </div>
   );

@@ -44,9 +44,10 @@ export const VisitorPage: React.FC = () => {
       <PageHeader
         eyebrow="An ninh · Khách thăm"
         title="Đăng ký khách ghé thăm"
-        desc={`Sinh viên đăng ký trước họ tên + CCCD. Khách chỉ ở trong ngày, rời KTX trước ${VISITOR_LATEST_HOUR}:00, không lưu trú qua đêm.`}
+        desc={`Đăng ký họ tên + CCCD · Khách rời trước ${VISITOR_LATEST_HOUR}:00 · Không qua đêm`}
+        descClassName="truncate whitespace-nowrap"
       />
-      <SectionCard title="Đăng ký khách mới" desc={`Khách rời KTX trước ${VISITOR_LATEST_HOUR}:00 cùng ngày`}>
+      <SectionCard title="Đăng ký khách mới" desc={`Khách rời KTX trước ${VISITOR_LATEST_HOUR}:00 cùng ngày`} descClassName="truncate whitespace-nowrap">
         <form onSubmit={submit} className="grid gap-3 sm:grid-cols-2">
           <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Họ tên khách" className="whitespace-nowrap" required />
           <Input
@@ -66,7 +67,7 @@ export const VisitorPage: React.FC = () => {
         </form>
         {error && <p className="mt-2 text-xs font-semibold text-danger-soft-foreground" role="alert">{error}</p>}
       </SectionCard>
-      <SectionCard title={`Danh sách khách (${visitors.length})`} desc={`Bảo vệ check-in tại cổng, khách rời trước ${VISITOR_LATEST_HOUR}:00`}>
+      <SectionCard title={`Danh sách khách (${visitors.length})`} desc={`Bảo vệ check-in tại cổng · Rời trước ${VISITOR_LATEST_HOUR}:00`} descClassName="truncate whitespace-nowrap">
         {visitors.length === 0 ? (
           <EmptyState title="Chưa có khách nào" desc="Đăng ký khách thăm đầu tiên để bảo vệ đối chiếu tại cổng." />
         ) : (
