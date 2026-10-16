@@ -74,14 +74,20 @@ test("QR gate scan + overdue absentees", () => {
 });
 
 test("visitor register/checkin/checkout/overstay", () => {
-  const v = ops.registerVisitor("SE1", "Nguyen Van A", "012345678", "2026-10-14", 60);
+  // Khách thăm: CCCD đúng 12 số, không có thời lượng, rời trước 21:00, không qua đêm.
+  const v = ops.registerVisitor("QE200001", "Nguyen Van A", "079204018293", "2026-10-14");
   assert.equal(v.status, "PRE_REGISTERED");
+  assert.equal(v.expectedMinutes, 0);
   const inV = ops.checkInVisitor(v, "2026-10-14T10:00");
   assert.equal(inV.status, "CHECKED_IN");
-  assert.equal(ops.detectVisitorOverstay(inV, 61).status, "OVERSTAY");
-  assert.equal(ops.detectVisitorOverstay(inV, 30).status, "CHECKED_IN");
-  assert.equal(ops.checkOutVisitor(ops.detectVisitorOverstay(inV, 61), "2026-10-14T12:00").status, "CHECKED_OUT");
-  assert.throws(() => ops.registerVisitor("SE1", "A", "abc", "2026-10-14", 60), /citizenId|short/);
+  // Quá 21:00 -> OVERSTAY; trước 21:00 giữ nguyên.
+  assert.equal(ops.detectVisitorOverstay(inV, 21).status, "OVERSTAY");
+  assert.equal(ops.detectVisitorOverstay(inV, 20).status, "CHECKED_IN");
+  assert.equal(ops.checkOutVisitor(ops.detectVisitorOverstay(inV, 21), "2026-10-14T22:00").status, "CHECKED_OUT");
+  // CCCD 9 số (chuẩn CMND cũ) bị từ chối.
+  assert.throws(() => ops.registerVisitor("QE200001", "A", "079204018", "2026-10-14"), /12/);
+  assert.throws(() => ops.registerVisitor("QE200001", "A", "abc", "2026-10-14"), /12/);
+  assert.equal(ops.VISITOR_LATEST_HOUR, 21);
 });
 
 test("VietQR content + auto-reconcile", () => {

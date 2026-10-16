@@ -14,7 +14,19 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      - run: npm run check:frontend
       - run: npm run typecheck
       - run: npm run lint
       - run: node --experimental-strip-types scripts/verify-dorm-ops.mjs
+      - run: npm run check:domain
+      - run: npm run db:seed
+      - name: Khởi động backend
+        run: |
+          node server/index.js &
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:3001/api/health && break
+            sleep 1
+          done
+      - run: npm run check:contract
+      - run: npm run test:api
       - run: npm run build

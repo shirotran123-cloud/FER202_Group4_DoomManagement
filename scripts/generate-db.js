@@ -36,24 +36,42 @@ const VAT = 0.08;
 
 /* ---------- MSSV: Vinh 001, còn lại random cố định 002-310 ---------- */
 const STUDENTS = [
-  { mssv: 'QE200001', name: 'Nguyễn Hoàng Vinh', gender: 'MALE', room: 'A205', compartment: 'B1', bed: 'G03', debt: 0, suspended: false, phone: '0912 345 678' },
-  { mssv: 'QE200047', name: 'Trần Thanh Nguyên', gender: 'MALE', room: 'A205', compartment: 'B1', bed: 'G04', debt: 0, suspended: false, phone: '0905 111 222' },
-  { mssv: 'QE200123', name: 'Văn Thái Trung', gender: 'MALE', room: 'A205', compartment: 'B1', bed: 'G05', debt: 0, suspended: false, phone: '0934 999 888' },
-  { mssv: 'QE200286', name: 'Huỳnh Gia Kim', gender: 'MALE', room: 'A205', compartment: 'B1', bed: 'G06', debt: 0, suspended: false, phone: '0982 777 666' },
-  { mssv: 'QE200158', name: 'Lê Minh Tuấn', gender: 'MALE', room: 'A204', compartment: 'A1', bed: 'G01', debt: 218000, suspended: false, phone: '0961 223 344' },
-  { mssv: 'QE200094', name: 'Phạm Quốc Bảo', gender: 'MALE', room: 'A203', compartment: 'C1', bed: 'G14', debt: 0, suspended: false, phone: '0971 445 566' },
-  { mssv: 'QE200231', name: 'Vũ Đức Anh', gender: 'MALE', room: 'A202', compartment: 'A1', bed: 'G02', debt: 0, suspended: false, phone: '0905 333 444' },
-  { mssv: 'QE200175', name: 'Đoàn Gia Bảo', gender: 'MALE', room: 'A201', compartment: 'B1', bed: 'G04', debt: 0, suspended: false, phone: '0977 123 456' },
-  { mssv: 'QE200309', name: 'Ngô Văn Khải', gender: 'MALE', room: 'A302', compartment: 'B2', bed: 'G08', debt: 1445000, suspended: false, phone: '0943 222 111' },
-  { mssv: 'QE200062', name: 'Hoàng Gia Huy', gender: 'MALE', room: 'A104', compartment: 'D1', bed: 'G22', debt: 1650000, suspended: true, phone: '0938 123 789' },
-  { mssv: 'QE200297', name: 'Trần Công Tiến', gender: 'MALE', room: 'A205', compartment: 'B1', bed: 'G01', debt: 0, suspended: false, phone: '0934 112 233' },
-  { mssv: 'QE200204', name: 'Đinh Thanh Trung', gender: 'MALE', room: 'A205', compartment: 'B1', bed: 'G02', debt: 0, suspended: false, phone: '0988 990 011' },
+  { mssv: 'QE200001', name: 'Nguyễn Hoàng Vinh', gender: 'MALE', room: 'A205', compartment: 'B1', bed: 'G03', debt: 0, suspended: false, phone: '0912 345 678', citizenId: '079204018293', dob: '2004-05-15', hometown: 'TP. Hồ Chí Minh', major: 'Kỹ thuật Phần mềm (Software Engineering)', cohort: 'K19 - Khóa 2023-2027', parentName: 'Nguyễn Văn Hùng', parentPhone: '0903 123 456' },
+  { mssv: 'QE200047', name: 'Trần Thanh Nguyên', gender: 'MALE', room: 'A205', compartment: 'B1', bed: 'G04', debt: 0, suspended: false, phone: '0905 111 222', citizenId: '049204001923', dob: '2004-08-20', hometown: 'Quảng Nam', major: 'Kỹ thuật Phần mềm', cohort: 'K19 - Khóa 2023-2027', parentName: 'Trần Văn Toàn', parentPhone: '0905 888 999' },
+  { mssv: 'QE200123', name: 'Văn Thái Trung', gender: 'MALE', room: 'A205', compartment: 'B1', bed: 'G05', debt: 0, suspended: false, phone: '0934 999 888', citizenId: '052204008741', dob: '2004-11-12', hometown: 'Đà Nẵng', major: 'Khoa học Máy tính', cohort: 'K19 - Khóa 2023-2027', parentName: 'Văn Trọng Tuấn', parentPhone: '0918 333 444' },
+  { mssv: 'QE200286', name: 'Huỳnh Gia Kim', gender: 'MALE', room: 'A205', compartment: 'B1', bed: 'G06', debt: 0, suspended: false, phone: '0982 777 666', citizenId: '056204009214', dob: '2004-03-30', hometown: 'Khánh Hòa', major: 'An toàn thông tin', cohort: 'K19 - Khóa 2023-2027', parentName: 'Huỳnh Minh Trí', parentPhone: '0983 456 789' },
+  { mssv: 'QE200158', name: 'Lê Minh Tuấn', gender: 'MALE', room: 'A204', compartment: 'A1', bed: 'G01', debt: 218000, suspended: false, phone: '0961 223 344', citizenId: '038204001289', dob: '2004-07-04', hometown: 'Thanh Hóa', major: 'Thiết kế Đồ họa', cohort: 'K19 - Khóa 2023-2027', parentName: 'Lê Văn Tự', parentPhone: '0962 111 333' },
+  { mssv: 'QE200094', name: 'Phạm Quốc Bảo', gender: 'MALE', room: 'A203', compartment: 'C1', bed: 'G14', debt: 0, suspended: false, phone: '0971 445 566', citizenId: '075204004561', dob: '2004-09-18', hometown: 'Đồng Nai', major: 'Kỹ thuật Phần mềm', cohort: 'K19 - Khóa 2023-2027', parentName: 'Phạm Quốc Dũng', parentPhone: '0972 555 777' },
+  { mssv: 'QE200231', name: 'Vũ Đức Anh', gender: 'MALE', room: 'A202', compartment: 'A1', bed: 'G02', debt: 0, suspended: false, phone: '0905 333 444', citizenId: '031204003344', dob: '2004-02-11', hometown: 'Hà Nội', major: 'Khoa học Máy tính', cohort: 'K19 - Khóa 2023-2027', parentName: 'Vũ Đức Long', parentPhone: '0905 444 555' },
+  { mssv: 'QE200175', name: 'Đoàn Gia Bảo', gender: 'MALE', room: 'A201', compartment: 'B1', bed: 'G04', debt: 0, suspended: false, phone: '0977 123 456', citizenId: '079204007788', dob: '2004-06-22', hometown: 'TP. Hồ Chí Minh', major: 'An toàn thông tin', cohort: 'K19 - Khóa 2023-2027', parentName: 'Đoàn Gia Hân', parentPhone: '0977 654 321' },
+  { mssv: 'QE200309', name: 'Ngô Văn Khải', gender: 'MALE', room: 'A302', compartment: 'B2', bed: 'G08', debt: 1445000, suspended: false, phone: '0943 222 111', citizenId: '031204008922', dob: '2004-12-05', hometown: 'Hải Phòng', major: 'Kỹ thuật Phần mềm', cohort: 'K19 - Khóa 2023-2027', parentName: 'Ngô Văn Chiến', parentPhone: '0944 333 222' },
+  { mssv: 'QE200062', name: 'Hoàng Gia Huy', gender: 'MALE', room: 'A104', compartment: 'D1', bed: 'G22', debt: 1650000, suspended: true, phone: '0938 123 789', citizenId: '079204011122', dob: '2003-10-09', hometown: 'TP. Hồ Chí Minh', major: 'Thiết kế Đồ họa', cohort: 'K18 - Khóa 2022-2026', parentName: 'Hoàng Gia Bảo', parentPhone: '0938 987 654' },
+  { mssv: 'QE200297', name: 'Trần Công Tiến', gender: 'MALE', room: 'A205', compartment: 'B1', bed: 'G01', debt: 0, suspended: false, phone: '0934 112 233', citizenId: '052204002233', dob: '2004-04-02', hometown: 'Đà Nẵng', major: 'Kỹ thuật Phần mềm', cohort: 'K19 - Khóa 2023-2027', parentName: 'Trần Công Danh', parentPhone: '0934 332 211' },
+  { mssv: 'QE200204', name: 'Đinh Thanh Trung', gender: 'MALE', room: 'A205', compartment: 'B1', bed: 'G02', debt: 0, suspended: false, phone: '0988 990 011', citizenId: '038204006655', dob: '2004-01-25', hometown: 'Thanh Hóa', major: 'An toàn thông tin', cohort: 'K19 - Khóa 2023-2027', parentName: 'Đinh Thanh Sơn', parentPhone: '0988 110 022' },
 ];
 
 const STAFF = [
-  { id: 'usr_manager_01', staffId: 'MGR-004', name: 'Thầy Vũ Thành Nam', email: 'namvt@fpt.edu.vn', role: 'MANAGER', phone: '0988 765 432' },
-  { id: 'usr_tech_01', staffId: 'SEC-012', name: 'Chú Đỗ Mạnh Hùng', email: 'hungbv.guard@fe.edu.vn', role: 'TECHNICIAN', phone: '0977 112 233' },
-  { id: 'usr_admin_01', staffId: 'ADM-001', name: 'Ban Quản trị Hệ thống DMS', email: 'admin.dms@fpt.edu.vn', role: 'ADMIN', phone: '0236 730 0999' },
+  {
+    id: 'usr_manager_01', staffId: 'MGR-004', name: 'Thầy Vũ Thành Nam', email: 'namvt@fpt.edu.vn',
+    role: 'MANAGER', phone: '0988 765 432', citizenId: '001082001924', dob: '1982-11-20',
+    gender: 'MALE', hometown: 'Hà Nội', joinedDate: '2020-03-15',
+    department: 'Phòng Quản lý KTX & Công tác Sinh viên (CTSV)',
+    emergencyContact: { parentName: 'Vũ Đình Khiêm', relationship: 'Thân nhân', phone: '0912 999 888', address: 'Khu Đô thị FPT City, Đà Nẵng' },
+  },
+  {
+    id: 'usr_tech_01', staffId: 'SEC-012', name: 'Chú Đỗ Mạnh Hùng', email: 'hungbv.guard@fe.edu.vn',
+    role: 'TECHNICIAN', phone: '0977 112 233', citizenId: '034076008123', dob: '1976-08-10',
+    gender: 'MALE', hometown: 'Đà Nẵng', joinedDate: '2021-08-01',
+    department: 'Tổ An ninh Bảo vệ & Bảo trì Cơ sở vật chất',
+    emergencyContact: { parentName: 'Đỗ Thị Mai', relationship: 'Vợ', phone: '0905 556 677', address: 'Đường Nam Kỳ Khởi Nghĩa, Đà Nẵng' },
+  },
+  {
+    id: 'usr_admin_01', staffId: 'ADM-001', name: 'Ban Quản trị Hệ thống DMS', email: 'admin.dms@fpt.edu.vn',
+    role: 'ADMIN', phone: '0236 730 0999', citizenId: '048090001234', dob: '1990-01-01',
+    gender: 'MALE', hometown: 'Đà Nẵng', joinedDate: '2019-01-01',
+    department: 'Trung tâm Hệ thống Thông tin (IT Center FPT)',
+    emergencyContact: { parentName: 'Hotline Kỹ thuật CNTT', relationship: 'Tổng đài FPT', phone: '1900 6600', address: 'Tòa nhà FPT Complex, Đà Nẵng' },
+  },
 ];
 
 const db = {
@@ -94,12 +112,23 @@ for (const s of STUDENTS) {
     gender: s.gender,
     role: 'STUDENT',
     status: 'ACTIVE',
-    citizenId: '079204018293',
+    citizenId: s.citizenId,
+    dob: s.dob,
+    hometown: s.hometown,
+    major: s.major,
+    cohort: s.cohort,
+    joinedDate: '2024-09-01',
     room: s.room,
     compartment: s.compartment,
     bedCode: `${s.room}-${s.compartment}-${s.bed}`,
     previousDebt: s.debt,
     isSuspended: s.suspended,
+    emergencyContact: {
+      parentName: s.parentName,
+      relationship: 'Phụ huynh',
+      phone: s.parentPhone,
+      address: s.hometown,
+    },
   };
   db.users.push(u);
   studentByCode.set(s.mssv, u);
@@ -108,6 +137,9 @@ for (const st of STAFF) {
   db.users.push({
     id: st.id, staffId: st.staffId, name: st.name, fullName: st.name,
     email: st.email, role: st.role, status: 'ACTIVE', phone: st.phone,
+    citizenId: st.citizenId, dob: st.dob, gender: st.gender, hometown: st.hometown,
+    joinedDate: st.joinedDate, department: st.department,
+    emergencyContact: st.emergencyContact,
     previousDebt: 0, isSuspended: false,
   });
 }

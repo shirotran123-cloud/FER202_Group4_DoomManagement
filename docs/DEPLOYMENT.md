@@ -14,9 +14,17 @@ docker compose up --build
 ```
 
 ## 3. Kiểm tra sống
-- `GET /api/health` → `{ ok: true }`
+- `GET /api/health` → `{ ok: true, version: "2.0.0" }`
+- `GET /api/config` → biểu giá, mốc giới nghiêm, mô hình 1:4:6
 - `GET /api/events` → SSE realtime
-- `POST /api/ai/chat` → `{ query }` hoặc `{ action, args }`
+
+## 3b. Kiểm thử backend
+```bash
+npm run check:domain      # luật nghiệp vụ thuần (69 assertions)
+npm run check:contract    # shape khớp frontend (30 assertions)
+npm run test:api          # phân quyền 4 vai trò (58 assertions)
+npm run check:backend     # chạy cả 3 (cần backend đang chạy cho 2 bộ sau)
+```
 
 ## 4. Biến môi trường
 Copy `.env.example` thành `.env`. Không commit key thật.
