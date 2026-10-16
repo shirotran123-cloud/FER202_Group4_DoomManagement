@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react"
+import React, { useState } from "react"
 import { useAuth } from "@/contexts/useAuth"
 import {
   MOCK_OCCUPANCY_STATS,
@@ -35,7 +35,7 @@ export const ManagerDashboardPage: React.FC = () => {
       { header: "Họ và Tên Sinh Viên", key: "fullName", width: 160 },
       { header: "MSSV", key: "studentId", width: 90 },
       { header: "Giới Tính", key: "gender", width: 70 },
-      { header: "Số CCCD/CMND", key: "citizenId", width: 120 },
+      { header: "Số CCCD", key: "citizenId", width: 120 },
       { header: "Ngày Sinh", key: "dob", width: 90 },
       { header: "Quê Quán", key: "hometown", width: 120 },
       { header: "Số Điện Thoại", key: "phone", width: 100 },
@@ -57,7 +57,7 @@ export const ManagerDashboardPage: React.FC = () => {
       data: MOCK_RESIDENTS_REGISTRY,
     })
 
-    showToast("📊 Đã xuất file Excel: Danh_Sach_Tam_Tru_KTX_FPT.xlsx thành công!")
+    showToast("Đã xuất file Excel Danh_Sach_Tam_Tru_KTX_FPT.xlsx thành công!")
   }
 
   // Export CSV alternative
@@ -99,19 +99,19 @@ export const ManagerDashboardPage: React.FC = () => {
       { header: "Mã Giường", key: "bedCode", width: 110 },
       { header: "Kỳ Tính Cước", key: "billingPeriod", width: 140 },
       {
-        header: "Tiền Phòng Nợ (VNĐ)",
+        header: "Tiền phòng nợ VNĐ",
         key: "roomDebt",
         formatter: (v) => Number(v).toLocaleString("vi-VN"),
         width: 130,
       },
       {
-        header: "Tiền Điện Nước Nợ (VNĐ)",
+        header: "Tiền điện nước nợ VNĐ",
         key: "utilityDebt",
         formatter: (v) => Number(v).toLocaleString("vi-VN"),
         width: 140,
       },
       {
-        header: "Tổng Nợ (VNĐ)",
+        header: "Tổng nợ VNĐ",
         key: "totalDebt",
         formatter: (v) => Number(v).toLocaleString("vi-VN"),
         width: 130,
@@ -131,7 +131,7 @@ export const ManagerDashboardPage: React.FC = () => {
       data: MOCK_OVERDUE_DEBTS,
     })
 
-    showToast("📊 Đã xuất file Excel: Danh_Sach_Cong_No_Qua_Han.xlsx thành công!")
+    showToast("Đã xuất file Excel Danh_Sach_Cong_No_Qua_Han.xlsx thành công!")
   }
 
   // Filtered resident list for preview table
@@ -164,7 +164,7 @@ export const ManagerDashboardPage: React.FC = () => {
   const maintenanceStroke = (stats.maintenanceBeds / total) * circumference
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 pb-16">
+    <div className="w-full space-y-6 pb-12">
       {/* Toast Alert */}
       {toastMessage && (
         <div className="fixed top-20 right-6 z-50 flex items-center gap-2 rounded-2xl bg-foreground text-background px-4 py-3 shadow-xl text-xs font-semibold animate-in fade-in slide-in-from-top-4">
@@ -174,14 +174,14 @@ export const ManagerDashboardPage: React.FC = () => {
       )}
 
       {/* Header Banner */}
-      <div className="rounded-3xl border border-primary/25 bg-gradient-to-br from-card via-primary to-card p-6 sm:p-8 shadow-xs">
+      <div className="dms-card p-5 sm:p-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border/80 pb-6">
           <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary-soft-foreground border border-primary/25 shadow-xs">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted text-foreground border border-border shadow-xs">
               <LayoutDashboard className="h-7 w-7" />
             </div>
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-0.5 text-[11px] font-bold text-primary-soft-foreground">
+              <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-0.5 text-[11px] font-bold text-foreground">
                 <span>Vận hành</span>
                 <span>•</span>
                 <span>Tổng quan · Báo cáo</span>
@@ -198,7 +198,7 @@ export const ManagerDashboardPage: React.FC = () => {
             <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
               Ban quản lý:
             </p>
-            <p className="text-xs font-bold text-primary-soft-foreground flex items-center justify-end gap-1 mt-0.5">
+            <p className="text-xs font-bold text-foreground flex items-center justify-end gap-1 mt-0.5">
               <span>Đinh Thanh Trung & Ban Quản Lý</span>
             </p>
             {user && (
@@ -211,48 +211,48 @@ export const ManagerDashboardPage: React.FC = () => {
 
         {/* Top 4 KPI Metrics */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 text-xs">
-          <div className="rounded-2xl border border-success/25 bg-success/5 p-4">
-            <div className="flex items-center justify-between text-success-soft-foreground text-[11px] font-medium">
+          <div className="rounded-2xl border border-border bg-card/60 p-4">
+            <div className="flex items-center justify-between text-muted-foreground text-[11px] font-medium">
               <span>Tỷ lệ lấp đầy giường</span>
               <ChartPie className="h-4 w-4" />
             </div>
-            <p className="text-2xl font-black text-success-soft-foreground mt-1">
+            <p className="text-2xl font-black text-foreground mt-1">
               {stats.occupancyRate}%
             </p>
-            <span className="text-[10px] text-success-soft-foreground">
+            <span className="text-[10px] text-muted-foreground">
               {stats.occupiedBeds}/{stats.totalBeds} giường đang ở
             </span>
           </div>
 
-          <div className="rounded-2xl border border-primary/20 bg-primary-soft p-4">
-            <div className="flex items-center justify-between text-primary-soft-foreground dark:text-primary text-[11px] font-medium">
+          <div className="rounded-2xl border border-border bg-card/60 p-4">
+            <div className="flex items-center justify-between text-muted-foreground text-[11px] font-medium">
               <span>Doanh thu tháng 10</span>
               <TrendingUp className="h-4 w-4" />
             </div>
-            <p className="text-2xl font-black text-primary-soft-foreground dark:text-primary mt-1">318.5 tr</p>
-            <span className="text-[10px] text-primary-soft-foreground/80 dark:text-primary/80">
+            <p className="text-2xl font-black text-foreground mt-1">318.5 tr</p>
+            <span className="text-[10px] text-muted-foreground">
               +2.1% so với tháng trước
             </span>
           </div>
 
-          <div className="rounded-2xl border border-primary/25 bg-primary/5 p-4">
-            <div className="flex items-center justify-between text-primary-soft-foreground text-[11px] font-medium">
+          <div className="rounded-2xl border border-border bg-card/60 p-4">
+            <div className="flex items-center justify-between text-muted-foreground text-[11px] font-medium">
               <span>Sự cố đang xử lý</span>
               <Zap className="h-4 w-4" />
             </div>
-            <p className="text-2xl font-black text-primary-soft-foreground mt-1">2 phiếu</p>
-            <span className="text-[10px] text-primary-soft-foreground">
+            <p className="text-2xl font-black text-foreground mt-1">2 phiếu</p>
+            <span className="text-[10px] text-muted-foreground">
               1 ca khẩn cấp &lt;2h
             </span>
           </div>
 
-          <div className="rounded-2xl border border-primary/25 bg-primary/5 p-4">
-            <div className="flex items-center justify-between text-primary-soft-foreground text-[11px] font-medium">
+          <div className="rounded-2xl border border-border bg-card/60 p-4">
+            <div className="flex items-center justify-between text-muted-foreground text-[11px] font-medium">
               <span>Công nợ quá hạn</span>
               <DollarSign className="h-4 w-4" />
             </div>
-            <p className="text-2xl font-black text-primary-soft-foreground mt-1">3 sinh viên</p>
-            <span className="text-[10px] text-primary-soft-foreground">
+            <p className="text-2xl font-black text-foreground mt-1">3 sinh viên</p>
+            <span className="text-[10px] text-muted-foreground">
               Tổng 3,313,000 VNĐ
             </span>
           </div>
@@ -292,7 +292,7 @@ export const ManagerDashboardPage: React.FC = () => {
       {activeTab === "OVERVIEW" && (
         <div className="space-y-6">
           {/* Row 1: Bed Occupancy Donut Chart + Revenue Bar Chart */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
             {/* Donut Chart: Bed Occupancy State */}
             <div className="rounded-3xl border border-border bg-card p-6 shadow-xs flex flex-col justify-between space-y-4">
               <div className="flex items-center justify-between border-b border-border pb-3">
@@ -472,7 +472,7 @@ export const ManagerDashboardPage: React.FC = () => {
           </div>
 
           {/* Row 2: Building Energy & Water Consumption Comparison */}
-          <div className="rounded-3xl border border-border bg-card p-6 shadow-xs space-y-4">
+          <div className="overflow-hidden rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-xs space-y-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-border pb-3">
               <div>
                 <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
@@ -554,7 +554,7 @@ export const ManagerDashboardPage: React.FC = () => {
       {activeTab === "REPORTS" && (
         <div className="space-y-6">
           {/* Action Box to Trigger Excel Exports */}
-          <div className="rounded-3xl border border-success/25 bg-gradient-to-br from-card to-success p-6 sm:p-8 shadow-xs">
+          <div className="rounded-3xl border border-success/25 bg-gradient-to-br from-card to-success p-5 sm:p-6 shadow-xs">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border/80 pb-6">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-success-soft-foreground flex items-center gap-1.5">
@@ -631,7 +631,7 @@ export const ManagerDashboardPage: React.FC = () => {
 
           {/* TABLE 1: RESIDENCE PREVIEW */}
           {reportSubTab === "TEMPORARY_RESIDENCE" && (
-            <div className="rounded-3xl border border-border bg-card p-6 shadow-xs space-y-4">
+            <div className="overflow-hidden rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-xs space-y-4">
               <div className="flex items-center justify-between border-b border-border pb-3">
                 <div className="flex items-center gap-2">
                   <Users className="h-4 w-4 text-success-soft-foreground" />
@@ -647,39 +647,39 @@ export const ManagerDashboardPage: React.FC = () => {
                 </button>
               </div>
 
-              <div className="overflow-x-auto">
+              <div className="bleed-x-6 overflow-x-auto">
                 <table className="w-full text-xs text-left">
                   <thead className="bg-muted/50 text-muted-foreground uppercase text-[10px] font-bold border-b border-border">
                     <tr>
-                      <th className="whitespace-nowrap py-2.5 px-3">STT</th>
-                      <th className="whitespace-nowrap py-2.5 px-3">Hợp Đồng</th>
-                      <th className="whitespace-nowrap py-2.5 px-3">Họ và Tên</th>
-                      <th className="whitespace-nowrap py-2.5 px-3">MSSV</th>
-                      <th className="whitespace-nowrap py-2.5 px-3">Giới Tính</th>
-                      <th className="whitespace-nowrap py-2.5 px-3">CCCD</th>
-                      <th className="whitespace-nowrap py-2.5 px-3">Quê Quán</th>
-                      <th className="whitespace-nowrap py-2.5 px-3">Phòng - Giường</th>
-                      <th className="whitespace-nowrap py-2.5 px-3">Thời Hạn</th>
-                      <th className="whitespace-nowrap py-2.5 px-3 text-right">Phụ Huynh</th>
+                      <th className="whitespace-nowrap px-3 py-2.5 align-middle">STT</th>
+                      <th className="whitespace-nowrap px-3 py-2.5 align-middle">Hợp Đồng</th>
+                      <th className="whitespace-nowrap px-3 py-2.5 align-middle">Họ và Tên</th>
+                      <th className="whitespace-nowrap px-3 py-2.5 align-middle">MSSV</th>
+                      <th className="whitespace-nowrap px-3 py-2.5 align-middle">Giới Tính</th>
+                      <th className="whitespace-nowrap px-3 py-2.5 align-middle">CCCD</th>
+                      <th className="whitespace-nowrap px-3 py-2.5 align-middle">Quê Quán</th>
+                      <th className="whitespace-nowrap px-3 py-2.5 align-middle">Phòng - Giường</th>
+                      <th className="whitespace-nowrap px-3 py-2.5 align-middle">Thời Hạn</th>
+                      <th className="whitespace-nowrap px-3 py-2.5 align-middle text-right">Phụ Huynh</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
                     {filteredResidents.map((res) => (
                       <tr key={res.contractCode} className="hover:bg-muted/30">
-                        <td className="whitespace-nowrap py-2.5 px-3 font-mono text-muted-foreground">{res.stt}</td>
-                        <td className="whitespace-nowrap py-2.5 px-3 font-mono text-muted-foreground">{res.contractCode}</td>
-                        <td className="whitespace-nowrap py-2.5 px-3 font-bold text-foreground">{res.fullName}</td>
-                        <td className="whitespace-nowrap py-2.5 px-3 font-mono font-bold text-foreground">{res.studentId}</td>
-                        <td className="whitespace-nowrap py-2.5 px-3">{res.gender}</td>
-                        <td className="whitespace-nowrap py-2.5 px-3 font-mono">{res.citizenId}</td>
-                        <td className="whitespace-nowrap py-2.5 px-3">{res.hometown}</td>
-                        <td className="whitespace-nowrap py-2.5 px-3 font-semibold text-primary">
+                        <td className="whitespace-nowrap px-3 py-2.5 align-middle font-mono text-muted-foreground">{res.stt}</td>
+                        <td className="whitespace-nowrap px-3 py-2.5 align-middle font-mono text-muted-foreground">{res.contractCode}</td>
+                        <td className="whitespace-nowrap px-3 py-2.5 align-middle font-bold text-foreground">{res.fullName}</td>
+                        <td className="whitespace-nowrap px-3 py-2.5 align-middle font-mono font-bold text-foreground">{res.studentId}</td>
+                        <td className="whitespace-nowrap px-3 py-2.5 align-middle">{res.gender}</td>
+                        <td className="whitespace-nowrap px-3 py-2.5 align-middle font-mono">{res.citizenId}</td>
+                        <td className="whitespace-nowrap px-3 py-2.5 align-middle">{res.hometown}</td>
+                        <td className="whitespace-nowrap px-3 py-2.5 align-middle font-semibold text-primary">
                           {res.room} • {res.bedCode}
                         </td>
-                        <td className="whitespace-nowrap py-2.5 px-3 text-[11px] text-muted-foreground">
+                        <td className="whitespace-nowrap px-3 py-2.5 align-middle text-[11px] text-muted-foreground">
                           {res.startDate} ➔ {res.endDate}
                         </td>
-                        <td className="whitespace-nowrap py-2.5 px-3 text-right text-[11px]">
+                        <td className="whitespace-nowrap px-3 py-2.5 align-middle text-right text-[11px]">
                           <span className="font-semibold text-foreground">{res.parentName}</span>
                           <span className="block text-muted-foreground font-mono">{res.parentPhone}</span>
                         </td>
@@ -693,7 +693,7 @@ export const ManagerDashboardPage: React.FC = () => {
 
           {/* TABLE 2: OVERDUE DEBTS PREVIEW */}
           {reportSubTab === "OVERDUE_DEBTS" && (
-            <div className="rounded-3xl border border-border bg-card p-6 shadow-xs space-y-4">
+            <div className="overflow-hidden rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-xs space-y-4">
               <div className="flex items-center justify-between border-b border-border pb-3">
                 <div className="flex items-center gap-2">
                   <DollarSign className="h-4 w-4 text-danger-soft-foreground" />
@@ -709,43 +709,43 @@ export const ManagerDashboardPage: React.FC = () => {
                 </button>
               </div>
 
-              <div className="overflow-x-auto">
+              <div className="bleed-x-6 overflow-x-auto">
                 <table className="w-full text-xs text-left">
                   <thead className="bg-muted/50 text-muted-foreground uppercase text-[10px] font-bold border-b border-border">
                     <tr>
-                      <th className="whitespace-nowrap py-2.5 px-3">STT</th>
-                      <th className="whitespace-nowrap py-2.5 px-3">Mã Hóa Đơn</th>
-                      <th className="whitespace-nowrap py-2.5 px-3">MSSV</th>
-                      <th className="whitespace-nowrap py-2.5 px-3">Họ và Tên</th>
-                      <th className="whitespace-nowrap py-2.5 px-3">Phòng - Giường</th>
-                      <th className="whitespace-nowrap py-2.5 px-3">Kỳ Cước</th>
-                      <th className="whitespace-nowrap py-2.5 px-3 text-right">Tiền Phòng Nợ</th>
-                      <th className="whitespace-nowrap py-2.5 px-3 text-right">Điện Nước Nợ</th>
-                      <th className="whitespace-nowrap py-2.5 px-3 text-right">Tổng Nợ</th>
-                      <th className="whitespace-nowrap py-2.5 px-3 text-right">Trạng Thái</th>
+                      <th className="whitespace-nowrap px-3 py-2.5 align-middle">STT</th>
+                      <th className="whitespace-nowrap px-3 py-2.5 align-middle">Mã Hóa Đơn</th>
+                      <th className="whitespace-nowrap px-3 py-2.5 align-middle">MSSV</th>
+                      <th className="whitespace-nowrap px-3 py-2.5 align-middle">Họ và Tên</th>
+                      <th className="whitespace-nowrap px-3 py-2.5 align-middle">Phòng - Giường</th>
+                      <th className="whitespace-nowrap px-3 py-2.5 align-middle">Kỳ Cước</th>
+                      <th className="whitespace-nowrap px-3 py-2.5 align-middle text-right">Tiền Phòng Nợ</th>
+                      <th className="whitespace-nowrap px-3 py-2.5 align-middle text-right">Điện Nước Nợ</th>
+                      <th className="whitespace-nowrap px-3 py-2.5 align-middle text-right">Tổng Nợ</th>
+                      <th className="whitespace-nowrap px-3 py-2.5 align-middle text-right">Trạng Thái</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
                     {filteredDebts.map((debt) => (
                       <tr key={debt.invoiceCode} className="hover:bg-muted/30">
-                        <td className="whitespace-nowrap py-2.5 px-3 font-mono text-muted-foreground">{debt.stt}</td>
-                        <td className="whitespace-nowrap py-2.5 px-3 font-mono text-muted-foreground">{debt.invoiceCode}</td>
-                        <td className="whitespace-nowrap py-2.5 px-3 font-mono font-bold text-foreground">{debt.studentId}</td>
-                        <td className="whitespace-nowrap py-2.5 px-3 font-bold text-foreground">{debt.fullName}</td>
-                        <td className="whitespace-nowrap py-2.5 px-3 font-semibold text-primary">
+                        <td className="whitespace-nowrap px-3 py-2.5 align-middle font-mono text-muted-foreground">{debt.stt}</td>
+                        <td className="whitespace-nowrap px-3 py-2.5 align-middle font-mono text-muted-foreground">{debt.invoiceCode}</td>
+                        <td className="whitespace-nowrap px-3 py-2.5 align-middle font-mono font-bold text-foreground">{debt.studentId}</td>
+                        <td className="whitespace-nowrap px-3 py-2.5 align-middle font-bold text-foreground">{debt.fullName}</td>
+                        <td className="whitespace-nowrap px-3 py-2.5 align-middle font-semibold text-primary">
                           {debt.room} ({debt.bedCode})
                         </td>
-                        <td className="whitespace-nowrap py-2.5 px-3 text-muted-foreground">{debt.billingPeriod}</td>
-                        <td className="whitespace-nowrap py-2.5 px-3 text-right font-mono">
+                        <td className="whitespace-nowrap px-3 py-2.5 align-middle text-muted-foreground">{debt.billingPeriod}</td>
+                        <td className="whitespace-nowrap px-3 py-2.5 align-middle text-right font-mono">
                           {debt.roomDebt.toLocaleString("vi-VN")} đ
                         </td>
-                        <td className="whitespace-nowrap py-2.5 px-3 text-right font-mono">
+                        <td className="whitespace-nowrap px-3 py-2.5 align-middle text-right font-mono">
                           {debt.utilityDebt.toLocaleString("vi-VN")} đ
                         </td>
-                        <td className="whitespace-nowrap py-2.5 px-3 text-right font-mono font-bold text-danger-soft-foreground">
+                        <td className="whitespace-nowrap px-3 py-2.5 align-middle text-right font-mono font-bold text-danger-soft-foreground">
                           {debt.totalDebt.toLocaleString("vi-VN")} đ
                         </td>
-                        <td className="whitespace-nowrap py-2.5 px-3 text-right">
+                        <td className="whitespace-nowrap px-3 py-2.5 align-middle text-right">
                           <span
                             className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${
                               debt.status === "CẢNH BÁO ĐÌNH CHỈ"

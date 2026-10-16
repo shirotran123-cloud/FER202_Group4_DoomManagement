@@ -22,9 +22,9 @@ export const MyRoomPage: React.FC = () => {
 
   const roommates = [
     {
-      name: "Nguyễn Hoàng Vinh (Bạn)",
-      mssv: user?.studentId || "SE182049",
-      bed: "B-G03 (Tầng dưới)",
+      name: "Nguyễn Hoàng Vinh",
+      mssv: user?.studentId || "QE202049",
+      bed: "B-G03 tầng dưới",
       major: "Kỹ thuật phần mềm",
       phone: "0912 345 678",
       dutyDay: "Thứ Hai & Thứ Năm",
@@ -32,8 +32,8 @@ export const MyRoomPage: React.FC = () => {
     },
     {
       name: "Trần Công Tiến",
-      mssv: "SE183012",
-      bed: "B-G01 (Tầng dưới)",
+      mssv: "QE203012",
+      bed: "B-G01 tầng dưới",
       major: "Thiết kế Đồ họa",
       phone: "0934 112 233",
       dutyDay: "Thứ Ba & Thứ Sáu",
@@ -41,8 +41,8 @@ export const MyRoomPage: React.FC = () => {
     },
     {
       name: "Văn Thái Trung",
-      mssv: "SE181954",
-      bed: "B-G04 (Tầng trên)",
+      mssv: "QE201954",
+      bed: "B-G04 tầng trên",
       major: "Khoa học Máy tính",
       phone: "0977 445 566",
       dutyDay: "Thứ Tư & Thứ Bảy",
@@ -50,11 +50,11 @@ export const MyRoomPage: React.FC = () => {
     },
     {
       name: "Đinh Thanh Trung",
-      mssv: "SE182881",
-      bed: "B-G05 (Tầng dưới)",
+      mssv: "QE202881",
+      bed: "B-G05 tầng dưới",
       major: "An toàn thông tin",
       phone: "0988 990 011",
-      dutyDay: "Chủ Nhật (Tổng vệ sinh)",
+      dutyDay: "Chủ nhật tổng vệ sinh",
       isMe: false,
     },
   ]
@@ -69,11 +69,11 @@ export const MyRoomPage: React.FC = () => {
   ]
 
   return (
-    <div className="max-w-[1440px] mx-auto space-y-6 pb-12">
+    <div className="w-full space-y-6 pb-12">
       {/* 01. TOP UNIT SUMMARY & OPERATIONAL ACTION BAR */}
       <div className="dms-card p-6 shadow-xs flex flex-col xl:flex-row xl:items-center justify-between gap-6">
         <div className="flex items-start gap-4">
-          <div className="w-16 h-16 rounded-xl bg-primary text-white flex items-center justify-center shrink-0 shadow-xs">
+          <div className="w-20 h-20 rounded-xl bg-primary text-white flex items-center justify-center shrink-0 shadow-xs">
             <DoorClosed className="h-8 w-8" />
           </div>
           <div className="space-y-1.5">
@@ -85,16 +85,16 @@ export const MyRoomPage: React.FC = () => {
                 Khu A · Tầng 2
               </span>
               <Badge variant="success" dot>
-                Đang Lưu Trú (Active)
+                Đang lưu trú
               </Badge>
               <Badge variant="secondary">Sinh viên Chính quy K19</Badge>
             </div>
             <p className="text-xs text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1">
-              <span className="font-semibold text-foreground">Buồng B (Balcony Wing)</span>
+              <span className="font-semibold text-foreground">Buồng B</span>
               <span>•</span>
-              <span className="font-semibold text-primary dark:text-primary">Giường G03 (Tầng dưới)</span>
+              <span className="font-semibold text-primary dark:text-primary">Giường G03 tầng dưới</span>
               <span>•</span>
-              <span>Học kỳ 1 Năm học 2026–2027 (Hết hạn: 15/01/2027)</span>
+              <span>Học kỳ 1 năm học 2026–2027, hết hạn 15/01/2027</span>
             </p>
           </div>
         </div>
@@ -103,11 +103,11 @@ export const MyRoomPage: React.FC = () => {
         <div className="flex flex-wrap items-center gap-2">
           <Button
             variant="outline"
-            onClick={() => alert("Đang mở bản xem trước Hợp đồng điện tử e-Contract PDF...")}
+            onClick={() => alert("Đang mở bản xem trước hợp đồng điện tử...")}
             className="text-xs h-9 gap-1.5 bg-muted/70 whitespace-nowrap shrink-0"
           >
             <FileText className="h-4 w-4 text-primary shrink-0" />
-            <span>Hợp Đồng (PDF)</span>
+            <span>Hợp đồng</span>
           </Button>
 
           <Link to="/billing">
@@ -151,7 +151,7 @@ export const MyRoomPage: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-border">
           <div>
             <h2 className="font-bold text-sm text-foreground">
-              Mô Hình Phân Bổ Phòng 1:4:6 (Phòng A205)
+              Sơ đồ phòng A205
             </h2>
             <p className="text-[11px] text-muted-foreground">
               Vị trí giường của bạn và các bạn cùng phòng theo kiến trúc tiêu chuẩn
@@ -160,7 +160,7 @@ export const MyRoomPage: React.FC = () => {
           <div className="flex items-center gap-3 text-[11px]">
             <span className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-xs bg-primary"></span>
-              <strong className="text-primary dark:text-primary">Giường của bạn (B-G03)</strong>
+              <strong className="text-primary dark:text-primary">Giường của bạn B-G03</strong>
             </span>
             <span className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-xs bg-muted"></span>
@@ -174,7 +174,7 @@ export const MyRoomPage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {["Buồng A", "Buồng B (Của bạn)", "Buồng C", "Buồng D"].map((comp, idx) => {
+          {["Buồng A", "Buồng B của bạn", "Buồng C", "Buồng D"].map((comp, idx) => {
             const isMyComp = idx === 1
             return (
               <div
@@ -220,9 +220,9 @@ export const MyRoomPage: React.FC = () => {
       </div>
 
       {/* 03. TWO-COLUMN: ROOMMATES ROSTER & DIGITAL HANDOVER CHECKLIST */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         {/* ROOMMATES ROSTER (7 COLS) */}
-        <div className="lg:col-span-7 dms-card p-5 shadow-xs space-y-4">
+        <div className="lg:col-span-7 dms-card flex h-full flex-col p-5 shadow-xs space-y-4">
           <div className="flex items-center justify-between pb-2 border-b border-border">
             <div className="flex items-center gap-2">
               <span className="p-1.5 rounded-lg bg-primary/10 text-primary">
@@ -230,14 +230,14 @@ export const MyRoomPage: React.FC = () => {
               </span>
               <div>
                 <h3 className="font-bold text-sm text-foreground">
-                  Danh Sách Bạn Cùng Buồng B (Roommates Manifest)
+                  Bạn cùng buồng B
                 </h3>
                 <p className="text-[11px] text-muted-foreground">
                   Thông tin liên hệ & Lịch trực nhật vệ sinh buồng cá nhân
                 </p>
               </div>
             </div>
-            <Badge variant="success">4 Thành Viên</Badge>
+            <Badge variant="success">4 thành viên</Badge>
           </div>
 
           <div className="space-y-3">
@@ -251,7 +251,7 @@ export const MyRoomPage: React.FC = () => {
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <Avatar name={rm.name} className="h-10 w-10 text-xs" />
+                  <Avatar name={rm.name} className="h-12 w-12 text-xs" />
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-xs text-foreground">{rm.name}</span>
@@ -283,7 +283,7 @@ export const MyRoomPage: React.FC = () => {
         </div>
 
         {/* Danh mục bàn giao thiết bị */}
-        <div className="lg:col-span-5 dms-card p-5 shadow-xs space-y-4">
+        <div className="lg:col-span-5 dms-card flex h-full flex-col p-5 shadow-xs space-y-4">
           <div className="flex items-center justify-between pb-2 border-b border-border">
             <div className="flex items-center gap-2">
               <span className="p-1.5 rounded-lg bg-success-soft text-success-soft-foreground">
@@ -358,7 +358,7 @@ export const MyRoomPage: React.FC = () => {
                 <div>Mã biên bản: BB-2026-A205-0905</div>
                 <div>Chỉ số điện ban đầu: 12,450 kWh</div>
                 <div>Chỉ số nước ban đầu: 840 m³</div>
-                <div>Tình trạng tiền cọc: 1,000,000 VNĐ (Đang giữ tại quỹ)</div>
+                <div>Tình trạng tiền cọc: 1,000,000 VNĐ đang giữ tại quỹ</div>
               </div>
 
               <div className="flex gap-2 pt-2">
@@ -366,7 +366,7 @@ export const MyRoomPage: React.FC = () => {
                   onClick={() => alert("Đã tải biên bản bàn giao PDF!")}
                   className="flex-1 bg-primary text-white text-xs font-bold"
                 >
-                  Tải Bản PDF Có Chữ Ký Số
+                  Tải bản PDF có chữ ký số
                 </Button>
                 <Button
                   variant="outline"
@@ -386,14 +386,14 @@ export const MyRoomPage: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
           <div className="bg-card border border-border w-full max-w-md rounded-2xl shadow-xl p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-3">
-              <h3 className="font-bold text-sm text-foreground">Yêu Cầu Đổi Phòng (Submit → BQL duyệt → cập nhật sơ đồ)</h3>
+              <h3 className="font-bold text-sm text-foreground">Yêu cầu đổi phòng</h3>
               <button onClick={() => setShowSwitchModal(false)} className="text-muted-foreground hover:text-foreground text-sm"><X className="h-4 w-4" /></button>
             </div>
             <form
               onSubmit={(e) => {
                 e.preventDefault()
                 try {
-                  const req = createRoomSwitchRequest(user?.studentId || "SE182049", "A205", toRoom, switchReason)
+                  const req = createRoomSwitchRequest(user?.studentId || "QE202049", "A205", toRoom, switchReason)
                   try {
                     const raw = localStorage.getItem("dms_room_switch_v1")
                     const list = raw ? JSON.parse(raw) : []
@@ -408,7 +408,7 @@ export const MyRoomPage: React.FC = () => {
               }}
               className="space-y-3 text-xs"
             >
-              <Input value={toRoom} onChange={(e) => setToRoom(e.target.value)} placeholder="Phòng muốn chuyển (VD: A202)"  required />
+              <Input value={toRoom} onChange={(e) => setToRoom(e.target.value)} placeholder="Nhập mã phòng mới, ví dụ A202"  required />
               <Textarea value={switchReason} onChange={(e) => setSwitchReason(e.target.value)} placeholder="Lý do đổi phòng" rows={3}  />
               <Button type="submit" className="w-full">Gửi yêu cầu đổi phòng</Button>
             </form>
@@ -445,7 +445,7 @@ export const MyRoomPage: React.FC = () => {
               </div>
               <ul className="list-disc pl-4 space-y-1 text-muted-foreground text-[11px]">
                 <li>Cán bộ KTX sẽ kiểm tra hiện trạng thiết bị và chỉ số công tơ cuối cùng.</li>
-                <li>Nếu không có hư hại, <strong>100% tiền cọc (1,000,000 VNĐ)</strong> sẽ được hoàn trả tự động vào tài khoản ngân hàng của sinh viên trong 48 giờ.</li>
+                <li>Nếu không có hư hại, <strong>100% tiền cọc 1,000,000 VNĐ</strong> sẽ được hoàn trả tự động vào tài khoản ngân hàng của sinh viên trong 48 giờ.</li>
               </ul>
 
               <div className="flex gap-2 pt-2">

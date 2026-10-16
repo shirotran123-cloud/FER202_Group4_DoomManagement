@@ -57,7 +57,7 @@ export const BillingPage: React.FC = () => {
     }
   })
   const [ocrHint, setOcrHint] = useState<string | null>(null)
-  const vietqrContent = buildVietQrContent("A205", user?.studentId || "SE182049", netDue, "DIENNUOC")
+  const vietqrContent = buildVietQrContent("A205", user?.studentId || "QE202049", netDue, "DIENNUOC")
   const [reconcileMsg, setReconcileMsg] = useState<string | null>(null)
   const confirmPaidWithReconcile = () => {
     const r = reconcilePayment({ expectedAmount: netDue, expectedContent: vietqrContent, actualAmount: netDue, actualContent: vietqrContent })
@@ -87,7 +87,7 @@ export const BillingPage: React.FC = () => {
   }
 
   return (
-    <div className="max-w-[1600px] mx-auto space-y-6 pb-12">
+    <div className="w-full space-y-6 pb-12">
       {/* 01. PAGE ACTION HEADER */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -139,7 +139,7 @@ export const BillingPage: React.FC = () => {
             </div>
             <div className={`flex items-center gap-1.5 mt-1 text-xs font-semibold ${hasPaid ? "text-success-soft-foreground" : "text-danger-soft-foreground"}`}>
               <span className={`w-2 h-2 rounded-full ${hasPaid ? "bg-success" : "bg-danger"}`}></span>
-              <span>{hasPaid ? "Đã tất toán toàn bộ" : "Hạn nộp trong 3 ngày (05/10)"}</span>
+              <span>{hasPaid ? "Đã tất toán toàn bộ" : "Hạn nộp 05/10 · còn 3 ngày"}</span>
             </div>
           </div>
         </div>
@@ -208,11 +208,11 @@ export const BillingPage: React.FC = () => {
       </div>
 
       {/* 03. TWO-COLUMN SPLIT (LEFT: BREAKDOWN & PHOTOS, RIGHT: VIETQR CHECKOUT) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         {/* LEFT COLUMN: 7 COLS */}
-        <div className="lg:col-span-7 flex flex-col gap-6">
+        <div className="lg:col-span-7 flex h-full flex-col gap-6">
           {/* UTILITY DETAILS & FORMULA TABLE */}
-          <div className="bg-card rounded-xl border border-border p-5 shadow-xs space-y-4">
+          <div className="overflow-hidden bg-card rounded-xl border border-border p-5 sm:p-6 shadow-xs space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-lg bg-muted/70 gap-3">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">
@@ -229,78 +229,78 @@ export const BillingPage: React.FC = () => {
             </div>
 
             {/* Utility Breakdown Table */}
-            <div className="overflow-x-auto">
+            <div className="bleed-x-5 overflow-x-auto">
               <table className="w-full text-left text-[11px]">
                 <thead>
                   <tr className="bg-muted text-muted-foreground uppercase text-[10px] font-bold tracking-wider">
-                    <th className="whitespace-nowrap px-1.5 py-2.5 rounded-l-md">Dịch Vụ</th>
-                    <th className="whitespace-nowrap px-1.5 py-2.5">Chỉ Số</th>
-                    <th className="whitespace-nowrap px-1.5 py-2.5 text-right">Tiêu Thụ</th>
-                    <th className="whitespace-nowrap px-1.5 py-2.5 text-right">Đơn Giá</th>
-                    <th className="whitespace-nowrap px-1.5 py-2.5 text-right rounded-r-md">Thành Tiền</th>
+                    <th className="whitespace-nowrap px-1.5 py-2.5 align-middle">Dịch Vụ</th>
+                    <th className="whitespace-nowrap px-1.5 py-2.5 align-middle">Chỉ Số</th>
+                    <th className="whitespace-nowrap px-1.5 py-2.5 align-middle text-right">Tiêu Thụ</th>
+                    <th className="whitespace-nowrap px-1.5 py-2.5 align-middle text-right">Đơn Giá</th>
+                    <th className="whitespace-nowrap px-1.5 py-2.5 align-middle text-right">Thành Tiền</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
                   <tr className="hover:bg-muted/70 transition-colors">
-                    <td className="whitespace-nowrap px-1.5 py-2.5">
+                    <td className="whitespace-nowrap px-1.5 py-2.5 align-middle">
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-foreground">Điện Sinh Hoạt</span>
                       </div>
                     </td>
-                    <td className="whitespace-nowrap px-1.5 py-2.5 font-mono text-muted-foreground">
+                    <td className="whitespace-nowrap px-1.5 py-2.5 align-middle font-mono text-muted-foreground">
                       {elecOld.toLocaleString()} → {elecNew.toLocaleString()} kWh
                     </td>
-                    <td className="whitespace-nowrap px-1.5 py-2.5 text-right font-mono font-bold text-foreground">
+                    <td className="whitespace-nowrap px-1.5 py-2.5 align-middle text-right font-mono font-bold text-foreground">
                       {deltaElec} kWh
                     </td>
-                    <td className="whitespace-nowrap px-1.5 py-2.5 text-right font-mono text-muted-foreground">₫2,500</td>
-                    <td className="whitespace-nowrap px-1.5 py-2.5 text-right font-mono font-bold text-foreground">
+                    <td className="whitespace-nowrap px-1.5 py-2.5 align-middle text-right font-mono text-muted-foreground">₫2,500</td>
+                    <td className="whitespace-nowrap px-1.5 py-2.5 align-middle text-right font-mono font-bold text-foreground">
                       ₫{elecCost.toLocaleString()}
                     </td>
                   </tr>
 
                   <tr className="hover:bg-muted/70 transition-colors">
-                    <td className="whitespace-nowrap px-1.5 py-2.5">
+                    <td className="whitespace-nowrap px-1.5 py-2.5 align-middle">
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-foreground">Nước Sạch</span>
                       </div>
                     </td>
-                    <td className="whitespace-nowrap px-1.5 py-2.5 font-mono text-muted-foreground">
+                    <td className="whitespace-nowrap px-1.5 py-2.5 align-middle font-mono text-muted-foreground">
                       {waterOld} → {waterNew} m³
                     </td>
-                    <td className="whitespace-nowrap px-1.5 py-2.5 text-right font-mono font-bold text-foreground">
+                    <td className="whitespace-nowrap px-1.5 py-2.5 align-middle text-right font-mono font-bold text-foreground">
                       {deltaWater} m³
                     </td>
-                    <td className="whitespace-nowrap px-1.5 py-2.5 text-right font-mono text-muted-foreground">₫18,000</td>
-                    <td className="whitespace-nowrap px-1.5 py-2.5 text-right font-mono font-bold text-foreground">
+                    <td className="whitespace-nowrap px-1.5 py-2.5 align-middle text-right font-mono text-muted-foreground">₫18,000</td>
+                    <td className="whitespace-nowrap px-1.5 py-2.5 align-middle text-right font-mono font-bold text-foreground">
                       ₫{waterCost.toLocaleString()}
                     </td>
                   </tr>
 
                   <tr className="hover:bg-muted/70 transition-colors">
-                    <td className="whitespace-nowrap px-1.5 py-2.5">
+                    <td className="whitespace-nowrap px-1.5 py-2.5 align-middle">
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-foreground">Fiber & Vệ Sinh</span>
                       </div>
                     </td>
-                    <td className="whitespace-nowrap px-1.5 py-2.5 text-muted-foreground">Gói KTX Cố Định</td>
-                    <td className="whitespace-nowrap px-1.5 py-2.5 text-right font-mono font-bold text-foreground">1 Gói</td>
-                    <td className="whitespace-nowrap px-1.5 py-2.5 text-right font-mono text-muted-foreground">₫120,000</td>
-                    <td className="whitespace-nowrap px-1.5 py-2.5 text-right font-mono font-bold text-foreground">
+                    <td className="whitespace-nowrap px-1.5 py-2.5 align-middle text-muted-foreground">Gói KTX Cố Định</td>
+                    <td className="whitespace-nowrap px-1.5 py-2.5 align-middle text-right font-mono font-bold text-foreground">1 Gói</td>
+                    <td className="whitespace-nowrap px-1.5 py-2.5 align-middle text-right font-mono text-muted-foreground">₫120,000</td>
+                    <td className="whitespace-nowrap px-1.5 py-2.5 align-middle text-right font-mono font-bold text-foreground">
                       ₫{internetCost.toLocaleString()}
                     </td>
                   </tr>
 
                   <tr className="hover:bg-muted/70 transition-colors">
-                    <td className="whitespace-nowrap px-1.5 py-2.5">
+                    <td className="whitespace-nowrap px-1.5 py-2.5 align-middle">
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-foreground">Thuế VAT (10%)</span>
                       </div>
                     </td>
-                    <td className="whitespace-nowrap px-1.5 py-2.5 text-muted-foreground">Theo quy định</td>
-                    <td className="whitespace-nowrap px-1.5 py-2.5 text-right font-mono font-bold text-foreground">-</td>
-                    <td className="whitespace-nowrap px-1.5 py-2.5 text-right font-mono text-muted-foreground">10%</td>
-                    <td className="whitespace-nowrap px-1.5 py-2.5 text-right font-mono font-bold text-foreground">
+                    <td className="whitespace-nowrap px-1.5 py-2.5 align-middle text-muted-foreground">Theo quy định</td>
+                    <td className="whitespace-nowrap px-1.5 py-2.5 align-middle text-right font-mono font-bold text-foreground">-</td>
+                    <td className="whitespace-nowrap px-1.5 py-2.5 align-middle text-right font-mono text-muted-foreground">10%</td>
+                    <td className="whitespace-nowrap px-1.5 py-2.5 align-middle text-right font-mono font-bold text-foreground">
                       ₫{vatCost.toLocaleString()}
                     </td>
                   </tr>
@@ -348,11 +348,11 @@ export const BillingPage: React.FC = () => {
           </div>
 
           {/* METER PHOTOGRAPHIC PROOF GALLERY */}
-          <div className="bg-card rounded-xl border border-border p-5 shadow-xs space-y-3">
+          <div className="bg-card rounded-xl border border-border p-5 sm:p-6 shadow-xs space-y-3">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-sm text-foreground">
-                  Ảnh Chụp Đối Soát Công Tơ (Photo Verification)
+                  Ảnh Đối Soát Công Tơ
                 </h3>
                 <p className="text-[11px] text-muted-foreground">
                   Hình ảnh đồng hồ phòng A205 được chụp trực tiếp khi chốt chỉ số
@@ -364,7 +364,7 @@ export const BillingPage: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Photo 1: Electricity */}
               <div className="rounded-xl overflow-hidden border border-border bg-muted/70 shadow-xs">
-                <div className="relative h-44 w-full bg-foreground">
+                <div className="relative h-56 w-full bg-foreground">
                   <img
                     src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=600&q=80"
                     alt="Công tơ điện A205"
@@ -382,7 +382,7 @@ export const BillingPage: React.FC = () => {
 
               {/* Photo 2: Water */}
               <div className="rounded-xl overflow-hidden border border-border bg-muted/70 shadow-xs">
-                <div className="relative h-44 w-full bg-foreground">
+                <div className="relative h-56 w-full bg-foreground">
                   <img
                     src="https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=600&q=80"
                     alt="Đồng hồ nước A205"
@@ -401,22 +401,22 @@ export const BillingPage: React.FC = () => {
           </div>
 
           {/* HISTORICAL INVOICES TABLE */}
-          <div className="bg-card rounded-xl border border-border p-5 shadow-xs space-y-3">
+          <div className="overflow-hidden bg-card rounded-xl border border-border p-5 sm:p-6 shadow-xs space-y-3">
             <div className="flex items-center justify-between pb-2 border-b border-border">
               <h3 className="font-bold text-sm text-foreground">
-                Lịch Sử Hóa Đơn Các Kỳ Trước (Học kỳ 1)
+                Lịch Sử Hóa Đơn Học Kỳ 1
               </h3>
               <span className="text-[11px] text-muted-foreground font-mono">Năm học 2026-2027</span>
             </div>
 
-            <div className="overflow-x-auto">
+            <div className="bleed-x-5 overflow-x-auto">
               <table className="w-full text-left text-[11px]">
                 <thead>
-                  <tr className="text-muted-foreground text-[10px] uppercase font-bold tracking-wider">
-                    <th className="whitespace-nowrap py-2 px-2">Kỳ Hóa Đơn</th>
-                    <th className="whitespace-nowrap py-2 px-2">Số Tiền</th>
-                    <th className="whitespace-nowrap py-2 px-2">Trạng Thái</th>
-                    <th className="whitespace-nowrap py-2 px-2 text-right">Biên Lai PDF</th>
+                  <tr className="bg-muted/50 text-muted-foreground uppercase text-[10px] font-bold tracking-wider border-b border-border">
+                    <th className="whitespace-nowrap px-2 py-2.5 align-middle">Kỳ Hóa Đơn</th>
+                    <th className="whitespace-nowrap px-2 py-2.5 align-middle">Số Tiền</th>
+                    <th className="whitespace-nowrap px-2 py-2.5 align-middle">Trạng Thái</th>
+                    <th className="whitespace-nowrap px-2 py-2.5 align-middle text-right">Biên Lai PDF</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
@@ -427,14 +427,14 @@ export const BillingPage: React.FC = () => {
                     { month: "Tháng 05/2026", amount: "₫412,000", date: "05/05/2026" },
                   ].map((inv, idx) => (
                     <tr key={idx} className="hover:bg-muted/70 transition-colors">
-                      <td className="whitespace-nowrap px-1.5 py-2.5 font-semibold text-foreground">{inv.month}</td>
-                      <td className="whitespace-nowrap px-1.5 py-2.5 font-mono text-foreground">{inv.amount}</td>
-                      <td className="whitespace-nowrap px-1.5 py-2.5">
+                      <td className="whitespace-nowrap px-1.5 py-2.5 align-middle font-semibold text-foreground">{inv.month}</td>
+                      <td className="whitespace-nowrap px-1.5 py-2.5 align-middle font-mono text-foreground">{inv.amount}</td>
+                      <td className="whitespace-nowrap px-1.5 py-2.5 align-middle">
                         <Badge variant="success" dot>
-                          Đã thanh toán ({inv.date})
+                          Đã thanh toán · {inv.date}
                         </Badge>
                       </td>
-                      <td className="whitespace-nowrap px-1.5 py-2.5 text-right">
+                      <td className="whitespace-nowrap px-1.5 py-2.5 align-middle text-right">
                         <button
                           onClick={() => alert(`Đang tải biên lai ${inv.month}...`)}
                           className="p-1 rounded text-primary hover:bg-muted/70"
@@ -452,7 +452,7 @@ export const BillingPage: React.FC = () => {
         </div>
 
         {/* RIGHT COLUMN: 5 COLS (DYNAMIC VIETQR SETTLEMENT PANEL & TECHNICIAN TOOL) */}
-        <div className="lg:col-span-5 flex flex-col gap-6">
+        <div className="lg:col-span-5 flex h-full flex-col gap-6">
           {/* DYNAMIC VIETQR PAYMENT PANEL */}
           <div className="bg-card border border-border rounded-xl shadow-md p-5 sticky top-20 space-y-4">
             <div className="flex items-center gap-2.5 pb-2 border-b border-border">
@@ -495,9 +495,9 @@ export const BillingPage: React.FC = () => {
                 <div className="flex flex-col items-center justify-center p-4 bg-white rounded-xl border border-border shadow-2xs">
                   <div className="relative p-2 bg-white rounded-xl shadow-xs border border-border">
                     <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=2|99|09182391024|KY_TUC_XA_FPT|${netDue}|DIENNUOC_A205_${user?.studentId || "SE182049"}`}
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=2|99|09182391024|KY_TUC_XA_FPT|${netDue}|DIENNUOC_A205_${user?.studentId || "QE202049"}`}
                       alt="VietQR Bill Payment"
-                      className="w-52 h-52 rounded-lg"
+                      className="w-60 h-60 rounded-lg"
                     />
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                       <div className="w-9 h-9 rounded-full bg-white shadow-md flex items-center justify-center p-1 border">
@@ -577,7 +577,7 @@ export const BillingPage: React.FC = () => {
               <form onSubmit={handleRecordMeter} className="space-y-3 text-xs">
                 <ImageUpload
                   storageKey="dms_meter_photos_A205"
-                  label="Ảnh chụp đồng hồ (upload từ máy)"
+                  label="Ảnh chụp đồng hồ"
                   hint="Chụp rõ mặt số công tơ điện/nước. AI/OCR stub sẽ gợi ý số đọc, kỹ thuật viên xác nhận lại."
                   value={meterPhotos}
                   onChange={(next) => {
@@ -698,7 +698,7 @@ export const BillingPage: React.FC = () => {
                   </label>
                   <Textarea
                     rows={3}
-                    placeholder="Ví dụ: Tháng này phòng em đi thực tập 2 tuần nhưng số điện lại tăng gấp đôi..."
+                    placeholder="Mô tả chênh lệch chỉ số và thời gian vắng mặt nếu có…"
                     
                     required
                   />

@@ -4,7 +4,7 @@ import { PageHeader, EmptyState } from "@/components/ui/shared"
 
 export const MaintenanceStubPage: React.FC = () => {
   return (
-    <div className="mx-auto max-w-5xl space-y-5 pb-12">
+    <div className="w-full space-y-6 pb-12">
       <PageHeader
         eyebrow="Kỹ thuật · Bảo trì"
         title="Bảo trì đang hoàn thiện"

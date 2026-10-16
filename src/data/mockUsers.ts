@@ -7,7 +7,7 @@ export const MOCK_USERS: Record<UserRole, UserProfile> = {
     email: "hoangvinh.student@gmail.com",
     role: "student",
     roleTitle: "Sinh viên lưu trú",
-    studentId: "SE182049",
+    studentId: "QE202049",
     phone: "0912 345 678",
     citizenId: "079204018293",
     dob: "2004-05-15",

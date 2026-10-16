@@ -64,31 +64,6 @@ const COMPARTMENTS: { id: string; desc: string; used: string; beds: Bed[] }[] = 
   },
 ]
 
-function QrGlyph({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 100 100" aria-hidden="true">
-      <rect fill="currentColor" height="28" rx="4" width="28" x="5" y="5" />
-      <rect fill="white" height="18" rx="2" width="18" x="10" y="10" />
-      <rect fill="currentColor" height="10" width="10" x="14" y="14" />
-      <rect fill="currentColor" height="28" rx="4" width="28" x="67" y="5" />
-      <rect fill="white" height="18" rx="2" width="18" x="72" y="10" />
-      <rect fill="currentColor" height="10" width="10" x="76" y="14" />
-      <rect fill="currentColor" height="28" rx="4" width="28" x="5" y="67" />
-      <rect fill="white" height="18" rx="2" width="18" x="10" y="72" />
-      <rect fill="currentColor" height="10" width="10" x="14" y="76" />
-      <circle cx="48" cy="20" fill="currentColor" r="3" />
-      <circle cx="48" cy="32" fill="currentColor" r="3" />
-      <circle cx="56" cy="20" fill="currentColor" r="3" />
-      <circle cx="42" cy="48" fill="currentColor" r="4" />
-      <circle cx="58" cy="48" fill="currentColor" r="3" />
-      <rect fill="currentColor" height="6" rx="2" width="12" x="44" y="64" />
-      <rect fill="currentColor" height="16" rx="2" width="8" x="70" y="50" />
-      <rect fill="currentColor" height="10" rx="2" width="10" x="82" y="70" />
-      <rect fill="currentColor" height="6" rx="2" width="14" x="64" y="82" />
-    </svg>
-  )
-}
-
 export const StudentOverviewPage: React.FC = () => {
   const { user } = useAuth()
   const [qrCountdown, setQrCountdown] = useState(15)
@@ -116,10 +91,10 @@ export const StudentOverviewPage: React.FC = () => {
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="secondary" className="border-white/20 bg-white/15 text-white">
-                <ShieldCheck className="h-3.5 w-3.5" /> Verified Resident
+                <ShieldCheck className="h-3.5 w-3.5" /> Cư dân xác thực
               </Badge>
               <Badge variant="secondary" className="border-white/20 bg-white/15 text-white">
-                <Building2 className="h-3.5 w-3.5" /> Room A205 · Compartment B · Bed G03
+                <Building2 className="h-3.5 w-3.5" /> Phòng A205 · Buồng B · Giường G03
               </Badge>
               <span className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-2.5 py-0.5 font-mono text-xs text-white/90">
                 RFID: 8492-AX-01
@@ -130,17 +105,17 @@ export const StudentOverviewPage: React.FC = () => {
                 Chào buổi sáng, {displayName}
               </h1>
               <p className="mt-1 text-sm text-white/80">
-                Ký túc xá FPT University · Học kỳ Fall 2026 · Tòa A (High-Rise Hall)
+                Ký túc xá FPT University · Học kỳ Fall 2026 · Tòa A
               </p>
             </div>
           </div>
           <div className="flex shrink-0 flex-wrap items-center gap-3 self-start lg:self-center">
             <Button variant="outline" onClick={() => setShowGateQrModal(true)} className="bg-white text-foreground hover:bg-muted">
-              <QrCode /> Mã Cửa Ra Vào
+              <QrCode /> Mã cửa ra vào
             </Button>
             <Button asChild className="bg-primary text-white hover:bg-primary">
               <Link to="/billing">
-                <Zap /> VietQR Quickpay
+                <Zap /> Thanh toán VietQR
               </Link>
             </Button>
           </div>
@@ -148,34 +123,34 @@ export const StudentOverviewPage: React.FC = () => {
       </div>
 
       {/* KPI */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-4">
-        <div className="flex flex-col gap-3">
-          <StatCard label="Phòng hiện tại" value="A205" hint="Tầng 2 · Buồng B · Giường dưới G03 · 18/24 giường" tone="info" icon={<BedDouble className="h-5 w-5" />} />
-          <div className="dms-card flex items-center justify-between p-3 text-xs">
+      <div className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-4">
+        <div className="flex h-full flex-col gap-3">
+          <StatCard className="flex-1" label="Phòng hiện tại" value="A205" hint="Tầng 2 · Buồng B · Giường dưới G03 · 18/24 giường" tone="info" icon={<BedDouble className="h-5 w-5" />} />
+          <div className="dms-card mt-auto flex h-11 items-center justify-between px-3 text-xs">
             <span className="text-muted-foreground">Hợp đồng:</span>
-            <span className="font-semibold text-success-soft-foreground">Hiệu lực (Kỳ 1)</span>
+            <span className="font-semibold text-success-soft-foreground">Hiệu lực kỳ 1</span>
           </div>
         </div>
-        <div className="flex flex-col gap-3">
-          <StatCard label="Công nợ tháng 09" value="₫420,000" hint="Hạn nộp: còn 3 ngày (05/10)" tone="bad" icon={<Receipt className="h-5 w-5" />} />
-          <Button asChild className="bg-primary text-white hover:bg-primary/90">
+        <div className="flex h-full flex-col gap-3">
+          <StatCard className="flex-1" label="Công nợ tháng 09" value="₫420,000" hint="Hạn nộp 05/10 · còn 3 ngày" tone="bad" icon={<Receipt className="h-5 w-5" />} />
+          <Button asChild className="mt-auto h-11 bg-primary text-white hover:bg-primary/90">
             <Link to="/billing">
               <Receipt /> Thanh toán VietQR
             </Link>
           </Button>
         </div>
-        <div className="flex flex-col gap-3">
-          <StatCard label="Bảo trì kỹ thuật" value="2 đang xử lý" hint="1 khẩn: ổ cắm buồng B-G03 · NV Nguyễn Văn An" tone="warn" icon={<Wrench className="h-5 w-5" />} />
-          <div className="dms-card p-3 text-xs">
-            <p className="font-semibold">Lịch hẹn: hôm nay 14:30</p>
-            <Link to="/maintenance" className="mt-1 inline-flex items-center gap-1 font-semibold text-primary hover:underline">
+        <div className="flex h-full flex-col gap-3">
+          <StatCard className="flex-1" label="Bảo trì kỹ thuật" value="2 đang xử lý" hint="1 khẩn: ổ cắm buồng B-G03 · NV Nguyễn Văn An" tone="warn" icon={<Wrench className="h-5 w-5" />} />
+          <div className="dms-card mt-auto flex h-11 items-center justify-between gap-2 px-3 text-xs">
+            <span className="truncate font-semibold">Lịch hẹn: hôm nay 14:30</span>
+            <Link to="/maintenance" className="inline-flex shrink-0 items-center gap-1 font-semibold text-primary hover:underline">
               <Wrench className="h-3.5 w-3.5" /> Theo dõi tiến độ
             </Link>
           </div>
         </div>
-        <div className="flex flex-col gap-3">
-          <StatCard label="Giờ giới nghiêm" value="23:00" hint="Khóa cổng · Đã điểm danh / Trong phòng" tone="neutral" icon={<MoonStar className="h-5 w-5" />} />
-          <Button asChild variant="outline">
+        <div className="flex h-full flex-col gap-3">
+          <StatCard className="flex-1" label="Giờ giới nghiêm" value="23:00" hint="Khóa cổng · Đã điểm danh / Trong phòng" tone="neutral" icon={<MoonStar className="h-5 w-5" />} />
+          <Button asChild variant="outline" className="mt-auto h-11">
             <Link to="/curfew">
               <MoonStar /> Nộp đơn về muộn
             </Link>
@@ -183,12 +158,12 @@ export const StudentOverviewPage: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+      <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-12">
         {/* Left */}
-        <div className="space-y-6 lg:col-span-8">
+        <div className="flex flex-col space-y-6 lg:col-span-8">
           <SectionCard
             title="Sơ đồ phân bổ giường phòng A205"
-            desc="4 buồng riêng (A, B, C, D) · 6 giường/buồng · 18 đã ở, 6 trống"
+            desc="4 buồng riêng A, B, C, D · 6 giường/buồng · 18 đã ở, 6 trống"
             actions={<Badge variant="secondary">Chuẩn 24B</Badge>}
           >
             <div className="mb-4 flex flex-wrap items-center gap-3 rounded-lg bg-muted/70 px-3 py-1.5 text-xs">
@@ -202,14 +177,14 @@ export const StudentOverviewPage: React.FC = () => {
                 <span className="h-3 w-3 rounded border border-success/25 bg-success-soft" /> Trống
               </span>
             </div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {COMPARTMENTS.map((c) => (
                 <div
                   key={c.id}
                   className={
                     c.id === "B"
-                      ? "space-y-3 rounded-xl border-2 border-primary/40 bg-muted/70 p-4"
-                      : "space-y-3 rounded-xl border border-border bg-muted/40 p-4"
+                      ? "space-y-3 rounded-xl border-2 border-primary/40 bg-muted/70 p-5"
+                      : "space-y-3 rounded-xl border border-border bg-muted/40 p-5"
                   }
                 >
                   <div className="flex items-center justify-between gap-1.5">
@@ -225,16 +200,16 @@ export const StudentOverviewPage: React.FC = () => {
                       {c.used}
                     </span>
                   </div>
-                  <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                  <div className="grid grid-cols-3 gap-2.5 text-center text-xs">
                     {c.beds.map((b) => (
                       <div
                         key={b.code}
                         className={
                           b.mine
-                            ? "flex h-16 flex-col justify-between rounded-lg bg-primary p-2 text-white shadow-md"
+                            ? "flex h-36 flex-col justify-between rounded-lg bg-primary p-2 text-white shadow-md"
                             : b.empty
-                              ? "flex h-16 flex-col justify-between rounded-lg border border-success/25 bg-success-soft p-2 text-success-soft-foreground"
-                              : "flex h-16 flex-col justify-between rounded-lg border border-border bg-card p-2"
+                              ? "flex h-36 flex-col justify-between rounded-lg border border-success/25 bg-success-soft p-2 text-success-soft-foreground"
+                              : "flex h-36 flex-col justify-between rounded-lg border border-border bg-card p-2"
                         }
                       >
                         {b.mine ? (
@@ -283,20 +258,20 @@ export const StudentOverviewPage: React.FC = () => {
             </div>
           </SectionCard>
 
-          <SectionCard title="Thao tác nhanh" desc="Dịch vụ sinh viên thường dùng">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <SectionCard title="Thao tác nhanh" desc="Dịch vụ sinh viên thường dùng" className="flex-1 flex flex-col [&>div:last-child]:flex-1">
+            <div className="grid h-full grid-cols-1 content-stretch gap-3 sm:grid-cols-2 xl:grid-cols-4">
               {[
                 { to: "/maintenance", icon: <Wrench className="h-5 w-5" />, t: "Báo hỏng thiết bị", d: "Báo sửa điện, điều hòa, nước" },
                 { to: "/curfew", icon: <MoonStar className="h-5 w-5" />, t: "Xin giấy về muộn", d: "Nộp đơn ra vào sau 23:00" },
                 { to: "/my-room", icon: <FileText className="h-5 w-5" />, t: "Biên bản bàn giao", d: "Kiểm tra tài sản và hoàn cọc" },
                 { to: "/my-room", icon: <Users className="h-5 w-5" />, t: "Danh bạ cùng buồng", d: "Liên hệ 5 bạn cùng buồng B" },
               ].map((a) => (
-                <Link key={a.t} to={a.to} className="dms-card group p-4 transition-all hover:bg-muted/60">
-                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-muted text-primary transition-colors group-hover:bg-primary group-hover:text-white">
+                <Link key={a.t} to={a.to} className="dms-card group flex h-full flex-col justify-center p-4 transition-all hover:bg-muted/60">
+                  <div className="mb-2.5 flex h-12 w-12 items-center justify-center rounded-lg bg-muted text-primary transition-colors group-hover:bg-primary group-hover:text-white">
                     {a.icon}
                   </div>
                   <div className="text-xs font-bold">{a.t}</div>
-                  <div className="mt-1 text-[11px] text-muted-foreground">{a.d}</div>
+                  <div className="mt-0.5 text-[11px] text-muted-foreground">{a.d}</div>
                 </Link>
               ))}
             </div>
@@ -304,8 +279,8 @@ export const StudentOverviewPage: React.FC = () => {
         </div>
 
         {/* Right */}
-        <div className="space-y-6 lg:col-span-4">
-          <div className="dms-card relative overflow-hidden bg-gradient-to-b from-primary to-primary p-6 text-primary-foreground">
+        <div className="flex flex-col space-y-6 lg:col-span-4">
+          <div className="dms-card relative overflow-hidden bg-gradient-to-b from-primary to-primary p-3 sm:p-4 text-primary-foreground">
             <div className="relative z-10">
               <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -314,12 +289,20 @@ export const StudentOverviewPage: React.FC = () => {
                 </div>
                 <Badge className="bg-white/15 text-white">Dynamic NFC</Badge>
               </div>
-              <div className="flex flex-col items-center rounded-xl bg-white p-5 text-foreground">
-                <div className="relative flex h-44 w-44 flex-col items-center justify-center rounded-lg border border-border bg-muted/50 p-3">
-                  <QrGlyph className="h-full w-full text-primary" />
-                  <div className="absolute inset-x-3 top-3 h-0.5 animate-pulse bg-success" />
+              <div className="flex flex-col items-center rounded-xl bg-white p-2 text-foreground">
+                <div className="relative mx-auto w-44 overflow-hidden rounded-lg bg-white">
+                  <img
+                    src="https://api.qrserver.com/v1/create-qr-code/?size=480x480&margin=0&data=GATE-A205-QE202049-NguyenHoangVinh-8492-2026A"
+                    alt="QR cong A"
+                    className="block aspect-square h-44 w-44 scale-[1.08]"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-base font-black text-white shadow-md">
+                      D
+                    </span>
+                  </div>
                 </div>
-                <div className="mt-4 text-center">
+                <div className="mt-2 text-center">
                   <div className="text-xs font-bold">{displayName}</div>
                   <div className="mt-0.5 font-mono text-[10px] tracking-wider text-muted-foreground">TOKEN: #GATE-8492-2026A</div>
                   <div className="mt-1 flex items-center justify-center gap-1 text-[11px] font-medium text-success-soft-foreground">
@@ -396,8 +379,8 @@ export const StudentOverviewPage: React.FC = () => {
             </div>
           </SectionCard>
 
-          <SectionCard title="Ban quản lý & cấp cứu" desc="Tòa A" actions={<Badge variant="secondary">Tòa A</Badge>}>
-            <div className="space-y-4">
+          <SectionCard title="Ban quản lý & cấp cứu" desc="Tòa A" actions={<Badge variant="secondary">Tòa A</Badge>} className="flex-1 flex flex-col [&>div:last-child]:flex-1">
+            <div className="flex h-full flex-col justify-between gap-3">
               <div className="flex items-center gap-3 rounded-xl bg-muted/70 p-3.5">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">LQ</div>
                 <div className="min-w-0 flex-1">
@@ -444,8 +427,17 @@ export const StudentOverviewPage: React.FC = () => {
               </button>
             </div>
             <div className="flex flex-col items-center justify-center rounded-xl bg-muted/70 p-4">
-              <div className="flex h-48 w-48 items-center justify-center rounded-lg bg-white p-3 shadow-xs">
-                <QrGlyph className="h-full w-full text-primary" />
+              <div className="relative w-full max-w-64 overflow-hidden rounded-lg bg-white shadow-xs">
+                <img
+                  src="https://api.qrserver.com/v1/create-qr-code/?size=480x480&margin=0&data=GATE-A205-QE202049-NguyenHoangVinh-8492-2026A"
+                  alt="QR cong A"
+                  className="aspect-square w-full object-cover"
+                />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-lg font-black text-white shadow-md">
+                    D
+                  </span>
+                </div>
               </div>
               <div className="mt-3 text-center">
                 <span className="text-xs font-bold">{displayName} · Phòng A205</span>

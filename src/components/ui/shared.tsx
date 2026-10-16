@@ -21,28 +21,28 @@ export function PageHeader({ eyebrow, title, desc, actions }: { eyebrow?: string
 
 export function SectionCard({ title, desc, actions, children, className }: { title: string; desc?: string; actions?: React.ReactNode; children: React.ReactNode; className?: string }) {
   return (
-    <section className={cn("dms-card p-5 sm:p-6", className)}>
-      <div className="mb-4 flex items-start justify-between gap-3">
+    <section className={cn("dms-card overflow-hidden", className)}>
+      <div className="flex items-start justify-between gap-3 px-3 pt-3 sm:px-4 sm:pt-4">
         <div className="min-w-0">
           <h2 className="font-display text-[16px] font-bold tracking-tight">{title}</h2>
           {desc && <p className="mt-0.5 text-xs text-muted-foreground">{desc}</p>}
         </div>
         {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
       </div>
-      {children}
+      <div className="px-3 pb-3 pt-3 sm:px-4 sm:pb-4">{children}</div>
     </section>
   );
 }
 
 /** Stat tile. Tones map onto the 3-colour system: info=indigo, good=emerald, bad=red, neutral=grey. */
-export function StatCard({ label, value, hint, tone = "neutral", icon }: { label: string; value: string; hint?: string; tone?: "neutral" | "good" | "warn" | "bad" | "info"; icon?: React.ReactNode }) {
+export function StatCard({ label, value, hint, tone = "neutral", icon, className }: { label: string; value: string; hint?: string; tone?: "neutral" | "good" | "warn" | "bad" | "info"; icon?: React.ReactNode; className?: string }) {
   const toneCls =
     tone === "good" ? "text-success"
     : tone === "bad" ? "text-danger"
     : tone === "info" || tone === "warn" ? "text-primary"
     : "text-foreground";
   return (
-    <div className="dms-card group p-5 transition-transform hover:-translate-y-0.5">
+    <div className={cn("dms-card group p-4 transition-transform hover:-translate-y-0.5", className)}>
       <div className="flex items-center justify-between gap-2">
         <p className="text-[11px] font-bold tracking-[0.1em] text-muted-foreground uppercase">{label}</p>
         {icon && <span className="shrink-0 text-muted-foreground">{icon}</span>}

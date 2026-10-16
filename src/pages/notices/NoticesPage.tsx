@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { createNotice, filterActiveNotices, type DormNotice } from "@/lib/dorm-ops";
 import { PageHeader, SectionCard, EmptyState } from "@/components/ui/shared";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/useAuth";
 
 const KEY = "dms_notices_v1";
 const SYS_KEY = "dms_notifications_v1";
@@ -31,6 +32,9 @@ const SEED: DormNotice[] = [
 ];
 
 export const NoticesPage: React.FC = () => {
+  const { user } = useAuth();
+  // Only Ban Quản lý / Admin publish notices; students and technicians read-only.
+  const canPublish = user?.role === "manager" || user?.role === "admin";
   const [notices, setNotices] = useState<DormNotice[]>(() => {
     try {
       const raw = localStorage.getItem(KEY);
@@ -51,6 +55,7 @@ export const NoticesPage: React.FC = () => {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!canPublish) return;
     const n = createNotice(title, body, "ALL", new Date().toISOString().slice(0, 10), "2026-12-31");
     setNotices([n, ...notices]);
     setTitle("");
@@ -58,15 +63,23 @@ export const NoticesPage: React.FC = () => {
   };
 
   return (
-    <div className="mx-auto max-w-5xl space-y-5 pb-12">
+    <div className="w-full space-y-6 pb-12">
       <PageHeader eyebrow="Cộng đồng · Bảng tin" title="Thông báo KTX" desc="BQL gửi lịch cắt điện/nước, họp KTX. Thông báo tự động khi có hóa đơn mới." />
-      <SectionCard title="Đăng thông báo (BQL)" desc="Tiêu đề + nội dung bắt buộc, có hiệu lực tới 31/12">
-        <form onSubmit={submit} className="grid gap-3">
-          <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Tiêu đề"  required />
-          <Textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="Nội dung" rows={3}  required />
-          <div><Button type="submit">Đăng bảng tin</Button></div>
-        </form>
-      </SectionCard>
+      {canPublish ? (
+        <SectionCard title="Đăng thông báo" desc="Tiêu đề + nội dung bắt buộc, có hiệu lực tới 31/12">
+          <form onSubmit={submit} className="grid gap-3">
+            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Tiêu đề"  required />
+            <Textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="Nội dung" rows={3}  required />
+            <div><Button type="submit">Đăng bảng tin</Button></div>
+          </form>
+        </SectionCard>
+      ) : (
+        <SectionCard title="Bảng tin Ban Quản lý" desc="Chỉ BQL và Admin được đăng thông báo. Sinh viên theo dõi tại đây.">
+          <p className="text-xs text-muted-foreground">
+            Bạn đang xem với quyền độc giả. Cần đăng thông báo? Liên hệ Ban Quản lý KTX.
+          </p>
+        </SectionCard>
+      )}
       <SectionCard title={`Đang hiệu lực (${active.length})`}>
         {active.length === 0 ? (
           <EmptyState title="Chưa có thông báo hiệu lực" />

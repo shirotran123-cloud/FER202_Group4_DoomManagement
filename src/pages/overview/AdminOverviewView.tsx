@@ -102,27 +102,25 @@ export const AdminOverviewView: React.FC = () => {
       )}
 
       {/* Admin Welcome & Header Banner */}
-      <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-primary to-primary p-6 text-primary-foreground shadow-md sm:p-8">
-        <div className="absolute -right-20 -top-20 pointer-events-none h-80 w-80 rounded-full bg-white/10 blur-3xl" />
-        <div className="absolute right-40 -bottom-20 w-60 h-60 rounded-full bg-primary/10 blur-2xl pointer-events-none" />
+      <div className="dms-card p-6 sm:p-8">
 
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-white backdrop-blur-md">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-semibold text-foreground">
                 <ShieldCheck className="h-3.5 w-3.5" />
                 Quản Trị Viên Hệ Thống DMS
               </span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/10 text-white/90 text-xs font-mono">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-muted text-muted-foreground text-xs font-mono">
                 Vai trò: {user?.roleTitle || "Ban Quản Lý & Admin Toàn Quyền"}
               </span>
             </div>
 
             <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
                 Tổng Quan Điều Hành Ký Túc Xá
               </h1>
-              <p className="text-sm text-white/80 mt-1 max-w-2xl leading-relaxed">
+              <p className="text-sm text-muted-foreground mt-1 max-w-2xl leading-relaxed">
                 Tra cứu danh bạ sinh viên nội trú, giám sát tình trạng lưu trú và trực tiếp phê duyệt đơn từ, yêu cầu học viên toàn trường.
               </p>
             </div>
@@ -132,7 +130,7 @@ export const AdminOverviewView: React.FC = () => {
           <div className="flex flex-wrap items-center gap-2.5 self-start lg:self-center shrink-0">
             <Link
               to="/manager"
-              className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-2 backdrop-blur-md border border-white/15 transition-all shadow-xs"
+              className="px-4 py-2.5 rounded-xl bg-muted hover:bg-muted/70 text-foreground text-xs font-semibold flex items-center gap-2 border border-border transition-all shadow-xs"
             >
               <Building2 className="h-4 w-4" />
               <span>Bàn Làm Việc Ops</span>
@@ -140,7 +138,7 @@ export const AdminOverviewView: React.FC = () => {
 
             <Link
               to="/curfew"
-              className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-primary"
+              className="flex items-center gap-2 rounded-xl bg-foreground px-4 py-2.5 text-xs font-bold text-background shadow-sm transition-all hover:opacity-90"
             >
               <Clock className="h-4 w-4" />
               <span>Cổng Giới Nghiêm 23h</span>
@@ -158,7 +156,7 @@ export const AdminOverviewView: React.FC = () => {
               <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold">
                 Sinh Viên Đang Ở
               </span>
-              <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary-soft-foreground">
+              <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center text-foreground">
                 <Users className="h-5 w-5" />
               </div>
             </div>
@@ -183,11 +181,11 @@ export const AdminOverviewView: React.FC = () => {
               <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold">
                 Yêu Cầu & Đơn Chờ Duyệt
               </span>
-              <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary-soft-foreground">
+              <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center text-foreground">
                 <FileText className="h-5 w-5" />
               </div>
             </div>
-            <div className="text-2xl font-black text-primary-soft-foreground">
+            <div className="text-2xl font-black text-foreground">
               {totalPendingRequests} <span className="text-sm font-normal text-muted-foreground">hồ sơ</span>
             </div>
             <div className="text-xs text-muted-foreground mt-1">
@@ -217,7 +215,7 @@ export const AdminOverviewView: React.FC = () => {
               <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold">
                 Sự Cố Kỹ Thuật Đang Xử Lý
               </span>
-              <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary-soft-foreground">
+              <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center text-foreground">
                 <Wrench className="h-5 w-5" />
               </div>
             </div>
@@ -245,7 +243,7 @@ export const AdminOverviewView: React.FC = () => {
               <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold">
                 Kiểm Soát Giới Nghiêm 23:00
               </span>
-              <div className="w-9 h-9 rounded-xl bg-danger/10 flex items-center justify-center text-danger-soft-foreground">
+              <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center text-foreground">
                 <Clock className="h-5 w-5" />
               </div>
             </div>
@@ -340,14 +338,14 @@ export const AdminOverviewView: React.FC = () => {
               <table className="w-full text-left text-xs">
                 <thead className="bg-muted/60 text-muted-foreground text-[11px] uppercase border-b border-border font-bold">
                   <tr>
-                    <th className="whitespace-nowrap py-3 px-4">MSSV</th>
-                    <th className="whitespace-nowrap py-3 px-4">Họ và Tên</th>
-                    <th className="whitespace-nowrap py-3 px-4">Phòng & Giường</th>
-                    <th className="whitespace-nowrap py-3 px-4">Số Điện Thoại</th>
-                    <th className="whitespace-nowrap py-3 px-4">Quê Quán</th>
-                    <th className="whitespace-nowrap py-3 px-4">Hạn Hợp Đồng</th>
-                    <th className="whitespace-nowrap py-3 px-4 text-center">Rèn Luyện</th>
-                    <th className="whitespace-nowrap py-3 px-4 text-right">Chi Tiết</th>
+                    <th className="whitespace-nowrap px-4 py-3 align-middle">MSSV</th>
+                    <th className="whitespace-nowrap px-4 py-3 align-middle">Họ và Tên</th>
+                    <th className="whitespace-nowrap px-4 py-3 align-middle">Phòng & Giường</th>
+                    <th className="whitespace-nowrap px-4 py-3 align-middle">Số Điện Thoại</th>
+                    <th className="whitespace-nowrap px-4 py-3 align-middle">Quê Quán</th>
+                    <th className="whitespace-nowrap px-4 py-3 align-middle">Hạn Hợp Đồng</th>
+                    <th className="whitespace-nowrap px-4 py-3 align-middle text-center">Rèn Luyện</th>
+                    <th className="whitespace-nowrap px-4 py-3 align-middle text-right">Chi Tiết</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
@@ -357,38 +355,38 @@ export const AdminOverviewView: React.FC = () => {
                       className="hover:bg-muted/40 transition-colors cursor-pointer"
                       onClick={() => setSelectedStudent(st)}
                     >
-                      <td className="whitespace-nowrap py-3.5 px-4 font-mono font-bold text-foreground">
+                      <td className="whitespace-nowrap px-4 py-3 align-middle font-mono font-bold text-foreground">
                         {st.studentId}
                       </td>
-                      <td className="whitespace-nowrap py-3.5 px-4">
+                      <td className="whitespace-nowrap px-4 py-3 align-middle">
                         <div className="font-bold text-foreground">{st.fullName}</div>
                         <div className="text-[11px] text-muted-foreground">
                           {st.gender === "Nam" ? "Nam" : "Nữ"} • CCCD: {st.citizenId}
                         </div>
                       </td>
-                      <td className="whitespace-nowrap py-3.5 px-4">
+                      <td className="whitespace-nowrap px-4 py-3 align-middle">
                         <span className="inline-flex items-center gap-1 font-bold text-foreground bg-muted px-2 py-0.5 rounded-md">
                           <BedDouble className="h-3 w-3 text-primary-soft-foreground" />
                           {st.room} • {st.bedCode}
                         </span>
                         <div className="text-[10px] text-muted-foreground mt-0.5">{st.building}</div>
                       </td>
-                      <td className="whitespace-nowrap py-3.5 px-4">
+                      <td className="whitespace-nowrap px-4 py-3 align-middle">
                         <div className="font-medium text-foreground">{st.phone}</div>
                         <div className="text-[10px] text-muted-foreground">
                           PH: {st.parentPhone}
                         </div>
                       </td>
-                      <td className="whitespace-nowrap py-3.5 px-4 text-muted-foreground">{st.hometown}</td>
-                      <td className="whitespace-nowrap py-3.5 px-4 font-mono text-[11px] text-muted-foreground">
+                      <td className="whitespace-nowrap px-4 py-3 align-middle text-muted-foreground">{st.hometown}</td>
+                      <td className="whitespace-nowrap px-4 py-3 align-middle font-mono text-[11px] text-muted-foreground">
                         {st.endDate}
                       </td>
-                      <td className="whitespace-nowrap py-3.5 px-4 text-center">
+                      <td className="whitespace-nowrap px-4 py-3 align-middle text-center">
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-success/10 text-success-soft-foreground">
                           100/100 đ
                         </span>
                       </td>
-                      <td className="whitespace-nowrap py-3.5 px-4 text-right">
+                      <td className="whitespace-nowrap px-4 py-3 align-middle text-right">
                         <button
                           type="button"
                           onClick={(e) => {
@@ -678,7 +676,7 @@ export const AdminOverviewView: React.FC = () => {
                   </p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Số CCCD / CMND:</span>
+                  <span className="text-muted-foreground">Số CCCD:</span>
                   <p className="font-mono font-semibold text-foreground mt-0.5">{selectedStudent.citizenId}</p>
                 </div>
                 <div>

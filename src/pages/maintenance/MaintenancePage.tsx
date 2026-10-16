@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useAuth } from "@/contexts/useAuth"
 import type {
   MaintenanceTicket,
@@ -65,9 +65,6 @@ export const MaintenancePage: React.FC = () => {
   const [formCategory, setFormCategory] = useState<MaintenanceCategory>("ELECTRIC")
   const [formUrgency, setFormUrgency] = useState<MaintenanceUrgency>("NORMAL")
   const [formDescription, setFormDescription] = useState("")
-  const [formImage, setFormImage] = useState(
-    "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=600&q=80"
-  )
   const [formPhotos, setFormPhotos] = useState<PhotoRecord[]>([])
 
   // Assign Modal State
@@ -77,9 +74,7 @@ export const MaintenancePage: React.FC = () => {
 
   // Complete Modal State
   const [completionNotes, setCompletionNotes] = useState("")
-  const [completionImage, setCompletionImage] = useState(
-    "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80"
-  )
+  const [completionPhotos, setCompletionPhotos] = useState<PhotoRecord[]>([])
   const [materials, setMaterials] = useState<ReplacedMaterial[]>([])
   const [newMatName, setNewMatName] = useState("")
   const [newMatQty, setNewMatQty] = useState(1)
@@ -106,7 +101,6 @@ export const MaintenancePage: React.FC = () => {
     setFormCategory("ELECTRIC")
     setFormUrgency("NORMAL")
     setFormDescription("")
-    setFormImage("https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=600&q=80")
     setIsCreateModalOpen(true)
   }
 
@@ -130,10 +124,10 @@ export const MaintenancePage: React.FC = () => {
       category: formCategory,
       urgency: formUrgency,
       description: formDescription.trim() || "Cần kỹ thuật kiểm tra và khắc phục sự cố.",
-      studentId: user?.studentId || "SE182049",
+      studentId: user?.studentId || "QE202049",
       studentName: user?.fullName || "Nguyễn Hoàng Vinh",
       studentPhone: "0912 345 678",
-      evidenceImages: [...formPhotos.map((p) => p.dataUrl), ...(formImage ? [formImage] : [])].slice(0, 5),
+      evidenceImages: formPhotos.map((p) => p.dataUrl).slice(0, 5),
       status: "PENDING",
       createdAt: new Date().toISOString().replace("T", " ").substring(0, 16),
     }
@@ -155,7 +149,6 @@ export const MaintenancePage: React.FC = () => {
     setFormCategory(ticket.category)
     setFormUrgency(ticket.urgency)
     setFormDescription(ticket.description)
-    setFormImage(ticket.evidenceImages?.[0] || "")
     setIsEditModalOpen(true)
   }
 
@@ -178,7 +171,7 @@ export const MaintenancePage: React.FC = () => {
             category: formCategory,
             urgency: formUrgency,
             description: formDescription.trim(),
-            evidenceImages: formImage ? [formImage] : t.evidenceImages,
+            evidenceImages: t.evidenceImages,
           }
         }
         return t
@@ -259,7 +252,7 @@ export const MaintenancePage: React.FC = () => {
             resolution: {
               completedAt: new Date().toISOString().replace("T", " ").substring(0, 16),
               technicianNotes: completionNotes || "Đã kiểm tra và xử lý xong sự cố đạt chuẩn an toàn.",
-              completionImages: completionImage ? [completionImage] : [],
+              completionImages: completionPhotos.map((p) => p.dataUrl).slice(0, 5),
               materials,
               totalMaterialCost: totalCost,
             },
@@ -422,7 +415,7 @@ export const MaintenancePage: React.FC = () => {
             >
               <option value="ALL">Mức độ: Tất cả</option>
               <option value="NORMAL">Bình thường</option>
-              <option value="EMERGENCY">Khẩn cấp (2h)</option>
+              <option value="EMERGENCY">Khẩn cấp · xử lý trong 2h</option>
             </Select>
 
             <Select
@@ -525,7 +518,7 @@ export const MaintenancePage: React.FC = () => {
                       {isEmergency ? (
                         <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-danger-soft text-danger-soft-foreground border border-danger/25 flex items-center gap-1">
                           <TriangleAlert className="h-3 w-3" />
-                          <span>Khẩn cấp (2h)</span>
+                          <span>Khẩn cấp · 2h</span>
                         </span>
                       ) : (
                         <span className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-muted text-muted-foreground border border-border">
@@ -667,6 +660,8 @@ export const MaintenancePage: React.FC = () => {
                       <Button variant="success" className="hover:bg-success" onClick={() => {
                           setActiveTicket(ticket)
                           setMaterials([])
+                          setCompletionNotes("")
+                          setCompletionPhotos([])
                           setIsCompleteModalOpen(true)
                         }}>
                         <CircleCheck className="h-3.5 w-3.5" />
@@ -723,7 +718,7 @@ export const MaintenancePage: React.FC = () => {
                   required
                   value={formTitle}
                   onChange={(e) => setFormTitle(e.target.value)}
-                  placeholder="Ví dụ: Vỡ vòi sen nhà tắm, Chập ổ điện đầu giường..."
+                  placeholder="Vỡ vòi sen nhà tắm, chập ổ điện đầu giường…"
                   
                 />
               </div>
@@ -736,8 +731,8 @@ export const MaintenancePage: React.FC = () => {
                     onChange={(e) => setFormScope(e.target.value as MaintenanceScope)}
                     className="font-medium"
                   >
-                    <option value="COMPARTMENT_PRIVATE">Buồng cá nhân (Giường riêng)</option>
-                    <option value="ROOM_SHARED">Khu vực phòng chung (WC, Ban công)</option>
+                    <option value="COMPARTMENT_PRIVATE">Buồng cá nhân · Giường riêng</option>
+                    <option value="ROOM_SHARED">Khu vực phòng chung · WC, ban công</option>
                   </Select>
                 </div>
 
@@ -748,8 +743,8 @@ export const MaintenancePage: React.FC = () => {
                     onChange={(e) => setFormUrgency(e.target.value as MaintenanceUrgency)}
                     className="font-medium"
                   >
-                    <option value="NORMAL">Bình thường (Trong 24h)</option>
-                    <option value="EMERGENCY">Khẩn cấp (Cháy, nổ, vỡ ống - Trong 2h)</option>
+                    <option value="NORMAL">Bình thường · xử lý trong 24h</option>
+                    <option value="EMERGENCY">Khẩn cấp · cháy nổ, vỡ ống, xử lý trong 2h</option>
                   </Select>
                 </div>
               </div>
@@ -796,18 +791,10 @@ export const MaintenancePage: React.FC = () => {
               <div>
                 <ImageUpload
                   storageKey="dms_maintenance_create_photos"
-                  label="Ảnh chụp hiện trường (chọn từ máy)"
+                  label="Ảnh chụp hiện trường"
                   hint="JPG/PNG/WebP, mỗi ảnh ≤ 5MB, tối đa 5 ảnh. Ảnh được lưu kèm phiếu."
                   value={formPhotos}
                   onChange={setFormPhotos}
-                />
-                <label className="mt-2 block text-xs font-bold text-foreground mb-1">Hoặc dán link ảnh (tùy chọn)</label>
-                <Input
-                  type="url"
-                  value={formImage}
-                  onChange={(e) => setFormImage(e.target.value)}
-                  placeholder="https://..."
-                  
                 />
               </div>
 
@@ -1033,9 +1020,9 @@ export const MaintenancePage: React.FC = () => {
                   }}
                   
                 >
-                  <option value="Chú Đỗ Mạnh Hùng">Chú Đỗ Mạnh Hùng (Trưởng ban Điện lạnh)</option>
-                  <option value="Anh Lê Quốc Tuấn">Anh Lê Quốc Tuấn (Kỹ thuật Điện dân dụng)</option>
-                  <option value="Anh Vũ Trọng Nghĩa">Anh Vũ Trọng Nghĩa (Thợ nước & Vệ sinh)</option>
+                  <option value="Chú Đỗ Mạnh Hùng">Chú Đỗ Mạnh Hùng · Trưởng ban Điện lạnh</option>
+                  <option value="Anh Lê Quốc Tuấn">Anh Lê Quốc Tuấn · Kỹ thuật điện dân dụng</option>
+                  <option value="Anh Vũ Trọng Nghĩa">Anh Vũ Trọng Nghĩa · Thợ nước và vệ sinh</option>
                 </Select>
               </div>
 
@@ -1100,7 +1087,7 @@ export const MaintenancePage: React.FC = () => {
 
               {/* Material Logging */}
               <div className="p-3 bg-muted rounded-xl border border-border">
-                <span className="text-xs font-bold text-foreground block mb-2">Vật tư thay thế (nếu có)</span>
+                <span className="text-xs font-bold text-foreground block mb-2">Vật tư thay thế</span>
                 <div className="grid grid-cols-3 gap-2 mb-2">
                   <Input
                     type="text"
@@ -1120,7 +1107,7 @@ export const MaintenancePage: React.FC = () => {
                 <div className="flex gap-2 mb-2">
                   <Input
                     type="number"
-                    placeholder="Đơn giá (VNĐ)"
+                    placeholder="Đơn giá VNĐ"
                     value={newMatCost}
                     onChange={(e) => setNewMatCost(Number(e.target.value))}
                     className="flex-1"
@@ -1147,7 +1134,7 @@ export const MaintenancePage: React.FC = () => {
                         className="flex items-center justify-between text-xs bg-card p-2 rounded-lg border border-border"
                       >
                         <span>
-                          {m.name} x {m.quantity} ({m.unitCost.toLocaleString("vi-VN")} đ)
+                          {m.name} × {m.quantity} · {m.unitCost.toLocaleString("vi-VN")} đ
                         </span>
                         <button
                           type="button"
@@ -1162,15 +1149,13 @@ export const MaintenancePage: React.FC = () => {
                 )}
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-foreground mb-1">Ảnh sau khi hoàn thành</label>
-                <Input
-                  type="url"
-                  value={completionImage}
-                  onChange={(e) => setCompletionImage(e.target.value)}
-                  
-                />
-              </div>
+              <ImageUpload
+                storageKey="dms_maintenance_complete_photos"
+                label="Ảnh sau khi hoàn thành"
+                hint="Chụp rõ hạng mục đã sửa. JPG/PNG/WebP, mỗi ảnh ≤ 5MB, tối đa 5 ảnh."
+                value={completionPhotos}
+                onChange={setCompletionPhotos}
+              />
 
               <div className="flex items-center justify-end gap-2 pt-3 border-t border-border">
                 <button

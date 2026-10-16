@@ -197,8 +197,8 @@ export const DormAIAssistant: React.FC = () => {
         "⚠️ **CẢNH BÁO AN TOÀN KHẨN CẤP:**\n" +
         "1. Hãy lập tức gạt cầu dao (Aptomat) của buồng hoặc phòng bạn xuống!\n" +
         "2. Không chạm tay trần vào khu vực ổ cắm.\n" +
-        "3. Hãy vào mục **Báo hỏng thiết bị** -> Chọn mức độ **Khẩn cấp (2h)** để kỹ thuật viên trực trạm có mặt ngay trong 45-60 phút.\n" +
-        "4. Hotline cứu hộ khẩn cấp: **1900 6868** (Trực ban KTX 24/7)."
+        "3. Hãy vào mục **Báo hỏng thiết bị** -> Chọn mức độ **Khẩn cấp · xử lý trong 2h** để kỹ thuật viên trực trạm có mặt ngay trong 45-60 phút.\n" +
+        "4. Hotline cứu hộ khẩn cấp: **1900 6868** · trực ban KTX 24/7."
       )
     }
 
@@ -437,7 +437,7 @@ export const DormAIAssistant: React.FC = () => {
                         type="password"
                         value={tempKeyInput}
                         onChange={(e) => setTempKeyInput(e.target.value)}
-                        placeholder="Dán AIzaSy... vào đây"
+                        placeholder="Nhập API key Gemini"
                         className="font-mono"
                       />
                     </div>

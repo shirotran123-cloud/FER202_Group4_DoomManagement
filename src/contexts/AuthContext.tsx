@@ -91,7 +91,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return {
           success: false,
           message:
-            "Sinh viên vui lòng đăng nhập bằng Gmail cá nhân đã đăng ký trong hồ sơ tuyển sinh (không dùng email trường @fpt.edu.vn để tránh xung đột mã định danh sinh viên).",
+            "Sinh viên vui lòng đăng nhập bằng Gmail cá nhân đã đăng ký trong hồ sơ tuyển sinh. Không dùng email trường @fpt.edu.vn để tránh xung đột mã định danh sinh viên.",
         }
       }
       if (!isGmailDomain && !cleanEmail.includes("@")) {

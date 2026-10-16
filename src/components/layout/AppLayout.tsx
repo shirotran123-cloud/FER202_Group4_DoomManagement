@@ -15,7 +15,7 @@ export const AppLayout: React.FC = () => {
       <div className="flex min-h-screen flex-col lg:pl-[272px]">
         <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
         <main className="w-full flex-1 pt-[72px]">
-          <div className="mx-auto w-full max-w-[1200px] space-y-5 p-4 sm:p-6 lg:p-8">
+          <div className="w-full space-y-6 p-4 sm:p-6 lg:p-8">
             {user && (
               <p className="text-xs text-muted-foreground">
                 Xin chào, <span className="font-bold text-foreground">{user.fullName}</span>

@@ -213,8 +213,8 @@ export interface VisitorRecord {
 }
 
 export function registerVisitor(studentId: string, fullName: string, citizenId: string, visitDate: string, expectedMinutes: number): VisitorRecord {
-  if (!fullName.trim()) throw new Error("Visitor name required")
-  if (!/^\d{9,12}$/.test(citizenId.replace(/\s/g, ""))) throw new Error("citizenId must be 9-12 digits")
+  if (!fullName.trim()) throw new Error("Vui lòng nhập họ tên khách")
+  if (!/^\d{12}$/.test(citizenId.replace(/\s/g, ""))) throw new Error("Số CCCD phải gồm đúng 12 chữ số")
   return {
     id: `VST-${Date.now().toString().slice(-6)}`,
     studentId,
@@ -229,7 +229,7 @@ export function registerVisitor(studentId: string, fullName: string, citizenId: 
 }
 
 export function checkInVisitor(v: VisitorRecord, at: string): VisitorRecord {
-  if (v.status !== "PRE_REGISTERED") throw new Error("Only pre-registered visitors can check in")
+  if (v.status !== "PRE_REGISTERED") throw new Error("Chỉ check-in được khách đã đăng ký trước")
   return { ...v, status: "CHECKED_IN", checkInAt: at }
 }
 
@@ -314,9 +314,9 @@ export interface MarketplaceListing {
 }
 
 export function createMarketplaceListing(sellerId: string, title: string, price: number, category: string, photoIds: string[]): MarketplaceListing {
-  if (!sellerId.trim()) throw new Error("sellerId required")
-  if (title.trim().length < 4) throw new Error("title too short")
-  if (!Number.isFinite(price) || price < 0) throw new Error("invalid price")
+  if (!sellerId.trim()) throw new Error("Thiếu thông tin người bán")
+  if (title.trim().length < 4) throw new Error("Tiêu đề phải có ít nhất 4 ký tự")
+  if (!Number.isFinite(price) || price < 0) throw new Error("Giá tiền không hợp lệ")
   return {
     id: `MKT-${Date.now().toString().slice(-6)}`,
     sellerId,
@@ -339,8 +339,8 @@ export interface LostFoundPost {
 }
 
 export function createLostFoundPost(reporterId: string, kind: "LOST" | "FOUND", item: string, location: string, photoIds: string[]): LostFoundPost {
-  if (!reporterId.trim()) throw new Error("reporterId required")
-  if (item.trim().length < 3) throw new Error("item description too short")
+  if (!reporterId.trim()) throw new Error("Thiếu thông tin người đăng")
+  if (item.trim().length < 3) throw new Error("Mô tả món đồ phải có ít nhất 3 ký tự")
   return {
     id: `LAF-${Date.now().toString().slice(-6)}`,
     reporterId,
@@ -387,7 +387,7 @@ export function buildFloorGrid(rooms: FloorRoom[]): Record<string, RoomMapStatus
 export function answerDormQuestion(query: string): string {
   const q = query.toLowerCase()
   if (/(cháy|chap|chập|khét|lửa|emergency|khẩn cấp|cứu|1900)/.test(q)) {
-    return "Khan cap: ngat aptomat, goi bao ve 1900 6868, tao ticket muc Khan cap (2h) kem anh chup hien truong."
+    return "Khan cap: ngat aptomat, goi bao ve 1900 6868, tao ticket muc Khan cap 2h kem anh chup hien truong."
   }
   if (/(tiền|tien|thanh toán|vietqr|hóa đơn|hoa don|đóng tiền|dong tien|cọc|coc|thanh toan)/.test(q)) {
     return "Hoa don gom tien phong + dien bac thang + nuoc + wifi + ve sinh, chia deu theo dau nguoi. Quet VietQR dung so tien va noi dung DIENNUOC_[phong]_[MSSV]."

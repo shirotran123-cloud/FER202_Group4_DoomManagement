@@ -112,43 +112,43 @@ export const CurfewPage: React.FC = () => {
     string,
     { name: string; room: string; phone: string; parentPhone: string }
   > = {
-    SE182049: {
+    QE202049: {
       name: "Nguyễn Hoàng Vinh",
       room: "A205",
       phone: "0912 345 678",
       parentPhone: "0903 123 456",
     },
-    SE182050: {
+    QE202050: {
       name: "Trần Thanh Nguyên",
       room: "A205",
       phone: "0905 111 222",
       parentPhone: "0905 888 999",
     },
-    SE182051: {
+    QE202051: {
       name: "Văn Thái Trung",
       room: "A205",
       phone: "0934 999 888",
       parentPhone: "0918 333 444",
     },
-    SE182052: {
+    QE202052: {
       name: "Huỳnh Gia Kim",
       room: "A205",
       phone: "0982 777 666",
       parentPhone: "0983 456 789",
     },
-    SE182053: {
+    QE202053: {
       name: "Lê Minh Tuấn",
       room: "A204",
       phone: "0961 223 344",
       parentPhone: "0962 111 333",
     },
-    SE182054: {
+    QE202054: {
       name: "Phạm Quốc Bảo",
       room: "A203",
       phone: "0971 445 566",
       parentPhone: "0972 555 777",
     },
-    SE182057: {
+    QE202057: {
       name: "Ngô Văn Khải",
       room: "A302",
       phone: "0943 222 111",
@@ -160,7 +160,7 @@ export const CurfewPage: React.FC = () => {
   const handleScanCard = (mssvToScan?: string) => {
     const targetMssv = (mssvToScan || scanInputMssv).trim().toUpperCase()
     if (!targetMssv) {
-      showToast("Vui lòng nhập hoặc quẹt mã thẻ sinh viên (MSSV)!")
+      showToast("Vui lòng nhập hoặc quẹt mã thẻ sinh viên!")
       return
     }
 
@@ -201,7 +201,7 @@ export const CurfewPage: React.FC = () => {
         scanTimeFormatted: scanTimeFormatted,
         curfewStatus: "ON_TIME",
         guardNotes: "Check-in trước 23:00 an toàn.",
-        guardName: user?.fullName || "Chú Đỗ Mạnh Hùng (Tổ An ninh)",
+        guardName: user?.fullName || "Chú Đỗ Mạnh Hùng",
       }
       setGateLogs([newLog, ...gateLogs])
       showToast(`HỢP LỆ: Sinh viên ${studentInfo.name} về đúng giờ!`)
@@ -212,7 +212,7 @@ export const CurfewPage: React.FC = () => {
         studentName: studentInfo.name,
         studentId: targetMssv,
         room: studentInfo.room,
-        details: `Check-in lúc ${scanTimeFormatted}. Có đơn duyệt ${approvedRequest.id} (${approvedRequest.reasonDetail}). Cho phép vào cổng.`,
+        details: `Check-in lúc ${scanTimeFormatted}. Có đơn duyệt ${approvedRequest.id} · ${approvedRequest.reasonDetail}. Cho phép vào cổng.`,
         timestamp: scanTimeFormatted,
       }
       setScanResult(resultObj)
@@ -227,7 +227,7 @@ export const CurfewPage: React.FC = () => {
         curfewStatus: "APPROVED_LATE",
         matchedRequestId: approvedRequest.id,
         guardNotes: `Đối chiếu đơn ${approvedRequest.id} hợp lệ. Cho vào an toàn.`,
-        guardName: user?.fullName || "Chú Đỗ Mạnh Hùng (Tổ An ninh)",
+        guardName: user?.fullName || "Chú Đỗ Mạnh Hùng",
       }
       setGateLogs([newLog, ...gateLogs])
       showToast(`HỢP LỆ THEO ĐƠN: ${studentInfo.name} có đơn duyệt ${approvedRequest.id}!`)
@@ -253,7 +253,7 @@ export const CurfewPage: React.FC = () => {
         curfewStatus: "UNAUTHORIZED_LATE",
         penaltyPointsDeducted: 10,
         guardNotes: "Về sau 23:00 không có đơn duyệt. Tự động lập biên bản kỷ luật.",
-        guardName: user?.fullName || "Chú Đỗ Mạnh Hùng (Tổ An ninh)",
+        guardName: user?.fullName || "Chú Đỗ Mạnh Hùng",
       }
       setGateLogs([newLog, ...gateLogs])
 
@@ -265,10 +265,10 @@ export const CurfewPage: React.FC = () => {
         room: studentInfo.room,
         date: new Date().toISOString().substring(0, 10),
         infractionType: "CURFEW_VIOLATION",
-        infractionTitle: `Vi phạm giờ giới nghiêm 23:00 (Check-in lúc ${scanTimeFormatted})`,
+        infractionTitle: `Vi phạm giờ giới nghiêm 23:00 · Check-in lúc ${scanTimeFormatted}`,
         pointsDeducted: 10,
         description: `Quét thẻ lúc ${scanTimeFormatted} qua cổng KTX không có đơn xin về muộn đã duyệt trên hệ thống DMS.`,
-        officerName: user?.fullName || "Chú Đỗ Mạnh Hùng (Tổ An ninh)",
+        officerName: user?.fullName || "Chú Đỗ Mạnh Hùng",
         status: "RECORDED",
       }
       setViolations([newVio, ...violations])
@@ -339,7 +339,7 @@ export const CurfewPage: React.FC = () => {
 
     const newReq: CurfewRequest = {
       id: `REQ-2026-${String(requests.length + 1).padStart(3, "0")}`,
-      studentId: user?.studentId || "SE182049",
+      studentId: user?.studentId || "QE202049",
       studentName: user?.fullName || "Nguyễn Hoàng Vinh",
       room: user?.dormitoryStatus?.room || "A205",
       phone: user?.phone || "0912 345 678",
@@ -367,7 +367,7 @@ export const CurfewPage: React.FC = () => {
         return {
           ...r,
           status: newStatus,
-          reviewedBy: user?.fullName || "Thầy Vũ Thành Nam (Dorm Manager)",
+          reviewedBy: user?.fullName || "Thầy Vũ Thành Nam",
           reviewedAt: new Date().toISOString().replace("T", " ").substring(0, 16),
           reviewNotes:
             newStatus === "APPROVED"
@@ -384,13 +384,13 @@ export const CurfewPage: React.FC = () => {
   // ==========================================
   // State form biên bản kỷ luật
   // ==========================================
-  const [vioStudentId, setVioStudentId] = useState("SE182053")
+  const [vioStudentId, setVioStudentId] = useState("QE202053")
   const [vioType, setVioType] = useState<InfractionType>("UNAUTHORIZED_COOKING")
   const [vioDescription, setVioDescription] = useState("")
 
   const infractionPointsMap: Record<InfractionType, { title: string; points: number }> = {
     CURFEW_VIOLATION: { title: "Vi phạm giờ giới nghiêm 23:00 không phép", points: 10 },
-    UNAUTHORIZED_COOKING: { title: "Nấu ăn sai quy định trong phòng (Nguy cơ cháy)", points: 15 },
+    UNAUTHORIZED_COOKING: { title: "Nấu ăn sai quy định trong phòng", points: 15 },
     NOISE_AFTER_HOURS: { title: "Gây mất trật tự, ồn ào sau 22:30", points: 10 },
     SMOKING_VAPING: { title: "Hút thuốc lá / thuốc lá điện tử trong buồng phòng", points: 20 },
     UNAUTHORIZED_GUEST: { title: "Đưa người lạ vào phòng qua đêm không đăng ký", points: 25 },
@@ -415,7 +415,7 @@ export const CurfewPage: React.FC = () => {
       pointsDeducted: infractionInfo.points,
       description:
         vioDescription.trim() || `Lập biên bản vi phạm: ${infractionInfo.title}.`,
-      officerName: user?.fullName || "Thầy Vũ Thành Nam (Dorm Manager)",
+      officerName: user?.fullName || "Thầy Vũ Thành Nam",
       status: "RECORDED",
     }
 
@@ -462,7 +462,7 @@ export const CurfewPage: React.FC = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 pb-16">
+    <div className="w-full space-y-6 pb-12">
       {/* Toast Alert */}
       {toastMessage && (
         <div className="fixed top-20 right-6 z-50 flex items-center gap-2 rounded-2xl bg-foreground text-background px-4 py-3 shadow-xl text-xs font-semibold animate-in fade-in slide-in-from-top-4">
@@ -472,14 +472,14 @@ export const CurfewPage: React.FC = () => {
       )}
 
       {/* Header Banner */}
-      <div className="rounded-3xl border border-danger/25 bg-gradient-to-br from-card via-danger to-card p-6 sm:p-8 shadow-xs">
+      <div className="dms-card p-5 sm:p-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border/80 pb-6">
           <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-danger/10 text-danger-soft-foreground border border-danger/25 shadow-xs">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted text-foreground border border-border shadow-xs">
               <ClockAlert className="h-7 w-7" />
             </div>
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-danger/10 px-3 py-0.5 text-[11px] font-bold text-danger-soft-foreground">
+              <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-0.5 text-[11px] font-bold text-foreground">
                 <span>An ninh · Kỷ luật nội trú</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-black text-foreground mt-1">
@@ -494,7 +494,7 @@ export const CurfewPage: React.FC = () => {
             <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
               Phụ trách an ninh:
             </p>
-            <p className="text-xs font-bold text-danger-soft-foreground flex items-center justify-end gap-1 mt-0.5">
+            <p className="text-xs font-bold text-foreground flex items-center justify-end gap-1 mt-0.5">
               <span>Đinh Thanh Trung</span>
             </p>
             {isGuardOrManager && (
@@ -512,32 +512,32 @@ export const CurfewPage: React.FC = () => {
             <p className="text-2xl font-black text-foreground mt-1">{gateLogs.length}</p>
             <span className="text-[10px] text-muted-foreground">Ca trực hôm nay</span>
           </div>
-          <div className="rounded-2xl border border-primary/20 bg-primary-soft/60 p-4 dark:bg-primary-soft/40">
-            <p className="text-primary-soft-foreground text-[11px] font-medium flex items-center gap-1">
+          <div className="rounded-2xl border border-border bg-card/60 p-4">
+            <p className="text-muted-foreground text-[11px] font-medium flex items-center gap-1">
               <FileText className="h-3.5 w-3.5" /> Đơn về muộn đã duyệt
             </p>
-            <p className="text-2xl font-black text-primary mt-1">
+            <p className="text-2xl font-black text-foreground mt-1">
               {requests.filter((r) => r.status === "APPROVED").length}
             </p>
-            <span className="text-[10px] text-primary-soft-foreground/80">Hợp lệ ra vào ngoài giờ</span>
+            <span className="text-[10px] text-muted-foreground">Hợp lệ ra vào ngoài giờ</span>
           </div>
-          <div className="rounded-2xl border border-primary/25 bg-primary/5 p-4">
-            <p className="text-primary-soft-foreground text-[11px] font-medium flex items-center gap-1">
+          <div className="rounded-2xl border border-border bg-card/60 p-4">
+            <p className="text-muted-foreground text-[11px] font-medium flex items-center gap-1">
               <TriangleAlert className="h-3.5 w-3.5" /> SV bị cảnh cáo (&gt;20đ)
             </p>
-            <p className="text-2xl font-black text-primary-soft-foreground mt-1">
+            <p className="text-2xl font-black text-foreground mt-1">
               {demerits.filter((d) => d.status === "WARNING").length}
             </p>
-            <span className="text-[10px] text-primary-soft-foreground">Cần nhắc nhở rèn luyện</span>
+            <span className="text-[10px] text-muted-foreground">Cần nhắc nhở rèn luyện</span>
           </div>
-          <div className="rounded-2xl border border-danger/25 bg-danger/5 p-4">
-            <p className="text-danger-soft-foreground text-[11px] font-medium flex items-center gap-1">
+          <div className="rounded-2xl border border-border bg-card/60 p-4">
+            <p className="text-muted-foreground text-[11px] font-medium flex items-center gap-1">
               <UserX className="h-3.5 w-3.5" /> Đình chỉ kỳ sau (&gt;30đ)
             </p>
-            <p className="text-2xl font-black text-danger-soft-foreground mt-1">
+            <p className="text-2xl font-black text-foreground mt-1">
               {demerits.filter((d) => d.status === "SUSPENDED").length}
             </p>
-            <span className="text-[10px] text-danger-soft-foreground">Không xét duyệt KTX kỳ tới</span>
+            <span className="text-[10px] text-muted-foreground">Không xét duyệt KTX kỳ tới</span>
           </div>
         </div>
       </div>
@@ -589,7 +589,7 @@ export const CurfewPage: React.FC = () => {
       {activeTab === "GATE_SCAN" && (
         <div className="space-y-6">
           {/* Main Console Box */}
-          <div className="rounded-3xl border border-danger/25 bg-card p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="rounded-3xl border border-danger/25 bg-card p-5 sm:p-6 shadow-sm space-y-6">
             {/* Top Bar of Console */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border pb-6">
               <div className="space-y-1">
@@ -656,37 +656,37 @@ export const CurfewPage: React.FC = () => {
               </span>
               <div className="flex flex-wrap gap-2">
                 <button
-                  onClick={() => handleScanCard("SE182049")}
+                  onClick={() => handleScanCard("QE202049")}
                   className="rounded-xl border border-primary/30 bg-primary/10 hover:bg-primary/20 px-3 py-1.5 text-xs font-semibold text-primary-soft-foreground dark:text-primary-soft-foreground flex items-center gap-1.5"
                 >
-                  <span>SE182049 (Nguyễn Hoàng Vinh - Có đơn duyệt hợp lệ)</span>
+                  <span>QE202049 (Nguyễn Hoàng Vinh - Có đơn duyệt hợp lệ)</span>
                 </button>
                 <button
-                  onClick={() => handleScanCard("SE182053")}
+                  onClick={() => handleScanCard("QE202053")}
                   className="rounded-xl border border-danger/25 bg-danger/10 hover:bg-danger/20 px-3 py-1.5 text-xs font-semibold text-danger-soft-foreground flex items-center gap-1.5"
                 >
-                  <span>SE182053 (Lê Minh Tuấn - KHÔNG CÓ ĐƠN ➔ Vi phạm)</span>
+                  <span>QE202053 (Lê Minh Tuấn - KHÔNG CÓ ĐƠN ➔ Vi phạm)</span>
                 </button>
                 <button
-                  onClick={() => handleScanCard("SE182050")}
+                  onClick={() => handleScanCard("QE202050")}
                   className="rounded-xl border border-primary/25 bg-primary/10 hover:bg-primary/20 px-3 py-1.5 text-xs font-semibold text-primary-soft-foreground flex items-center gap-1.5"
                 >
-                  <span>SE182050 (Trần Thanh Nguyên - Về quê qua đêm)</span>
+                  <span>QE202050 (Trần Thanh Nguyên - Về quê qua đêm)</span>
                 </button>
                 <button
-                  onClick={() => handleScanCard("SE182054")}
+                  onClick={() => handleScanCard("QE202054")}
                   className="rounded-xl border border-border bg-muted/60 hover:bg-muted px-3 py-1.5 text-xs font-semibold text-foreground flex items-center gap-1.5"
                 >
-                  <span>SE182054 (Phạm Quốc Bảo - Phòng A203)</span>
+                  <span>QE202054 (Phạm Quốc Bảo - Phòng A203)</span>
                 </button>
               </div>
             </div>
 
             {/* Card Scan Input Form */}
             <p className="text-[11px] text-muted-foreground">
-              Mã QR chuẩn cổng: <code className="font-mono">{buildGateQrPayload("SE182049", new Date().toISOString().slice(0, 16))}</code> ·
+              Mã QR chuẩn cổng: <code className="font-mono">{buildGateQrPayload("QE202049", new Date().toISOString().slice(0, 16))}</code> ·
               Logic đối chiếu dùng <code className="font-mono">evaluateGateScan()</code> (trước 23:00 hợp lệ, sau 23:00 cần đơn duyệt).
-              Vắng mặt quá giờ: <code className="font-mono">{findOverdueAbsentees(gateLogs.map((g) => ({ studentId: g.studentId, scanHour: 22 })), ["SE182049", "SE182050"], simulatedHour).join(", ") || "không có"}</code>
+              Vắng mặt quá giờ: <code className="font-mono">{findOverdueAbsentees(gateLogs.map((g) => ({ studentId: g.studentId, scanHour: 22 })), ["QE202049", "QE202050"], simulatedHour).join(", ") || "không có"}</code>
             </p>
             <div className="flex gap-2">
               <div className="relative flex-1">
@@ -696,7 +696,7 @@ export const CurfewPage: React.FC = () => {
                   value={scanInputMssv}
                   onChange={(e) => setScanInputMssv(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleScanCard()}
-                  placeholder="Nhập MSSV hoặc quét mã barcode thẻ sinh viên (VD: SE182049)..."
+                  placeholder="Nhập MSSV hoặc quét barcode thẻ sinh viên…"
                   className="rounded-2xl pl-10 pr-4 font-mono uppercase focus:outline-hidden focus:ring-danger/30"
                 />
               </div>
@@ -761,7 +761,7 @@ export const CurfewPage: React.FC = () => {
           </div>
 
           {/* Recent Access Logs Table */}
-          <div className="rounded-3xl border border-border bg-card p-6 shadow-xs space-y-4">
+          <div className="overflow-hidden rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-xs space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
                 <History className="h-4 w-4 text-muted-foreground" />
@@ -772,29 +772,29 @@ export const CurfewPage: React.FC = () => {
               </span>
             </div>
 
-            <div className="overflow-x-auto">
+            <div className="bleed-x-6 overflow-x-auto">
               <table className="w-full text-xs text-left">
                 <thead className="bg-muted/50 text-muted-foreground uppercase text-[10px] font-bold border-b border-border">
                   <tr>
-                    <th className="whitespace-nowrap py-2.5 px-3">Thời gian</th>
-                    <th className="whitespace-nowrap py-2.5 px-3">MSSV</th>
-                    <th className="whitespace-nowrap py-2.5 px-3">Họ và Tên</th>
-                    <th className="whitespace-nowrap py-2.5 px-3">Phòng</th>
-                    <th className="whitespace-nowrap py-2.5 px-3">Kết quả đối chiếu</th>
-                    <th className="whitespace-nowrap py-2.5 px-3">Ghi chú an ninh</th>
-                    <th className="whitespace-nowrap py-2.5 px-3 text-right">Bảo vệ ca trực</th>
+                    <th className="whitespace-nowrap px-3 py-2.5 align-middle">Thời gian</th>
+                    <th className="whitespace-nowrap px-3 py-2.5 align-middle">MSSV</th>
+                    <th className="whitespace-nowrap px-3 py-2.5 align-middle">Họ và Tên</th>
+                    <th className="whitespace-nowrap px-3 py-2.5 align-middle">Phòng</th>
+                    <th className="whitespace-nowrap px-3 py-2.5 align-middle">Kết quả đối chiếu</th>
+                    <th className="whitespace-nowrap px-3 py-2.5 align-middle">Ghi chú an ninh</th>
+                    <th className="whitespace-nowrap px-3 py-2.5 align-middle text-right">Bảo vệ ca trực</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
                   {gateLogs.map((log) => (
                     <tr key={log.id} className="hover:bg-muted/30">
-                      <td className="whitespace-nowrap py-2.5 px-3 font-mono text-[11px] font-semibold text-muted-foreground">
+                      <td className="whitespace-nowrap px-3 py-2.5 align-middle font-mono text-[11px] font-semibold text-muted-foreground">
                         {log.scanTimeFormatted}
                       </td>
-                      <td className="whitespace-nowrap py-2.5 px-3 font-mono font-bold text-foreground">{log.studentId}</td>
-                      <td className="whitespace-nowrap py-2.5 px-3 font-semibold text-foreground">{log.studentName}</td>
-                      <td className="whitespace-nowrap py-2.5 px-3">{log.room}</td>
-                      <td className="whitespace-nowrap py-2.5 px-3">
+                      <td className="whitespace-nowrap px-3 py-2.5 align-middle font-mono font-bold text-foreground">{log.studentId}</td>
+                      <td className="whitespace-nowrap px-3 py-2.5 align-middle font-semibold text-foreground">{log.studentName}</td>
+                      <td className="whitespace-nowrap px-3 py-2.5 align-middle">{log.room}</td>
+                      <td className="whitespace-nowrap px-3 py-2.5 align-middle">
                         <span
                           className={`inline-flex items-center gap-1 rounded-lg px-2 py-0.5 text-[10px] font-bold ${
                             log.curfewStatus === "ON_TIME"
@@ -809,10 +809,10 @@ export const CurfewPage: React.FC = () => {
                           {log.curfewStatus === "UNAUTHORIZED_LATE" && "Vi phạm (-10đ)"}
                         </span>
                       </td>
-                      <td className="whitespace-nowrap py-2.5 px-3 text-muted-foreground text-[11px] max-w-xs truncate">
+                      <td className="whitespace-nowrap px-3 py-2.5 align-middle text-muted-foreground text-[11px] max-w-xs truncate">
                         {log.guardNotes}
                       </td>
-                      <td className="whitespace-nowrap py-2.5 px-3 text-right text-muted-foreground text-[11px]">
+                      <td className="whitespace-nowrap px-3 py-2.5 align-middle text-right text-muted-foreground text-[11px]">
                         {log.guardName}
                       </td>
                     </tr>
@@ -828,9 +828,9 @@ export const CurfewPage: React.FC = () => {
       {/* TAB 2: ĐƠN VẮNG MẶT / VỀ MUỘN NGOÀI GIỜ */}
       {/* ========================================================= */}
       {activeTab === "REQUESTS" && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
           {/* Left Column: Submit Request Form */}
-          <div className="rounded-3xl border border-border bg-card p-6 shadow-xs space-y-4">
+          <div className="rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-xs space-y-4">
             <div className="flex items-center gap-2 border-b border-border pb-3 text-primary">
               <FileText className="h-5 w-5" />
               <h3 className="font-bold text-sm text-foreground">
@@ -838,12 +838,10 @@ export const CurfewPage: React.FC = () => {
               </h3>
             </div>
 
-            <div className="p-3 rounded-2xl bg-primary/10 border border-primary/25 text-[11px] text-primary-soft-foreground">
-              <p className="font-bold flex items-center gap-1">
-                <CircleAlert className="h-3.5 w-3.5" /> Quy định nộp đơn:
-              </p>
-              <p className="mt-0.5 leading-relaxed">
-                Đơn phải nộp <strong>trước 21:00</strong> ngày vắng mặt. Nộp sau 21:00 hệ thống sẽ gắn cờ nộp muộn và có thể bị từ chối.
+            <div className="p-3 rounded-2xl bg-primary/10 border border-primary/25 text-[11px] leading-relaxed text-primary-soft-foreground">
+              <p className="flex items-start gap-1.5">
+                <CircleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                <span><strong>Quy định nộp đơn:</strong> Đơn phải nộp <strong>trước 21:00</strong> ngày vắng mặt. Nộp sau 21:00 hệ thống sẽ gắn cờ nộp muộn và có thể bị từ chối.</span>
               </p>
             </div>
 
@@ -892,7 +890,7 @@ export const CurfewPage: React.FC = () => {
                     type="text"
                     value={reqTime}
                     onChange={(e) => setReqTime(e.target.value)}
-                    placeholder="VD: 23:45 hoặc 06:30 sáng"
+                    placeholder="23:45"
                     className="mt-1"
                   />
                 </div>
@@ -954,12 +952,12 @@ export const CurfewPage: React.FC = () => {
           </div>
 
           {/* Right Column: List of Requests with Manager Action Buttons */}
-          <div className="lg:col-span-2 rounded-3xl border border-border bg-card p-6 shadow-xs space-y-4">
+          <div className="lg:col-span-2 rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-xs space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h3 className="font-bold text-sm text-foreground">
                 {isGuardOrManager
                   ? `Danh Sách Đơn Cần Phê Duyệt (${requests.length})`
-                  : `Các Đơn Của Tôi Đã Nộp (${requests.filter((r) => r.studentId === (user?.studentId || "SE182049")).length})`}
+                  : `Các Đơn Của Tôi Đã Nộp (${requests.filter((r) => r.studentId === (user?.studentId || "QE202049")).length})`}
               </h3>
               <span className="text-[11px] text-muted-foreground">
                 {isGuardOrManager
@@ -971,7 +969,7 @@ export const CurfewPage: React.FC = () => {
             <div className="space-y-3">
               {(isGuardOrManager
                 ? requests
-                : requests.filter((r) => r.studentId === (user?.studentId || "SE182049"))
+                : requests.filter((r) => r.studentId === (user?.studentId || "QE202049"))
               ).map((req) => (
                 <div
                   key={req.id}
@@ -1049,7 +1047,7 @@ export const CurfewPage: React.FC = () => {
 
               {(isGuardOrManager
                 ? requests
-                : requests.filter((r) => r.studentId === (user?.studentId || "SE182049"))
+                : requests.filter((r) => r.studentId === (user?.studentId || "QE202049"))
               ).length === 0 && (
                 <div className="p-8 text-center text-muted-foreground text-xs rounded-2xl border border-dashed border-border bg-muted/10">
                   {isGuardOrManager
@@ -1068,7 +1066,7 @@ export const CurfewPage: React.FC = () => {
       {activeTab === "DISCIPLINE" && (
         <div className="space-y-6">
           {/* Summary of Student Demerit Points */}
-          <div className="rounded-3xl border border-border bg-card p-6 shadow-xs space-y-4">
+          <div className="rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-xs space-y-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-border pb-3">
               <div>
                 <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
@@ -1084,7 +1082,7 @@ export const CurfewPage: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {(isGuardOrManager
                 ? demerits
-                : demerits.filter((d) => d.studentId === (user?.studentId || "SE182049"))
+                : demerits.filter((d) => d.studentId === (user?.studentId || "QE202049"))
               ).map((student) => {
                 const percent = student.remainingPoints
                 const isWarning = student.status === "WARNING"
@@ -1160,8 +1158,8 @@ export const CurfewPage: React.FC = () => {
 
           {/* Form to create infraction report: ONLY for Guard / Manager / Admin */}
           {isGuardOrManager ? (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="rounded-3xl border border-border bg-card p-6 shadow-xs space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+              <div className="rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-xs space-y-4">
                 <div className="flex items-center gap-2 border-b border-border pb-3 text-danger-soft-foreground">
                   <TriangleAlert className="h-5 w-5" />
                   <h3 className="font-bold text-sm text-foreground">
@@ -1177,10 +1175,10 @@ export const CurfewPage: React.FC = () => {
                     onChange={(e) => setVioStudentId(e.target.value)}
                     className="mt-1"
                   >
-                    <option value="SE182053">SE182053 - Lê Minh Tuấn (A204)</option>
-                    <option value="SE182056">SE182056 - Đoàn Gia Bảo (A201)</option>
-                    <option value="SE182057">SE182057 - Ngô Văn Khải (A302)</option>
-                    <option value="SE182049">SE182049 - Nguyễn Hoàng Vinh (A205)</option>
+                    <option value="QE202053">QE202053 - Lê Minh Tuấn (A204)</option>
+                    <option value="QE202056">QE202056 - Đoàn Gia Bảo (A201)</option>
+                    <option value="QE202057">QE202057 - Ngô Văn Khải (A302)</option>
+                    <option value="QE202049">QE202049 - Nguyễn Hoàng Vinh (A205)</option>
                   </Select>
                 </div>
 
@@ -1219,7 +1217,7 @@ export const CurfewPage: React.FC = () => {
             </div>
 
             {/* List of Violation Records */}
-            <div className="lg:col-span-2 rounded-3xl border border-border bg-card p-6 shadow-xs space-y-4">
+            <div className="lg:col-span-2 rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-xs space-y-4">
               <div className="flex items-center justify-between border-b border-border pb-3">
                 <h3 className="font-bold text-sm text-foreground">
                   Danh Sách Biên Bản Xử Lý Kỷ Luật ({violations.length})

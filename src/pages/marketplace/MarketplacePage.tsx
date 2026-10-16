@@ -43,7 +43,7 @@ export const MarketplacePage: React.FC = () => {
     e.preventDefault();
     setError(null);
     try {
-      const l = createMarketplaceListing("SE182049", title, price, "DO_CU", photos.map((p) => p.id));
+      const l = createMarketplaceListing("QE202049", title, price, "DO_CU", photos.map((p) => p.id));
       setListings([l, ...listings]);
       setTitle("");
       setPhotos([]);
@@ -56,7 +56,7 @@ export const MarketplacePage: React.FC = () => {
     e.preventDefault();
     setError(null);
     try {
-      const p = createLostFoundPost("SE182049", kind, item, "KTX", photos.map((ph) => ph.id));
+      const p = createLostFoundPost("QE202049", kind, item, "KTX", photos.map((ph) => ph.id));
       setPosts([p, ...posts]);
       setItem("");
       setPhotos([]);
@@ -66,7 +66,7 @@ export const MarketplacePage: React.FC = () => {
   };
 
   return (
-    <div className="mx-auto max-w-5xl space-y-5 pb-12">
+    <div className="w-full space-y-6 pb-12">
       <PageHeader eyebrow="Cộng đồng · Chợ & thất lạc" title="Chợ đồ cũ & Tìm đồ thất lạc" desc="Nhượng tủ lạnh, quạt, sách vở. Báo mất/nhặt được đồ trong KTX, kèm ảnh upload." />
       <div className="flex gap-2">
         <Button variant={tab === "MARKET" ? "default" : "outline"} onClick={() => setTab("MARKET")}>Chợ đồ cũ ({listings.length})</Button>
@@ -75,7 +75,7 @@ export const MarketplacePage: React.FC = () => {
       {tab === "MARKET" ? (
         <SectionCard title="Đăng bán đồ cũ">
           <form onSubmit={submitMarket} className="grid gap-3">
-            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="VD: Quạt cây cũ còn tốt"  required />
+            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Quạt cây cũ còn tốt"  required />
             <Input type="number" min={0} value={price} onChange={(e) => setPrice(Number(e.target.value))}  aria-label="Gia ban" />
             <ImageUpload storageKey="dms_market_photos" label="Ảnh món đồ" value={photos} onChange={setPhotos} />
             <div><Button type="submit">Đăng bán</Button></div>
@@ -96,7 +96,7 @@ export const MarketplacePage: React.FC = () => {
               <Button type="button" variant={kind === "LOST" ? "default" : "outline"} onClick={() => setKind("LOST")}>Mất đồ</Button>
               <Button type="button" variant={kind === "FOUND" ? "default" : "outline"} onClick={() => setKind("FOUND")}>Nhặt được</Button>
             </div>
-            <Input value={item} onChange={(e) => setItem(e.target.value)} placeholder="VD: Ví da màu đen khu sân A"  required />
+            <Input value={item} onChange={(e) => setItem(e.target.value)} placeholder="Ví da màu đen, khu sân A"  required />
             <ImageUpload storageKey="dms_lostfound_photos" label="Ảnh minh chứng" value={photos} onChange={setPhotos} />
             <div><Button type="submit">Đăng tin</Button></div>
           </form>

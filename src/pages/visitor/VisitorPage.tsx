@@ -27,7 +27,7 @@ export const VisitorPage: React.FC = () => {
     e.preventDefault();
     setError(null);
     try {
-      const v = registerVisitor("SE182049", name, citizenId, new Date().toISOString().slice(0, 10), minutes);
+      const v = registerVisitor("QE202049", name, citizenId, new Date().toISOString().slice(0, 10), minutes);
       setVisitors([v, ...visitors]);
       setName("");
       setCitizenId("");
@@ -41,17 +41,27 @@ export const VisitorPage: React.FC = () => {
   };
 
   return (
-    <div className="mx-auto max-w-5xl space-y-5 pb-12">
+    <div className="w-full space-y-6 pb-12">
       <PageHeader
         eyebrow="An ninh · Khách thăm"
         title="Đăng ký khách ghé thăm"
         desc="Sinh viên đăng ký trước họ tên + CCCD + thời gian. Bảo vệ check-in/out tại cổng, tự động cảnh báo quá giờ."
-        actions={<Button onClick={tickOverstay} variant="outline">Quét quá giờ (demo)</Button>}
+        actions={<Button onClick={tickOverstay} variant="outline">Quét quá giờ</Button>}
       />
-      <SectionCard title="Đăng ký khách mới" desc="CCCD 9–12 số, thời gian tối thiểu 15 phút">
+      <SectionCard title="Đăng ký khách mới" desc="Thời gian tối thiểu 15 phút">
         <form onSubmit={submit} className="grid gap-3 sm:grid-cols-3">
           <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Họ tên khách"  required />
-          <Input value={citizenId} onChange={(e) => setCitizenId(e.target.value)} placeholder="CCCD (9-12 số)" className="font-mono" required />
+          <Input
+            value={citizenId}
+            onChange={(e) => setCitizenId(e.target.value.replace(/\D/g, "").slice(0, 12))}
+            placeholder="Số CCCD"
+            inputMode="numeric"
+            maxLength={12}
+            pattern="\d{12}"
+            title="CCCD gồm đúng 12 chữ số"
+            className="font-mono"
+            required
+          />
           <Input type="number" min={15} value={minutes} onChange={(e) => setMinutes(Number(e.target.value))}  aria-label="So phut du kien" />
           <div className="sm:col-span-3">
             <Button type="submit">Đăng ký khách</Button>

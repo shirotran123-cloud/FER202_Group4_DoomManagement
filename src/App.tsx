@@ -78,7 +78,7 @@ export function App() {
               <Route
                 path="/overview"
                 element={
-                  <ProtectedRoute allowedRoles={["student", "admin"]}>
+                  <ProtectedRoute allowedRoles={["student", "manager", "admin"]}>
                     <StudentOverviewPage />
                   </ProtectedRoute>
                 }

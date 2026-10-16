@@ -13,7 +13,7 @@ const FAQ_ITEMS = [
   {
     question: "Mô hình buồng riêng 1:4:6 là gì?",
     answer:
-      "Mỗi phòng lớn có 4 buồng riêng (A, B, C, D), mỗi buồng 6 giường (tổng 24 giường). Mỗi giường có rèm che riêng tư, đèn bàn, ổ cắm và tủ locker khóa số.",
+      "Mỗi phòng lớn có 4 buồng riêng A, B, C, D, mỗi buồng 6 giường, tổng 24 giường. Mỗi giường có rèm che riêng tư, đèn bàn, ổ cắm và tủ locker khóa số.",
   },
   {
     question: "Tiền điện nước tính và chia như thế nào?",
@@ -38,7 +38,7 @@ const FAQ_ITEMS = [
   {
     question: "Phòng hỏng điều hòa, vòi sen thì báo ở đâu?",
     answer:
-      "Vào mục Báo hỏng, chọn vị trí, tải ảnh chụp hiện trường lên (không cần dán link), mô tả sự cố. Khẩn cấp xử lý trong 2 giờ, thường trong 24 giờ.",
+      "Vào mục Báo hỏng, chọn vị trí, tải ảnh chụp hiện trường lên, mô tả sự cố. Khẩn cấp xử lý trong 2 giờ, thường trong 24 giờ.",
   },
 ]
 

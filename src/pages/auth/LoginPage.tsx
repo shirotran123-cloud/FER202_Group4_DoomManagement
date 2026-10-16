@@ -11,10 +11,10 @@ interface LocationState {
 }
 
 const DEMO_ACCOUNTS: { role: UserRole; name: string; detail: string; initials: string; tint: string }[] = [
-  { role: "student", name: "Nguyễn Hoàng Vinh", detail: "Sinh viên · SE182049", initials: "VH", tint: "bg-success/15 text-success-soft-foreground" },
+  { role: "student", name: "Nguyễn Hoàng Vinh", detail: "Sinh viên · QE202049", initials: "VH", tint: "bg-success/15 text-success-soft-foreground" },
   { role: "manager", name: "Thầy Vũ Thành Nam", detail: "Quản lý KTX · MGR-004", initials: "QL", tint: "bg-primary/15 text-primary-soft-foreground" },
   { role: "technician", name: "Chú Đỗ Mạnh Hùng", detail: "An ninh / Kỹ thuật · SEC-012", initials: "KT", tint: "bg-primary/15 text-primary-soft-foreground" },
-  { role: "admin", name: "Quản trị viên", detail: "System Admin · ADM-001", initials: "AD", tint: "bg-primary/15 text-primary-soft-foreground" },
+  { role: "admin", name: "Quản trị viên", detail: "Quản trị hệ thống · ADM-001", initials: "AD", tint: "bg-primary/15 text-primary-soft-foreground" },
 ]
 
 export const LoginPage: React.FC = () => {
@@ -32,7 +32,7 @@ export const LoginPage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [regDone, setRegDone] = useState(false)
   const [regName, setRegName] = useState("Nguyễn Hoàng Vinh")
-  const [regCode, setRegCode] = useState("SE182049")
+  const [regCode, setRegCode] = useState("QE202049")
   const [regEmail, setRegEmail] = useState("hoangvinh.student@gmail.com")
 
   const locationState = location.state as LocationState | null
@@ -130,7 +130,7 @@ export const LoginPage: React.FC = () => {
             <div className="py-8 text-center">
               <p className="font-display text-xl font-extrabold">Đã nhận hồ sơ!</p>
               <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
-                Hồ sơ của <strong>{regName} ({regCode})</strong> đã được tiếp nhận. Đăng nhập demo để giữ chỗ giường ngay.
+                Hồ sơ của <strong>{regName} · {regCode}</strong> đã được tiếp nhận. Đăng nhập demo để giữ chỗ giường ngay.
               </p>
               <Button className="mt-6 shadow-primary transition-transform" type="button" onClick={() => handleQuickDemo("student")}>
                 Đăng nhập giữ chỗ <ArrowRight className="h-4 w-4" />

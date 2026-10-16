@@ -39,11 +39,11 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
 
   return (
     <>
-      <div className="relative overflow-hidden rounded-3xl border border-border bg-card p-6 sm:p-8 shadow-sm">
+      <div className="relative overflow-hidden rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-sm">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div className="flex items-center gap-5">
             <div className="relative">
-              <Avatar name={user.fullName} className="h-20 w-20 rounded-2xl text-xl sm:h-24 sm:w-24" />
+              <Avatar name={user.fullName} className="h-24 w-24 rounded-2xl text-xl sm:h-28 sm:w-28" />
             </div>
 
             <div className="space-y-1">
@@ -128,7 +128,7 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
               </div>
 
               <div>
-                <p className="text-muted-foreground text-[11px]">Số CCCD / Định danh</p>
+                <p className="text-muted-foreground text-[11px]">Số CCCD</p>
                 <p className="font-mono font-semibold text-foreground">{user.citizenId}</p>
               </div>
 
@@ -309,7 +309,7 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
 
               <div className="space-y-3 text-xs">
                 <div className="rounded-xl border border-border bg-card p-3.5 space-y-2">
-                  <p className="text-[11px] text-muted-foreground font-semibold">Mã định danh giường (SSOT):</p>
+                  <p className="text-[11px] text-muted-foreground font-semibold">Mã định danh giường:</p>
                   <p className="text-xl font-mono font-black text-primary-soft-foreground tracking-wider">
                     {user.dormitoryStatus.bedCode}
                   </p>
@@ -392,7 +392,7 @@ export const ProfilePage: React.FC = () => {
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 pb-12">
+    <div className="w-full space-y-6 pb-12">
       {toastMessage && (
         <div className="fixed top-20 right-6 z-50 flex items-center gap-2.5 rounded-xl border border-success/25 bg-success px-4 py-3 text-xs font-semibold text-white shadow-xl">
           <CircleCheck className="h-4 w-4" />

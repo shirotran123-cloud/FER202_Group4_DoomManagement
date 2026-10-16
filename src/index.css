@@ -166,6 +166,14 @@
   summary {
     white-space: nowrap;
   }
+  th,
+  td {
+    vertical-align: middle;
+  }
+  th,
+  td {
+    vertical-align: middle;
+  }
 }
 
 @layer utilities {
@@ -188,5 +196,21 @@
      and only opt back in where prose is expected. */
   .nowrap {
     white-space: nowrap;
+  }
+  .bleed-x-5 { margin-inline: -0.75rem; }
+  .bleed-x-5 table :is(th, td):first-child { padding-left: 0.75rem; }
+  .bleed-x-5 table :is(th, td):last-child { padding-right: 0.75rem; }
+  @media (min-width: 640px) {
+    .bleed-x-5 { margin-inline: -1rem; }
+    .bleed-x-5 table :is(th, td):first-child { padding-left: 1rem; }
+    .bleed-x-5 table :is(th, td):last-child { padding-right: 1rem; }
+  }
+  .bleed-x-6 { margin-inline: -0.75rem; }
+  .bleed-x-6 table :is(th, td):first-child { padding-left: 0.75rem; }
+  .bleed-x-6 table :is(th, td):last-child { padding-right: 0.75rem; }
+  @media (min-width: 640px) {
+    .bleed-x-6 { margin-inline: -1rem; }
+    .bleed-x-6 table :is(th, td):first-child { padding-left: 1rem; }
+    .bleed-x-6 table :is(th, td):last-child { padding-right: 1rem; }
   }
 }

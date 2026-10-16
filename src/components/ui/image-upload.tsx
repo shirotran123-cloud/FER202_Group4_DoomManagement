@@ -31,7 +31,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ storageKey, label = "�
     setError(null);
     const { records: added, rejected } = await filesToPhotoRecords(Array.from(files), records.length);
     if (added.length > 0) commit([...added, ...records]);
-    if (rejected.length > 0) setError(`Không nhận: ${rejected.join(", ")} (chỉ JPG/PNG/WebP ≤ 5MB, tối đa 5 ảnh)`);
+    if (rejected.length > 0) setError(`Không nhận ${rejected.join(", ")}. Chỉ nhận JPG/PNG/WebP, mỗi ảnh ≤ 5MB, tối đa 5 ảnh.`);
     if (inputRef.current) inputRef.current.value = "";
   };
 
@@ -49,7 +49,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ storageKey, label = "�
         className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-muted/40 px-3 py-4 text-xs font-semibold text-foreground transition-colors hover:bg-muted"
       >
         <ImagePlus className="h-4 w-4" />
-        <span>Chọn ảnh từ máy (thay vì dán link)</span>
+        <span>Chọn ảnh từ máy</span>
       </button>
       <input
         ref={inputRef}

@@ -13,7 +13,7 @@ export const INITIAL_MAINTENANCE_TICKETS: MaintenanceTicket[] = [
     urgency: "EMERGENCY",
     description:
       "Ổ cắm điện 220V cạnh giường G03 bị lỏng chân, khi cắm sạc laptop phát ra tia lửa điện và có mùi khét cách điện nhựa. Đã tạm ngắt cầu dao buồng B1 để phòng cháy.",
-    studentId: "SE182049",
+    studentId: "QE202049",
     studentName: "Nguyễn Hoàng Vinh",
     studentPhone: "0912 345 678",
     evidenceImages: [
@@ -65,7 +65,7 @@ export const INITIAL_MAINTENANCE_TICKETS: MaintenanceTicket[] = [
     urgency: "EMERGENCY",
     description:
       "Dây cấp nước vòi sen tắm bị bục đầu nối ren, nước phun mạnh làm tràn ra hành lang phòng vệ sinh chung. Đã khóa tạm van tổng góc phòng.",
-    studentId: "SE182050",
+    studentId: "QE202050",
     studentName: "Trần Thanh Nguyên",
     studentPhone: "0905 111 222",
     evidenceImages: [
@@ -91,7 +91,7 @@ export const INITIAL_MAINTENANCE_TICKETS: MaintenanceTicket[] = [
     urgency: "NORMAL",
     description:
       "Bóng tuýp LED 1.2m ngoài ban công phơi đồ chập chờn từ tối qua, sáng yếu và phát tiếng rè rè liên tục.",
-    studentId: "SE182051",
+    studentId: "QE202051",
     studentName: "Văn Thái Trung",
     studentPhone: "0934 999 888",
     evidenceImages: [
@@ -112,7 +112,7 @@ export const INITIAL_MAINTENANCE_TICKETS: MaintenanceTicket[] = [
     urgency: "NORMAL",
     description:
       "Điều hòa Daikin 12000BTU bật 18 độ nhưng chỉ ra gió quạt không có hơi lạnh, máng xối ngưng tụ bị tắc tràn nước nhỏ giọt xuống sàn.",
-    studentId: "SE182052",
+    studentId: "QE202052",
     studentName: "Huỳnh Gia Kim",
     studentPhone: "0982 777 666",
     evidenceImages: [
