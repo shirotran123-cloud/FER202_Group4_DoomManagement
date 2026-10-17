@@ -16,6 +16,7 @@ import { CurfewPage } from "@/pages/curfew/CurfewPage"
 import { ManagerDashboardPage } from "@/pages/manager/ManagerDashboardPage"
 import { UnauthorizedPage } from "@/pages/errors/UnauthorizedPage"
 import { NotFoundPage } from "@/pages/errors/NotFoundPage"
+import { QATestPlanPage } from "@/pages/stubs/QATestPlanPage"
 
 export function App() {
   return (
@@ -109,6 +110,14 @@ export function App() {
               }
             />
 
+            <Route
+              path="/qa"
+              element={
+                <ProtectedRoute>
+                  <QATestPlanPage />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
           </Route>
 

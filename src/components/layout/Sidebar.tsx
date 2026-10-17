@@ -16,6 +16,7 @@ import {
   Zap,
   PhoneCall,
   Shield,
+  CheckSquare,
   type LucideIcon,
 } from "lucide-react"
 
@@ -66,6 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             { title: "Điện nước & VietQR", to: "/billing", icon: Receipt },
             { title: "Báo hỏng thiết bị", to: "/maintenance", icon: Wrench },
             { title: "Giới nghiêm & Ra vào", to: "/curfew", icon: Clock, badge: "23:00" },
+            { title: "QA Test Matrix", to: "/qa", icon: CheckSquare, badge: "FER202" },
           ],
         },
         {
@@ -84,6 +86,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             { title: "Chốt số & Chia điện nước", to: "/billing", icon: Zap },
             { title: "Giám sát Cổng & Giới nghiêm", to: "/curfew", icon: ShieldCheck, badge: "23:00" },
             { title: "Điều phối Bảo trì", to: "/maintenance", icon: Wrench },
+            { title: "QA Test Matrix", to: "/qa", icon: CheckSquare, badge: "FER202" },
           ],
         },
         {
@@ -101,6 +104,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             { title: "Hàng đợi Sửa chữa", to: "/maintenance", icon: Wrench, badge: "2 Phiếu" },
             { title: "Nhập số Điện Nước", to: "/billing", icon: Zap },
             { title: "Trực Cổng An Ninh", to: "/curfew", icon: Shield, badge: "24/7" },
+            { title: "QA Test Matrix", to: "/qa", icon: CheckSquare, badge: "FER202" },
           ],
         },
         {
