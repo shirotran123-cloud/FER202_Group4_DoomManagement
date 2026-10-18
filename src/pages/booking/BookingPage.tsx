@@ -722,7 +722,16 @@ export const BookingPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 02. MAIN 3-COLUMN ERGONOMIC GRID */}
+      {/*
+        02. MAIN 3-COLUMN ERGONOMIC GRID
+
+        `items-stretch` để ba cột cao bằng nhau, nhưng ba cột có SỐ THẺ khác nhau
+        (trái 2, giữa 1, phải 2). Nếu mỗi cột chỉ là `flex flex-col gap-4` thì thẻ
+        cuối của cột ít thẻ sẽ ngắn hơn, đáy ba cột so le nhau.
+
+        Cách xử lý: cho thẻ CUỐI của mỗi cột giãn hết phần cao còn lại
+        (`flex-1`), nhờ vậy đáy ba cột luôn thẳng hàng bất kể nội dung dài ngắn.
+      */}
       <div className="grid grid-cols-12 gap-6 items-stretch">
         {/* COLUMN 1: BUILDING, LEVEL, ROOM LIST (3 COLS) */}
         {/* gap-4 khớp hai cột còn lại: trước đây cột này dùng gap-5 nên khoảng
@@ -770,8 +779,10 @@ export const BookingPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Rooms on Floor Manifest — danh sách suy ra từ tầng + tòa đang chọn */}
-          <div className="dms-card p-4 space-y-3">
+          {/* Rooms on Floor Manifest — danh sách suy ra từ tầng + tòa đang chọn.
+              `flex-1` để thẻ này giãn hết chiều cao còn lại, giữ đáy cột thẳng
+              hàng với hai cột bên cạnh. */}
+          <div className="dms-card flex-1 p-4 space-y-3">
             <div className="flex items-center justify-between pb-1 border-b border-border">
               <span className="text-xs font-bold text-foreground">Phòng tại Tầng {selectedFloor}</span>
               <span className="text-[11px] text-muted-foreground">{roomsOnFloor.length} phòng tìm thấy</span>
@@ -838,9 +849,9 @@ export const BookingPage: React.FC = () => {
 
         {/* COLUMN 2: CENTER ARCHITECTURAL 1:4:6 UNIT BLUEPRINT (6 COLS) */}
         <div className="col-span-12 lg:col-span-6 flex flex-col gap-4">
-          {/* p-4 khớp với hai cột bên cạnh: trước đây cột giữa dùng p-5 nên lề
-              trong của ba cột lệch nhau, nhìn như bị so le. */}
-          <div className="dms-card p-4 space-y-4">
+          {/* p-4 khớp với hai cột bên cạnh. Thêm `flex-1` để thẻ duy nhất này
+              giãn hết chiều cao, đáy cột thẳng hàng với hai cột kia. */}
+          <div className="dms-card flex-1 p-4 space-y-4">
             {/* Header blueprint */}
             <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-border">
               <div className="flex items-center gap-2.5">
@@ -1019,8 +1030,9 @@ export const BookingPage: React.FC = () => {
 
         {/* COLUMN 3: DETAIL & RESERVATION HOLD DRAWER (3 COLS) */}
         <div className="col-span-12 lg:col-span-3 flex flex-col gap-4">
-          {/* 15-Minute Countdown Timer Card */}
-          <div className="bg-primary text-white p-3.5 rounded-xl shadow-xs space-y-2">
+          {/* 15-Minute Countdown Timer Card — p-4 cho khớp lề trong của hai cột kia
+              (trước đây p-3.5 nên chữ trong thẻ này thụt vào ít hơn 2px). */}
+          <div className="bg-primary text-white p-4 rounded-xl shadow-xs space-y-2">
             <div className="flex items-center justify-between text-xs">
               <span className="uppercase tracking-wider font-bold text-white/80 text-[10px] whitespace-nowrap">
                 Khóa Giữ Chỗ Tạm Thời
@@ -1048,8 +1060,10 @@ export const BookingPage: React.FC = () => {
             </p>
           </div>
 
-          {/* Selected Bed Specifications */}
-          <div className="dms-card p-4 space-y-3">
+          {/* Selected Bed Specifications.
+              `flex-1` + `flex-col` để thẻ giãn hết chiều cao còn lại và đẩy được
+              khối CTA xuống đáy bằng `mt-auto`. */}
+          <div className="dms-card flex flex-1 flex-col gap-3 p-4">
             <div className="flex items-center justify-between pb-2 border-b border-border">
               <div className="min-w-0">
                 <span className="text-[10px] uppercase font-bold text-muted-foreground block">
@@ -1183,6 +1197,9 @@ export const BookingPage: React.FC = () => {
               </div>
             </div>
 
+            {/* CTA đẩy xuống đáy thẻ để ba cột kết thúc cùng một đường.
+                `mt-auto` chỉ có tác dụng khi thẻ cha là flex-col và đã `flex-1`. */}
+            <div className="mt-auto space-y-2">
             {/* CTA Button — chỉ mở được khi đã có giường thật đang chọn. */}
             <Button
               onClick={handleStartCheckout}
@@ -1210,6 +1227,7 @@ export const BookingPage: React.FC = () => {
             <p className="text-[10px] text-muted-foreground text-center leading-normal">
               Tự động duyệt 0-chạm & cấp Hợp đồng điện tử PDF tức thì khi có báo Có.
             </p>
+            </div>
           </div>
         </div>
       </div>

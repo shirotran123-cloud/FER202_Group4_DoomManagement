@@ -20850,8 +20850,15 @@
       "studentName": "Văn Thái Trung",
       "studentPhone": "0934 999 888",
       "evidenceImages": [],
-      "status": "PENDING",
-      "createdAt": "2026-10-10 16:00"
+      "status": "IN_PROGRESS",
+      "createdAt": "2026-10-10 16:00",
+      "assignedTechnician": {
+        "id": "tech_1792294909182",
+        "name": "Chú Đỗ Mạnh Hùng",
+        "phone": "0977 112 233",
+        "assignedAt": "2026-10-18 03:41",
+        "etaMinutes": 1440
+      }
     },
     {
       "id": "TKT-2026-004",
@@ -20950,6 +20957,31 @@
         "reviewedAt": "2026-10-18 03:33",
         "comment": "Nhanh, sạch sẽ.",
         "isSatisfied": true
+      }
+    },
+    {
+      "id": "TKT-960703",
+      "title": "nổ",
+      "scope": "COMPARTMENT_PRIVATE",
+      "building": "Tòa A",
+      "room": "A205",
+      "compartment": "B1",
+      "bedCode": "A205-B1-G03",
+      "category": "ELECTRIC",
+      "urgency": "NORMAL",
+      "description": "Cần kỹ thuật kiểm tra và khắc phục sự cố.",
+      "studentId": "QE200001",
+      "studentName": "Nguyễn Hoàng Vinh",
+      "studentPhone": "0999 888 777",
+      "evidenceImages": [],
+      "status": "IN_PROGRESS",
+      "createdAt": "2026-10-18 03:42",
+      "assignedTechnician": {
+        "id": "tech_1792294974930",
+        "name": "Chú Đỗ Mạnh Hùng",
+        "phone": "0977 112 233",
+        "assignedAt": "2026-10-18 03:42",
+        "etaMinutes": 1440
       }
     }
   ],
@@ -21124,7 +21156,10 @@
       "parentConfirmed": false,
       "submittedAt": "2026-10-10 21:40",
       "isSubmittedBefore2100": false,
-      "status": "PENDING"
+      "status": "APPROVED",
+      "reviewedBy": "Thầy Vũ Thành Nam",
+      "reviewedAt": "2026-10-18 03:41",
+      "reviewNotes": "Đã đối chiếu thông tin phụ huynh và phê duyệt hợp lệ."
     },
     {
       "id": "REQ-399138",
