@@ -154,6 +154,47 @@ export const dormApi = {
       method: "POST",
       body: { studentId, damages, deposit, unpaidBills },
     }),
+
+  /* ---------- Đơn xin trả phòng ---------- */
+
+  /** Nộp đơn xin trả phòng (sinh viên). Lưu thật trên máy chủ để BQL thấy được. */
+  createCheckoutRequest: (input: {
+    reason?: string
+    expectedLeaveDate?: string
+    deposit?: number
+    damages?: { name: string; cost: number }[]
+    unpaidBills?: number
+  }) => request<CheckoutRequest>("/dorm/checkout-requests", { method: "POST", body: input }),
+
+  /** Danh sách đơn trả phòng: sinh viên thấy đơn của mình, quản lý thấy tất cả. */
+  checkoutRequests: () => request<CheckoutRequest[]>("/dorm/checkout-requests"),
+
+  /** Duyệt / từ chối đơn trả phòng (quản lý/admin). Duyệt thì quyết toán luôn. */
+  decideCheckoutRequest: (id: string, approve: boolean, notes?: string) =>
+    request<CheckoutRequest>(`/dorm/checkout-requests/${id}/decide`, {
+      method: "POST",
+      body: { approve, notes },
+    }),
+}
+
+/** Một đơn xin trả phòng (check-out) của sinh viên. */
+export interface CheckoutRequest {
+  id: string
+  studentId: string
+  studentName: string
+  room: string
+  bedCode: string
+  reason: string
+  expectedLeaveDate: string
+  deposit: number
+  deduction: number
+  refund: number
+  damages: { name: string; cost: number }[]
+  status: "PENDING" | "APPROVED" | "REJECTED"
+  createdAt: string
+  reviewedBy: string | null
+  reviewedAt: string | null
+  reviewNotes: string
 }
 
 /* ==================== Điện nước ==================== */
@@ -270,7 +311,39 @@ export const communityApi = {
   createLostFound: (input: { kind: "LOST" | "FOUND"; item: string; location?: string; photoIds?: string[] }) =>
     request<unknown>("/community/lost-found", { method: "POST", body: input }),
   claimLostFound: (id: string) => request<unknown>(`/community/lost-found/${id}/claim`, { method: "POST" }),
-  notifications: () => request<unknown[]>("/community/notifications"),
+  /**
+   * Thông báo của CHÍNH người đang đăng nhập.
+   *
+   * Dùng `raw: true` vì cần cả `meta.unreadCount` — đó là căn cứ để hiện chấm đỏ,
+   * thay cho việc luôn hiện chấm đỏ như trước.
+   */
+  notifications: () =>
+    request<NotificationsPayload>("/community/notifications", { raw: true }),
+  /** Đánh dấu đã đọc một thông báo (`id`) hoặc tất cả (`all: true`). */
+  markNotificationsRead: (input: { id?: string; all?: boolean }) =>
+    request<NotificationsPayload>("/community/notifications/read", {
+      method: "POST",
+      body: input,
+      raw: true,
+    }),
+}
+
+/** Một thông báo hệ thống gửi tới người đang đăng nhập. */
+export interface AppNotification {
+  id: string
+  title: string
+  body: string
+  kind: "INVOICE" | "CURFEW" | "TICKET" | "CONTRACT" | "SYSTEM"
+  at: string
+  room?: string | null
+  read: boolean
+}
+
+/** Phản hồi của hai endpoint thông báo, kèm số chưa đọc. */
+export interface NotificationsPayload {
+  success: boolean
+  data: AppNotification[]
+  meta: { unreadCount: number; total: number; updated?: number }
 }
 
 /* ==================== Dashboard & hệ thống ==================== */

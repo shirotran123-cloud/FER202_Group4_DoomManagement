@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { canRecordMeter } from "@/lib/role-access"
+import { ApiError, billingApi } from "@/lib/api"
 export const BillingPage: React.FC = () => {
   const { user } = useAuth()
   const [hasPaid, setHasPaid] = useState(false)
@@ -25,8 +26,17 @@ export const BillingPage: React.FC = () => {
   const waterOld = 840
   const [waterNew, setWaterNew] = useState(854)
   const [recordedSuccess, setRecordedSuccess] = useState(false)
+  /** Trạng thái ghi chỉ số: đang gửi máy chủ, và lỗi trả về (nếu có). */
+  const [recordBusy, setRecordBusy] = useState(false)
+  const [recordError, setRecordError] = useState<string | null>(null)
 
   const isTechnicianOrManager = canRecordMeter(user?.role)
+
+  /**
+   * Phòng đang ghi chỉ số. Lấy từ hồ sơ lưu trú của người đang đăng nhập để
+   * hóa đơn và thông báo gửi đúng phòng, thay vì viết cứng "A205".
+   */
+  const meterRoom = user?.dormitoryStatus?.room || "A205"
 
   // Tiered invoice (dorm-ops): dien bac thang + nuoc + wifi + ve sinh, chia deu dau nguoi
   const invoice = buildMonthlyInvoice({
@@ -160,25 +170,45 @@ export const BillingPage: React.FC = () => {
     if (r.matched) setHasPaid(true)
   }
 
-  const handleRecordMeter = (e: React.FormEvent) => {
+  /**
+   * Ghi chỉ số công tơ và phát hành hóa đơn.
+   *
+   * Trước đây hàm này chỉ bật cờ thành công rồi tự nhét một thẻ vào
+   * `localStorage` — máy chủ không nhận được chỉ số nào, không có hóa đơn, và
+   * "thông báo" chỉ nằm trong trình duyệt của người bấm. Nay gọi thật
+   * `POST /api/billing/meter-readings`: máy chủ lưu chỉ số, tính tiền theo bậc
+   * thang, phát hành hóa đơn và gửi thông báo tới từng sinh viên trong phòng.
+   */
+  const handleRecordMeter = async (e: React.FormEvent) => {
     e.preventDefault()
-    setRecordedSuccess(true)
+    if (recordBusy) return
+    setRecordBusy(true)
+    setRecordError(null)
     try {
-      const raw = localStorage.getItem("dms_notifications_v1")
-      const list = raw ? JSON.parse(raw) : []
-      const arr = Array.isArray(list) ? list : []
-      arr.unshift({
-        id: `BILL-${invoice.room}-${invoice.month}`,
-        title: `Hóa đơn tháng mới phòng ${invoice.room} đã phát hành`,
-        body: `Kỳ ${invoice.month}: điện ${invoice.deltaElec} kWh, nước ${invoice.deltaWater} m³. Mỗi sinh viên đóng ₫${invoice.perStudentTotal.toLocaleString()}. Thanh toán VietQR trước ngày 05.`,
-        at: new Date().toISOString(),
-        read: false,
-      })
-      localStorage.setItem("dms_notifications_v1", JSON.stringify(arr))
-    } catch {
-      // ignore storage quota
+      const result = (await billingApi.issue({
+        room: meterRoom,
+        month: invoice.month,
+        elecOld,
+        elecNew,
+        waterOld,
+        waterNew,
+        dueDate: `${invoice.month}-30`,
+      })) as { notice?: { title?: string }; notifiedCount?: number }
+
+      setRecordedSuccess(true)
+      setOcrHint(
+        result?.notifiedCount
+          ? `Đã phát hành hóa đơn và gửi thông báo tới ${result.notifiedCount} sinh viên trong phòng.`
+          : "Đã phát hành hóa đơn cho phòng này.",
+      )
+      setTimeout(() => setRecordedSuccess(false), 4000)
+    } catch (err) {
+      setRecordError(
+        err instanceof ApiError ? err.message : "Không ghi được chỉ số. Vui lòng thử lại.",
+      )
+    } finally {
+      setRecordBusy(false)
     }
-    setTimeout(() => setRecordedSuccess(false), 4000)
   }
 
   return (
@@ -665,6 +695,14 @@ export const BillingPage: React.FC = () => {
                 <div className="p-3 bg-success-soft text-success-soft-foreground rounded-lg text-xs font-semibold flex items-center gap-2">
                   <CircleCheck className="h-4 w-4 text-success-soft-foreground shrink-0" />
                   <span>Đã ghi nhận chỉ số mới và cập nhật hóa đơn chia đều tức thì!</span>
+                </div>
+              )}
+
+              {/* Lỗi ghi chỉ số: nói rõ máy chủ từ chối vì lý do gì. */}
+              {recordError && (
+                <div className="p-3 bg-danger-soft text-danger-soft-foreground rounded-lg text-xs font-semibold flex items-center gap-2">
+                  <TriangleAlert className="h-4 w-4 shrink-0" />
+                  <span className="min-w-0">{recordError}</span>
                 </div>
               )}
 

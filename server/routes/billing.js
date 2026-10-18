@@ -182,9 +182,38 @@ router.post(
       endsAt: b.dueDate || "2026-12-31",
     })
 
+    /*
+      Bảng tin (`notices`) là để mọi người đọc chung, còn CHUÔNG thông báo
+      (`notifications`) phải gửi tới đúng từng sinh viên đang ở phòng đó — nếu
+      không thì sinh viên không bao giờ nhận được tin hóa đơn mới của mình.
+    */
+    const bedsInRoom = all("beds").filter(
+      (bed) => bed.roomName === b.room && bed.status === "OCCUPIED" && bed.studentId,
+    )
+    const notifiedStudents = new Set()
+    for (const bed of bedsInRoom) {
+      if (notifiedStudents.has(bed.studentId)) continue
+      notifiedStudents.add(bed.studentId)
+      insert("notifications", {
+        id: nextId("notifications", "NOTI"),
+        title: `Hóa đơn tháng ${b.month} đã phát hành`,
+        body: `Phòng ${b.room}: điện ${invoice.deltaElec} kWh, nước ${invoice.deltaWater} m³. ` +
+          `Phần của bạn là ${invoice.perStudentTotal.toLocaleString("vi-VN")}đ, hạn ${b.dueDate || "cuối tháng"}.`,
+        kind: "INVOICE",
+        at: new Date().toISOString(),
+        studentId: bed.studentId,
+        room: b.room,
+        role: null,
+        read: false,
+      })
+    }
+
     cacheDel("rooms:")
     broadcastEvent("INVOICE_ISSUED", notice.title)
-    res.json({ success: true, data: { invoice: inv, utilityRecord, notice, warnings } })
+    res.json({
+      success: true,
+      data: { invoice: inv, utilityRecord, notice, warnings, notifiedCount: notifiedStudents.size },
+    })
   }),
 )
 

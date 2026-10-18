@@ -16,6 +16,7 @@ import {
 import { PDF_FONT_FAMILY, PDF_FONT_FAMILY_MEDIUM } from "@/lib/fontEmbed"
 import { generateContractPDF } from "@/lib/pdfGenerator"
 import { DoorClosed, FileText, Receipt, Wrench, LogOut, Users, CircleAlert, CircleCheck, SquareCheck, X } from "lucide-react"
+import { ApiError, dormApi } from "@/lib/api"
 
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -332,9 +333,6 @@ const INVENTORY_ITEMS: HandoverAsset[] = [
   { name: "Điều hòa Inverter Daikin 2HP", status: "Tốt", note: "Remote để tại giá treo cửa" },
 ]
 
-/** Sinh mã yêu cầu trả phòng — đặt ngoài component để không gọi hàm impure khi render. */
-const makeCheckoutId = (): string => `CHK-${Date.now().toString().slice(-6)}`
-
 export const MyRoomPage: React.FC = () => {
   const { user } = useAuth()
   const [showHandoverModal, setShowHandoverModal] = useState(false)
@@ -345,6 +343,11 @@ export const MyRoomPage: React.FC = () => {
   const [switchMsg, setSwitchMsg] = useState<string | null>(null)
   const [damages] = useState<DamageItem[]>([{ name: "Vòi sen rò rỉ", cost: 250000 }])
   const settlement = computeCheckoutSettlement(1000000, damages, 0)
+  /** Lý do và ngày dự kiến trả phòng — gửi kèm đơn để BQL sắp xếp nghiệm thu. */
+  const [checkoutReason, setCheckoutReason] = useState("")
+  const [checkoutLeaveDate, setCheckoutLeaveDate] = useState(
+    new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10),
+  )
   const [toastMessage, setToastMessage] = useState<string | null>(null)
   const [toastTone, setToastTone] = useState<ToastTone>("success")
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false)
@@ -460,26 +463,42 @@ export const MyRoomPage: React.FC = () => {
     }
   }
 
-  /** Gửi yêu cầu trả phòng: lưu vào localStorage rồi báo bằng toast (không alert). */
-  const handleSubmitCheckout = () => {
+  /**
+   * Gửi yêu cầu trả phòng lên MÁY CHỦ.
+   *
+   * Trước đây hàm này chỉ ghi đơn vào `localStorage` của trình duyệt sinh viên,
+   * nên Ban Quản lý không bao giờ thấy đơn — máy của quản lý là một kho
+   * `localStorage` hoàn toàn khác. Nay đơn được lưu thật và gửi thông báo cho
+   * quản lý.
+   */
+  const [checkoutBusy, setCheckoutBusy] = useState(false)
+
+  const handleSubmitCheckout = async () => {
+    if (checkoutBusy) return
+    setCheckoutBusy(true)
     try {
-      const request = {
-        id: makeCheckoutId(),
-        studentId: user?.studentId ?? "QE200001",
-        room: handoverRecord.room,
-        bedCode: handoverRecord.bedCode,
+      const created = (await dormApi.createCheckoutRequest({
+        reason: checkoutReason,
+        expectedLeaveDate: checkoutLeaveDate,
         deposit: settlement.deposit,
-        deduction: settlement.deduction,
-        refund: settlement.refund,
-        createdAt: new Date().toISOString(),
-      }
-      const raw = localStorage.getItem("dms_checkout_requests_v1")
-      const list = raw ? (JSON.parse(raw) as unknown[]) : []
-      localStorage.setItem("dms_checkout_requests_v1", JSON.stringify([request, ...list]))
+        damages,
+      })) as { id?: string }
+
       setShowCheckoutModal(false)
-      showToast(`Đã gửi yêu cầu trả phòng ${request.id} tới Ban Quản lý KTX.`)
+      showToast(
+        `Đã gửi yêu cầu trả phòng ${created?.id ?? ""} tới Ban Quản lý KTX.`.trim(),
+      )
     } catch (error) {
-      showToast(error instanceof Error ? error.message : "Gửi yêu cầu trả phòng thất bại.", "error")
+      showToast(
+        error instanceof ApiError
+          ? error.message
+          : error instanceof Error
+          ? error.message
+          : "Gửi yêu cầu trả phòng thất bại.",
+        "error",
+      )
+    } finally {
+      setCheckoutBusy(false)
     }
   }
 
@@ -882,6 +901,27 @@ export const MyRoomPage: React.FC = () => {
                 <li className="prose">Nếu không có hư hại, <strong>100% tiền cọc 1,000,000 VNĐ</strong> sẽ được hoàn trả tự động vào tài khoản ngân hàng của sinh viên trong 48 giờ.</li>
               </ul>
 
+              {/* Lý do và ngày dự kiến trả: Ban Quản lý cần biết để sắp xếp nghiệm thu. */}
+              <div className="space-y-2 pt-1">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">
+                  Ngày dự kiến trả phòng
+                </label>
+                <Input
+                  type="date"
+                  value={checkoutLeaveDate}
+                  onChange={(e) => setCheckoutLeaveDate(e.target.value)}
+                />
+                <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">
+                  Lý do trả phòng
+                </label>
+                <Textarea
+                  value={checkoutReason}
+                  onChange={(e) => setCheckoutReason(e.target.value)}
+                  placeholder="Ví dụ: chuyển sang ở ngoài cùng gia đình"
+                  rows={2}
+                />
+              </div>
+
               <div className="flex gap-2 pt-2">
                 <Button
                   variant="outline"
@@ -891,10 +931,11 @@ export const MyRoomPage: React.FC = () => {
                   Hủy
                 </Button>
                 <Button
-                  onClick={handleSubmitCheckout}
+                  onClick={() => void handleSubmitCheckout()}
+                  disabled={checkoutBusy}
                   className="flex-1 min-w-0 bg-danger hover:bg-danger text-white text-xs font-bold"
                 >
-                  <span className="one-line">Gửi Yêu Cầu Trả Phòng</span>
+                  <span className="one-line">{checkoutBusy ? "Đang gửi…" : "Gửi Yêu Cầu Trả Phòng"}</span>
                 </Button>
               </div>
             </div>

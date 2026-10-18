@@ -98,6 +98,7 @@ const db = {
   configs: [], bookings: [], contracts: [], utilityRecords: [], invoices: [],
   tickets: [], visitors: [], notices: [], marketplace: [], lostFound: [],
   curfewRequests: [], gateLogs: [], disciplineRecords: [], demeritSummaries: [],
+  notifications: [], checkoutRequests: [],
 };
 
 /* 1. Configs — khớp hằng số dorm-ops để backend tính y hệt frontend */
@@ -485,6 +486,135 @@ db.demeritSummaries.push(
   { studentId: 'QE200062', studentName: 'Hoàng Gia Huy', room: 'A104', initialPoints: 100, totalDeducted: 35, remainingPoints: 65, status: 'SUSPENDED', violationCount: 3 },
 );
 
+/*
+ * 9b. Thông báo hệ thống.
+ *
+ * Trước đây mảng này rỗng, nhưng Navbar vẫn luôn hiện chấm đỏ và hai thẻ thông
+ * báo viết cứng — nên "có thông báo" là giả còn bấm vào thì không có gì để đọc.
+ *
+ * Nay mỗi thông báo là dữ liệu thật, sinh từ chính hóa đơn / vi phạm / phiếu sự
+ * cố ở trên, và gắn `audience` để máy chủ lọc đúng người nhận:
+ *   - `studentId` : chỉ sinh viên đó thấy
+ *   - `role`      : mọi tài khoản thuộc vai trò đó thấy (ví dụ MANAGER)
+ * Có `read` để biết đã đọc hay chưa.
+ */
+let notifSeq = 0;
+const pushNotification = ({ title, body, kind, at, studentId, room, role }) => {
+  notifSeq += 1;
+  db.notifications.push({
+    id: `NOTI-${String(notifSeq).padStart(3, '0')}`,
+    title,
+    body,
+    kind, // INVOICE | CURFEW | TICKET | CONTRACT | SYSTEM
+    at,
+    // Người nhận: hoặc một sinh viên cụ thể, hoặc cả một vai trò.
+    studentId: studentId || null,
+    room: room || null,
+    role: role || null,
+    read: false,
+  });
+};
+
+// 1. Mỗi hóa đơn CHƯA thanh toán -> một thông báo cho sinh viên của phòng đó.
+const notifOccupiedRooms = db.rooms.filter((r) => r.status === 'OCCUPIED');
+for (const invoice of db.invoices) {
+  if (invoice.status === 'PAID') continue;
+  const room = notifOccupiedRooms.find((r) => r.name === invoice.room);
+  if (!room) continue;
+  // Sinh viên đang ở trong phòng này (lấy giường OCCUPIED đầu tiên).
+  const bed = db.beds.find((b) => b.status === 'OCCUPIED' && b.roomName === invoice.room);
+  if (!bed) continue;
+  pushNotification({
+    title: `Hóa đơn ${invoice.month} chưa thanh toán`,
+    body: `Phòng ${invoice.room} còn ${(invoice.total || 0).toLocaleString('vi-VN')}đ chưa nộp. ` +
+      `Hạn chót ${invoice.dueDate || 'cuối tháng'}.`,
+    kind: 'INVOICE',
+    at: `${invoice.month}-28T08:00:00`,
+    studentId: bed.studentId,
+    room: invoice.room,
+  });
+}
+
+// 2. Vi phạm giới nghiêm -> thông báo cho chính sinh viên vi phạm.
+for (const record of db.disciplineRecords) {
+  pushNotification({
+    title: 'Bị trừ điểm rèn luyện',
+    body: `${record.infractionTitle} — trừ ${record.pointsDeducted} điểm.`,
+    kind: 'CURFEW',
+    at: `${record.date}T23:50:00`,
+    studentId: record.studentId,
+    room: record.room,
+  });
+}
+
+// 3. Phiếu sự cố đã xử lý xong -> báo cho người đã gửi phiếu.
+for (const ticket of db.tickets) {
+  if (ticket.status !== 'RESOLVED' && ticket.status !== 'CLOSED') continue;
+  pushNotification({
+    title: `Phiếu sự cố đã xử lý: ${ticket.title}`,
+    body: `Phòng ${ticket.room} đã được kỹ thuật xử lý. Vui lòng kiểm tra và đánh giá.`,
+    kind: 'TICKET',
+    at: ticket.resolvedAt || ticket.createdAt || '2026-10-15T09:00:00',
+    studentId: ticket.studentId,
+    room: ticket.room,
+  });
+}
+
+// 4. Việc dành cho Ban Quản lý -> thông báo theo vai trò.
+const pendingTickets = db.tickets.filter((t) => t.status === 'PENDING').length;
+if (pendingTickets > 0) {
+  pushNotification({
+    title: `${pendingTickets} phiếu sự cố chờ phân công`,
+    body: 'Vào phân hệ Sửa chữa để phân công kỹ thuật viên.',
+    kind: 'TICKET',
+    at: '2026-10-16T07:30:00',
+    role: 'MANAGER',
+  });
+}
+const unpaidInvoices = db.invoices.filter((i) => i.status !== 'PAID').length;
+if (unpaidInvoices > 0) {
+  pushNotification({
+    title: `${unpaidInvoices} hóa đơn chưa thu`,
+    body: 'Theo dõi công nợ và gửi nhắc nhở sinh viên.',
+    kind: 'INVOICE',
+    at: '2026-10-16T07:35:00',
+    role: 'MANAGER',
+  });
+}
+pushNotification({
+  title: 'Chốt chỉ số điện nước kỳ tới',
+  body: 'Ghi chỉ số công tơ cho tất cả phòng đang ở trước ngày 25.',
+  kind: 'SYSTEM',
+  at: '2026-10-16T07:40:00',
+  role: 'MANAGER',
+});
+
+/*
+ * 9b-2. Đơn xin trả phòng.
+ *
+ * Trước đây đơn trả phòng chỉ nằm trong localStorage của trình duyệt sinh viên
+ * nên Ban Quản lý không thấy gì. Nay là dữ liệu thật trên máy chủ; seed sẵn một
+ * đơn đang chờ để luồng duyệt có dữ liệu mà thử ngay.
+ */
+db.checkoutRequests.push({
+  id: 'CKO-001',
+  studentId: 'QE200062',
+  studentName: 'Hoàng Gia Huy',
+  room: 'A104',
+  bedCode: 'A104-A1-G01',
+  reason: 'Chuyển sang ở ngoài cùng gia đình từ tháng sau.',
+  expectedLeaveDate: '2026-10-25',
+  deposit: 1000000,
+  deduction: 250000,
+  refund: 750000,
+  damages: [{ name: 'Vỡ mặt bàn học', cost: 250000 }],
+  status: 'PENDING',
+  createdAt: '2026-10-16T09:20:00',
+  reviewedBy: null,
+  reviewedAt: null,
+  reviewNotes: '',
+});
+
 const outputPath = path.join(__dirname, '../db.json');
 fs.writeFileSync(outputPath, JSON.stringify(db, null, 2));
 
@@ -503,6 +633,7 @@ console.log(
   `${db.buildings.length} tòa, ${db.floors.length} tầng, ${db.rooms.length} rooms, ` +
   `${db.compartments.length} compartments, ${db.beds.length} beds ` +
   `(${db.beds.filter((b) => b.status === 'OCCUPIED').length} occupied), ` +
-  `${db.tickets.length} tickets, ${db.invoices.length} invoices`,
+  `${db.tickets.length} tickets, ${db.invoices.length} invoices, ` +
+  `${db.notifications.length} notifications, ${db.checkoutRequests.length} checkout requests`,
 );
 console.log(`  Theo tòa: ${perBuilding}`);

@@ -44,6 +44,16 @@ function Button({
   variant = "default",
   size = "default",
   asChild = false,
+  /**
+   * Mặc định `type="button"`.
+   *
+   * HTML mặc định của `<button>` là `type="submit"`, nên mọi nút nằm trong một
+   * `<form>` — kể cả nút không liên quan như "Duyệt đơn", "Từ chối" — đều kích
+   * hoạt submit form, trình duyệt gửi request và TẢI LẠI TRANG. Đó là lý do bấm
+   * duyệt đơn xong trang tự tải lại. Nút nào thật sự để gửi form thì truyền
+   * `type="submit"` tường minh.
+   */
+  type = "button",
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
@@ -56,6 +66,7 @@ function Button({
       data-slot="button"
       data-variant={variant}
       data-size={size}
+      type={asChild ? undefined : type}
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />

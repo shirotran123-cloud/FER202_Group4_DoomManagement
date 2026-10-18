@@ -1,10 +1,11 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
 import type { UserRole } from "@/types/auth"
-import { User, LogOut, Bell, ChevronDown, CircleCheck, Menu, LogIn, Sun, Moon, GraduationCap, ClipboardList, ShieldCheck, Crown } from "lucide-react"
+import { User, LogOut, Bell, ChevronDown, CircleCheck, Menu, LogIn, Sun, Moon, GraduationCap, ClipboardList, ShieldCheck, Crown, CircleAlert, Receipt, Wrench, Clock3, Inbox } from "lucide-react"
 import { useTheme } from "@/components/theme-provider"
 import { Avatar } from "@/components/ui/avatar"
+import { communityApi, type AppNotification } from "@/lib/api"
 
 interface NavbarProps {
   onToggleSidebar?: () => void
@@ -17,6 +18,30 @@ const ROLE_META: Record<UserRole, { label: string; icon: React.ReactNode }> = {
   admin: { label: "Admin", icon: <Crown className="h-3.5 w-3.5" /> },
 }
 
+/** Biểu tượng và màu theo loại thông báo, để nhìn là biết chuyện gì. */
+const NOTIFICATION_META: Record<AppNotification["kind"], { icon: React.ReactNode; tone: string }> = {
+  INVOICE: { icon: <Receipt className="h-3.5 w-3.5" />, tone: "text-primary" },
+  CURFEW: { icon: <Clock3 className="h-3.5 w-3.5" />, tone: "text-danger" },
+  TICKET: { icon: <Wrench className="h-3.5 w-3.5" />, tone: "text-success" },
+  CONTRACT: { icon: <CircleCheck className="h-3.5 w-3.5" />, tone: "text-success" },
+  SYSTEM: { icon: <CircleAlert className="h-3.5 w-3.5" />, tone: "text-muted-foreground" },
+}
+
+/** Hiện thời gian tương đối ngắn gọn: "3 giờ trước", "hôm qua", hoặc ngày cụ thể. */
+function relativeTime(iso: string): string {
+  const then = new Date(iso).getTime()
+  if (Number.isNaN(then)) return ""
+  const diffMinutes = Math.floor((Date.now() - then) / 60000)
+  if (diffMinutes < 1) return "vừa xong"
+  if (diffMinutes < 60) return `${diffMinutes} phút trước`
+  const hours = Math.floor(diffMinutes / 60)
+  if (hours < 24) return `${hours} giờ trước`
+  const days = Math.floor(hours / 24)
+  if (days === 1) return "hôm qua"
+  if (days < 7) return `${days} ngày trước`
+  return new Date(iso).toLocaleDateString("vi-VN")
+}
+
 export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
   const { user, isAuthenticated, logout, switchRole } = useAuth()
   const { theme, setTheme } = useTheme()
@@ -25,6 +50,66 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
 
   const toggle = (menu: "role" | "user" | "bell") => setOpenMenu((prev) => (prev === menu ? null : menu))
   const meta = user ? ROLE_META[user.role] : ROLE_META.student
+
+  /*
+    Thông báo lấy từ máy chủ. Trước đây chấm đỏ và hai thẻ thông báo được viết
+    cứng nên luôn hiện "có thông báo" dù chẳng có gì, và bấm vào cũng không mất.
+    Nay chấm đỏ chỉ hiện khi `unreadCount > 0`, và mở chuông là đánh dấu đã đọc.
+  */
+  const [notifications, setNotifications] = useState<AppNotification[]>([])
+  const [unreadCount, setUnreadCount] = useState(0)
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setNotifications([])
+      setUnreadCount(0)
+      return
+    }
+    let cancelled = false
+    void communityApi
+      .notifications()
+      .then((payload) => {
+        if (cancelled) return
+        setNotifications(payload.data ?? [])
+        setUnreadCount(payload.meta?.unreadCount ?? 0)
+      })
+      .catch(() => {
+        // Máy chủ không phản hồi thì không hiện chấm đỏ, thay vì báo sai là có tin.
+        if (cancelled) return
+        setNotifications([])
+        setUnreadCount(0)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [isAuthenticated, user?.id])
+
+  /** Mở/đóng chuông; mở thì đánh dấu đã đọc để chấm đỏ tắt ngay. */
+  const handleToggleBell = () => {
+    const willOpen = openMenu !== "bell"
+    toggle("bell")
+    if (!willOpen || unreadCount === 0) return
+
+    // Tắt chấm đỏ ngay cho phản hồi tức thì, rồi mới đồng bộ với máy chủ.
+    setUnreadCount(0)
+    setNotifications((rows) => rows.map((n) => ({ ...n, read: true })))
+    void communityApi
+      .markNotificationsRead({ all: true })
+      .then((payload) => {
+        setNotifications(payload.data ?? [])
+        setUnreadCount(payload.meta?.unreadCount ?? 0)
+      })
+      .catch(() => {
+        // Không đánh dấu được thì tải lại để chấm đỏ phản ánh đúng sự thật.
+        void communityApi
+          .notifications()
+          .then((payload) => {
+            setNotifications(payload.data ?? [])
+            setUnreadCount(payload.meta?.unreadCount ?? 0)
+          })
+          .catch(() => undefined)
+      })
+  }
 
   return (
     <header className="fixed left-0 right-0 top-0 z-40 flex h-[72px] items-center justify-between border-b border-border bg-card/90 px-4 backdrop-blur-md sm:px-6 lg:left-[272px]">
@@ -94,26 +179,65 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
 
             <div className="relative">
               <button
-                onClick={() => toggle("bell")}
+                onClick={handleToggleBell}
                 className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-border text-foreground transition-colors hover:bg-muted"
-                aria-label="Thông báo"
+                aria-label={unreadCount > 0 ? `Thông báo, ${unreadCount} chưa đọc` : "Thông báo"}
               >
                 <Bell className="h-[18px] w-[18px]" />
-                <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-danger ring-2 ring-card" />
+                {/* Chấm đỏ CHỈ hiện khi máy chủ báo còn thông báo chưa đọc. */}
+                {unreadCount > 0 && (
+                  <span className="absolute right-2 top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[9px] font-bold text-white ring-2 ring-card">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
               </button>
               {openMenu === "bell" && (
-                <div className="absolute right-0 z-50 mt-2 w-80 rounded-2xl border border-border bg-card p-4 shadow-xl">
-                  <p className="text-[13px] font-bold">Thông báo</p>
-                  <div className="mt-2 space-y-2 text-xs">
-                    <div className="rounded-xl border border-primary/30 bg-primary-soft p-3">
-                      <p className="font-bold">Giới nghiêm 23:00</p>
-                      <p className="mt-0.5 text-muted-foreground">Nộp đơn trước 21:00 nếu có lịch học, làm thêm.</p>
-                    </div>
-                    <div className="rounded-xl border border-border bg-muted/60 p-3">
-                      <p className="font-bold">Hóa đơn tháng 09</p>
-                      <p className="mt-0.5 text-muted-foreground">Đã chốt chỉ số phòng A205. Kiểm tra và thanh toán.</p>
-                    </div>
+                <div className="absolute right-0 z-50 mt-2 w-80 overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
+                  <div className="flex items-center justify-between border-b border-border px-4 py-3">
+                    <p className="text-[13px] font-bold">Thông báo</p>
+                    {notifications.length > 0 && (
+                      <span className="shrink-0 text-[11px] font-semibold text-muted-foreground">
+                        {notifications.length} tin
+                      </span>
+                    )}
                   </div>
+
+                  {notifications.length === 0 ? (
+                    <div className="flex flex-col items-center gap-2 px-4 py-8 text-center">
+                      <Inbox className="h-6 w-6 text-muted-foreground" />
+                      <p className="text-xs font-semibold text-foreground">Không có thông báo nào</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        Tin về hóa đơn, giới nghiêm và phiếu sự cố sẽ hiện ở đây.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="max-h-80 space-y-1.5 overflow-y-auto p-2">
+                      {notifications.map((n) => {
+                        const style = NOTIFICATION_META[n.kind] ?? NOTIFICATION_META.SYSTEM
+                        return (
+                          <div
+                            key={n.id}
+                            className={`rounded-xl border p-3 ${
+                              n.read ? "border-border bg-muted/60" : "border-primary/30 bg-primary-soft"
+                            }`}
+                          >
+                            <div className="flex items-start gap-2">
+                              <span className={`mt-0.5 shrink-0 ${style.tone}`}>{style.icon}</span>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-xs font-bold text-foreground">{n.title}</p>
+                                <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">
+                                  {n.body}
+                                </p>
+                                <p className="mt-1 text-[10px] font-medium text-muted-foreground">
+                                  {relativeTime(n.at)}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
                 </div>
               )}
             </div>

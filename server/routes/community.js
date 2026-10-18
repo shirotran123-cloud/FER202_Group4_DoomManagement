@@ -201,13 +201,78 @@ router.post(
 
 /* ---------- Thông báo hệ thống ---------- */
 
-/** GET /api/community/notifications — thông báo tự động (hóa đơn, vi phạm). */
+/** Danh sách thông báo gửi tới một người, mới nhất trước. */
+function notificationsFor(actor) {
+  const role = String(actor?.role || "").toUpperCase()
+  const mssv = String(actor?.mssv || actor?.studentId || "").toUpperCase()
+
+  return all("notifications")
+    .filter((n) => {
+      // Thông báo gửi cho một sinh viên cụ thể.
+      if (n.studentId) return String(n.studentId).toUpperCase() === mssv
+      // Thông báo gửi cho cả một vai trò (ví dụ MANAGER).
+      if (n.role) return String(n.role).toUpperCase() === role
+      return false
+    })
+    .sort((a, b) => (a.at < b.at ? 1 : -1))
+}
+
+/**
+ * GET /api/community/notifications — thông báo của CHÍNH người đang đăng nhập.
+ *
+ * Trước đây trả về toàn bộ mảng (và mảng đó rỗng), nên giao diện phải tự bịa
+ * chấm đỏ. Nay lọc đúng người nhận và trả kèm `unreadCount` để giao diện biết
+ * chính xác khi nào còn thông báo chưa đọc.
+ */
 router.get(
   "/notifications",
   asyncHandler((req, res) => {
     if (!req.actor) return res.status(401).json({ success: false, message: "Chưa đăng nhập" })
-    const rows = all("notifications").slice().sort((a, b) => (a.at < b.at ? 1 : -1))
-    res.json({ success: true, data: rows })
+    const rows = notificationsFor(req.actor)
+    res.json({
+      success: true,
+      data: rows,
+      meta: { unreadCount: rows.filter((n) => !n.read).length, total: rows.length },
+    })
+  }),
+)
+
+/**
+ * POST /api/community/notifications/read — đánh dấu đã đọc.
+ *
+ * Body: `{ id }` để đọc một thông báo, hoặc `{ all: true }` để đọc tất cả.
+ * Chỉ đánh dấu được thông báo gửi cho chính người gọi.
+ */
+router.post(
+  "/notifications/read",
+  asyncHandler((req, res) => {
+    if (!req.actor) return res.status(401).json({ success: false, message: "Chưa đăng nhập" })
+
+    const mine = notificationsFor(req.actor)
+    const mineIds = new Set(mine.map((n) => n.id))
+    const { id, all: markAll } = req.body || {}
+
+    if (!markAll && !id) {
+      return res.status(400).json({ success: false, message: "Thiếu id thông báo hoặc cờ all" })
+    }
+    if (id && !mineIds.has(id)) {
+      return res.status(404).json({ success: false, message: "Không tìm thấy thông báo của bạn" })
+    }
+
+    let updated = 0
+    for (const n of mine) {
+      if (!markAll && n.id !== id) continue
+      if (n.read) continue
+      updateById("notifications", n.id, { read: true })
+      updated += 1
+    }
+
+    const rows = notificationsFor(req.actor)
+    res.json({
+      success: true,
+      data: rows,
+      meta: { updated, unreadCount: rows.filter((n) => !n.read).length, total: rows.length },
+    })
   }),
 )
 

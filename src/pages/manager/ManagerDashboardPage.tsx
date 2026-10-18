@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { useAuth } from "@/contexts/useAuth"
-import { ApiError, dashboardApi, ticketApi } from "@/lib/api"
+import { ApiError, dashboardApi, dormApi, ticketApi, type CheckoutRequest } from "@/lib/api"
 import { exportToExcel, exportToCsv, type ExportColumn } from "@/lib/excelExport"
 import type {
   ResidentTemporaryRecord,
@@ -22,7 +22,7 @@ interface DashboardOverview {
   invoices?: Record<string, number>
   visitors?: Record<string, number>
 }
-import { LayoutDashboard, FileSpreadsheet, ChartPie, TrendingUp, Download, Search, Building, DollarSign, Zap, Droplets, TriangleAlert, Users, Sparkles, FileDown } from "lucide-react"
+import { LayoutDashboard, FileSpreadsheet, ChartPie, TrendingUp, Download, Search, Building, DollarSign, Zap, Droplets, TriangleAlert, Users, Sparkles, FileDown, DoorOpen } from "lucide-react"
 
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -257,6 +257,14 @@ export const ManagerDashboardPage: React.FC = () => {
   const [residents, setResidents] = useState<ResidentTemporaryRecord[]>([])
   const [debts, setDebts] = useState<OverdueDebtRecord[]>([])
   const [openTickets, setOpenTickets] = useState(0)
+  /**
+   * Đơn xin trả phòng của sinh viên. Quản lý cần thấy ngay tại đây để duyệt —
+   * trước đây đơn chỉ nằm trong localStorage của trình duyệt sinh viên nên
+   * không ai ở Ban Quản lý thấy được.
+   */
+  const [checkoutRequests, setCheckoutRequests] = useState<CheckoutRequest[]>([])
+  /** Đơn đang gửi quyết định duyệt/từ chối, để khoá nút tránh bấm hai lần. */
+  const [decidingCheckoutId, setDecidingCheckoutId] = useState<string | null>(null)
   const [dataLoading, setDataLoading] = useState(true)
   const [dataError, setDataError] = useState<string | null>(null)
   /** Tăng số này để chạy lại hiệu ứng tải (nút "Thử lại"). */
@@ -269,11 +277,12 @@ export const ManagerDashboardPage: React.FC = () => {
 
     void (async () => {
       // Mỗi nguồn hỏng độc lập: một nguồn lỗi không được làm mất các nguồn khác.
-      const [ovRes, resRes, debtRes, ticketRes] = await Promise.allSettled([
+      const [ovRes, resRes, debtRes, ticketRes, checkoutRes] = await Promise.allSettled([
         dashboardApi.overview() as unknown as Promise<DashboardOverview>,
         dashboardApi.residents() as Promise<ResidentTemporaryRecord[]>,
         dashboardApi.debts() as Promise<OverdueDebtRecord[]>,
         ticketApi.list() as Promise<Array<{ status?: string }>>,
+        dormApi.checkoutRequests() as Promise<CheckoutRequest[]>,
       ])
       if (cancelled) return
 
@@ -303,6 +312,12 @@ export const ManagerDashboardPage: React.FC = () => {
         problems.push("phiếu sự cố")
       }
 
+      if (checkoutRes.status === "fulfilled" && Array.isArray(checkoutRes.value)) {
+        setCheckoutRequests(checkoutRes.value)
+      } else {
+        problems.push("đơn xin trả phòng")
+      }
+
       setDataError(problems.length ? `Không tải được ${problems.join(" · ")} từ máy chủ.` : null)
       setDataLoading(false)
     })()
@@ -311,6 +326,24 @@ export const ManagerDashboardPage: React.FC = () => {
       cancelled = true
     }
   }, [reloadToken])
+
+  /** Duyệt hoặc từ chối một đơn xin trả phòng, rồi tải lại danh sách. */
+  const handleDecideCheckout = async (id: string, approve: boolean) => {
+    setDecidingCheckoutId(id)
+    try {
+      await dormApi.decideCheckoutRequest(id, approve)
+      const rows = (await dormApi.checkoutRequests()) as CheckoutRequest[]
+      setCheckoutRequests(rows)
+      showToast(approve ? "Đã duyệt đơn trả phòng và quyết toán hoàn cọc." : "Đã từ chối đơn trả phòng.")
+    } catch (error) {
+      showToast(`❌ ${error instanceof ApiError ? error.message : "Không xử lý được đơn trả phòng."}`)
+    } finally {
+      setDecidingCheckoutId(null)
+    }
+  }
+
+  /** Số đơn trả phòng đang chờ duyệt. */
+  const pendingCheckoutCount = checkoutRequests.filter((r) => r.status === "PENDING").length
 
   // Filtered resident list for preview table
   const filteredResidents = residents.filter(
@@ -1081,6 +1114,125 @@ export const ManagerDashboardPage: React.FC = () => {
           )}
         </div>
       )}
+
+      {/*
+        Đơn xin trả phòng của sinh viên.
+        Trước đây đơn chỉ nằm trong localStorage của trình duyệt sinh viên nên
+        Ban Quản lý không thấy gì; nay đọc từ máy chủ và duyệt được ngay tại đây.
+      */}
+      <div className="dms-card p-4 space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="rounded-lg bg-danger-soft p-2 text-danger-soft-foreground">
+              <DoorOpen className="h-5 w-5" />
+            </div>
+            <div className="min-w-0">
+              <h3 className="text-sm font-bold text-foreground">Đơn Xin Trả Phòng</h3>
+              <p className="text-[11px] text-muted-foreground">
+                Duyệt đơn sẽ trả giường về trạng thái trống và quyết toán hoàn cọc
+              </p>
+            </div>
+          </div>
+          {pendingCheckoutCount > 0 && (
+            <span className="shrink-0 rounded-full bg-danger px-2.5 py-1 text-[11px] font-bold text-white">
+              {pendingCheckoutCount} đơn chờ duyệt
+            </span>
+          )}
+        </div>
+
+        {checkoutRequests.length === 0 ? (
+          <p className="py-6 text-center text-xs font-semibold text-muted-foreground">
+            {dataLoading ? "Đang tải đơn trả phòng…" : "Chưa có đơn xin trả phòng nào"}
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead>
+                <tr className="border-b border-border text-[10px] uppercase tracking-wider text-muted-foreground">
+                  <th className="px-3 py-2 font-bold">Sinh viên</th>
+                  <th className="px-3 py-2 font-bold">Phòng · Giường</th>
+                  <th className="px-3 py-2 font-bold">Dự kiến trả</th>
+                  <th className="px-3 py-2 text-right font-bold">Cọc</th>
+                  <th className="px-3 py-2 text-right font-bold">Khấu trừ</th>
+                  <th className="px-3 py-2 text-right font-bold">Hoàn lại</th>
+                  <th className="px-3 py-2 font-bold">Trạng thái</th>
+                  <th className="px-3 py-2 text-right font-bold">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                {checkoutRequests.map((row) => (
+                  <tr key={row.id} className="border-b border-border/60 last:border-0">
+                    <td className="px-3 py-2.5 align-middle">
+                      <span className="block font-semibold text-foreground">{row.studentName}</span>
+                      <span className="block font-mono text-[10px] text-muted-foreground">
+                        {row.studentId}
+                      </span>
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-2.5 align-middle font-mono">
+                      {row.room} · {row.bedCode}
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-2.5 align-middle">
+                      {row.expectedLeaveDate}
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-2.5 align-middle text-right font-mono">
+                      {row.deposit.toLocaleString("vi-VN")} đ
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-2.5 align-middle text-right font-mono text-danger-soft-foreground">
+                      −{row.deduction.toLocaleString("vi-VN")} đ
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-2.5 align-middle text-right font-mono font-bold text-success-soft-foreground">
+                      {row.refund.toLocaleString("vi-VN")} đ
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-2.5 align-middle">
+                      <span
+                        className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                          row.status === "PENDING"
+                            ? "bg-primary/10 text-primary-soft-foreground border border-primary/25"
+                            : row.status === "APPROVED"
+                            ? "bg-success-soft text-success-soft-foreground border border-success/25"
+                            : "bg-muted text-muted-foreground border border-border"
+                        }`}
+                      >
+                        {row.status === "PENDING"
+                          ? "Chờ duyệt"
+                          : row.status === "APPROVED"
+                          ? "Đã duyệt"
+                          : "Từ chối"}
+                      </span>
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-2.5 align-middle text-right">
+                      {row.status === "PENDING" ? (
+                        <div className="flex justify-end gap-1.5">
+                          <Button
+                            size="xs"
+                            variant="success"
+                            disabled={decidingCheckoutId === row.id}
+                            onClick={() => void handleDecideCheckout(row.id, true)}
+                          >
+                            Duyệt
+                          </Button>
+                          <Button
+                            size="xs"
+                            variant="destructive"
+                            disabled={decidingCheckoutId === row.id}
+                            onClick={() => void handleDecideCheckout(row.id, false)}
+                          >
+                            Từ chối
+                          </Button>
+                        </div>
+                      ) : (
+                        <span className="text-[10px] text-muted-foreground">
+                          {row.reviewedBy || "—"}
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

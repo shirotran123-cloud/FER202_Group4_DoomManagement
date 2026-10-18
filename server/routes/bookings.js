@@ -21,6 +21,27 @@ import { DEPOSIT_AMOUNT, ROOM_FEE_PER_STUDENT } from "../config.js"
 
 const router = Router()
 
+/**
+ * Tìm giường mà một sinh viên đang ở.
+ *
+ * `beds[].studentId` lưu **id người dùng** (ví dụ `usr_qe200001`), còn hồ sơ
+ * đăng nhập lại có `mssv` (ví dụ `QE200001`). So sánh thẳng hai giá trị này sẽ
+ * luôn trượt, nên phải chấp nhận cả hai dạng.
+ */
+function findBedOfStudent(studentId) {
+  const wanted = String(studentId || "").toUpperCase()
+  if (!wanted) return null
+  const compact = wanted.replace(/^USR_/, "")
+  return (
+    all("beds").find((b) => {
+      if (!b.studentId) return false
+      const owner = String(b.studentId).toUpperCase()
+      return owner === wanted || owner === `USR_${compact}` || owner.replace(/^USR_/, "") === compact
+    }) || null
+  )
+}
+
+
 /** Bản đồ tầng/phòng/buồng/giường đầy đủ để trả cho BookingPage. */
 router.get(
   "/inventory",
@@ -375,9 +396,7 @@ router.post(
 
     // Khi duyệt: chuyển giường từ phòng cũ sang phòng mới.
     if (approve) {
-      const oldBed = all("beds").find(
-        (b) => b.roomName === row.fromRoom && b.studentId && b.studentId.includes(row.studentId),
-      )
+      const oldBed = findBedOfStudent(row.studentId)
       const newBed = all("beds").find((b) => b.roomName === row.toRoom && b.status === BED_STATUS.AVAILABLE)
       if (newBed) {
         updateById("beds", newBed.id, { status: BED_STATUS.OCCUPIED, studentId: oldBed?.studentId || row.studentId })
@@ -388,6 +407,181 @@ router.post(
       cacheDel("rooms:")
     }
     res.json({ success: true, data: find("roomSwitchRequests", (r) => r.id === row.id) })
+  }),
+)
+
+/* ---------- Đơn xin trả phòng ---------- */
+
+/**
+ * Sinh viên nộp đơn xin trả phòng.
+ *
+ * Trước đây `MyRoomPage` chỉ ghi đơn vào `localStorage` của chính trình duyệt
+ * sinh viên, nên Ban Quản lý KHÔNG bao giờ thấy đơn — máy của quản lý là một
+ * `localStorage` khác. Nay đơn được lưu thật trên máy chủ và gửi thông báo cho
+ * quản lý.
+ */
+router.post(
+  "/checkout-requests",
+  rateLimit("public"),
+  asyncHandler((req, res) => {
+    if (!req.actor) return res.status(401).json({ success: false, message: "Chưa đăng nhập" })
+    const b = req.body || {}
+    // Sinh viên chỉ nộp được đơn cho chính mình.
+    const studentId =
+      req.actor.role === "student"
+        ? String(req.actor.studentId || req.actor.mssv || "")
+        : String(b.studentId || "")
+    if (!studentId) return res.status(400).json({ success: false, message: "Thiếu MSSV" })
+
+    const bed = findBedOfStudent(studentId)
+    if (!bed) {
+      return res.status(400).json({
+        success: false,
+        message: "Không tìm thấy giường đang ở của sinh viên này trong hệ thống",
+      })
+    }
+
+    // Không cho nộp trùng: còn đơn đang chờ thì báo rõ.
+    const pending = find(
+      "checkoutRequests",
+      (r) => r.studentId === studentId && (r.status === "PENDING" || r.status === "APPROVED"),
+    )
+    if (pending) {
+      return res.status(400).json({
+        success: false,
+        message:
+          pending.status === "PENDING"
+            ? "Bạn đã có đơn xin trả phòng đang chờ duyệt"
+            : "Đơn trả phòng của bạn đã được duyệt",
+      })
+    }
+
+    const settlement = computeCheckoutSettlement(
+      b.deposit ?? DEPOSIT_AMOUNT,
+      b.damages || [],
+      b.unpaidBills ?? 0,
+    )
+    const me = all("users").find((u) => String(u.mssv || u.studentId) === studentId)
+
+    const row = insert("checkoutRequests", {
+      id: nextId("checkoutRequests", "CKO"),
+      studentId,
+      studentName: me?.fullName || req.actor.fullName || studentId,
+      room: bed.roomName,
+      bedCode: bed.fullCode || bed.id,
+      reason: String(b.reason || "").slice(0, 300),
+      expectedLeaveDate: b.expectedLeaveDate || new Date().toISOString().slice(0, 10),
+      deposit: settlement.deposit,
+      deduction: settlement.deduction,
+      refund: settlement.refund,
+      damages: b.damages || [],
+      status: "PENDING",
+      createdAt: new Date().toISOString(),
+      reviewedBy: null,
+      reviewedAt: null,
+      reviewNotes: "",
+    })
+
+    // Báo cho Ban Quản lý để họ thấy đơn ngay trong chuông thông báo.
+    insert("notifications", {
+      id: nextId("notifications", "NOTI"),
+      title: `Đơn xin trả phòng mới: ${row.studentName}`,
+      body: `Phòng ${row.room} · giường ${row.bedCode}. Dự kiến trả ${row.expectedLeaveDate}.`,
+      kind: "CONTRACT",
+      at: new Date().toISOString(),
+      studentId: null,
+      room: row.room,
+      role: "MANAGER",
+      read: false,
+    })
+
+    broadcastEvent("CHECKOUT_REQUESTED", `${row.studentName} xin trả phòng ${row.room}`)
+    res.status(201).json({ success: true, data: row })
+  }),
+)
+
+/**
+ * Danh sách đơn xin trả phòng.
+ * Sinh viên chỉ thấy đơn của mình; quản lý/admin thấy tất cả.
+ */
+router.get(
+  "/checkout-requests",
+  asyncHandler((req, res) => {
+    if (!req.actor) return res.status(401).json({ success: false, message: "Chưa đăng nhập" })
+    let rows = all("checkoutRequests")
+    if (req.actor.role === "student") {
+      const me = String(req.actor.studentId || req.actor.mssv || "")
+      rows = rows.filter((r) => r.studentId === me)
+    } else {
+      assertCan(req.actor?.role, "handover:checkout")
+    }
+    rows = rows.slice().sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+    res.json({ success: true, data: rows })
+  }),
+)
+
+/**
+ * Duyệt / từ chối đơn xin trả phòng.
+ *
+ * Duyệt thì thực hiện luôn quyết toán: trả giường về AVAILABLE, đóng hợp đồng,
+ * và báo cho sinh viên biết số tiền cọc được hoàn.
+ */
+router.post(
+  "/checkout-requests/:id/decide",
+  rateLimit("sensitive"),
+  asyncHandler((req, res) => {
+    assertCan(req.actor?.role, "handover:checkout")
+    const row = find("checkoutRequests", (r) => r.id === req.params.id)
+    if (!row) return res.status(404).json({ success: false, message: "Không tìm thấy đơn trả phòng" })
+    if (row.status !== "PENDING") {
+      return res.status(400).json({ success: false, message: "Đơn này đã được xử lý" })
+    }
+
+    const approve = req.body?.approve === true
+    const updated = updateById("checkoutRequests", row.id, {
+      status: approve ? "APPROVED" : "REJECTED",
+      reviewedBy: req.actor?.fullName || req.actor?.role,
+      reviewedAt: new Date().toISOString(),
+      reviewNotes: String(req.body?.notes || "").slice(0, 300),
+    })
+
+    if (approve) {
+      const bed = all("beds").find((x) => x.fullCode === row.bedCode || x.id === row.bedCode)
+      if (bed) {
+        updateById("beds", bed.id, { status: BED_STATUS.AVAILABLE, studentId: null })
+        cacheDel("rooms:")
+      }
+      for (const c of all("contracts").filter(
+        (x) => x.studentId === row.studentId && x.status === "ACTIVE",
+      )) {
+        updateById("contracts", c.id, { status: "CLOSED", closedAt: new Date().toISOString() })
+      }
+      updateById("users", row.studentId, { bedCode: null, room: null, compartment: null })
+    }
+
+    // Báo kết quả cho sinh viên.
+    insert("notifications", {
+      id: nextId("notifications", "NOTI"),
+      title: approve
+        ? `Đơn trả phòng đã được duyệt · hoàn ${row.refund.toLocaleString("vi-VN")}đ`
+        : "Đơn xin trả phòng bị từ chối",
+      body: approve
+        ? `Phòng ${row.room} đã được trả. Tiền cọc ${row.deposit.toLocaleString("vi-VN")}đ, ` +
+          `khấu trừ ${row.deduction.toLocaleString("vi-VN")}đ, hoàn lại ${row.refund.toLocaleString("vi-VN")}đ.`
+        : `Lý do: ${req.body?.notes || "Chưa đủ điều kiện trả phòng"}.`,
+      kind: "CONTRACT",
+      at: new Date().toISOString(),
+      studentId: row.studentId,
+      room: row.room,
+      role: null,
+      read: false,
+    })
+
+    broadcastEvent(
+      "CHECKOUT_DECIDED",
+      `${row.studentId} ${approve ? "được duyệt" : "bị từ chối"} trả phòng`,
+    )
+    res.json({ success: true, data: updated })
   }),
 )
 
@@ -404,7 +598,7 @@ router.post(
       damages || [],
       unpaidBills ?? 0,
     )
-    const bed = all("beds").find((b) => b.studentId && String(b.studentId).includes(studentId))
+    const bed = findBedOfStudent(studentId)
     if (bed) {
       updateById("beds", bed.id, { status: BED_STATUS.AVAILABLE, studentId: null })
       cacheDel("rooms:")
