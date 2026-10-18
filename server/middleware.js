@@ -296,30 +296,55 @@ export function sseClientCount() {
 /* ---------- Phân giải vai trò demo ---------- */
 /**
  * Lấy vai trò của người gọi.
- * Ưu tiên: header Authorization Bearer <mssv|role> -> X-Demo-Role -> query role.
- * Dữ liệu demo nên không xác thực mật khẩu; chỉ ánh xạ ra hồ sơ.
+ *
+ * THỨ TỰ ƯU TIÊN (quan trọng): `X-Demo-Role` trước, rồi mới tới Bearer token,
+ * rồi query `role`.
+ *
+ * Vì sao không ưu tiên token: đây là dữ liệu demo, token do `/api/auth/*` phát
+ * ra có dạng `jwt_<base64>` và KHÔNG mang thông tin vai trò đọc được. Nếu ưu
+ * tiên token như trước đây thì mọi request có đăng nhập đều bị coi là "khách"
+ * (vì token không khớp tên vai trò nào) và bị trả 403 — đúng lỗi "không tải
+ * được dữ liệu giường" dù đã đăng nhập sinh viên.
+ *
+ * Token vẫn được chấp nhận khi nó chính là vai trò hoặc MSSV, để các lời gọi
+ * trực tiếp bằng curl/Postman vẫn dùng được.
  */
 export function resolveActor(req) {
   const auth = req.headers.authorization || ""
   const bearer = auth.startsWith("Bearer ") ? auth.slice(7).trim() : ""
   const headerRole = String(req.headers["x-demo-role"] || "").trim()
   const queryRole = String(req.query.role || "").trim()
-  const token = bearer || headerRole || queryRole
 
-  if (!token) return null
-  const lower = token.toLowerCase()
+  /** Ánh xạ một chuỗi thành hồ sơ; trả null nếu không nhận ra. */
+  const actorFrom = (token) => {
+    if (!token) return null
+    const lower = token.toLowerCase()
 
-  // Token có thể là role trực tiếp
-  if (["student", "manager", "technician", "admin"].includes(lower)) {
-    const user = all("users").find((u) => String(u.role).toLowerCase() === lower)
-    return user ? { ...user, role: lower } : { role: lower, fullName: `Demo ${lower}` }
+    // Là tên vai trò trực tiếp.
+    if (["student", "manager", "technician", "admin"].includes(lower)) {
+      const user = all("users").find((u) => String(u.role).toLowerCase() === lower)
+      return user ? { ...user, role: lower } : { role: lower, fullName: `Demo ${lower}` }
+    }
+
+    // Là MSSV.
+    const user = all("users").find(
+      (u) => String(u.mssv || u.studentId || "").toUpperCase() === token.toUpperCase(),
+    )
+    return user ? { ...user, role: String(user.role).toLowerCase() } : null
   }
 
-  // Hoặc là MSSV
-  const user = all("users").find(
-    (u) => String(u.mssv || u.studentId || "").toUpperCase() === token.toUpperCase(),
-  )
-  if (user) return { ...user, role: String(user.role).toLowerCase() }
+  // 1. Header vai trò do frontend gửi — nguồn đáng tin nhất trong dữ liệu demo.
+  const byHeader = actorFrom(headerRole)
+  if (byHeader) return byHeader
+
+  // 2. Bearer token: chỉ dùng khi bản thân nó là vai trò hoặc MSSV.
+  const byBearer = actorFrom(bearer)
+  if (byBearer) return byBearer
+
+  // 3. Query `?role=` cho tiện thử nghiệm.
+  const byQuery = actorFrom(queryRole)
+  if (byQuery) return byQuery
+
   return null
 }
 
