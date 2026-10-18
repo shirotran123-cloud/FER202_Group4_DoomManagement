@@ -9,12 +9,6 @@ import type {
   CurfewReasonCategory,
   InfractionType,
 } from "@/types/curfew"
-import {
-  INITIAL_CURFEW_REQUESTS,
-  INITIAL_GATE_LOGS,
-  INITIAL_DISCIPLINE_RECORDS,
-  INITIAL_STUDENT_DEMERIT_SUMMARIES,
-} from "@/data/mockCurfew"
 import { buildGateQrPayload, findOverdueAbsentees, parseGateQrPayload } from "@/lib/dorm-ops"
 import { canApproveCurfew, canScanGate, isStaff } from "@/lib/role-access"
 import { ClockAlert, ShieldCheck, FileText, CircleAlert, Scan, CircleCheck, TriangleAlert, Sparkles, History, Shield, UserX, QrCode } from "lucide-react"
@@ -56,11 +50,6 @@ function toGateScanStatus(value: unknown): GateScanStatus | null {
     : null
 }
 
-const STORAGE_KEY_CURFEW_REQS = "dms_curfew_requests_v1"
-const STORAGE_KEY_GATE_LOGS = "dms_gate_logs_v1"
-const STORAGE_KEY_DISCIPLINE = "dms_discipline_records_v1"
-const STORAGE_KEY_DEMERITS = "dms_student_demerits_v1"
-
 export const CurfewPage: React.FC = () => {
   const { user } = useAuth()
   const isGuardOrManager = isStaff(user?.role)
@@ -68,53 +57,61 @@ export const CurfewPage: React.FC = () => {
   const canApprove = canApproveCurfew(user?.role)
   const canScan = canScanGate(user?.role)
 
-  // 1. Curfew Requests State
-  const [requests, setRequests] = useState<CurfewRequest[]>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY_CURFEW_REQS)
-      return saved ? JSON.parse(saved) : INITIAL_CURFEW_REQUESTS
-    } catch {
-      return INITIAL_CURFEW_REQUESTS
-    }
-  })
+  /* ------------------------------------------------------------------
+     Bốn nguồn dữ liệu của trang, đọc từ BACKEND (không còn dữ liệu mẫu).
 
-  // 2. Gate Logs State
-  const [gateLogs, setGateLogs] = useState<GateAccessLog[]>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY_GATE_LOGS)
-      return saved ? JSON.parse(saved) : INITIAL_GATE_LOGS
-    } catch {
-      return INITIAL_GATE_LOGS
-    }
-  })
+     Trước đây mỗi state được khởi tạo bằng mảng mẫu trong `src/data/mockCurfew.ts`
+     và mọi thay đổi chỉ ghi vào localStorage, nên số liệu trên màn hình không
+     liên quan gì tới dữ liệu thật của KTX. Nay tất cả đi qua `curfewApi`;
+     localStorage không còn được dùng làm nguồn sự thật.
 
-  // 3. Discipline Records State
-  const [violations, setViolations] = useState<DisciplineRecord[]>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY_DISCIPLINE)
-      return saved ? JSON.parse(saved) : INITIAL_DISCIPLINE_RECORDS
-    } catch {
-      return INITIAL_DISCIPLINE_RECORDS
-    }
-  })
+     Trạng thái tải/lỗi được giữ riêng để giao diện nói thật khi máy chủ không
+     phản hồi, thay vì âm thầm hiện một bảng trống trông như "không có dữ liệu".
+     ------------------------------------------------------------------ */
+  const [requests, setRequests] = useState<CurfewRequest[]>([])
+  const [gateLogs, setGateLogs] = useState<GateAccessLog[]>([])
+  const [violations, setViolations] = useState<DisciplineRecord[]>([])
+  const [demerits, setDemerits] = useState<StudentDemeritSummary[]>([])
+  const [dataLoading, setDataLoading] = useState(true)
+  const [dataError, setDataError] = useState<string | null>(null)
+  /** Tăng số này để chạy lại hiệu ứng tải dữ liệu (dùng cho nút "Thử lại"). */
+  const [reloadToken, setReloadToken] = useState(0)
 
-  // 4. Demerit Summaries State
-  const [demerits, setDemerits] = useState<StudentDemeritSummary[]>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY_DEMERITS)
-      return saved ? JSON.parse(saved) : INITIAL_STUDENT_DEMERIT_SUMMARIES
-    } catch {
-      return INITIAL_STUDENT_DEMERIT_SUMMARIES
-    }
-  })
-
-  // Save to localStorage
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY_CURFEW_REQS, JSON.stringify(requests))
-    localStorage.setItem(STORAGE_KEY_GATE_LOGS, JSON.stringify(gateLogs))
-    localStorage.setItem(STORAGE_KEY_DISCIPLINE, JSON.stringify(violations))
-    localStorage.setItem(STORAGE_KEY_DEMERITS, JSON.stringify(demerits))
-  }, [requests, gateLogs, violations, demerits])
+    let cancelled = false
+    setDataLoading(true)
+    setDataError(null)
+
+    void (async () => {
+      try {
+        const [reqRows, logRows, disciplineRows, demeritRows] = await Promise.all([
+          curfewApi.requests() as Promise<CurfewRequest[]>,
+          // Nhật ký quét cổng chỉ có với người được xem toàn bộ (bảo vệ/quản lý/admin).
+          isGuardOrManager ? (curfewApi.gateLogs() as Promise<GateAccessLog[]>) : Promise.resolve([]),
+          curfewApi.discipline() as Promise<DisciplineRecord[]>,
+          curfewApi.demerits() as Promise<StudentDemeritSummary[]>,
+        ])
+        if (cancelled) return
+        setRequests(Array.isArray(reqRows) ? reqRows : [])
+        setGateLogs(Array.isArray(logRows) ? logRows : [])
+        setViolations(Array.isArray(disciplineRows) ? disciplineRows : [])
+        setDemerits(Array.isArray(demeritRows) ? demeritRows : [])
+      } catch (error) {
+        if (cancelled) return
+        setDataError(
+          error instanceof ApiError
+            ? error.message
+            : "Không tải được dữ liệu giới nghiêm từ máy chủ.",
+        )
+      } finally {
+        if (!cancelled) setDataLoading(false)
+      }
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [isGuardOrManager, reloadToken])
 
   // Sub-tabs: Sinh viên mặc định vào REQUESTS và không thể xem console quét thẻ của BQL
   const [activeTab, setActiveTab] = useState<"GATE_SCAN" | "REQUESTS" | "DISCIPLINE">(() =>
@@ -600,6 +597,22 @@ export const CurfewPage: React.FC = () => {
         <div className="fixed top-20 right-6 z-50 flex items-center gap-2 rounded-2xl bg-foreground text-background px-4 py-3 shadow-xl text-xs font-semibold animate-in fade-in slide-in-from-top-4">
           <Sparkles className="h-4 w-4 text-primary shrink-0" />
           <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Trạng thái tải / lỗi dữ liệu — nói thật thay vì hiện bảng trống */}
+      {dataLoading && (
+        <div className="dms-card flex items-center gap-2 p-3 text-xs font-semibold text-muted-foreground" aria-busy="true">
+          <span className="h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          Đang tải dữ liệu giới nghiêm từ máy chủ…
+        </div>
+      )}
+      {dataError && !dataLoading && (
+        <div className="dms-card flex items-center justify-between gap-3 border-danger/30 bg-danger-soft p-3 text-xs font-semibold text-danger-soft-foreground">
+          <span className="min-w-0 truncate">{dataError}</span>
+          <Button variant="outline" size="sm" className="shrink-0" onClick={() => setReloadToken((n) => n + 1)}>
+            Thử lại
+          </Button>
         </div>
       )}
 

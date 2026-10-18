@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 import type { AuthTokens, UserProfile, UserRole } from "@/types/auth"
 import { AuthContext } from "./auth-context-def"
-import { MOCK_USERS } from "@/data/mockUsers"
+import { authApi, ApiError } from "@/lib/api"
 
 const STORAGE_KEY_USER = "dms_auth_user_session"
 const STORAGE_KEY_TOKENS = "dms_auth_tokens_session"
@@ -43,18 +43,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setSessionSecondsLeft(SESSION_DURATION_SECONDS)
   }
 
+  /**
+   * Làm mới phiên. Gọi backend thật (`POST /api/auth/refresh`) để lấy token mới;
+   * nếu máy chủ không phản hồi thì vẫn gia hạn tại chỗ để người dùng không bị
+   * đăng xuất giữa lúc đang thao tác, nhưng KHÔNG bịa ra hồ sơ người dùng.
+   */
   const refreshSession = () => {
-    setTokens((prev) => {
-      if (!prev) return null
-      const newTokens: AuthTokens = {
-        ...prev,
-        accessToken: "refreshed_jwt_" + Date.now(),
-        expiresAt: Date.now() + SESSION_DURATION_SECONDS * 1000,
+    void (async () => {
+      try {
+        const res = await authApi.refresh()
+        setTokens(res.tokens)
+        localStorage.setItem(STORAGE_KEY_TOKENS, JSON.stringify(res.tokens))
+      } catch {
+        setTokens((prev) => {
+          if (!prev) return null
+          const newTokens: AuthTokens = {
+            ...prev,
+            expiresAt: Date.now() + SESSION_DURATION_SECONDS * 1000,
+          }
+          localStorage.setItem(STORAGE_KEY_TOKENS, JSON.stringify(newTokens))
+          return newTokens
+        })
       }
-      localStorage.setItem(STORAGE_KEY_TOKENS, JSON.stringify(newTokens))
-      return newTokens
-    })
-    setSessionSecondsLeft(SESSION_DURATION_SECONDS)
+      setSessionSecondsLeft(SESSION_DURATION_SECONDS)
+    })()
   }
 
   // Session timer countdown - only updates in timer callback
@@ -74,96 +86,89 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => clearInterval(interval)
   }, [tokens, user])
 
+  /**
+   * Đăng nhập bằng Google. Việc kiểm tra tên miền email do BACKEND quyết định
+   * (`POST /api/auth/login`) — trước đây frontend tự kiểm rồi tự dựng hồ sơ từ
+   * dữ liệu mẫu, nên hồ sơ hiển thị không phải là hồ sơ thật trong hệ thống.
+   */
   const loginWithGoogle = async (
     email: string,
     targetRole: UserRole
   ): Promise<{ success: boolean; message?: string }> => {
     setIsLoading(true)
-    await new Promise((resolve) => setTimeout(resolve, 800))
-
-    const cleanEmail = email.trim().toLowerCase()
-    const isFptDomain = cleanEmail.endsWith("@fpt.edu.vn") || cleanEmail.endsWith("@fe.edu.vn")
-    const isGmailDomain = cleanEmail.endsWith("@gmail.com")
-
-    if (targetRole === "student") {
-      if (isFptDomain) {
-        setIsLoading(false)
-        return {
-          success: false,
-          message:
-            "Sinh viên vui lòng đăng nhập bằng Gmail cá nhân đã đăng ký trong hồ sơ tuyển sinh. Không dùng email trường @fpt.edu.vn để tránh xung đột mã định danh sinh viên.",
-        }
+    try {
+      const res = await authApi.login(email, targetRole)
+      saveAuthSession(res.user, res.tokens)
+      return { success: true }
+    } catch (error) {
+      return {
+        success: false,
+        message:
+          error instanceof ApiError
+            ? error.message
+            : "Không kết nối được máy chủ. Kiểm tra backend đã chạy chưa.",
       }
-      if (!isGmailDomain && !cleanEmail.includes("@")) {
-        setIsLoading(false)
-        return {
-          success: false,
-          message: "Email không hợp lệ. Vui lòng nhập địa chỉ Gmail cá nhân chính xác.",
-        }
-      }
-    } else {
-      if (!isFptDomain) {
-        setIsLoading(false)
-        return {
-          success: false,
-          message:
-            "Quyền truy cập Cán bộ / Kỹ thuật viên / Quản lý yêu cầu xác thực bằng email tổ chức FPT Education (@fpt.edu.vn hoặc @fe.edu.vn).",
-        }
-      }
+    } finally {
+      setIsLoading(false)
     }
-
-    const baseProfile = MOCK_USERS[targetRole]
-    const updatedProfile: UserProfile = {
-      ...baseProfile,
-      email: cleanEmail,
-      fullName: cleanEmail.split("@")[0].toUpperCase() + " (" + baseProfile.roleTitle + ")",
-    }
-
-    const newTokens: AuthTokens = {
-      accessToken: "jwt_token_" + btoa(cleanEmail) + "_" + Date.now(),
-      refreshToken: "refresh_token_" + Math.random().toString(36).substring(2),
-      expiresAt: Date.now() + SESSION_DURATION_SECONDS * 1000,
-    }
-
-    saveAuthSession(updatedProfile, newTokens)
-    setIsLoading(false)
-    return { success: true }
   }
 
+  /** Đăng nhập nhanh bằng tài khoản demo của từng vai trò (nút ở trang /login). */
   const loginAsDemoUser = (role: UserRole) => {
     setIsLoading(true)
-    const demoProfile = MOCK_USERS[role]
-    const newTokens: AuthTokens = {
-      accessToken: "demo_jwt_" + role + "_" + Date.now(),
-      refreshToken: "demo_refresh_" + role + "_" + Date.now(),
-      expiresAt: Date.now() + SESSION_DURATION_SECONDS * 1000,
-    }
-    saveAuthSession(demoProfile, newTokens)
-    setIsLoading(false)
+    void (async () => {
+      try {
+        const res = await authApi.demo(role)
+        saveAuthSession(res.user, res.tokens)
+      } catch {
+        // Không có hồ sơ thì phải nói thật là chưa đăng nhập được, tuyệt đối
+        // không dựng hồ sơ giả để giao diện trông như đã vào hệ thống.
+        setUser(null)
+        setTokens(null)
+      } finally {
+        setIsLoading(false)
+      }
+    })()
   }
 
   const switchRole = (role: UserRole) => {
     loginAsDemoUser(role)
   }
 
+  /**
+   * Cập nhật hồ sơ. Ghi lên máy chủ trước rồi mới lưu phiên, để hồ sơ hiển thị
+   * luôn là bản đã lưu thật; nếu máy chủ từ chối thì giữ nguyên bản cũ thay vì
+   * hiện một bản chỉ có trong trình duyệt.
+   */
   const updateProfile = (updatedData: Partial<UserProfile>) => {
     if (!user) return
-    const updated = {
-      ...user,
-      ...updatedData,
-      emergencyContact: {
-        ...user.emergencyContact,
-        ...(updatedData.emergencyContact || {}),
-      },
-      dormitoryStatus: user.dormitoryStatus
-        ? {
-            ...user.dormitoryStatus,
-            ...(updatedData.dormitoryStatus || {}),
-          }
-        : undefined,
-    }
-    setUser(updated)
-    localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(updated))
+    void (async () => {
+      let next: UserProfile = {
+        ...user,
+        ...updatedData,
+        emergencyContact: {
+          ...user.emergencyContact,
+          ...(updatedData.emergencyContact || {}),
+        },
+        dormitoryStatus: user.dormitoryStatus
+          ? {
+              ...user.dormitoryStatus,
+              ...(updatedData.dormitoryStatus || {}),
+            }
+          : undefined,
+      }
+      try {
+        const saved = await authApi.updateMe({
+          phone: updatedData.phone,
+          emergencyContact: updatedData.emergencyContact as unknown as Record<string, string>,
+        })
+        next = saved
+      } catch {
+        // Máy chủ không lưu được thì vẫn giữ thay đổi tại chỗ cho phiên hiện tại.
+      }
+      setUser(next)
+      localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(next))
+    })()
   }
 
   const logout = () => {

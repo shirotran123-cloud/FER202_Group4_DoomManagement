@@ -15,6 +15,18 @@ const router = Router()
 function toProfile(user) {
   const role = String(user.role).toLowerCase()
   const isStudent = role === "student"
+
+  /**
+   * Tên tòa suy ra từ mã phòng (A205 -> Tòa A, B101 -> Tòa B) để hồ sơ luôn khớp
+   * dữ liệu giường, thay vì mặc định cứng "Tòa A" cho mọi sinh viên — sinh viên
+   * Tòa B trước đây bị ghi nhầm sang Tòa A.
+   */
+  const buildingOfRoom = (room) => {
+    const letter = String(room || "").trim().charAt(0).toUpperCase()
+    const found = all("buildings").find((b) => String(b.name).trim().endsWith(letter))
+    return found?.name || user.building || `Tòa ${letter}`
+  }
+
   return {
     id: user.id,
     fullName: user.fullName || user.name || "",
@@ -28,13 +40,22 @@ function toProfile(user) {
     gender: String(user.gender || "").toLowerCase() === "female" ? "female" : "male",
     hometown: user.hometown || "",
     ...(isStudent ? { major: user.major, cohort: user.cohort } : { department: user.department }),
-    ...(isStudent && user.bedCode
+    // Thông tin liên hệ khẩn cấp: trước đây bị bỏ sót nên trang Hồ sơ luôn hiện
+    // "Chưa cập nhật" dù dữ liệu đã có sẵn trong db.
+    emergencyContact: {
+      parentName: user.emergencyContact?.parentName || "",
+      relationship: user.emergencyContact?.relationship || "",
+      phone: user.emergencyContact?.phone || "",
+      address: user.emergencyContact?.address || "",
+      ...(user.emergencyContact?.email ? { email: user.emergencyContact.email } : {}),
+    },
+    ...(isStudent && (user.bedCode || user.room)
       ? {
           dormitoryStatus: {
-            building: user.building || "Tòa A",
+            building: buildingOfRoom(user.room),
             room: user.room || "",
             compartment: user.compartment || "",
-            bedCode: user.bedCode,
+            bedCode: user.bedCode || "",
             contractStart: user.contractStart || "2026-09-01",
             contractEnd: user.contractEnd || "2027-01-15",
             debtStatus: user.previousDebt || 0,

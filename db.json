@@ -19983,13 +19983,13 @@
       "defaultCompartmentSize": 6,
       "depositAmount": 1000000,
       "note": "kiểm thử",
-      "updatedAt": "2026-10-18T01:52:26.379Z",
+      "updatedAt": "2026-10-18T02:54:14.673Z",
       "updatedBy": "Ban Quản trị Hệ thống DMS"
     }
   ],
   "bookings": [
     {
-      "id": "BK-346270",
+      "id": "BK-054502",
       "userId": "usr_qe200001",
       "studentId": "QE200001",
       "bedId": "bed265",
@@ -20001,37 +20001,37 @@
       "status": "APPROVED",
       "paymentMethod": "vietqr",
       "qrContent": "DORM_BOOKING_A206-A1-G01_QE200001_2150000",
-      "createdAt": "2026-10-18T01:52:26.270Z",
-      "paidAt": "2026-10-18T01:52:26.275Z",
-      "approvedAt": "2026-10-18T01:52:26.277Z"
+      "createdAt": "2026-10-18T02:54:14.502Z",
+      "paidAt": "2026-10-18T02:54:14.509Z",
+      "approvedAt": "2026-10-18T02:54:14.512Z"
     }
   ],
   "bedHolds": [
     {
-      "id": "HOLD-346262",
+      "id": "HOLD-054491",
       "studentId": "QE200001",
       "bedId": "bed265",
       "bedCode": "A206-A1-G01",
       "room": "A206",
       "status": "CONVERTED",
-      "createdAt": "2026-10-18T01:52:26.262Z",
-      "expiresAt": "2026-10-18T02:07:26.262Z"
+      "createdAt": "2026-10-18T02:54:14.491Z",
+      "expiresAt": "2026-10-18T03:09:14.491Z"
     },
     {
-      "id": "HOLD-346589",
+      "id": "HOLD-055031",
       "studentId": "QE200001",
       "bedId": "bed1",
       "bedCode": "A101-A1-G01",
       "room": "A101",
       "status": "ACTIVE",
-      "createdAt": "2026-10-18T01:52:26.589Z",
-      "expiresAt": "2026-10-18T02:07:26.589Z"
+      "createdAt": "2026-10-18T02:54:15.031Z",
+      "expiresAt": "2026-10-18T03:09:15.031Z"
     }
   ],
   "contracts": [
     {
-      "id": "CTR-346277",
-      "bookingId": "BK-346270",
+      "id": "CTR-054512",
+      "bookingId": "BK-054502",
       "userId": "usr_qe200001",
       "studentId": "QE200001",
       "bedCode": "A206-A1-G01",
@@ -20040,21 +20040,21 @@
       "status": "CLOSED",
       "startDate": "2026-10-18",
       "endDate": "2027-01-15",
-      "createdAt": "2026-10-18T01:52:26.277Z",
-      "closedAt": "2026-10-18T01:52:26.334Z"
+      "createdAt": "2026-10-18T02:54:14.512Z",
+      "closedAt": "2026-10-18T02:54:14.595Z"
     }
   ],
   "roomSwitchRequests": [
     {
-      "id": "RSW-346327",
+      "id": "RSW-054586",
       "studentId": "QE200001",
       "fromRoom": "A205",
       "toRoom": "A203",
       "reason": "Muốn ở gần bạn cùng lớp.",
       "status": "REJECTED",
-      "createdAt": "2026-10-18T01:52:26.327Z",
+      "createdAt": "2026-10-18T02:54:14.586Z",
       "reviewedBy": "Thầy Vũ Thành Nam",
-      "reviewedAt": "2026-10-18T01:52:26.331Z",
+      "reviewedAt": "2026-10-18T02:54:14.591Z",
       "reviewNotes": "Chưa có giường trống phù hợp."
     }
   ],
@@ -20072,6 +20072,174 @@
       "recordedAt": "2026-09-26 09:30"
     },
     {
+      "id": "util_a104_2026_09",
+      "room": "A104",
+      "month": "2026-09",
+      "elecOld": 10540,
+      "elecNew": 10683,
+      "waterOld": 548,
+      "waterNew": 560,
+      "meterPhotoIds": [],
+      "recordedBy": "usr_tech_01",
+      "recordedAt": "2026-09-26 09:30"
+    },
+    {
+      "id": "util_a201_2026_09",
+      "room": "A201",
+      "month": "2026-09",
+      "elecOld": 11010,
+      "elecNew": 11155,
+      "waterOld": 582,
+      "waterNew": 593,
+      "meterPhotoIds": [],
+      "recordedBy": "usr_tech_01",
+      "recordedAt": "2026-09-26 09:30"
+    },
+    {
+      "id": "util_a202_2026_09",
+      "room": "A202",
+      "month": "2026-09",
+      "elecOld": 11020,
+      "elecNew": 11175,
+      "waterOld": 584,
+      "waterNew": 596,
+      "meterPhotoIds": [],
+      "recordedBy": "usr_tech_01",
+      "recordedAt": "2026-09-26 09:30"
+    },
+    {
+      "id": "util_a203_2026_09",
+      "room": "A203",
+      "month": "2026-09",
+      "elecOld": 11030,
+      "elecNew": 11185,
+      "waterOld": 586,
+      "waterNew": 598,
+      "meterPhotoIds": [],
+      "recordedBy": "usr_tech_01",
+      "recordedAt": "2026-09-26 09:30"
+    },
+    {
+      "id": "util_a204_2026_09",
+      "room": "A204",
+      "month": "2026-09",
+      "elecOld": 11040,
+      "elecNew": 11195,
+      "waterOld": 588,
+      "waterNew": 600,
+      "meterPhotoIds": [],
+      "recordedBy": "usr_tech_01",
+      "recordedAt": "2026-09-26 09:30"
+    },
+    {
+      "id": "util_a302_2026_09",
+      "room": "A302",
+      "month": "2026-09",
+      "elecOld": 11520,
+      "elecNew": 11686,
+      "waterOld": 624,
+      "waterNew": 636,
+      "meterPhotoIds": [],
+      "recordedBy": "usr_tech_01",
+      "recordedAt": "2026-09-26 09:30"
+    },
+    {
+      "id": "util_b101_2026_09",
+      "room": "B101",
+      "month": "2026-09",
+      "elecOld": 10510,
+      "elecNew": 10650,
+      "waterOld": 542,
+      "waterNew": 554,
+      "meterPhotoIds": [],
+      "recordedBy": "usr_tech_01",
+      "recordedAt": "2026-09-26 09:30"
+    },
+    {
+      "id": "util_b102_2026_09",
+      "room": "B102",
+      "month": "2026-09",
+      "elecOld": 10520,
+      "elecNew": 10666,
+      "waterOld": 544,
+      "waterNew": 556,
+      "meterPhotoIds": [],
+      "recordedBy": "usr_tech_01",
+      "recordedAt": "2026-09-26 09:30"
+    },
+    {
+      "id": "util_b103_2026_09",
+      "room": "B103",
+      "month": "2026-09",
+      "elecOld": 10530,
+      "elecNew": 10673,
+      "waterOld": 546,
+      "waterNew": 558,
+      "meterPhotoIds": [],
+      "recordedBy": "usr_tech_01",
+      "recordedAt": "2026-09-26 09:30"
+    },
+    {
+      "id": "util_b201_2026_09",
+      "room": "B201",
+      "month": "2026-09",
+      "elecOld": 11010,
+      "elecNew": 11158,
+      "waterOld": 582,
+      "waterNew": 594,
+      "meterPhotoIds": [],
+      "recordedBy": "usr_tech_01",
+      "recordedAt": "2026-09-26 09:30"
+    },
+    {
+      "id": "util_b202_2026_09",
+      "room": "B202",
+      "month": "2026-09",
+      "elecOld": 11020,
+      "elecNew": 11178,
+      "waterOld": 584,
+      "waterNew": 596,
+      "meterPhotoIds": [],
+      "recordedBy": "usr_tech_01",
+      "recordedAt": "2026-09-26 09:30"
+    },
+    {
+      "id": "util_b301_2026_09",
+      "room": "B301",
+      "month": "2026-09",
+      "elecOld": 11510,
+      "elecNew": 11667,
+      "waterOld": 622,
+      "waterNew": 633,
+      "meterPhotoIds": [],
+      "recordedBy": "usr_tech_01",
+      "recordedAt": "2026-09-26 09:30"
+    },
+    {
+      "id": "util_b401_2026_09",
+      "room": "B401",
+      "month": "2026-09",
+      "elecOld": 12010,
+      "elecNew": 12178,
+      "waterOld": 662,
+      "waterNew": 673,
+      "meterPhotoIds": [],
+      "recordedBy": "usr_tech_01",
+      "recordedAt": "2026-09-26 09:30"
+    },
+    {
+      "id": "util_b503_2026_09",
+      "room": "B503",
+      "month": "2026-09",
+      "elecOld": 12530,
+      "elecNew": 12721,
+      "waterOld": 706,
+      "waterNew": 718,
+      "meterPhotoIds": [],
+      "recordedBy": "usr_tech_01",
+      "recordedAt": "2026-09-26 09:30"
+    },
+    {
       "id": "util_A205_2026-11",
       "room": "A205",
       "month": "2026-11",
@@ -20081,7 +20249,7 @@
       "waterNew": 815,
       "meterPhotoIds": [],
       "recordedBy": "usr_manager_01",
-      "recordedAt": "2026-10-18 01:52",
+      "recordedAt": "2026-10-18 02:54",
       "warnings": []
     },
     {
@@ -20094,7 +20262,7 @@
       "waterNew": 314,
       "meterPhotoIds": [],
       "recordedBy": "usr_manager_01",
-      "recordedAt": "2026-10-18 01:52",
+      "recordedAt": "2026-10-18 02:54",
       "warnings": []
     }
   ],
@@ -20158,6 +20326,361 @@
       ]
     },
     {
+      "id": "INV-2026-09-A104",
+      "invoiceCode": "INV-2026-09-A104",
+      "room": "A104",
+      "month": "2026-09",
+      "utilityRecordId": "util_a104_2026_09",
+      "deltaElec": 143,
+      "deltaWater": 12,
+      "elecCost": 311800,
+      "waterCost": 216000,
+      "sharedFees": 180000,
+      "roomTotal": 950000,
+      "grandTotal": 1657800,
+      "perStudentUtility": 707800,
+      "perStudentTotal": 1657800,
+      "numStudents": 1,
+      "vat": 0.08,
+      "status": "ISSUED",
+      "dueDate": "2026-10-05",
+      "issuedAt": "2026-09-28 10:00",
+      "studentIds": [
+        "QE200062"
+      ],
+      "vietQrContent": "DIENNUOC_A104_A104"
+    },
+    {
+      "id": "INV-2026-09-A201",
+      "invoiceCode": "INV-2026-09-A201",
+      "room": "A201",
+      "month": "2026-09",
+      "utilityRecordId": "util_a201_2026_09",
+      "deltaElec": 145,
+      "deltaWater": 11,
+      "elecCost": 317000,
+      "waterCost": 198000,
+      "sharedFees": 180000,
+      "roomTotal": 950000,
+      "grandTotal": 1645000,
+      "perStudentUtility": 695000,
+      "perStudentTotal": 1645000,
+      "numStudents": 1,
+      "vat": 0.08,
+      "status": "ISSUED",
+      "dueDate": "2026-10-05",
+      "issuedAt": "2026-09-28 10:00",
+      "studentIds": [
+        "QE200175"
+      ],
+      "vietQrContent": "DIENNUOC_A201_A201"
+    },
+    {
+      "id": "INV-2026-09-A202",
+      "invoiceCode": "INV-2026-09-A202",
+      "room": "A202",
+      "month": "2026-09",
+      "utilityRecordId": "util_a202_2026_09",
+      "deltaElec": 155,
+      "deltaWater": 12,
+      "elecCost": 343000,
+      "waterCost": 216000,
+      "sharedFees": 180000,
+      "roomTotal": 950000,
+      "grandTotal": 1689000,
+      "perStudentUtility": 739000,
+      "perStudentTotal": 1689000,
+      "numStudents": 1,
+      "vat": 0.08,
+      "status": "ISSUED",
+      "dueDate": "2026-10-05",
+      "issuedAt": "2026-09-28 10:00",
+      "studentIds": [
+        "QE200231"
+      ],
+      "vietQrContent": "DIENNUOC_A202_A202"
+    },
+    {
+      "id": "INV-2026-09-A203",
+      "invoiceCode": "INV-2026-09-A203",
+      "room": "A203",
+      "month": "2026-09",
+      "utilityRecordId": "util_a203_2026_09",
+      "deltaElec": 155,
+      "deltaWater": 12,
+      "elecCost": 343000,
+      "waterCost": 216000,
+      "sharedFees": 180000,
+      "roomTotal": 950000,
+      "grandTotal": 1689000,
+      "perStudentUtility": 739000,
+      "perStudentTotal": 1689000,
+      "numStudents": 1,
+      "vat": 0.08,
+      "status": "ISSUED",
+      "dueDate": "2026-10-05",
+      "issuedAt": "2026-09-28 10:00",
+      "studentIds": [
+        "QE200094"
+      ],
+      "vietQrContent": "DIENNUOC_A203_A203"
+    },
+    {
+      "id": "INV-2026-09-A204",
+      "invoiceCode": "INV-2026-09-A204",
+      "room": "A204",
+      "month": "2026-09",
+      "utilityRecordId": "util_a204_2026_09",
+      "deltaElec": 155,
+      "deltaWater": 12,
+      "elecCost": 343000,
+      "waterCost": 216000,
+      "sharedFees": 180000,
+      "roomTotal": 950000,
+      "grandTotal": 1689000,
+      "perStudentUtility": 739000,
+      "perStudentTotal": 1689000,
+      "numStudents": 1,
+      "vat": 0.08,
+      "status": "ISSUED",
+      "dueDate": "2026-10-05",
+      "issuedAt": "2026-09-28 10:00",
+      "studentIds": [
+        "QE200158"
+      ],
+      "vietQrContent": "DIENNUOC_A204_A204"
+    },
+    {
+      "id": "INV-2026-09-A302",
+      "invoiceCode": "INV-2026-09-A302",
+      "room": "A302",
+      "month": "2026-09",
+      "utilityRecordId": "util_a302_2026_09",
+      "deltaElec": 166,
+      "deltaWater": 12,
+      "elecCost": 371600,
+      "waterCost": 216000,
+      "sharedFees": 180000,
+      "roomTotal": 950000,
+      "grandTotal": 1717600,
+      "perStudentUtility": 767600,
+      "perStudentTotal": 1717600,
+      "numStudents": 1,
+      "vat": 0.08,
+      "status": "ISSUED",
+      "dueDate": "2026-10-05",
+      "issuedAt": "2026-09-28 10:00",
+      "studentIds": [
+        "QE200309"
+      ],
+      "vietQrContent": "DIENNUOC_A302_A302"
+    },
+    {
+      "id": "INV-2026-09-B101",
+      "invoiceCode": "INV-2026-09-B101",
+      "room": "B101",
+      "month": "2026-09",
+      "utilityRecordId": "util_b101_2026_09",
+      "deltaElec": 140,
+      "deltaWater": 12,
+      "elecCost": 304000,
+      "waterCost": 216000,
+      "sharedFees": 180000,
+      "roomTotal": 2850000,
+      "grandTotal": 3550000,
+      "perStudentUtility": 233333,
+      "perStudentTotal": 1183333,
+      "numStudents": 3,
+      "vat": 0.08,
+      "status": "ISSUED",
+      "dueDate": "2026-10-05",
+      "issuedAt": "2026-09-28 10:00",
+      "studentIds": [
+        "QE200013",
+        "QE200068",
+        "QE200137"
+      ],
+      "vietQrContent": "DIENNUOC_B101_B101"
+    },
+    {
+      "id": "INV-2026-09-B102",
+      "invoiceCode": "INV-2026-09-B102",
+      "room": "B102",
+      "month": "2026-09",
+      "utilityRecordId": "util_b102_2026_09",
+      "deltaElec": 146,
+      "deltaWater": 12,
+      "elecCost": 319600,
+      "waterCost": 216000,
+      "sharedFees": 180000,
+      "roomTotal": 1900000,
+      "grandTotal": 2615600,
+      "perStudentUtility": 357800,
+      "perStudentTotal": 1307800,
+      "numStudents": 2,
+      "vat": 0.08,
+      "status": "ISSUED",
+      "dueDate": "2026-10-05",
+      "issuedAt": "2026-09-28 10:00",
+      "studentIds": [
+        "QE200082",
+        "QE200191"
+      ],
+      "vietQrContent": "DIENNUOC_B102_B102"
+    },
+    {
+      "id": "INV-2026-09-B103",
+      "invoiceCode": "INV-2026-09-B103",
+      "room": "B103",
+      "month": "2026-09",
+      "utilityRecordId": "util_b103_2026_09",
+      "deltaElec": 143,
+      "deltaWater": 12,
+      "elecCost": 311800,
+      "waterCost": 216000,
+      "sharedFees": 180000,
+      "roomTotal": 950000,
+      "grandTotal": 1657800,
+      "perStudentUtility": 707800,
+      "perStudentTotal": 1657800,
+      "numStudents": 1,
+      "vat": 0.08,
+      "status": "ISSUED",
+      "dueDate": "2026-10-05",
+      "issuedAt": "2026-09-28 10:00",
+      "studentIds": [
+        "QE200106"
+      ],
+      "vietQrContent": "DIENNUOC_B103_B103"
+    },
+    {
+      "id": "INV-2026-09-B201",
+      "invoiceCode": "INV-2026-09-B201",
+      "room": "B201",
+      "month": "2026-09",
+      "utilityRecordId": "util_b201_2026_09",
+      "deltaElec": 148,
+      "deltaWater": 12,
+      "elecCost": 324800,
+      "waterCost": 216000,
+      "sharedFees": 180000,
+      "roomTotal": 1900000,
+      "grandTotal": 2620800,
+      "perStudentUtility": 360400,
+      "perStudentTotal": 1310400,
+      "numStudents": 2,
+      "vat": 0.08,
+      "status": "ISSUED",
+      "dueDate": "2026-10-05",
+      "issuedAt": "2026-09-28 10:00",
+      "studentIds": [
+        "QE200243",
+        "QE200269"
+      ],
+      "vietQrContent": "DIENNUOC_B201_B201"
+    },
+    {
+      "id": "INV-2026-09-B202",
+      "invoiceCode": "INV-2026-09-B202",
+      "room": "B202",
+      "month": "2026-09",
+      "utilityRecordId": "util_b202_2026_09",
+      "deltaElec": 158,
+      "deltaWater": 12,
+      "elecCost": 350800,
+      "waterCost": 216000,
+      "sharedFees": 180000,
+      "roomTotal": 1900000,
+      "grandTotal": 2646800,
+      "perStudentUtility": 373400,
+      "perStudentTotal": 1323400,
+      "numStudents": 2,
+      "vat": 0.08,
+      "status": "ISSUED",
+      "dueDate": "2026-10-05",
+      "issuedAt": "2026-09-28 10:00",
+      "studentIds": [
+        "QE200118",
+        "QE200155"
+      ],
+      "vietQrContent": "DIENNUOC_B202_B202"
+    },
+    {
+      "id": "INV-2026-09-B301",
+      "invoiceCode": "INV-2026-09-B301",
+      "room": "B301",
+      "month": "2026-09",
+      "utilityRecordId": "util_b301_2026_09",
+      "deltaElec": 157,
+      "deltaWater": 11,
+      "elecCost": 348200,
+      "waterCost": 198000,
+      "sharedFees": 180000,
+      "roomTotal": 950000,
+      "grandTotal": 1676200,
+      "perStudentUtility": 726200,
+      "perStudentTotal": 1676200,
+      "numStudents": 1,
+      "vat": 0.08,
+      "status": "ISSUED",
+      "dueDate": "2026-10-05",
+      "issuedAt": "2026-09-28 10:00",
+      "studentIds": [
+        "QE200227"
+      ],
+      "vietQrContent": "DIENNUOC_B301_B301"
+    },
+    {
+      "id": "INV-2026-09-B401",
+      "invoiceCode": "INV-2026-09-B401",
+      "room": "B401",
+      "month": "2026-09",
+      "utilityRecordId": "util_b401_2026_09",
+      "deltaElec": 168,
+      "deltaWater": 11,
+      "elecCost": 376800,
+      "waterCost": 198000,
+      "sharedFees": 180000,
+      "roomTotal": 950000,
+      "grandTotal": 1704800,
+      "perStudentUtility": 754800,
+      "perStudentTotal": 1704800,
+      "numStudents": 1,
+      "vat": 0.08,
+      "status": "ISSUED",
+      "dueDate": "2026-10-05",
+      "issuedAt": "2026-09-28 10:00",
+      "studentIds": [
+        "QE200294"
+      ],
+      "vietQrContent": "DIENNUOC_B401_B401"
+    },
+    {
+      "id": "INV-2026-09-B503",
+      "invoiceCode": "INV-2026-09-B503",
+      "room": "B503",
+      "month": "2026-09",
+      "utilityRecordId": "util_b503_2026_09",
+      "deltaElec": 191,
+      "deltaWater": 12,
+      "elecCost": 436600,
+      "waterCost": 216000,
+      "sharedFees": 180000,
+      "roomTotal": 950000,
+      "grandTotal": 1782600,
+      "perStudentUtility": 832600,
+      "perStudentTotal": 1782600,
+      "numStudents": 1,
+      "vat": 0.08,
+      "status": "ISSUED",
+      "dueDate": "2026-10-05",
+      "issuedAt": "2026-09-28 10:00",
+      "studentIds": [
+        "QE200178"
+      ],
+      "vietQrContent": "DIENNUOC_B503_B503"
+    },
+    {
       "id": "INV-2026-11-A205",
       "invoiceCode": "INV-2026-11-A205",
       "room": "A205",
@@ -20180,7 +20703,7 @@
       ],
       "status": "ISSUED",
       "dueDate": "2026-12-05",
-      "issuedAt": "2026-10-18 01:52",
+      "issuedAt": "2026-10-18 02:54",
       "vietQrContent": "DIENNUOC_A205_QE200001",
       "warnings": []
     },
@@ -20206,41 +20729,41 @@
       ],
       "status": "PAID",
       "dueDate": "2027-01-05",
-      "issuedAt": "2026-10-18 01:52",
+      "issuedAt": "2026-10-18 02:54",
       "vietQrContent": "DIENNUOC_A206_QE200001",
       "warnings": [],
-      "paidAt": "2026-10-18T01:52:26.321Z"
+      "paidAt": "2026-10-18T02:54:14.576Z"
     }
   ],
   "payments": [
     {
-      "id": "PAY-346275",
-      "bookingId": "BK-346270",
+      "id": "PAY-054509",
+      "bookingId": "BK-054502",
       "studentId": "QE200001",
       "amount": 1000000,
       "content": "DORM_BOOKING_A206-A1-G01_QE200001_2150000",
       "method": "vietqr",
       "status": "CONFIRMED",
-      "paidAt": "2026-10-18T01:52:26.275Z"
+      "paidAt": "2026-10-18T02:54:14.509Z"
     },
     {
-      "id": "PAY-346321",
+      "id": "PAY-054576",
       "invoiceId": "INV-2026-12-A206",
       "studentId": "QE200001",
       "amount": 1790000,
       "content": "DIENNUOC_A206_QE200001",
       "method": "vietqr",
       "status": "CONFIRMED",
-      "paidAt": "2026-10-18T01:52:26.321Z"
+      "paidAt": "2026-10-18T02:54:14.576Z"
     },
     {
-      "id": "DSP-346325",
+      "id": "DSP-054582",
       "invoiceId": "INV-2026-09-A205",
       "studentId": "QE200001",
       "kind": "DISPUTE",
       "reason": "Chỉ số điện tháng này cao bất thường, đề nghị kiểm tra lại.",
       "status": "PENDING",
-      "createdAt": "2026-10-18T01:52:26.325Z"
+      "createdAt": "2026-10-18T02:54:14.582Z"
     }
   ],
   "tickets": [
@@ -20377,7 +20900,7 @@
       }
     },
     {
-      "id": "TKT-346283",
+      "id": "TKT-054521",
       "title": "Luồng test — bóng đèn buồng B cháy",
       "scope": "COMPARTMENT_PRIVATE",
       "building": "Tòa A",
@@ -20392,16 +20915,16 @@
       "studentPhone": "0912 345 678",
       "evidenceImages": [],
       "status": "CLOSED",
-      "createdAt": "2026-10-18 01:52",
+      "createdAt": "2026-10-18 02:54",
       "assignedTechnician": {
-        "id": "tech_1792288346289",
+        "id": "tech_1792292054531",
         "name": "Chú Đỗ Mạnh Hùng",
         "phone": "0977 112 233",
-        "assignedAt": "2026-10-18 01:52",
+        "assignedAt": "2026-10-18 02:54",
         "etaMinutes": 90
       },
       "resolution": {
-        "completedAt": "2026-10-18 01:52",
+        "completedAt": "2026-10-18 02:54",
         "technicianNotes": "Đã thay bóng LED 18W.",
         "completionImages": [],
         "materials": [
@@ -20424,7 +20947,7 @@
       },
       "review": {
         "rating": 5,
-        "reviewedAt": "2026-10-18 01:52",
+        "reviewedAt": "2026-10-18 02:54",
         "comment": "Nhanh, sạch sẽ.",
         "isSatisfied": true
       }
@@ -20443,7 +20966,7 @@
       "checkOutAt": null
     },
     {
-      "id": "VST-346066",
+      "id": "VST-237696",
       "studentId": "QE200001",
       "fullName": "Khách Test API",
       "citizenId": "079204018293",
@@ -20454,15 +20977,26 @@
       "checkOutAt": null
     },
     {
-      "id": "VST-346311",
+      "id": "VST-054218",
+      "studentId": "QE200001",
+      "fullName": "Khách Test API",
+      "citizenId": "079204018293",
+      "visitDate": "2026-10-18",
+      "expectedMinutes": 0,
+      "status": "PRE_REGISTERED",
+      "checkInAt": null,
+      "checkOutAt": null
+    },
+    {
+      "id": "VST-054562",
       "studentId": "QE200001",
       "fullName": "Nguyễn Thị Khách",
       "citizenId": "079204019988",
       "visitDate": "2026-10-18",
       "expectedMinutes": 0,
       "status": "CHECKED_OUT",
-      "checkInAt": "2026-10-18T01:52:26.314Z",
-      "checkOutAt": "2026-10-18T01:52:26.316Z",
+      "checkInAt": "2026-10-18T02:54:14.565Z",
+      "checkOutAt": "2026-10-18T02:54:14.569Z",
       "gateOfficer": "Chú Đỗ Mạnh Hùng"
     }
   ],
@@ -20484,7 +21018,7 @@
       "endsAt": "2026-10-31"
     },
     {
-      "id": "NTC-346100",
+      "id": "NTC-237724",
       "title": "Hóa đơn tháng 2026-11 phòng A205 đã phát hành",
       "body": "Điện 180 kWh, nước 15 m³. Mỗi sinh viên đóng 1.379.000đ.",
       "audience": "ROOM",
@@ -20492,33 +21026,51 @@
       "endsAt": "2026-12-05"
     },
     {
-      "id": "NTC-346121",
+      "id": "NTC-237758",
       "title": "Thông báo test",
       "body": "Nội dung test",
       "audience": "ALL",
       "startsAt": "2026-01-01",
       "endsAt": "2026-12-31",
       "publishedBy": "Thầy Vũ Thành Nam",
-      "publishedAt": "2026-10-18T01:52:26.121Z"
+      "publishedAt": "2026-10-18T02:07:17.758Z"
     },
     {
-      "id": "NTC-346319",
+      "id": "NTC-054243",
+      "title": "Hóa đơn tháng 2026-11 phòng A205 đã phát hành",
+      "body": "Điện 180 kWh, nước 15 m³. Mỗi sinh viên đóng 1.379.000đ.",
+      "audience": "ROOM",
+      "startsAt": "2026-10-18",
+      "endsAt": "2026-12-05"
+    },
+    {
+      "id": "NTC-054264",
+      "title": "Thông báo test",
+      "body": "Nội dung test",
+      "audience": "ALL",
+      "startsAt": "2026-01-01",
+      "endsAt": "2026-12-31",
+      "publishedBy": "Thầy Vũ Thành Nam",
+      "publishedAt": "2026-10-18T02:54:14.264Z"
+    },
+    {
+      "id": "NTC-054572",
       "title": "Hóa đơn tháng 2026-12 phòng A206 đã phát hành",
       "body": "Điện 180 kWh, nước 14 m³. Mỗi sinh viên đóng 1.790.000đ.",
       "audience": "ROOM",
       "startsAt": "2026-10-18",
       "endsAt": "2027-01-05",
-      "deletedAt": "2026-10-18T01:52:26.591Z"
+      "deletedAt": "2026-10-18T02:54:15.035Z"
     },
     {
-      "id": "NTC-346346",
+      "id": "NTC-054618",
       "title": "Lịch cắt nước",
       "body": "Cắt nước 8:00–10:00 ngày 20/10.",
       "audience": "ALL",
       "startsAt": "2026-10-01",
       "endsAt": "2026-12-31",
       "publishedBy": "Thầy Vũ Thành Nam",
-      "publishedAt": "2026-10-18T01:52:26.346Z"
+      "publishedAt": "2026-10-18T02:54:14.618Z"
     }
   ],
   "marketplace": [
@@ -20532,7 +21084,7 @@
       "status": "SOLD"
     },
     {
-      "id": "MKT-346338",
+      "id": "MKT-054601",
       "sellerId": "QE200001",
       "sellerName": "Nguyễn Hoàng Vinh",
       "title": "Quạt tích điện cũ",
@@ -20540,7 +21092,7 @@
       "category": "DO_CU",
       "photoIds": [],
       "status": "SOLD",
-      "createdAt": "2026-10-18T01:52:26.339Z"
+      "createdAt": "2026-10-18T02:54:14.601Z"
     }
   ],
   "lostFound": [
@@ -20554,7 +21106,7 @@
       "status": "OPEN"
     },
     {
-      "id": "LAF-346344",
+      "id": "LAF-054610",
       "reporterId": "QE200001",
       "reporterName": "Nguyễn Hoàng Vinh",
       "kind": "LOST",
@@ -20562,7 +21114,7 @@
       "location": "Sân A",
       "photoIds": [],
       "status": "OPEN",
-      "createdAt": "2026-10-18T01:52:26.344Z"
+      "createdAt": "2026-10-18T02:54:14.610Z"
     }
   ],
   "curfewRequests": [
@@ -20604,7 +21156,7 @@
       "status": "PENDING"
     },
     {
-      "id": "REQ-346301",
+      "id": "REQ-054548",
       "studentId": "QE200001",
       "studentName": "Nguyễn Hoàng Vinh",
       "room": "A205",
@@ -20616,11 +21168,11 @@
       "reasonDetail": "Họp nhóm đồ án tại thư viện.",
       "parentPhone": "0903 123 456",
       "parentConfirmed": true,
-      "submittedAt": "2026-10-18 01:52",
+      "submittedAt": "2026-10-18 02:54",
       "isSubmittedBefore2100": true,
       "status": "APPROVED",
       "reviewedBy": "Thầy Vũ Thành Nam",
-      "reviewedAt": "2026-10-18 01:52",
+      "reviewedAt": "2026-10-18 02:54",
       "reviewNotes": "Đã đối chiếu thông tin phụ huynh và phê duyệt hợp lệ."
     }
   ],
@@ -20661,12 +21213,12 @@
       "guardName": "Chú Đỗ Mạnh Hùng"
     },
     {
-      "id": "LOG-346086",
+      "id": "LOG-237714",
       "studentId": "QE200001",
       "studentName": "Nguyễn Hoàng Vinh",
       "room": "A205",
-      "timestamp": "2026-10-18T01:52:26.085Z",
-      "scanTimeFormatted": "08:52:26",
+      "timestamp": "2026-10-18T02:07:17.714Z",
+      "scanTimeFormatted": "09:07:17",
       "scanDate": "2026-10-18",
       "curfewStatus": "UNAUTHORIZED_LATE",
       "qrVerified": false,
@@ -20675,26 +21227,40 @@
       "guardName": "Chú Đỗ Mạnh Hùng"
     },
     {
-      "id": "LOG-346306",
+      "id": "LOG-054232",
       "studentId": "QE200001",
       "studentName": "Nguyễn Hoàng Vinh",
       "room": "A205",
-      "timestamp": "2026-10-18T01:52:26.306Z",
-      "scanTimeFormatted": "08:52:26",
-      "scanDate": "2026-10-20",
-      "curfewStatus": "APPROVED_LATE",
-      "matchedRequestId": "REQ-346301",
+      "timestamp": "2026-10-18T02:54:14.232Z",
+      "scanTimeFormatted": "09:54:14",
+      "scanDate": "2026-10-18",
+      "curfewStatus": "UNAUTHORIZED_LATE",
       "qrVerified": false,
-      "guardNotes": "Đối chiếu đơn REQ-346301 (2026-10-20): có phép hợp lệ.",
+      "penaltyPointsDeducted": 10,
+      "guardNotes": "Về muộn sau 23:00 không có đơn xin phép hợp lệ cho ngày 2026-10-18.",
       "guardName": "Chú Đỗ Mạnh Hùng"
     },
     {
-      "id": "LOG-346307",
+      "id": "LOG-054554",
+      "studentId": "QE200001",
+      "studentName": "Nguyễn Hoàng Vinh",
+      "room": "A205",
+      "timestamp": "2026-10-18T02:54:14.554Z",
+      "scanTimeFormatted": "09:54:14",
+      "scanDate": "2026-10-20",
+      "curfewStatus": "APPROVED_LATE",
+      "matchedRequestId": "REQ-054548",
+      "qrVerified": false,
+      "guardNotes": "Đối chiếu đơn REQ-054548 (2026-10-20): có phép hợp lệ.",
+      "guardName": "Chú Đỗ Mạnh Hùng"
+    },
+    {
+      "id": "LOG-054556",
       "studentId": "QE200094",
       "studentName": "Phạm Quốc Bảo",
       "room": "A203",
-      "timestamp": "2026-10-18T01:52:26.307Z",
-      "scanTimeFormatted": "08:52:26",
+      "timestamp": "2026-10-18T02:54:14.556Z",
+      "scanTimeFormatted": "09:54:14",
       "scanDate": "2026-10-18",
       "curfewStatus": "UNAUTHORIZED_LATE",
       "qrVerified": false,
@@ -20718,7 +21284,7 @@
       "status": "RECORDED"
     },
     {
-      "id": "VIO-346086",
+      "id": "VIO-237714",
       "studentId": "QE200001",
       "studentName": "Nguyễn Hoàng Vinh",
       "room": "A205",
@@ -20726,12 +21292,25 @@
       "infractionType": "CURFEW_VIOLATION",
       "infractionTitle": "Vi phạm giờ giới nghiêm 23:00 không phép",
       "pointsDeducted": 10,
-      "description": "Quét cổng lúc 08:52:26 không có đơn xin phép.",
+      "description": "Quét cổng lúc 09:07:17 không có đơn xin phép.",
       "officerName": "Chú Đỗ Mạnh Hùng",
       "status": "RECORDED"
     },
     {
-      "id": "VIO-346307",
+      "id": "VIO-054232",
+      "studentId": "QE200001",
+      "studentName": "Nguyễn Hoàng Vinh",
+      "room": "A205",
+      "date": "2026-10-18",
+      "infractionType": "CURFEW_VIOLATION",
+      "infractionTitle": "Vi phạm giờ giới nghiêm 23:00 không phép",
+      "pointsDeducted": 10,
+      "description": "Quét cổng lúc 09:54:14 không có đơn xin phép.",
+      "officerName": "Chú Đỗ Mạnh Hùng",
+      "status": "RECORDED"
+    },
+    {
+      "id": "VIO-054556",
       "studentId": "QE200094",
       "studentName": "Phạm Quốc Bảo",
       "room": "A203",
@@ -20739,12 +21318,12 @@
       "infractionType": "CURFEW_VIOLATION",
       "infractionTitle": "Vi phạm giờ giới nghiêm 23:00 không phép",
       "pointsDeducted": 10,
-      "description": "Quét cổng lúc 08:52:26 không có đơn xin phép.",
+      "description": "Quét cổng lúc 09:54:14 không có đơn xin phép.",
       "officerName": "Chú Hùng",
       "status": "RECORDED"
     },
     {
-      "id": "VIO-346309",
+      "id": "VIO-054559",
       "studentId": "QE200158",
       "studentName": "Lê Minh Tuấn",
       "room": "A204",
@@ -20789,7 +21368,7 @@
       "violationCount": 3
     },
     {
-      "id": "DMR-346307",
+      "id": "DMR-054556",
       "studentId": "QE200094",
       "studentName": "Phạm Quốc Bảo",
       "room": "A203",

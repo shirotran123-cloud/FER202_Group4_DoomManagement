@@ -2,32 +2,50 @@ import React, { useState, useEffect } from "react"
 import { useAuth } from "@/contexts/useAuth"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { suggestRoomAllocation } from "@/lib/dorm-ops"
+import { ApiError, dormApi } from "@/lib/api"
 import { canBookBed } from "@/lib/role-access"
 import { QrCodeImage } from "@/components/ui/qr-code"
-import { ExpandableText } from "@/components/ui/expandable-text"
+import { LoadingSkeleton } from "@/components/ui/shared"
 import { generateContractPDF } from "@/lib/pdfGenerator"
-import { Building, CircleCheck, CircleAlert, Clock, QrCode, Download, Check, Zap, Sun, Compass, BedDouble, DoorOpen, ChevronDown, Snowflake, Wifi, LayoutGrid, X } from "lucide-react"
+import { Building, CircleCheck, CircleAlert, Clock, QrCode, Download, Check, Zap, BedDouble, DoorOpen, ChevronDown, LayoutGrid, X } from "lucide-react"
 
 import { Select } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 
 /** Dữ liệu hợp đồng sinh ra ở bước xác nhận giữ chỗ (xem khối "success"). */
 const BOOKING_CONTRACT_ID = "CTR-2026-A205-B03"
-const BOOKING_BUILDING = "Tòa A (Nam)"
 const BOOKING_START_DATE = "2026-09-05"
 const BOOKING_END_DATE = "2027-01-15"
 /** Tiền cọc giữ chỗ (khớp số tiền VietQR 2.150.000 VNĐ của modal thanh toán). */
 const BOOKING_DEPOSIT = 2150000
+/** Các khoản cấu thành tổng tiền giữ chỗ, hiển thị trong bảng kê chi phí. */
+const SECURITY_DEPOSIT = 1_000_000
+const UTILITY_ADVANCE = 200_000
+/** Giá phòng niêm yết, dùng cho bảng kê trước khi người dùng chọn giường. */
+const DEFAULT_ROOM_FEE = 950_000
+
+/** Định dạng tiền Việt Nam: 950000 → "₫950,000". */
+const formatVnd = (amount: number): string => `₫${amount.toLocaleString("en-US")}`
+
+/* ==================================================================
+   Dữ liệu giường THẬT — nguồn duy nhất là `GET /api/dorm/inventory`.
+
+   Trước đây trang này vẽ một mảng 24 giường viết cứng của phòng A205 rồi đổi
+   mã giường theo phòng đang chọn. Cách đó khiến mọi phòng trông giống hệt
+   nhau và trạng thái giường là do người viết code bịa ra. Nay toàn bộ sơ đồ
+   được dựng từ cây kiểm kê thật của backend, nên mỗi phòng có đúng số giường
+   trống / đã ở / đang giữ / bảo trì của chính nó.
+   ================================================================== */
+
+type BedStatus = "available" | "occupied" | "holding" | "maintenance"
+
 interface Bed {
   id: string
   code: string
   slot: string
-  status: "available" | "occupied" | "holding" | "maintenance"
+  status: BedStatus
   price: number
   tier: "lower" | "upper"
-  holdingTime?: string
-  studentName?: string
 }
 
 interface Compartment {
@@ -36,6 +54,182 @@ interface Compartment {
   title: string
   zone: string
   beds: Bed[]
+}
+
+/*
+  Hình dạng thật của `GET /api/dorm/inventory` (đã đối chiếu với backend đang chạy):
+
+    Building  { id, name, genderType, totalFloors, floors: Floor[] }
+    Floor     { id, buildingId, level, rooms: Room[] }
+    Room      { id, floorId, name, status, compartments: Compartment[] }
+    Compartment { id, roomId, name, roomName, beds: Bed[] }
+    Bed       { id, compartmentId, roomName, compartmentName, name, fullCode,
+                status, studentId, tier, price }
+
+  `dormApi.inventory()` khai báo `unknown[]` nên phần bóc tách bên dưới kiểm tra
+  kiểu ở từng cấp thay vì tin tưởng hình dạng này.
+*/
+
+/** Buồng đã chuẩn hoá về chữ cái đơn mà giao diện đang dùng (A/B/C/D). */
+interface RoomLayout {
+  roomName: string
+  compartments: Compartment[]
+}
+
+/** Trạng thái của một lượt gọi `/dorm/inventory`. */
+type InventoryState =
+  | { status: "loading" }
+  | { status: "ready" }
+  | { status: "error"; message: string }
+
+/** Trạng thái giường backend (CHỮ HOA) → trạng thái trang này đang dùng. */
+const BED_STATUS_MAP: Record<string, BedStatus> = {
+  AVAILABLE: "available",
+  OCCUPIED: "occupied",
+  HOLDING: "holding",
+  MAINTENANCE: "maintenance",
+}
+
+const mapBedStatus = (status: string): BedStatus => BED_STATUS_MAP[status] ?? "maintenance"
+
+/** Buồng "A1" → "A"; nhãn giao diện vẫn là "Buồng A/B/C/D" như trước. */
+const compartmentLetter = (compartmentName: string): string =>
+  (compartmentName.trim().charAt(0) || "?").toUpperCase()
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null
+
+const readString = (source: Record<string, unknown>, key: string, fallback = ""): string => {
+  const value = source[key]
+  return typeof value === "string" ? value : fallback
+}
+
+const readNumber = (source: Record<string, unknown>, key: string, fallback = 0): number => {
+  const value = source[key]
+  return typeof value === "number" && Number.isFinite(value) ? value : fallback
+}
+
+/**
+ * Mô tả 4 buồng theo đúng vị trí kiến trúc của mô hình 1:4:6.
+ *
+ * Giống nhau ở MỌI phòng vì đây là vị trí cố định của buồng, không phải dữ liệu
+ * riêng của từng phòng — nói về phòng nào cũng đúng nên không gây hiểu nhầm.
+ */
+const COMPARTMENT_TITLES: Record<string, string> = {
+  A: "Khu cửa sổ",
+  B: "Khu ban công",
+  C: "Khu bàn học",
+  D: "Khu cửa ra vào",
+}
+
+const COMPARTMENT_ZONES: Record<string, string> = {
+  A: "Cạnh cửa sổ",
+  B: "Cạnh ban công",
+  C: "Cạnh bàn học",
+  D: "Cạnh cửa & WC",
+}
+
+/** Kết quả bóc cây kiểm kê: sơ đồ từng phòng + tên tòa thật. */
+interface InventoryIndex {
+  /** Khoá là mã phòng viết hoa (`A205`) → sơ đồ buồng/giường thật của phòng đó. */
+  rooms: Map<string, RoomLayout>
+  /** Tên tòa theo id (`b1`/`b2`) đọc từ backend, dùng cho bước 01 của thanh tiến trình. */
+  buildingNames: Record<string, string>
+  /** Số tầng thật của từng tòa, đọc từ cây kiểm kê. */
+  buildingFloors: Record<string, number>
+}
+
+/**
+ * Bóc phản hồi `/dorm/inventory` thành sơ đồ giường của từng phòng.
+ *
+ * Backend trả `{ success, data: Building[] }` nhưng `dormApi.inventory()` khai báo
+ * `unknown[]`, nên ở đây kiểm tra từng cấp trước khi đọc — một phòng thiếu dữ liệu
+ * sẽ bị bỏ qua chứ không làm vỡ cả trang.
+ */
+const buildInventoryIndex = (payload: unknown): InventoryIndex => {
+  const rooms = new Map<string, RoomLayout>()
+  const buildingNames: Record<string, string> = {}
+  const buildingFloors: Record<string, number> = {}
+  if (!Array.isArray(payload)) return { rooms, buildingNames, buildingFloors }
+
+  const buildings = payload.filter(isRecord)
+
+  for (const building of buildings) {
+    const buildingId = readString(building, "id")
+    const floors = Array.isArray(building.floors) ? building.floors : []
+    if (buildingId) {
+      buildingNames[buildingId] = readString(building, "name")
+      // Số tầng đọc từ chính cây kiểm kê, không viết cứng "5 tầng".
+      buildingFloors[buildingId] = floors.length
+    }
+
+    for (const floor of floors.filter(isRecord)) {
+      const rooms_ = Array.isArray(floor.rooms) ? floor.rooms : []
+      for (const room of rooms_.filter(isRecord)) {
+        const roomName = readString(room, "name")
+        if (!roomName) continue
+
+        const rawCompartments = Array.isArray(room.compartments) ? room.compartments : []
+        const compartments: Compartment[] = rawCompartments.filter(isRecord).map((compartment) => {
+          const compartmentName = readString(compartment, "name")
+          const id = compartmentLetter(compartmentName)
+          const rawBeds = Array.isArray(compartment.beds) ? compartment.beds : []
+
+          const beds: Bed[] = rawBeds.filter(isRecord).map((bed, bedIndex) => {
+            const slot = readString(bed, "name", `G${String(bedIndex + 1).padStart(2, "0")}`)
+            const code = readString(bed, "fullCode", `${roomName}-${compartmentName}-${slot}`)
+            return {
+              // `code` (mã giường thật) là khoá nhận diện: hợp đồng và nội dung QR
+              // đều in mã này, nên nó phải duy nhất và đúng.
+              id: code,
+              code,
+              slot,
+              status: mapBedStatus(readString(bed, "status")),
+              price: readNumber(bed, "price"),
+              tier: readString(bed, "tier") === "upper" ? "upper" : "lower",
+              ...(readString(bed, "status") === "HOLDING" ? { holdingTime: "15p" } : {}),
+            }
+          })
+
+          return {
+            id,
+            name: compartmentName,
+            title: COMPARTMENT_TITLES[id] ?? "Khu vực trong phòng",
+            zone: COMPARTMENT_ZONES[id] ?? "Trong phòng",
+            beds,
+          }
+        })
+
+        rooms.set(roomName.toUpperCase(), {
+          // Phòng chỉ có 3 buồng trong dữ liệu vẫn hiện đúng 3 buồng thật, không thêm buồng rỗng.
+          roomName,
+          compartments,
+        })
+      }
+    }
+  }
+
+  return { rooms, buildingNames, buildingFloors }
+}
+
+const countBeds = (compartments: Compartment[]): number =>
+  compartments.reduce((sum, compartment) => sum + compartment.beds.length, 0)
+
+/** Số giường còn trống của một sơ đồ phòng. */
+const countAvailable = (compartments: Compartment[]): number =>
+  compartments.reduce(
+    (sum, compartment) => sum + compartment.beds.filter((bed) => bed.status === "available").length,
+    0,
+  )
+
+/** Lựa chọn mặc định trước khi có dữ liệu thật; không có mã giường nào được bịa. */
+const EMPTY_SELECTED_BED: Bed = {
+  id: "",
+  code: "",
+  slot: "",
+  status: "available",
+  price: 0,
+  tier: "lower",
 }
 
 export const BookingPage: React.FC = () => {
@@ -47,16 +241,11 @@ export const BookingPage: React.FC = () => {
   // Selection states
   const [selectedBuilding, setSelectedBuilding] = useState("b1")
   const [selectedFloor, setSelectedFloor] = useState(2)
+  /** Phòng mở đầu khi vào trang; đổi tầng/tòa sẽ tự chuyển sang phòng hợp lệ. */
   const [selectedRoom, setSelectedRoom] = useState("A205")
   const [selectedCompartment, setSelectedCompartment] = useState("B")
-  const [selectedBed, setSelectedBed] = useState<Bed>({
-    id: "A205-B-G03",
-    code: "A205-B-G03",
-    slot: "G03",
-    status: "available",
-    price: 950000,
-    tier: "lower",
-  })
+  /** Chưa chọn giường nào: mã giường chỉ có được sau khi đọc dữ liệu thật. */
+  const [selectedBed, setSelectedBed] = useState<Bed>(EMPTY_SELECTED_BED)
 
   // Timer state (15 minutes = 900 seconds)
   const [timeLeft, setTimeLeft] = useState(14 * 60 + 45)
@@ -101,153 +290,155 @@ export const BookingPage: React.FC = () => {
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`
   }
 
-  // Compartments definition based on Stitch architectural blueprint
-  const compartments: Compartment[] = [
-    {
-      id: "A",
-      name: "Compartment A",
-      title: "Window Bay",
-      zone: "Đón nắng ban mai",
-      beds: [
-        { id: "A-G01", code: "A205-A-G01", slot: "G01", status: "occupied", price: 950000, tier: "lower" },
-        { id: "A-G02", code: "A205-A-G02", slot: "G02", status: "occupied", price: 950000, tier: "upper" },
-        { id: "A-G03", code: "A205-A-G03", slot: "G03", status: "available", price: 950000, tier: "lower" },
-        { id: "A-G04", code: "A205-A-G04", slot: "G04", status: "occupied", price: 950000, tier: "upper" },
-        { id: "A-G05", code: "A205-A-G05", slot: "G05", status: "occupied", price: 950000, tier: "lower" },
-        { id: "A-G06", code: "A205-A-G06", slot: "G06", status: "available", price: 950000, tier: "upper" },
-      ],
-    },
-    {
-      id: "B",
-      name: "Compartment B",
-      title: "Balcony Wing",
-      zone: "Hướng ban công",
-      beds: [
-        { id: "B-G01", code: "A205-B-G01", slot: "G01", status: "occupied", price: 950000, tier: "lower" },
-        { id: "B-G02", code: "A205-B-G02", slot: "G02", status: "holding", price: 950000, tier: "upper", holdingTime: "12m" },
-        { id: "B-G03", code: "A205-B-G03", slot: "G03", status: "available", price: 950000, tier: "lower" },
-        { id: "B-G04", code: "A205-B-G04", slot: "G04", status: "occupied", price: 950000, tier: "upper" },
-        { id: "B-G05", code: "A205-B-G05", slot: "G05", status: "occupied", price: 950000, tier: "lower" },
-        { id: "B-G06", code: "A205-B-G06", slot: "G06", status: "occupied", price: 950000, tier: "upper" },
-      ],
-    },
-    {
-      id: "C",
-      name: "Compartment C",
-      title: "Study Hub",
-      zone: "Góc bàn học",
-      beds: [
-        { id: "C-G01", code: "A205-C-G01", slot: "G01", status: "available", price: 950000, tier: "lower" },
-        { id: "C-G02", code: "A205-C-G02", slot: "G02", status: "available", price: 950000, tier: "upper" },
-        { id: "C-G03", code: "A205-C-G03", slot: "G03", status: "maintenance", price: 950000, tier: "lower" },
-        { id: "C-G04", code: "A205-C-G04", slot: "G04", status: "occupied", price: 950000, tier: "upper" },
-        { id: "C-G05", code: "A205-C-G05", slot: "G05", status: "occupied", price: 950000, tier: "lower" },
-        { id: "C-G06", code: "A205-C-G06", slot: "G06", status: "available", price: 950000, tier: "upper" },
-      ],
-    },
-    {
-      id: "D",
-      name: "Compartment D",
-      title: "Main Hall Door",
-      zone: "Cạnh cửa & WC",
-      beds: [
-        { id: "D-G01", code: "A205-D-G01", slot: "G01", status: "occupied", price: 950000, tier: "lower" },
-        { id: "D-G02", code: "A205-D-G02", slot: "G02", status: "occupied", price: 950000, tier: "upper" },
-        { id: "D-G03", code: "A205-D-G03", slot: "G03", status: "occupied", price: 950000, tier: "lower" },
-        { id: "D-G04", code: "A205-D-G04", slot: "G04", status: "available", price: 950000, tier: "upper" },
-        { id: "D-G05", code: "A205-D-G05", slot: "G05", status: "occupied", price: 950000, tier: "lower" },
-        { id: "D-G06", code: "A205-D-G06", slot: "G06", status: "occupied", price: 950000, tier: "upper" },
-      ],
-    },
-  ]
+  /* ------------------------------------------------------------------
+     KIỂM KÊ GIƯỜNG THẬT TỪ BACKEND.
+
+     Một lần gọi `GET /api/dorm/inventory` khi vào trang, dựng chỉ mục
+     `mã phòng -> buồng/giường` để mọi phòng hiện đúng sơ đồ và đúng trạng thái
+     của nó. Không có dữ liệu mẫu dự phòng: khi máy chủ lỗi thì giao diện nói rõ
+     lỗi và cho bấm "Thử lại", chứ không âm thầm vẽ lại số liệu cũ.
+     ------------------------------------------------------------------ */
+  const [inventory, setInventory] = useState<InventoryIndex>(() => buildInventoryIndex(null))
+  const [inventoryState, setInventoryState] = useState<InventoryState>({ status: "loading" })
+  /**
+   * Số thứ tự lượt tải. Bấm "Thử lại" tăng lên 1 và đặt lại trạng thái "đang tải"
+   * ngay trong sự kiện bấm (không đặt trong effect) để effect chỉ còn việc gọi API.
+   */
+  const [loadAttempt, setLoadAttempt] = useState(0)
+
+  useEffect(() => {
+    let cancelled = false
+
+    dormApi
+      .inventory()
+      .then((payload) => {
+        if (cancelled) return
+        setInventory(buildInventoryIndex(payload))
+        setInventoryState({ status: "ready" })
+      })
+      .catch((error: unknown) => {
+        if (cancelled) return
+        const message =
+          error instanceof ApiError
+            ? error.message
+            : error instanceof Error
+              ? error.message
+              : "Không rõ nguyên nhân."
+        setInventory(buildInventoryIndex(null))
+        setInventoryState({ status: "error", message })
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [loadAttempt])
+
+  const isLoadingInventory = inventoryState.status === "loading"
+  const inventoryError = inventoryState.status === "error" ? inventoryState.message : null
+
+  const handleRetryInventory = () => {
+    setInventoryState({ status: "loading" })
+    setLoadAttempt((attempt) => attempt + 1)
+  }
+
+  /* ------------------------------------------------------------------
+     Danh sách phòng của tầng đang chọn.
+
+     Mã phòng suy ra từ mô hình thật: mỗi tầng 6 phòng, mã =
+     <chữ tòa><tầng>0<số phòng> (tầng 2 tòa A -> A201..A206). Số giường trống
+     đọc từ cây kiểm kê thật; phòng không có trong dữ liệu trả `null` để giao
+     diện nói thẳng là chưa có số, thay vì bịa ra một con số trông như thật.
+     ------------------------------------------------------------------ */
+  const buildingLetter = selectedBuilding === "b2" ? "B" : "A"
+  const buildingName = inventory.buildingNames[selectedBuilding] || `Tòa ${buildingLetter}`
+  /** Số tầng thật của tòa đang chọn; chưa tải xong thì mặc định 5 như cấu hình tòa. */
+  const floorLevels = Array.from(
+    { length: inventory.buildingFloors[selectedBuilding] || 5 },
+    (_, index) => index + 1,
+  )
+  const ROOMS_PER_FLOOR = 6
+
+  /**
+   * Số giường còn trống của một phòng, hoặc `null` nếu phòng chưa có trong dữ liệu.
+   */
+  const availableBedsOf = (roomCode: string): number | null => {
+    const layout = inventory.rooms.get(roomCode.toUpperCase())
+    if (!layout) return null
+    return countAvailable(layout.compartments)
+  }
+
+  const roomsOnFloor = Array.from({ length: ROOMS_PER_FLOOR }, (_, i) => {
+    const code = `${buildingLetter}${selectedFloor}0${i + 1}`
+    const layout = inventory.rooms.get(code.toUpperCase()) ?? null
+    const free = availableBedsOf(code)
+    const total = layout ? countBeds(layout.compartments) : 0
+    return {
+      code,
+      free,
+      total,
+      /** Tỷ lệ đã dùng, chỉ tính khi biết số giường thật. */
+      usedRatio: free === null || total === 0 ? null : (total - free) / total,
+    }
+  })
+
+  /**
+   * Giữ lựa chọn luôn hợp lệ mà không cần đồng bộ bằng effect: phòng/tòa đổi thì
+   * handler đặt thẳng phòng đầu tiên của tầng mới, còn dữ liệu thật về muộn thì
+   * `activeRoom` dưới đây tự rơi về phòng đầu tiên nếu phòng đang chọn không có.
+   */
+  const firstRoomOf = (letter: string, floor: number) => `${letter}${floor}01`
+
+  const isSelectedRoomOnFloor = roomsOnFloor.some((r) => r.code === selectedRoom)
+
+  const handleSelectRoom = (roomCode: string) => {
+    setSelectedRoom(roomCode)
+    setSelectedBed(EMPTY_SELECTED_BED)
+  }
+
+  const handleSelectFloor = (level: number) => {
+    setSelectedFloor(level)
+    setSelectedRoom(firstRoomOf(buildingLetter, level))
+    setSelectedCompartment("A")
+    setSelectedBed(EMPTY_SELECTED_BED)
+  }
+
+  const handleSelectBuilding = (buildingId: string) => {
+    setSelectedBuilding(buildingId)
+    setSelectedRoom(firstRoomOf(buildingId === "b2" ? "B" : "A", selectedFloor))
+    setSelectedCompartment("A")
+    setSelectedBed(EMPTY_SELECTED_BED)
+  }
+
+  /* ------------------------------------------------------------------
+     Lựa chọn đã chốt cho lượt render này.
+
+     Suy ra trực tiếp từ state + dữ liệu thật (không `setState` trong effect) nên
+     giao diện không bao giờ hiển thị một phòng/giường không tồn tại.
+     ------------------------------------------------------------------ */
+  const activeRoom = isSelectedRoomOnFloor ? selectedRoom : roomsOnFloor[0].code
+  const activeRoomLayout = inventory.rooms.get(activeRoom.toUpperCase()) ?? null
+  /**
+   * Sơ đồ đang vẽ: chỉ lấy từ dữ liệu thật. Chưa tải xong, tải lỗi, hoặc phòng
+   * không có giường thì mảng rỗng — giao diện đã có nhánh riêng cho từng trường
+   * hợp đó, nên không bao giờ cần một ô giường giả để lấp chỗ trống.
+   */
+  const activeRoomCompartments: Compartment[] = activeRoomLayout?.compartments ?? []
+  const activeBed: Bed =
+    selectedBed.id && activeRoomCompartments.some((c) => c.beds.some((b) => b.id === selectedBed.id))
+      ? selectedBed
+      : EMPTY_SELECTED_BED
 
   // Handle bed selection — chặn giữ giường nếu không đủ quyền.
   const handleSelectBed = (bed: Bed, compId: string) => {
-    if (!canBook || bed.status !== "available") return
+    if (!canBook || bed.status !== "available" || !bed.code) return
     setSelectedBed(bed)
     setSelectedCompartment(compId)
     setTimeLeft(15 * 60)
     setIsLocked(true)
   }
 
-  /* ------------------------------------------------------------------
-     Danh sách phòng của tầng đang chọn.
-
-     Trước đây khối này viết cứng ba thẻ "Phòng A201 / A202 / A205" nên đổi tầng
-     hay đổi tòa đều hiện y hệt, còn dòng đếm thì ghi "4 phòng tìm thấy" trong khi
-     chỉ vẽ 3. Nay danh sách được suy ra từ mô hình thật: mỗi tầng có 6 phòng, mã
-     phòng = <chữ tòa><tầng>0<số phòng> (tầng 2 tòa A -> A201..A206).
-     ------------------------------------------------------------------ */
-  const buildingLetter = selectedBuilding === "b2" ? "B" : "A"
-  const buildingName = selectedBuilding === "b2" ? "Tòa B (Nữ)" : BOOKING_BUILDING
-  const ROOMS_PER_FLOOR = 6
-
-  /* ------------------------------------------------------------------
-     Sơ đồ giường của phòng đang chọn.
-
-     Mảng `compartments` ở trên chỉ là dữ liệu mẫu của phòng A205, với mã giường
-     gắn cứng "A205-...". Nếu chọn phòng khác mà vẫn dùng nguyên mã đó thì hợp
-     đồng in ra sẽ ghi sai phòng. Nên mã được viết lại theo phòng đang chọn;
-     phần bố trí buồng/giường giữ nguyên vì đây là dữ liệu minh hoạ của một phòng
-     chuẩn 1:4:6 (mọi phòng đều cùng kiểu bố trí).
-     ------------------------------------------------------------------ */
-  const bedsOfSelectedRoom = compartments.map((comp) => ({
-    ...comp,
-    beds: comp.beds.map((bed) => ({
-      ...bed,
-      id: `${selectedRoom}-${comp.id}-${bed.slot}`,
-      code: `${selectedRoom}-${comp.id}-${bed.slot}`,
-    })),
-  }))
-
-  /**
-   * Số giường còn trống của một phòng.
-   *
-   * Trang này chỉ có dữ liệu giường chi tiết cho phòng A205 (mảng `compartments`).
-   * Với các phòng khác thì KHÔNG bịa ra con số trông như thật — trả `null` để giao
-   * diện hiện "Chưa có dữ liệu giường". Một con số sai còn tệ hơn không có số.
-   */
-  const availableBedsOf = (roomCode: string): number | null => {
-    if (roomCode !== "A205") return null
-    return bedsOfSelectedRoom.reduce(
-      (sum, c) => sum + c.beds.filter((b) => b.status === "available").length,
-      0,
-    )
-  }
-
-  const roomsOnFloor = Array.from({ length: ROOMS_PER_FLOOR }, (_, i) => {
-    const code = `${buildingLetter}${selectedFloor}0${i + 1}`
-    const free = availableBedsOf(code)
-    return {
-      code,
-      free,
-      total: 24,
-      /** Tỷ lệ đã dùng, chỉ tính khi biết số giường thật. */
-      usedRatio: free === null ? null : (24 - free) / 24,
-    }
-  })
-
-  /**
-   * Giữ lựa chọn luôn hợp lệ: đổi tầng hoặc đổi tòa mà phòng đang chọn không còn
-   * thuộc tầng đó thì nhảy về phòng đầu tiên của tầng mới.
-   */
-  useEffect(() => {
-    if (!roomsOnFloor.some((r) => r.code === selectedRoom)) {
-      setSelectedRoom(roomsOnFloor[0].code)
-      setSelectedBed({
-        id: `${roomsOnFloor[0].code}-B-G03`,
-        code: `${roomsOnFloor[0].code}-B-G03`,
-        slot: "G03",
-        status: "available",
-        price: 950000,
-        tier: "lower",
-      })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedFloor, selectedBuilding])
-
   /** Đếm giường theo trạng thái của phòng đang chọn, dùng cho bảng chú thích. */
-  const bedCounts = bedsOfSelectedRoom
+  const bedCounts = activeRoomCompartments
     .flatMap((c) => c.beds)
     .reduce(
       (acc, b) => {
@@ -256,6 +447,13 @@ export const BookingPage: React.FC = () => {
       },
       { available: 0, occupied: 0, holding: 0, maintenance: 0 } as Record<Bed["status"], number>,
     )
+
+  /** Phòng đang chọn có giường thật trong dữ liệu hay không. */
+  const hasRealBeds = activeRoomCompartments.some((c) => c.beds.some((b) => b.code !== ""))
+
+  /** Tiền phòng của giường đang chọn, lấy từ giá thật trong cây kiểm kê. */
+  const roomFee = activeBed.price > 0 ? activeBed.price : DEFAULT_ROOM_FEE
+  const payableTotal = roomFee + SECURITY_DEPOSIT + UTILITY_ADVANCE
 
   // Trigger checkout & simulate auto-approval
   const handleStartCheckout = () => {
@@ -284,18 +482,18 @@ export const BookingPage: React.FC = () => {
         contractId: BOOKING_CONTRACT_ID,
         studentName: user?.fullName ?? "Nguyễn Hoàng Vinh",
         mssv: user?.studentId ?? "QE200001",
-        bedCode: selectedBed.code,
+        bedCode: activeBed.code,
         building: buildingName,
-        room: `${selectedRoom} - Buồng ${selectedCompartment}`,
+        room: `${activeRoom} - Buồng ${selectedCompartment}`,
         citizenId: user?.citizenId,
         phone: user?.phone,
-        roomFee: selectedBed.price,
+        roomFee,
         deposit: BOOKING_DEPOSIT,
         startDate: BOOKING_START_DATE,
         endDate: BOOKING_END_DATE,
         createdAt: new Date().toISOString(),
       })
-      showToast("Đã tải hợp đồng điện tử PDF cho giường " + selectedBed.code + ".")
+      showToast("Đã tải hợp đồng điện tử PDF cho giường " + activeBed.code + ".")
     } catch (error) {
       showToast(error instanceof Error ? error.message : "Không tạo được hợp đồng điện tử.", "error")
     } finally {
@@ -359,7 +557,11 @@ export const BookingPage: React.FC = () => {
               <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block">
                 Phòng chuẩn
               </span>
-              <span className="font-semibold text-foreground">Phòng {selectedRoom} · 24 giường</span>
+              <span className="font-semibold text-foreground">
+                {hasRealBeds
+                  ? `Phòng ${activeRoom} · ${countBeds(activeRoomCompartments)} giường`
+                  : `Phòng ${activeRoom}`}
+              </span>
             </div>
           </div>
 
@@ -387,7 +589,9 @@ export const BookingPage: React.FC = () => {
               <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block">
                 Vị trí giường
               </span>
-              <span className="font-bold text-primary dark:text-primary">{selectedBed.code}</span>
+              <span className="font-bold text-primary dark:text-primary">
+                {activeBed.code || "Chưa chọn giường"}
+              </span>
             </div>
           </div>
 
@@ -419,7 +623,7 @@ export const BookingPage: React.FC = () => {
             <div className="relative">
               <Select
                 value={selectedBuilding}
-                onChange={(e) => setSelectedBuilding(e.target.value)}
+                onChange={(e) => handleSelectBuilding(e.target.value)}
                 className="font-semibold pr-8 appearance-none cursor-pointer"
               >
                 <option value="b1">Tòa A · Khu Nam</option>
@@ -436,10 +640,10 @@ export const BookingPage: React.FC = () => {
                 </span>
               </div>
               <div className="grid grid-cols-5 gap-1 p-1 bg-muted rounded-lg">
-                {[1, 2, 3, 4, 5].map((lvl) => (
+                {floorLevels.map((lvl) => (
                   <button
                     key={lvl}
-                    onClick={() => setSelectedFloor(lvl)}
+                    onClick={() => handleSelectFloor(lvl)}
                     className={`py-1.5 text-xs font-bold rounded-md transition-all ${
                       selectedFloor === lvl
                         ? "bg-primary text-white shadow-xs"
@@ -461,12 +665,12 @@ export const BookingPage: React.FC = () => {
             </div>
 
             {roomsOnFloor.map((room) => {
-              const isActive = selectedRoom === room.code
+              const isActive = activeRoom === room.code
               const hasData = room.free !== null
               return (
                 <div
                   key={room.code}
-                  onClick={() => setSelectedRoom(room.code)}
+                  onClick={() => handleSelectRoom(room.code)}
                   className={`p-3 rounded-lg border cursor-pointer transition-all ${
                     isActive
                       ? "bg-primary text-white shadow-xs border-primary"
@@ -478,6 +682,11 @@ export const BookingPage: React.FC = () => {
                       <DoorOpen className={`h-4 w-4 shrink-0 ${isActive ? "text-white/80" : "text-muted-foreground"}`} />
                       <span className="truncate">Phòng {room.code}</span>
                     </div>
+                    {/*
+                      Số giường đọc thẳng từ cây kiểm kê thật. Chỉ khi lượt tải
+                      thất bại mới không có số để nói — lúc đó ghi rõ là chưa tải
+                      được, chứ không bịa ra một con số trông như thật.
+                    */}
                     {hasData ? (
                       isActive ? (
                         <span className="shrink-0 whitespace-nowrap rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-bold text-primary">
@@ -494,37 +703,20 @@ export const BookingPage: React.FC = () => {
                           isActive ? "bg-black/20 text-white/90" : "bg-muted text-muted-foreground"
                         }`}
                       >
-                        Chưa có dữ liệu giường
+                        {isLoadingInventory ? "Đang tải số giường" : "Chưa tải được số giường"}
                       </span>
                     )}
                   </div>
 
-                  {/*
-                    Chỉ phòng có dữ liệu giường thật mới hiện thanh tỷ lệ. Các phòng
-                    khác để thanh trống thay vì vẽ một con số bịa.
-                  */}
+                  {/* Thanh tỷ lệ đã dùng, cùng nguồn số với nhãn phía trên. */}
                   <div className={`h-1.5 w-full overflow-hidden rounded-full ${isActive ? "bg-white/20" : "bg-muted"}`}>
-                    {hasData && (
+                    {room.usedRatio !== null && (
                       <div
                         className={isActive ? "h-full bg-white" : "h-full bg-muted-foreground"}
-                        style={{ width: `${(room.usedRatio ?? 0) * 100}%` }}
+                        style={{ width: `${room.usedRatio * 100}%` }}
                       />
                     )}
                   </div>
-
-                  {isActive && (
-                    <div className="flex flex-wrap gap-1 pt-2">
-                      <span className="flex items-center gap-1 rounded bg-black/20 px-1.5 py-0.5 text-[10px] text-white/90">
-                        <Sun className="h-3 w-3 shrink-0" /> Ban công
-                      </span>
-                      <span className="flex items-center gap-1 rounded bg-black/20 px-1.5 py-0.5 text-[10px] text-white/90">
-                        <Snowflake className="h-3 w-3 shrink-0" /> ĐH Inverter
-                      </span>
-                      <span className="flex items-center gap-1 rounded bg-black/20 px-1.5 py-0.5 text-[10px] text-white/90">
-                        <Wifi className="h-3 w-3 shrink-0" /> Fiber 1Gbps
-                      </span>
-                    </div>
-                  )}
                 </div>
               )
             })}
@@ -539,10 +731,9 @@ export const BookingPage: React.FC = () => {
               {/* Nhãn cũ "Khu A205 · Chuẩn 2026" vô nghĩa: A205 là một phòng chứ
                   không phải "khu", và "Chuẩn 2026" không nói lên điều gì. Nay ghi
                   đúng toà đang chọn và số tầng thực có. */}
-              <p className="font-bold text-xs text-foreground whitespace-nowrap">{buildingName} · 5 tầng</p>
-              <ExpandableText className="mt-0.5" textClassName="text-[11px] text-muted-foreground">
-                Tiêu âm trần và vách, rèm kháng khuẩn từng giường, khóa số thông minh, camera hành lang.
-              </ExpandableText>
+              <p className="font-bold text-xs text-foreground whitespace-nowrap">
+                {buildingName} · {floorLevels.length} tầng
+              </p>
             </div>
           </div>
         </div>
@@ -559,151 +750,169 @@ export const BookingPage: React.FC = () => {
                 <div>
                   <div className="flex items-center gap-2">
                     <h2 className="font-bold text-base text-foreground">
-                      Bản Đồ Kiến Trúc · Phòng {selectedRoom}
+                      Bản Đồ Kiến Trúc · Phòng {activeRoom}
                     </h2>
-                    <span className="text-[11px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-semibold">
-                      Mô hình 1:4:6 · 24 giường
-                    </span>
+                    {hasRealBeds && (
+                      <span className="text-[11px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-semibold">
+                        {activeRoomCompartments.length} buồng · {countBeds(activeRoomCompartments)} giường
+                      </span>
+                    )}
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Nhấp vào giường có màu xanh lá để khóa giữ chỗ 15 phút.
-                  </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success/10 text-success-soft-foreground text-xs font-semibold">
-                <span className="w-2 h-2 rounded-full bg-success animate-pulse"></span>
-                <span>Thời gian thực: {bedCounts.available} giường trống</span>
-              </div>
+              {hasRealBeds && (
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success/10 text-success-soft-foreground text-xs font-semibold">
+                  <span className="w-2 h-2 rounded-full bg-success animate-pulse"></span>
+                  <span>Thời gian thực: {bedCounts.available} giường trống</span>
+                </div>
+              )}
             </div>
 
-            {/* Status Legend — số đếm suy ra từ chính dữ liệu giường đang vẽ */}
-            <div className="flex flex-wrap items-center gap-4 py-2 px-3 rounded-lg bg-muted/70 text-[11px]">
-              <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-xs bg-success"></span>
-                <span className="font-medium text-foreground">Còn chỗ · {bedCounts.available}</span>
+            {/*
+              Status Legend — số đếm suy ra từ chính dữ liệu giường đang vẽ.
+              Chỉ hiện khi đã có giường thật: lúc đang tải hoặc tải lỗi thì mọi ô
+              đều là "chưa rõ", hiện "Bảo trì · 24" sẽ là một con số bịa.
+            */}
+            {hasRealBeds && (
+              <div className="flex flex-wrap items-center gap-4 py-2 px-3 rounded-lg bg-muted/70 text-[11px]">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-3 h-3 rounded-xs bg-success"></span>
+                  <span className="font-medium text-foreground">Còn chỗ · {bedCounts.available}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-3 h-3 rounded-xs bg-muted"></span>
+                  <span className="text-muted-foreground">Đã ở · {bedCounts.occupied}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-3 h-3 rounded-xs bg-primary"></span>
+                  <span className="text-muted-foreground">Đang giữ · {bedCounts.holding}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-3 h-3 rounded-xs bg-danger"></span>
+                  <span className="text-muted-foreground">Bảo trì · {bedCounts.maintenance}</span>
+                </div>
+                <div className="flex items-center gap-1.5 ml-auto">
+                  <span className="w-3 h-3 rounded-xs bg-primary ring-2 ring-primary ring-offset-1"></span>
+                  <span className="font-bold text-primary dark:text-primary">Đang chọn · {activeBed.code ? 1 : 0}</span>
+                </div>
               </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-xs bg-muted"></span>
-                <span className="text-muted-foreground">Đã ở · {bedCounts.occupied}</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-xs bg-primary"></span>
-                <span className="text-muted-foreground">Đang giữ · {bedCounts.holding}</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-xs bg-danger"></span>
-                <span className="text-muted-foreground">Bảo trì · {bedCounts.maintenance}</span>
-              </div>
-              <div className="ml-auto rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
-                AI gợi ý: {suggestRoomAllocation({ id: user?.studentId || "QE200001", faculty: user?.major || "CNTT", nightOwl: false, quiet: true }, roomsOnFloor.map((r) => ({ id: r.code, facultyMix: [user?.major || "CNTT"], nightOwlFriendly: false, quietZone: true, freeBeds: r.free ?? 0 })), 1)[0]?.id || selectedRoom} hợp thói quen yên tĩnh
-              </div>
-              <div className="flex items-center gap-1.5 ml-auto">
-                <span className="w-3 h-3 rounded-xs bg-primary ring-2 ring-primary ring-offset-1"></span>
-                <span className="font-bold text-primary dark:text-primary">Đang chọn · 1</span>
-              </div>
-            </div>
+            )}
 
             {/* Visual Floor Canvas Matrix */}
             <div className="p-3.5 bg-muted/70 rounded-xl border border-border relative space-y-3">
-              {/* Orientation Indicators */}
-              <div className="flex justify-between items-center text-muted-foreground text-[10px] font-mono tracking-wider px-1">
-                <span className="flex items-center gap-1 whitespace-nowrap truncate">
-                  <Sun className="h-3 w-3 text-primary shrink-0" /> Hướng Đông
-                </span>
-                <span className="flex items-center gap-1 whitespace-nowrap truncate text-right">
-                  <Compass className="h-3 w-3 shrink-0" /> Hướng Bắc
-                </span>
-              </div>
-
-              {/* 4 Quadrants (1:4:6 Layout) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                {bedsOfSelectedRoom.map((comp) => {
-                  const isSelectedComp = selectedCompartment === comp.id
-                  return (
-                    <div
-                      key={comp.id}
-                      className={`bg-card p-3 rounded-xl border transition-all ${
-                        isSelectedComp
-                          ? "ring-2 ring-primary border-primary shadow-sm"
-                          : "border-border"
-                      }`}
-                    >
-                      {/* Compartment Header */}
-                      <div className="mb-2 pb-1.5 border-b border-border/60">
-                        <div className="flex items-center justify-between gap-1.5">
-                          <span className="font-bold text-xs text-foreground whitespace-nowrap flex items-center gap-1.5 shrink-0">
-                            Buồng {comp.id}
-                            {isSelectedComp && (
-                              <span className="w-1.5 h-1.5 rounded-full bg-primary inline-block shrink-0"></span>
-                            )}
-                          </span>
-                          <span className="text-[10px] font-semibold text-muted-foreground bg-muted px-1.5 py-0.5 rounded whitespace-nowrap shrink-0">
-                            {comp.zone}
-                          </span>
-                        </div>
-                        <span className="text-[10px] text-muted-foreground whitespace-nowrap block truncate mt-0.5">
-                          Buồng {comp.id} · {comp.title}
-                        </span>
-                      </div>
-
-                      {/* 6 Beds Grid (2 rows x 3 columns) */}
-                      <div className="grid grid-cols-3 gap-2">
-                        {comp.beds.map((bed) => {
-                          const isCurrentPick = selectedBed.id === bed.id
-                          const isAvailable = bed.status === "available"
-                          const isHolding = bed.status === "holding"
-                          const isMaint = bed.status === "maintenance"
-
-                          return (
-                            <div
-                              key={bed.id}
-                              onClick={() => handleSelectBed(bed, comp.id)}
-                              className={`p-2 rounded-lg text-center flex flex-col items-center justify-center transition-all border ${
-                                isCurrentPick
-                                  ? "bg-primary text-white border-primary shadow-md scale-105 ring-2 ring-primary ring-offset-2 z-10 cursor-pointer"
-                                  : isAvailable
-                                  ? "bg-success-soft border-success/25 hover:bg-success-soft cursor-pointer text-success-soft-foreground   "
-                                  : isHolding
-                                  ? "bg-primary-soft border-primary/25 text-primary-soft-foreground    cursor-not-allowed"
-                                  : isMaint
-                                  ? "bg-danger-soft border-danger/25 text-danger-soft-foreground    cursor-not-allowed"
-                                  : "bg-muted border-border text-muted-foreground cursor-not-allowed"
-                              }`}
-                            >
-                              {isCurrentPick ? (
-                                <CircleCheck className="h-4 w-4 shrink-0" />
-                              ) : (
-                                <BedDouble className="h-4 w-4 shrink-0" />
-                              )}
-                              <span className="font-mono font-bold text-[11px] leading-tight whitespace-nowrap">
-                                {bed.slot}
+              {isLoadingInventory ? (
+                /* Đang tải kiểm kê: khung xương, tuyệt đối không vẽ lưới 0 giường. */
+                <LoadingSkeleton rows={4} />
+              ) : inventoryError ? (
+                /* Tải lỗi: nói rõ thông điệp tiếng Việt của backend và cho thử lại. */
+                <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
+                  <div className="flex items-center gap-2 text-danger">
+                    <CircleAlert className="h-5 w-5 shrink-0" />
+                    <span className="text-sm font-bold">Không tải được dữ liệu giường</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground max-w-md">{inventoryError}</p>
+                  <Button
+                    variant="outline"
+                    onClick={handleRetryInventory}
+                    className="text-xs font-bold"
+                  >
+                    Thử lại
+                  </Button>
+                </div>
+              ) : !hasRealBeds ? (
+                /* Phòng này không có giường nào trong dữ liệu máy chủ. */
+                <div className="py-8 text-center">
+                  <p className="text-sm font-bold text-foreground">
+                    Phòng {activeRoom} chưa có giường trong dữ liệu máy chủ
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Chọn phòng khác để xem sơ đồ giường.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {/* 4 Quadrants (1:4:6 Layout) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    {activeRoomCompartments.map((comp) => {
+                      const isSelectedComp = selectedCompartment === comp.id
+                      return (
+                        <div
+                          key={comp.id}
+                          className={`bg-card p-3 rounded-xl border transition-all ${
+                            isSelectedComp
+                              ? "ring-2 ring-primary border-primary shadow-sm"
+                              : "border-border"
+                          }`}
+                        >
+                          {/* Compartment Header */}
+                          <div className="mb-2 pb-1.5 border-b border-border/60">
+                            <div className="flex items-center justify-between gap-1.5">
+                              <span className="font-bold text-xs text-foreground whitespace-nowrap flex items-center gap-1.5 shrink-0">
+                                Buồng {comp.id}
+                                {isSelectedComp && (
+                                  <span className="w-1.5 h-1.5 rounded-full bg-primary inline-block shrink-0"></span>
+                                )}
                               </span>
-                              <span className="text-[9px] mt-0.5 font-medium whitespace-nowrap">
-                                {isCurrentPick
-                                  ? "Đang chọn"
-                                  : isAvailable
-                                  ? "950k/th"
-                                  : isHolding
-                                  ? `${bed.holdingTime} Giữ`
-                                  : isMaint
-                                  ? "Bảo trì"
-                                  : "Đã ở"}
+                              <span className="text-[10px] font-semibold text-muted-foreground bg-muted px-1.5 py-0.5 rounded whitespace-nowrap shrink-0">
+                                {comp.zone}
                               </span>
                             </div>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
+                          </div>
 
-              {/* Architectural CAD Notation */}
-              <div className="pt-2 flex justify-between items-center text-muted-foreground text-[10px] font-mono border-t border-border">
-                <span className="shrink-0 whitespace-nowrap">[CAD: 2026.10-DMS-146]</span>
-                <span className="truncate ml-2 text-right">WC & BÀN HỌC BỐ TRÍ CUỐI HÀNH LANG B & D</span>
-              </div>
+                          {/* Bed cells */}
+                          <div className="grid grid-cols-3 gap-2">
+                            {comp.beds.map((bed) => {
+                              const isCurrentPick = activeBed.id === bed.id
+                              const isAvailable = bed.status === "available"
+                              const isHolding = bed.status === "holding"
+                              const isMaint = bed.status === "maintenance"
+
+                              return (
+                                <div
+                                  key={bed.id}
+                                  onClick={() => handleSelectBed(bed, comp.id)}
+                                  className={`p-2 rounded-lg text-center flex flex-col items-center justify-center transition-all border ${
+                                    isCurrentPick
+                                      ? "bg-primary text-white border-primary shadow-md scale-105 ring-2 ring-primary ring-offset-2 z-10 cursor-pointer"
+                                      : isAvailable
+                                      ? "bg-success-soft border-success/25 hover:bg-success-soft cursor-pointer text-success-soft-foreground   "
+                                      : isHolding
+                                      ? "bg-primary-soft border-primary/25 text-primary-soft-foreground    cursor-not-allowed"
+                                      : isMaint
+                                      ? "bg-danger-soft border-danger/25 text-danger-soft-foreground    cursor-not-allowed"
+                                      : "bg-muted border-border text-muted-foreground cursor-not-allowed"
+                                  }`}
+                                >
+                                  {isCurrentPick ? (
+                                    <CircleCheck className="h-4 w-4 shrink-0" />
+                                  ) : (
+                                    <BedDouble className="h-4 w-4 shrink-0" />
+                                  )}
+                                  <span className="font-mono font-bold text-[11px] leading-tight whitespace-nowrap">
+                                    {bed.slot}
+                                  </span>
+                                  <span className="text-[9px] mt-0.5 font-medium whitespace-nowrap">
+                                    {isCurrentPick
+                                      ? "Đang chọn"
+                                      : isAvailable
+                                      ? `${Math.round(bed.price / 1000)}k/th`
+                                      : isHolding
+                                      ? "Đang giữ"
+                                      : isMaint
+                                      ? "Bảo trì"
+                                      : "Đã ở"}
+                                  </span>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -742,14 +951,16 @@ export const BookingPage: React.FC = () => {
           {/* Selected Bed Specifications */}
           <div className="dms-card p-4 space-y-3">
             <div className="flex items-center justify-between pb-2 border-b border-border">
-              <div>
+              <div className="min-w-0">
                 <span className="text-[10px] uppercase font-bold text-muted-foreground block">
                   Giường bạn đã chọn
                 </span>
-                <h4 className="font-bold text-sm text-foreground">{selectedBed.code}</h4>
+                <h4 className="font-bold text-sm text-foreground truncate">
+                  {activeBed.code || "Chưa chọn giường"}
+                </h4>
               </div>
               <Badge variant="success" className="shrink-0 whitespace-nowrap">
-                {selectedBed.tier === "lower" ? "Tầng dưới" : "Tầng trên"}
+                {activeBed.tier === "lower" ? "Tầng dưới" : "Tầng trên"}
               </Badge>
             </div>
 
@@ -757,7 +968,7 @@ export const BookingPage: React.FC = () => {
               <div className="flex items-center justify-between gap-2 text-muted-foreground">
                 <span className="whitespace-nowrap">Vị trí buồng:</span>
                 <span className="font-semibold text-foreground truncate text-right">
-                  Buồng {selectedCompartment} · P.{selectedRoom}
+                  Buồng {selectedCompartment} · P.{activeRoom}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-2 text-muted-foreground">
@@ -774,26 +985,34 @@ export const BookingPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Financial Breakdown */}
+            {/* Financial Breakdown — tiền phòng lấy đúng giá giường thật từ máy chủ. */}
             <div className="bg-muted/70 p-3 rounded-xl space-y-2 text-xs border border-border">
               <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block">
                 Bảng kê chi phí kỳ 1
               </span>
               <div className="flex items-center justify-between gap-2 text-muted-foreground">
                 <span className="whitespace-nowrap">Tiền phòng (tháng 1):</span>
-                <span className="font-mono text-foreground font-semibold whitespace-nowrap">₫950,000</span>
+                <span className="font-mono text-foreground font-semibold whitespace-nowrap">
+                  {formatVnd(roomFee)}
+                </span>
               </div>
               <div className="flex items-center justify-between gap-2 text-muted-foreground">
                 <span className="whitespace-nowrap">Tiền cọc an ninh:</span>
-                <span className="font-mono text-foreground font-semibold whitespace-nowrap">₫1,000,000</span>
+                <span className="font-mono text-foreground font-semibold whitespace-nowrap">
+                  {formatVnd(SECURITY_DEPOSIT)}
+                </span>
               </div>
               <div className="flex items-center justify-between gap-2 text-muted-foreground">
                 <span className="whitespace-nowrap">Tạm ứng điện nước:</span>
-                <span className="font-mono text-foreground font-semibold whitespace-nowrap">₫200,000</span>
+                <span className="font-mono text-foreground font-semibold whitespace-nowrap">
+                  {formatVnd(UTILITY_ADVANCE)}
+                </span>
               </div>
               <div className="pt-2 border-t border-border flex items-center justify-between gap-2 font-bold text-foreground text-xs">
                 <span className="whitespace-nowrap">Tổng thanh toán:</span>
-                <span className="font-mono text-primary dark:text-primary font-black text-sm whitespace-nowrap">₫2,150,000</span>
+                <span className="font-mono text-primary dark:text-primary font-black text-sm whitespace-nowrap">
+                  {formatVnd(payableTotal)}
+                </span>
               </div>
             </div>
 
@@ -864,9 +1083,10 @@ export const BookingPage: React.FC = () => {
               </div>
             </div>
 
-            {/* CTA Button */}
+            {/* CTA Button — chỉ mở được khi đã có giường thật đang chọn. */}
             <Button
               onClick={handleStartCheckout}
+              disabled={!canBook || !activeBed.code}
               className="w-full h-10 bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs rounded-lg"
             >
               <QrCode className="h-4 w-4 shrink-0" />
@@ -895,7 +1115,7 @@ export const BookingPage: React.FC = () => {
                     Cổng Thanh Toán VietQR và Xét Duyệt Tự Động
                   </h3>
                   <p className="text-[11px] text-muted-foreground">
-                    Khóa giữ chỗ giường {selectedBed.code} · Hợp đồng K19
+                    Khóa giữ chỗ giường {activeBed.code || "—"} · Hợp đồng K19
                   </p>
                 </div>
               </div>
@@ -915,9 +1135,9 @@ export const BookingPage: React.FC = () => {
                     {/* Dynamic QR Code graphic — sinh tại chỗ, không gọi dịch vụ ảnh ngoài */}
                     <div className="relative p-2 bg-white rounded-xl shadow-xs border border-border">
                       <QrCodeImage
-                        value={`DORM_BOOKING_${selectedBed.code}_${user?.studentId || "QE200001"}_2150000`}
+                        value={`DORM_BOOKING_${activeBed.code}_${user?.studentId || "QE200001"}_${payableTotal}`}
                         size={240}
-                        alt={`Mã thanh toán giữ giường ${selectedBed.code}`}
+                        alt={`Mã thanh toán giữ giường ${activeBed.code}`}
                       />
                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <div className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center p-1 border">
@@ -931,9 +1151,9 @@ export const BookingPage: React.FC = () => {
                         Quét mã bằng app ngân hàng bất kỳ
                       </span>
                       <p className="text-[11px] text-muted-foreground font-mono">
-                        Số tiền: <strong>2,150,000 VNĐ</strong> • Nội dung:{" "}
+                        Số tiền: <strong>{formatVnd(payableTotal)}</strong> • Nội dung:{" "}
                         <span className="bg-muted px-1 py-0.5 rounded text-foreground font-semibold">
-                          KTX {user?.studentId || "QE200001"} {selectedBed.code}
+                          KTX {user?.studentId || "QE200001"} {activeBed.code}
                         </span>
                       </p>
                     </div>
@@ -993,7 +1213,7 @@ export const BookingPage: React.FC = () => {
                       Hệ thống đang xét duyệt {autoApprovalProgress}%
                     </h4>
                     <p className="text-xs text-muted-foreground max-w-sm">
-                      Kiểm tra đối soát số dư ngân hàng, khóa giường {selectedBed.code} và khởi tạo hợp đồng điện tử...
+                      Kiểm tra đối soát số dư ngân hàng, khóa giường {activeBed.code} và khởi tạo hợp đồng điện tử...
                     </p>
                   </div>
                 </div>
@@ -1010,10 +1230,10 @@ export const BookingPage: React.FC = () => {
                       Đặt giường thành công và đã phê duyệt
                     </h4>
                     <p className="text-xs text-muted-foreground">
-                      Mã hợp đồng: <strong className="font-mono text-primary">CTR-2026-A205-B03</strong>
+                      Mã hợp đồng: <strong className="font-mono text-primary">{BOOKING_CONTRACT_ID}</strong>
                     </p>
                     <p className="text-xs text-muted-foreground max-w-sm">
-                      Bạn đã hoàn tất đăng ký giường <strong>{selectedBed.code}</strong>. Hợp đồng điện tử kèm biên nhận tiền cọc đã được lưu vào hồ sơ cá nhân.
+                      Bạn đã hoàn tất đăng ký giường <strong>{activeBed.code}</strong>. Hợp đồng điện tử kèm biên nhận tiền cọc đã được lưu vào hồ sơ cá nhân.
                     </p>
                   </div>
 
@@ -1024,7 +1244,7 @@ export const BookingPage: React.FC = () => {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Phòng & Buồng:</span>
-                      <span className="font-semibold">Phòng {selectedRoom} - Buồng {selectedCompartment}</span>
+                      <span className="font-semibold">Phòng {activeRoom} - Buồng {selectedCompartment}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Ngày bắt đầu vào ở:</span>

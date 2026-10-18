@@ -1,16 +1,27 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useAuth } from "@/contexts/useAuth"
-import { ApiError, dashboardApi } from "@/lib/api"
-import {
-  MOCK_OCCUPANCY_STATS,
-  MOCK_MONTHLY_REVENUE,
-  MOCK_BUILDING_CONSUMPTION,
-  MOCK_RESIDENTS_REGISTRY,
-  MOCK_OVERDUE_DEBTS,
-} from "@/data/mockDashboard"
+import { ApiError, dashboardApi, ticketApi } from "@/lib/api"
 import { exportToExcel, exportToCsv, type ExportColumn } from "@/lib/excelExport"
-import { INITIAL_MAINTENANCE_TICKETS } from "@/data/mockMaintenance"
-import type { ResidentTemporaryRecord, OverdueDebtRecord } from "@/types/dashboard"
+import type {
+  ResidentTemporaryRecord,
+  OverdueDebtRecord,
+  OccupancyStats,
+  MonthlyRevenue,
+  BuildingConsumption,
+} from "@/types/dashboard"
+
+/**
+ * Hình dạng `GET /api/dashboard/overview` mà trang này dùng.
+ * Khai báo tường minh thay vì dựa vào `Record<string, unknown>`.
+ */
+interface DashboardOverview {
+  occupancy: OccupancyStats
+  revenue: MonthlyRevenue[]
+  consumption: BuildingConsumption[]
+  tickets?: Record<string, number>
+  invoices?: Record<string, number>
+  visitors?: Record<string, number>
+}
 import { LayoutDashboard, FileSpreadsheet, ChartPie, TrendingUp, Download, Search, Building, DollarSign, Zap, Droplets, TriangleAlert, Users, Sparkles, FileDown } from "lucide-react"
 
 import { Input } from "@/components/ui/input"
@@ -39,22 +50,19 @@ export const ManagerDashboardPage: React.FC = () => {
   /**
    * Lấy dữ liệu báo cáo THẬT từ backend (`/api/dashboard/reports/*`).
    *
-   * DỰ PHÒNG: nếu backend tắt/lỗi, hàm trả về dữ liệu mẫu (`MOCK_*`) để bản demo
-   * vẫn xuất được file, đồng thời hiện toast nói rõ đang dùng dữ liệu mẫu — tuyệt đối
-   * không im lặng giả vờ là dữ liệu thật.
+   * KHÔNG còn dữ liệu mẫu dự phòng: máy chủ lỗi thì trả lỗi cho người dùng và
+   * mảng rỗng, để không ai tưởng nhầm số liệu mẫu là số liệu thật của KTX.
    */
   const loadReportRows = async <T,>(
     fetcher: () => Promise<T[]>,
-    fallback: T[],
     label: string,
-  ): Promise<{ rows: T[]; usedFallback: boolean }> => {
+  ): Promise<{ rows: T[]; error: string | null }> => {
     try {
       const rows = await fetcher()
-      return { rows: Array.isArray(rows) ? rows : [], usedFallback: false }
+      return { rows: Array.isArray(rows) ? rows : [], error: null }
     } catch (error) {
       const detail = error instanceof ApiError ? error.message : "Lỗi không xác định"
-      showToast(`⚠️ Không lấy được ${label} từ máy chủ (${detail}). Đang dùng dữ liệu mẫu.`)
-      return { rows: fallback, usedFallback: true }
+      return { rows: [], error: `Không lấy được ${label} từ máy chủ (${detail}).` }
     }
   }
 
@@ -82,12 +90,15 @@ export const ManagerDashboardPage: React.FC = () => {
     const filename = `Danh_Sach_Tam_Tru_KTX_FPT_${new Date().toISOString().substring(0, 10)}.xlsx`
     setExportingKind("RESIDENTS_XLSX")
     try {
-      const { rows, usedFallback } = await loadReportRows<ResidentTemporaryRecord>(
+      const { rows, error } = await loadReportRows<ResidentTemporaryRecord>(
         () => dashboardApi.residents() as Promise<ResidentTemporaryRecord[]>,
-        MOCK_RESIDENTS_REGISTRY,
         "danh sách tạm trú",
       )
 
+      if (error) {
+        showToast(`❌ ${error}`)
+        return
+      }
       if (rows.length === 0) {
         showToast("⚠️ Không có dữ liệu tạm trú để xuất file.")
         return
@@ -102,11 +113,7 @@ export const ManagerDashboardPage: React.FC = () => {
         data: rows,
       })
 
-      showToast(
-        usedFallback
-          ? `⚠️ Đã xuất ${filename} từ DỮ LIỆU MẪU (backend không phản hồi).`
-          : `✅ Đã xuất file Excel thật ${filename} (${rows.length} sinh viên).`,
-      )
+      showToast(`✅ Đã xuất file Excel ${filename} (${rows.length} sinh viên).`)
     } catch (error) {
       const detail = error instanceof ApiError ? error.message : (error as Error).message
       showToast(`❌ Xuất file Excel tạm trú thất bại: ${detail}`)
@@ -137,12 +144,15 @@ export const ManagerDashboardPage: React.FC = () => {
     const filename = `Danh_Sach_Tam_Tru_${new Date().toISOString().substring(0, 10)}.csv`
     setExportingKind("RESIDENTS_CSV")
     try {
-      const { rows, usedFallback } = await loadReportRows<ResidentTemporaryRecord>(
+      const { rows, error } = await loadReportRows<ResidentTemporaryRecord>(
         () => dashboardApi.residents() as Promise<ResidentTemporaryRecord[]>,
-        MOCK_RESIDENTS_REGISTRY,
         "danh sách tạm trú",
       )
 
+      if (error) {
+        showToast(`❌ ${error}`)
+        return
+      }
       if (rows.length === 0) {
         showToast("⚠️ Không có dữ liệu tạm trú để xuất file CSV.")
         return
@@ -150,11 +160,7 @@ export const ManagerDashboardPage: React.FC = () => {
 
       exportToCsv({ filename, columns, data: rows })
 
-      showToast(
-        usedFallback
-          ? `⚠️ Đã xuất ${filename} từ DỮ LIỆU MẪU (backend không phản hồi).`
-          : `📄 Đã xuất file CSV (UTF-8 BOM) ${filename} thành công!`,
-      )
+      showToast(`📄 Đã xuất file CSV (UTF-8 BOM) ${filename} (${rows.length} sinh viên).`)
     } catch (error) {
       const detail = error instanceof ApiError ? error.message : (error as Error).message
       showToast(`❌ Xuất file CSV thất bại: ${detail}`)
@@ -208,12 +214,15 @@ export const ManagerDashboardPage: React.FC = () => {
     const filename = `Danh_Sach_Cong_No_Qua_Han_${new Date().toISOString().substring(0, 10)}.xlsx`
     setExportingKind("DEBTS_XLSX")
     try {
-      const { rows, usedFallback } = await loadReportRows<OverdueDebtRecord>(
+      const { rows, error } = await loadReportRows<OverdueDebtRecord>(
         () => dashboardApi.debts() as Promise<OverdueDebtRecord[]>,
-        MOCK_OVERDUE_DEBTS,
         "danh sách công nợ",
       )
 
+      if (error) {
+        showToast(`❌ ${error}`)
+        return
+      }
       if (rows.length === 0) {
         showToast("⚠️ Không có dữ liệu công nợ quá hạn để xuất file.")
         return
@@ -228,11 +237,7 @@ export const ManagerDashboardPage: React.FC = () => {
         data: rows,
       })
 
-      showToast(
-        usedFallback
-          ? `⚠️ Đã xuất ${filename} từ DỮ LIỆU MẪU (backend không phản hồi).`
-          : `✅ Đã xuất file Excel thật ${filename} (${rows.length} hóa đơn).`,
-      )
+      showToast(`✅ Đã xuất file Excel ${filename} (${rows.length} hóa đơn).`)
     } catch (error) {
       const detail = error instanceof ApiError ? error.message : (error as Error).message
       showToast(`❌ Xuất file Excel công nợ thất bại: ${detail}`)
@@ -241,8 +246,74 @@ export const ManagerDashboardPage: React.FC = () => {
     }
   }
 
+  /* ------------------------------------------------------------------
+     Dữ liệu của trang, đọc từ BACKEND (không còn dữ liệu mẫu).
+
+     Bốn nguồn: overview (công suất/doanh thu/tiêu thụ), residents, debts, tickets.
+     Trạng thái tải/lỗi giữ riêng để giao diện nói thật khi máy chủ không phản hồi,
+     thay vì âm thầm vẽ biểu đồ rỗng trông như "KTX chưa có dữ liệu".
+     ------------------------------------------------------------------ */
+  const [overview, setOverview] = useState<DashboardOverview | null>(null)
+  const [residents, setResidents] = useState<ResidentTemporaryRecord[]>([])
+  const [debts, setDebts] = useState<OverdueDebtRecord[]>([])
+  const [openTickets, setOpenTickets] = useState(0)
+  const [dataLoading, setDataLoading] = useState(true)
+  const [dataError, setDataError] = useState<string | null>(null)
+  /** Tăng số này để chạy lại hiệu ứng tải (nút "Thử lại"). */
+  const [reloadToken, setReloadToken] = useState(0)
+
+  useEffect(() => {
+    let cancelled = false
+    setDataLoading(true)
+    setDataError(null)
+
+    void (async () => {
+      // Mỗi nguồn hỏng độc lập: một nguồn lỗi không được làm mất các nguồn khác.
+      const [ovRes, resRes, debtRes, ticketRes] = await Promise.allSettled([
+        dashboardApi.overview() as unknown as Promise<DashboardOverview>,
+        dashboardApi.residents() as Promise<ResidentTemporaryRecord[]>,
+        dashboardApi.debts() as Promise<OverdueDebtRecord[]>,
+        ticketApi.list() as Promise<Array<{ status?: string }>>,
+      ])
+      if (cancelled) return
+
+      const problems: string[] = []
+
+      if (ovRes.status === "fulfilled" && ovRes.value) {
+        setOverview(ovRes.value)
+      } else {
+        problems.push(
+          ovRes.status === "rejected" && ovRes.reason instanceof ApiError
+            ? `tổng quan: ${ovRes.reason.message}`
+            : "tổng quan",
+        )
+      }
+
+      if (resRes.status === "fulfilled" && Array.isArray(resRes.value)) setResidents(resRes.value)
+      else problems.push("danh sách tạm trú")
+
+      if (debtRes.status === "fulfilled" && Array.isArray(debtRes.value)) setDebts(debtRes.value)
+      else problems.push("danh sách công nợ")
+
+      if (ticketRes.status === "fulfilled" && Array.isArray(ticketRes.value)) {
+        setOpenTickets(
+          ticketRes.value.filter((t) => t.status === "PENDING" || t.status === "IN_PROGRESS").length,
+        )
+      } else {
+        problems.push("phiếu sự cố")
+      }
+
+      setDataError(problems.length ? `Không tải được ${problems.join(" · ")} từ máy chủ.` : null)
+      setDataLoading(false)
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [reloadToken])
+
   // Filtered resident list for preview table
-  const filteredResidents = MOCK_RESIDENTS_REGISTRY.filter(
+  const filteredResidents = residents.filter(
     (r) =>
       r.fullName.toLowerCase().includes(searchReportQuery.toLowerCase()) ||
       r.studentId.toLowerCase().includes(searchReportQuery.toLowerCase()) ||
@@ -251,7 +322,7 @@ export const ManagerDashboardPage: React.FC = () => {
   )
 
   // Filtered overdue list for preview table
-  const filteredDebts = MOCK_OVERDUE_DEBTS.filter(
+  const filteredDebts = debts.filter(
     (d) =>
       d.fullName.toLowerCase().includes(searchReportQuery.toLowerCase()) ||
       d.studentId.toLowerCase().includes(searchReportQuery.toLowerCase()) ||
@@ -260,14 +331,21 @@ export const ManagerDashboardPage: React.FC = () => {
   )
 
   /* ------------------------------------------------------------------
-     Dữ liệu biểu đồ.
+     Dữ liệu biểu đồ — suy ra từ `overview` của máy chủ.
 
-     Trước đây các con số của biểu đồ được viết cứng rời rạc (trục 350 triệu,
-     tổng lũy kế 1.528,4 triệu) nên chúng KHÔNG khớp với dữ liệu thực sự vẽ
-     ra, và không ai phát hiện khi dữ liệu đổi. Dưới đây mọi thứ được suy ra
-     từ chính mảng dữ liệu: sửa dữ liệu thì biểu đồ tự đúng theo.
+     Không con số nào viết cứng: sửa dữ liệu thì biểu đồ tự đúng theo. Khi chưa
+     tải xong hoặc máy chủ lỗi thì dùng 0 để biểu đồ không vẽ bậy.
      ------------------------------------------------------------------ */
-  const stats = MOCK_OCCUPANCY_STATS
+  const stats: OccupancyStats = overview?.occupancy ?? {
+    totalBeds: 0,
+    availableBeds: 0,
+    holdingBeds: 0,
+    occupiedBeds: 0,
+    maintenanceBeds: 0,
+    occupancyRate: 0,
+    totalRooms: 0,
+    totalCompartments: 0,
+  }
   const total = stats.totalBeds
   const radius = 65
   const circumference = 2 * Math.PI * radius
@@ -296,7 +374,7 @@ export const ManagerDashboardPage: React.FC = () => {
 
   /* ---------- Biểu đồ cột doanh thu ---------- */
 
-  const revenueData = MOCK_MONTHLY_REVENUE
+  const revenueData = overview?.revenue ?? []
   const revenueTotals = revenueData.map((m) => m.roomFee + m.utilityFee)
   const revenuePeak = Math.max(1, ...revenueTotals)
   /** Trục tung làm tròn lên bội số 50 triệu để nhãn trục là số đẹp, và không bao giờ cắt cột. */
@@ -309,7 +387,7 @@ export const ManagerDashboardPage: React.FC = () => {
 
   /* ---------- Đối chiếu tiêu thụ giữa các tòa ---------- */
 
-  const consumptionData = MOCK_BUILDING_CONSUMPTION
+  const consumptionData = overview?.consumption ?? []
   const maxKwh = Math.max(1, ...consumptionData.map((b) => b.electricityAvgKwh))
   const maxWater = Math.max(1, ...consumptionData.map((b) => b.waterAvgM3))
   /**
@@ -338,17 +416,11 @@ export const ManagerDashboardPage: React.FC = () => {
   const revenueGrowth =
     previousTotal > 0 ? Number((((latestTotal - previousTotal) / previousTotal) * 100).toFixed(1)) : null
   /** Số sinh viên đang có công nợ quá hạn (khớp bảng công nợ bên dưới). */
-  const debtStudentCount = new Set(MOCK_OVERDUE_DEBTS.map((d) => d.studentId)).size
+  const debtStudentCount = new Set(debts.map((d) => d.studentId)).size
   /** Tổng công nợ quá hạn. */
-  const totalDebt = MOCK_OVERDUE_DEBTS.reduce((sum, d) => sum + d.totalDebt, 0)
-  /**
-   * Số phiếu sự cố CHƯA xong. Đây là con số vận hành thật, lấy từ danh sách
-   * phiếu đang hiển thị ở phân hệ Sửa chữa — trước đây thẻ này ghi cứng "2 phiếu"
-   * kèm "1 ca khẩn cấp <2h" nên sai ngay khi có phiếu mới.
-   */
-  const openTicketCount = INITIAL_MAINTENANCE_TICKETS.filter(
-    (t) => t.status === "PENDING" || t.status === "IN_PROGRESS",
-  ).length
+  const totalDebt = debts.reduce((sum, d) => sum + d.totalDebt, 0)
+  /** Số phiếu sự cố CHƯA xong, đếm từ danh sách phiếu thật của máy chủ. */
+  const openTicketCount = openTickets
 
   return (
     <div className="w-full space-y-6 pb-12">
@@ -357,6 +429,22 @@ export const ManagerDashboardPage: React.FC = () => {
         <div className="fixed top-20 right-6 z-50 flex items-center gap-2 rounded-2xl bg-foreground text-background px-4 py-3 shadow-xl text-xs font-semibold animate-in fade-in slide-in-from-top-4">
           <Sparkles className="h-4 w-4 text-success shrink-0" />
           <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Trạng thái tải / lỗi dữ liệu — nói thật thay vì vẽ biểu đồ rỗng */}
+      {dataLoading && (
+        <div className="dms-card flex items-center gap-2 p-3 text-xs font-semibold text-muted-foreground" aria-busy="true">
+          <span className="h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          Đang tải dữ liệu vận hành từ máy chủ…
+        </div>
+      )}
+      {dataError && !dataLoading && (
+        <div className="dms-card flex items-center justify-between gap-3 border-danger/30 bg-danger-soft p-3 text-xs font-semibold text-danger-soft-foreground">
+          <span className="min-w-0 truncate">{dataError}</span>
+          <Button variant="outline" size="sm" className="shrink-0" onClick={() => setReloadToken((n) => n + 1)}>
+            Thử lại
+          </Button>
         </div>
       )}
 
@@ -827,7 +915,7 @@ export const ManagerDashboardPage: React.FC = () => {
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  1. Danh Sách Tạm Trú ({MOCK_RESIDENTS_REGISTRY.length} SV)
+                  1. Danh Sách Tạm Trú ({residents.length} SV)
                 </button>
                 <button
                   onClick={() => setReportSubTab("OVERDUE_DEBTS")}
@@ -837,7 +925,7 @@ export const ManagerDashboardPage: React.FC = () => {
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  2. Danh Sách Công Nợ Quá Hạn ({MOCK_OVERDUE_DEBTS.length} SV)
+                  2. Danh Sách Công Nợ Quá Hạn ({debts.length} SV)
                 </button>
               </div>
 

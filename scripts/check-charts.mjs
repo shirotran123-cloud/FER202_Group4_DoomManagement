@@ -5,6 +5,9 @@
  * cứng không khớp dữ liệu, tổng ghi cứng khác tổng thật, nhãn % không khớp số
  * giường. Script này soi mã nguồn và tính lại số liệu để chặn những lỗi đó.
  *
+ * Dữ liệu được đọc từ `db.json` (nguồn thật của seed), KHÔNG đọc file mock —
+ * các file mock đã bị xoá khi toàn bộ giao diện chuyển sang dùng API.
+ *
  * Không cần backend, không cần trình duyệt.
  */
 import fs from "node:fs"
@@ -12,7 +15,7 @@ import path from "node:path"
 
 const ROOT = process.cwd()
 const PAGE = path.join(ROOT, "src/pages/manager/ManagerDashboardPage.tsx")
-const MOCK = path.join(ROOT, "src/data/mockDashboard.ts")
+const DB = path.join(ROOT, "db.json")
 
 let passed = 0
 let failed = 0
@@ -30,7 +33,8 @@ function check(name, condition, detail) {
 }
 
 const srcRaw = fs.readFileSync(PAGE, "utf8")
-const mockSrc = fs.readFileSync(MOCK, "utf8")
+/** Dữ liệu seed thật, dùng để tính lại các con số mà biểu đồ sẽ vẽ. */
+const db = JSON.parse(fs.readFileSync(DB, "utf8"))
 
 /**
  * Bản mã nguồn đã bỏ comment — chỉ dùng cho các phép kiểm tra CHUỖI CODE.
@@ -134,40 +138,49 @@ check(
 
 /* ---------- 4. Tính lại số liệu từ chính dữ liệu mock ---------- */
 
-/** Bóc mảng MOCK_MONTHLY_REVENUE từ file mock. */
-function parseMonthlyRevenue() {
-  const block = mockSrc.match(/MOCK_MONTHLY_REVENUE[^=]*=\s*\[([\s\S]*?)\n\]/)
-  if (!block) return []
-  const rows = []
-  for (const m of block[1].matchAll(/month:\s*"([^"]+)"[\s\S]*?roomFee:\s*(\d+)[\s\S]*?utilityFee:\s*(\d+)/g)) {
-    rows.push({ month: m[1], roomFee: Number(m[2]), utilityFee: Number(m[3]) })
+/**
+ * Doanh thu theo tháng — tính lại từ `invoices` trong db.json bằng đúng công
+ * thức backend dùng ở `server/routes/dashboard.js`:
+ *   roomFee    = invoice.roomTotal
+ *   utilityFee = elecCost + waterCost + sharedFees
+ * Đây chính là dữ liệu mà `/api/dashboard/overview` sẽ trả về cho biểu đồ.
+ */
+function computeMonthlyRevenue() {
+  const byMonth = new Map()
+  for (const inv of db.invoices ?? []) {
+    const key = inv.month || "unknown"
+    const prev = byMonth.get(key) || { month: key, roomFee: 0, utilityFee: 0 }
+    prev.roomFee += inv.roomTotal || 0
+    prev.utilityFee += (inv.elecCost || 0) + (inv.waterCost || 0) + (inv.sharedFees || 0)
+    byMonth.set(key, prev)
   }
-  return rows
+  return [...byMonth.values()]
 }
 
-/** Bóc MOCK_OCCUPANCY_STATS. */
-function parseOccupancy() {
-  const block = mockSrc.match(/MOCK_OCCUPANCY_STATS[^=]*=\s*\{([\s\S]*?)\n\}/)
-  if (!block) return null
-  const num = (key) => {
-    const m = block[1].match(new RegExp(`${key}:\\s*([\\d.]+)`))
-    return m ? Number(m[1]) : null
-  }
+/** Công suất giường — đếm trực tiếp từ `beds` trong db.json. */
+function computeOccupancy() {
+  const beds = db.beds ?? []
+  const byStatus = beds.reduce((acc, b) => {
+    acc[b.status] = (acc[b.status] || 0) + 1
+    return acc
+  }, {})
+  const totalBeds = beds.length
+  const occupiedBeds = byStatus.OCCUPIED || 0
   return {
-    totalBeds: num("totalBeds"),
-    availableBeds: num("availableBeds"),
-    holdingBeds: num("holdingBeds"),
-    occupiedBeds: num("occupiedBeds"),
-    maintenanceBeds: num("maintenanceBeds"),
-    occupancyRate: num("occupancyRate"),
+    totalBeds,
+    availableBeds: byStatus.AVAILABLE || 0,
+    holdingBeds: byStatus.HOLDING || 0,
+    occupiedBeds,
+    maintenanceBeds: byStatus.MAINTENANCE || 0,
+    occupancyRate: totalBeds ? Number(((occupiedBeds / totalBeds) * 100).toFixed(1)) : 0,
   }
 }
 
 console.log("\nSố liệu donut — tổng các phần phải khớp tổng số giường")
 
-const occ = parseOccupancy()
-if (!occ) {
-  check("đọc được MOCK_OCCUPANCY_STATS", false)
+const occ = computeOccupancy()
+if (!occ || occ.totalBeds === 0) {
+  check("đọc được dữ liệu giường từ db.json", false, "db.json có mảng beds rỗng")
 } else {
   const sum = occ.occupiedBeds + occ.availableBeds + occ.holdingBeds + occ.maintenanceBeds
   check(
@@ -177,16 +190,16 @@ if (!occ) {
   )
   const rate = Number(((occ.occupiedBeds / occ.totalBeds) * 100).toFixed(1))
   check(
-    `tỷ lệ lấp đầy khai báo khớp số giường (${occ.occupancyRate}% vs ${rate}%)`,
-    Math.abs((occ.occupancyRate ?? 0) - rate) < 0.05,
+    `tỷ lệ lấp đầy tính lại khớp số giường (${occ.occupancyRate}% vs ${rate}%)`,
+    Math.abs(occ.occupancyRate - rate) < 0.05,
     "số hiển thị ở giữa vòng phải khớp dữ liệu",
   )
 }
 
 console.log("\nSố liệu cột doanh thu — trục phải chứa được cột cao nhất")
 
-const revenue = parseMonthlyRevenue()
-check("đọc được MOCK_MONTHLY_REVENUE", revenue.length > 0, `${revenue.length} tháng`)
+const revenue = computeMonthlyRevenue()
+check("tính được doanh thu từ invoices", revenue.length > 0, `${revenue.length} tháng`)
 
 if (revenue.length > 0) {
   const totals = revenue.map((r) => r.roomFee + r.utilityFee)
@@ -204,11 +217,7 @@ if (revenue.length > 0) {
     axis - peak < 50_000_000,
     "trục quá cao làm mọi cột lùn đi, khó so sánh",
   )
-  check(
-    `tổng lũy kế tính được = ${grand.toLocaleString("vi-VN")}đ`,
-    grand > 0,
-  )
-  // Mọi mốc tháng phải có mặt đúng một lần, không trùng để vẽ đè nhau.
+  check(`tổng lũy kế tính được = ${grand.toLocaleString("vi-VN")}đ`, grand > 0)
   const months = revenue.map((r) => r.month)
   check("không có tháng trùng lặp", new Set(months).size === months.length, months.join(", "))
 }
@@ -225,24 +234,35 @@ check("có ngưỡng điện (KWH_WARN)", /KWH_WARN\s*=\s*\d+/.test(codeOnly))
 check("có ngưỡng nước (WATER_WARN)", /WATER_WARN\s*=\s*\d+/.test(codeOnly))
 check("có hàm tính cảnh báo theo ngưỡng", /consumptionAlerts/.test(codeOnly))
 
-/** Bóc MOCK_BUILDING_CONSUMPTION. */
-function parseConsumption() {
-  const block = mockSrc.match(/MOCK_BUILDING_CONSUMPTION[^=]*=\s*\[([\s\S]*?)\n\]/)
-  if (!block) return []
-  const rows = []
-  for (const m of block[1].matchAll(/building:\s*"([^"]+)"[\s\S]*?electricityAvgKwh:\s*([\d.]+)[\s\S]*?waterAvgM3:\s*([\d.]+)/g)) {
-    rows.push({ building: m[1], kwh: Number(m[2]), water: Number(m[3]) })
-  }
-  return rows
+/**
+ * Tiêu thụ trung bình theo tòa — tính từ `utilityRecords` + `rooms` trong db.json,
+ * đúng công thức backend dùng ở `server/routes/dashboard.js`.
+ */
+function computeConsumption() {
+  const floors = db.floors ?? []
+  const rooms = db.rooms ?? []
+  const records = db.utilityRecords ?? []
+  return (db.buildings ?? []).map((b) => {
+    const roomNames = rooms
+      .filter((r) => floors.some((f) => f.id === r.floorId && f.buildingId === b.id))
+      .map((r) => r.name)
+    const own = records.filter((u) => roomNames.includes(u.room))
+    const avg = (arr) => (arr.length ? Number((arr.reduce((s, v) => s + v, 0) / arr.length).toFixed(1)) : 0)
+    return {
+      building: b.name,
+      kwh: avg(own.map((u) => u.elecNew - u.elecOld)),
+      water: avg(own.map((u) => u.waterNew - u.waterOld)),
+    }
+  })
 }
 
-const consumption = parseConsumption()
-check("đọc được MOCK_BUILDING_CONSUMPTION", consumption.length > 0, `${consumption.length} tòa`)
+const consumption = computeConsumption()
+check("tính được tiêu thụ theo tòa", consumption.length > 0, `${consumption.length} tòa`)
 if (consumption.length > 0) {
   check(
     "mỗi tòa có số liệu dương",
     consumption.every((b) => b.kwh > 0 && b.water > 0),
-    "số 0 hoặc âm sẽ làm thanh tỷ lệ chia cho 0",
+    "thiếu công tơ cho tòa nào đó -> thanh tỷ lệ chia cho 0",
   )
   const names = consumption.map((b) => b.building)
   check("tên tòa không trùng", new Set(names).size === names.length, names.join(" | "))

@@ -288,6 +288,88 @@ for (const code of ['QE200309', 'QE200062']) {
   });
 }
 
+/* 4b. Công tơ + hóa đơn cho MỌI phòng đang có người ở.
+ *
+ * Trước đây chỉ phòng A205 (và A206) có chỉ số, nên bảng điện nước và biểu đồ
+ * tiêu thụ của các phòng còn lại trống — kể cả toàn bộ Tòa B. Nay mỗi phòng có
+ * người ở đều có một bản ghi công tơ tháng 09/2026 và một hóa đơn tương ứng,
+ * tính đúng bằng công thức bậc thang ở trên (không nhập tay số tiền).
+ *
+ * Chỉ số được suy ra một cách tất định từ tên phòng để chạy lại script luôn ra
+ * cùng kết quả: phòng ở tầng cao dùng nhiều hơn (nắng nóng), phòng góc (số phòng
+ * 01 và 06) dùng ít hơn một chút. Mức tiêu thụ nằm trong khoảng thực tế của KTX.
+ */
+const ROOM_CONSUMPTION_BASE = { elec: 150, water: 12 }; // kWh và m³ mỗi tháng
+const occupiedRooms = [...new Set(db.beds.filter((b) => b.status === 'OCCUPIED').map((b) => b.roomName))].sort();
+
+for (const room of occupiedRooms) {
+  // Bỏ qua phòng đã có công tơ ở khối trên để không ghi trùng.
+  if (db.utilityRecords.some((u) => u.room === room && u.month === '2026-09')) continue;
+
+  const floor = Number(room.slice(1, 2));       // A205 -> 2
+  const roomNo = Number(room.slice(2));         // A205 -> 05
+  const isCorner = roomNo === 1 || roomNo === 6; // phòng góc thoáng hơn
+  const occCount = db.beds.filter((b) => b.roomName === room && b.status === 'OCCUPIED').length;
+
+  // Tầng cao dùng nhiều hơn; phòng góc bớt ~6%; nhiều người thì tăng nhẹ.
+  const elecDelta = Math.round(
+    ROOM_CONSUMPTION_BASE.elec * (0.85 + floor * 0.08) * (isCorner ? 0.94 : 1) + occCount * 3,
+  );
+  const waterDelta = Math.round(
+    ROOM_CONSUMPTION_BASE.water * (0.9 + occCount * 0.06) * (isCorner ? 0.95 : 1),
+  );
+
+  const eOld = 10000 + floor * 500 + roomNo * 10;
+  const wOld = 500 + floor * 40 + roomNo * 2;
+
+  const uRec = {
+    id: `util_${room.toLowerCase()}_2026_09`,
+    room,
+    month: '2026-09',
+    elecOld: eOld,
+    elecNew: eOld + elecDelta,
+    waterOld: wOld,
+    waterNew: wOld + waterDelta,
+    meterPhotoIds: [],
+    recordedBy: 'usr_tech_01',
+    recordedAt: '2026-09-26 09:30',
+  };
+  db.utilityRecords.push(uRec);
+
+  const eCost = calculateTieredElectricity(elecDelta);
+  const wCost = waterDelta * WATER_PRICE_PER_M3;
+  const shared = WIFI_FEE_TOTAL + CLEANING_FEE_TOTAL;
+  const util = eCost + wCost + shared;
+  const n = Math.max(1, occCount);
+  const perUtil = Math.round(util / n);
+
+  db.invoices.push({
+    id: `INV-2026-09-${room}`,
+    invoiceCode: `INV-2026-09-${room}`,
+    room,
+    month: '2026-09',
+    utilityRecordId: uRec.id,
+    deltaElec: elecDelta,
+    deltaWater: waterDelta,
+    elecCost: eCost,
+    waterCost: wCost,
+    sharedFees: shared,
+    roomTotal: ROOM_FEE_PER_STUDENT * n,
+    grandTotal: util + ROOM_FEE_PER_STUDENT * n,
+    perStudentUtility: perUtil,
+    perStudentTotal: perUtil + ROOM_FEE_PER_STUDENT,
+    numStudents: n,
+    vat: VAT,
+    status: 'ISSUED',
+    dueDate: '2026-10-05',
+    issuedAt: '2026-09-28 10:00',
+    studentIds: db.beds
+      .filter((b) => b.roomName === room && b.status === 'OCCUPIED' && b.studentId)
+      .map((b) => (studentByCode.get(b.studentId.replace('usr_', '').toUpperCase()) || {}).mssv || b.studentId),
+    vietQrContent: `DIENNUOC_${room}_${room}`,
+  });
+}
+
 /* 5. Tickets báo hỏng — shape MaintenanceTicket */
 db.tickets.push(
   {

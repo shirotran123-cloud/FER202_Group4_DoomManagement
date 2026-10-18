@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { useAuth } from "@/contexts/useAuth"
 import type {
   MaintenanceTicket,
   MaintenanceScope,
   MaintenanceCategory,
+  MaintenanceStatus,
   MaintenanceUrgency,
   ReplacedMaterial,
 } from "@/types/maintenance"
-import { INITIAL_MAINTENANCE_TICKETS } from "@/data/mockMaintenance"
-import { Wrench, TriangleAlert, CircleCheck, Plus, Search, Star, UserCheck, Info, Pencil, Trash2, X } from "lucide-react"
+import { ApiError, ticketApi } from "@/lib/api"
+import { Wrench, TriangleAlert, CircleCheck, CircleAlert, Plus, Search, Star, UserCheck, Info, Pencil, Trash2, X } from "lucide-react"
 import { ImageUpload } from "@/components/ui/image-upload"
 import type { PhotoRecord } from "@/lib/photo-upload"
 
@@ -17,29 +18,251 @@ import { Select } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { ExpandableText } from "@/components/ui/expandable-text"
-import { canEditTicket, isManagerOrAdmin as isManagerOrAdminRole } from "@/lib/role-access"
-const STORAGE_KEY_TICKETS = "dms_maintenance_tickets_v1"
+import { LoadingSkeleton } from "@/components/ui/shared"
+import { canEditTicket } from "@/lib/role-access"
+
+/* ------------------------------------------------------------------
+   NGUỒN DỮ LIỆU: `GET /api/tickets` — trang không còn mảng phiếu mẫu nào.
+
+   Máy chủ là nguồn chân lý duy nhất. Trang chỉ giữ danh sách trong state để
+   lọc và hiển thị; mọi thao tác ghi (tạo, sửa, xóa, phân công, báo hoàn
+   thành, đánh giá) đều gọi API rồi ghép lại đúng bản ghi máy chủ trả về.
+   Khi tải lỗi, giao diện nói rõ thông điệp tiếng Việt của backend kèm nút
+   "Thử lại" — tuyệt đối không âm thầm vẽ lại dữ liệu mẫu.
+   ------------------------------------------------------------------ */
+
+/** Trạng thái một lượt tải danh sách phiếu. */
+type TicketsState =
+  | { status: "loading" }
+  | { status: "ready" }
+  | { status: "error"; message: string }
+
+/** Lỗi của thao tác ghi, hiện ngay trong modal đang mở. */
+interface MutationError {
+  scope: "CREATE" | "EDIT" | "DELETE" | "ASSIGN" | "COMPLETE" | "REVIEW"
+  message: string
+}
+
+/**
+ * Quyền thao tác máy chủ cấp cho TỪNG phiếu theo vai trò đang đăng nhập.
+ *
+ * `GET /api/tickets` trả kèm `permissions` đã tính sẵn ở backend; dùng nó để
+ * ẩn/hiện nút thay vì đoán lại ở frontend — nhờ vậy nút "Đánh giá sao" không
+ * hiện cho người không phải chủ phiếu (backend sẽ trả 403).
+ */
+interface TicketPermissions {
+  canEdit?: boolean
+  canDelete?: boolean
+  canAssign?: boolean
+  canComplete?: boolean
+  canReview?: boolean
+  canCancel?: boolean
+}
+
+/** Phiếu kèm quyền máy chủ gửi kèm — state của trang dùng kiểu này. */
+type TicketRow = MaintenanceTicket & { permissions: TicketPermissions }
+
+/** Đọc khối `permissions` máy chủ gửi kèm (thiếu thì trả object rỗng). */
+function readPermissions(raw: unknown): TicketPermissions {
+  const source = (raw as { permissions?: unknown } | null)?.permissions
+  if (!source || typeof source !== "object") return {}
+  const p = source as Record<string, unknown>
+  return {
+    canEdit: p.canEdit === true,
+    canDelete: p.canDelete === true,
+    canAssign: p.canAssign === true,
+    canComplete: p.canComplete === true,
+    canReview: p.canReview === true,
+    canCancel: p.canCancel === true,
+  }
+}
+
+/** Khung báo lỗi thao tác ghi — in đúng thông điệp tiếng Việt của backend. */
+const MutationErrorBox: React.FC<{ error: MutationError | null; scope: MutationError["scope"] }> = ({
+  error,
+  scope,
+}) => {
+  if (!error || error.scope !== scope) return null
+  return (
+    <div className="flex items-start gap-2 rounded-xl border border-danger/25 bg-danger-soft p-3">
+      <CircleAlert className="h-4 w-4 shrink-0 text-danger-soft-foreground" />
+      <ExpandableText className="min-w-0" textClassName="text-xs font-semibold text-danger-soft-foreground">
+        {error.message}
+      </ExpandableText>
+    </div>
+  )
+}
+
+/** Thông điệp lỗi tiếng Việt: ưu tiên `ApiError.message` do backend trả về. */
+function describeError(error: unknown): string {
+  if (error instanceof ApiError) return error.message
+  if (error instanceof Error) return error.message
+  return "Không rõ nguyên nhân."
+}
+
+function isMaintenanceScope(value: unknown): value is MaintenanceScope {
+  return value === "ROOM_SHARED" || value === "COMPARTMENT_PRIVATE"
+}
+
+function isMaintenanceCategory(value: unknown): value is MaintenanceCategory {
+  return (
+    value === "ELECTRIC" ||
+    value === "PLUMBING" ||
+    value === "HVAC" ||
+    value === "FURNITURE" ||
+    value === "NETWORK" ||
+    value === "OTHER"
+  )
+}
+
+function isMaintenanceStatus(value: unknown): value is MaintenanceStatus {
+  return (
+    value === "PENDING" ||
+    value === "IN_PROGRESS" ||
+    value === "RESOLVED" ||
+    value === "CLOSED" ||
+    value === "CANCELLED"
+  )
+}
+
+/** Danh sách chuỗi ảnh máy chủ trả về (bỏ phần tử rỗng). */
+function toStringList(value: unknown): string[] {
+  if (!Array.isArray(value)) return []
+  return value.filter((v): v is string => typeof v === "string" && v.length > 0)
+}
+
+/**
+ * Chuẩn hoá một phiếu máy chủ trả về sang `TicketRow`.
+ *
+ * Vì sao cần: `ticketApi.list()` khai báo `unknown[]`, còn dữ liệu thật có thêm
+ * `slaDeadline`/`permissions` và có thể thiếu `compartment`, `resolution`,
+ * `review`. Chuẩn hoá tại một chỗ giúp phần JSX bên dưới không phải phòng thủ
+ * từng trường, và không trường nào bị bịa ra: thiếu thì để rỗng/`undefined`.
+ */
+function normalizeTicket(raw: unknown): TicketRow {
+  const t = (raw ?? {}) as Record<string, unknown>
+  const tech = (t.assignedTechnician ?? null) as Record<string, unknown> | null
+  const resolution = (t.resolution ?? null) as Record<string, unknown> | null
+  const review = (t.review ?? null) as Record<string, unknown> | null
+
+  const rawMaterials = Array.isArray(resolution?.materials)
+    ? (resolution.materials as Record<string, unknown>[])
+    : []
+  const materials: ReplacedMaterial[] = rawMaterials.map((m, index) => ({
+    id: String(m?.id ?? `mat_${index + 1}`),
+    name: String(m?.name ?? ""),
+    quantity: Number(m?.quantity ?? 0),
+    unitCost: Number(m?.unitCost ?? 0),
+    paidBy: m?.paidBy === "STUDENT" ? "STUDENT" : "DORMITORY",
+  }))
+
+  const rating = Number(review?.rating ?? 0)
+
+  return {
+    id: String(t.id ?? ""),
+    title: String(t.title ?? ""),
+    scope: isMaintenanceScope(t.scope) ? t.scope : "ROOM_SHARED",
+    building: String(t.building ?? ""),
+    room: String(t.room ?? ""),
+    compartment: t.compartment ? String(t.compartment) : undefined,
+    bedCode: t.bedCode ? String(t.bedCode) : undefined,
+    category: isMaintenanceCategory(t.category) ? t.category : "OTHER",
+    urgency: t.urgency === "EMERGENCY" ? "EMERGENCY" : "NORMAL",
+    description: String(t.description ?? ""),
+    studentId: String(t.studentId ?? ""),
+    studentName: String(t.studentName ?? ""),
+    studentPhone: String(t.studentPhone ?? ""),
+    evidenceImages: toStringList(t.evidenceImages),
+    status: isMaintenanceStatus(t.status) ? t.status : "PENDING",
+    createdAt: String(t.createdAt ?? ""),
+    assignedTechnician: tech
+      ? {
+          id: String(tech.id ?? ""),
+          name: String(tech.name ?? ""),
+          phone: String(tech.phone ?? ""),
+          assignedAt: String(tech.assignedAt ?? ""),
+          etaMinutes: Number(tech.etaMinutes ?? 0),
+        }
+      : undefined,
+    resolution: resolution
+      ? {
+          completedAt: String(resolution.completedAt ?? ""),
+          technicianNotes: String(resolution.technicianNotes ?? ""),
+          completionImages: toStringList(resolution.completionImages),
+          materials,
+          totalMaterialCost: Number(resolution.totalMaterialCost ?? 0),
+        }
+      : undefined,
+    review: review
+      ? {
+          rating: Number.isFinite(rating) ? rating : 0,
+          reviewedAt: String(review.reviewedAt ?? ""),
+          comment: String(review.comment ?? ""),
+          isSatisfied: review.isSatisfied === true,
+        }
+      : undefined,
+    permissions: readPermissions(raw),
+  }
+}
 
 export const MaintenancePage: React.FC = () => {
   const { user } = useAuth()
-  const isManagerOrAdmin = isManagerOrAdminRole(user?.role)
-  // Kỹ thuật xử lý ticket + bảo vệ quét cổng đều dùng vai technician;
-  // chỉ quản lý/admin phân công thợ.
-  const isTechnician = user?.role === "technician" || isManagerOrAdmin
-
-  // Tickets state with localStorage persistence
-  const [tickets, setTickets] = useState<MaintenanceTicket[]>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY_TICKETS)
-      return saved ? JSON.parse(saved) : INITIAL_MAINTENANCE_TICKETS
-    } catch {
-      return INITIAL_MAINTENANCE_TICKETS
-    }
-  })
+  /* ------------------------------------------------------------------
+     Nạp danh sách phiếu từ backend + trạng thái tải/lỗi.
+     ------------------------------------------------------------------ */
+  const [tickets, setTickets] = useState<TicketRow[]>([])
+  const [ticketsState, setTicketsState] = useState<TicketsState>({ status: "loading" })
+  /** Số thứ tự lượt tải: bấm "Thử lại" tăng lên để effect gọi lại API. */
+  const [reloadToken, setReloadToken] = useState(0)
+  /** Lỗi của thao tác ghi gần nhất, hiện trong modal tương ứng. */
+  const [mutationError, setMutationError] = useState<MutationError | null>(null)
+  /** Phiếu đang chờ máy chủ xử lý (khóa nút để tránh bấm hai lần). */
+  const [savingTicketId, setSavingTicketId] = useState<string | null>(null)
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY_TICKETS, JSON.stringify(tickets))
-  }, [tickets])
+    let cancelled = false
+
+    ticketApi
+      .list()
+      .then((rows) => {
+        if (cancelled) return
+        setTickets((Array.isArray(rows) ? rows : []).map(normalizeTicket))
+        setTicketsState({ status: "ready" })
+      })
+      .catch((error: unknown) => {
+        if (cancelled) return
+        // Không có dữ liệu mẫu dự phòng: lỗi thì danh sách để rỗng và báo rõ.
+        setTickets([])
+        setTicketsState({ status: "error", message: describeError(error) })
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [reloadToken])
+
+  /** Gọi lại API và trả về trạng thái "đang tải" ngay trong sự kiện bấm. */
+  const reloadTickets = useCallback(() => {
+    setTicketsState({ status: "loading" })
+    setReloadToken((token) => token + 1)
+  }, [])
+
+  /**
+   * Ghép một phiếu máy chủ vừa trả về vào danh sách đang hiển thị.
+   *
+   * Dùng chung cho mọi thao tác ghi để giao diện luôn phản ánh đúng dữ liệu
+   * máy chủ (kể cả trường máy chủ tự sinh như `assignedTechnician`,
+   * `resolution`, `review`), thay vì tự đoán rồi sửa state tại chỗ.
+   */
+  const mergeTicket = useCallback((raw: unknown) => {
+    const fresh = normalizeTicket(raw)
+    if (!fresh.id) return
+    setTickets((prev) =>
+      prev.some((t) => t.id === fresh.id)
+        ? prev.map((t) => (t.id === fresh.id ? fresh : t))
+        : [fresh, ...prev],
+    )
+  }, [])
 
   // Filters & Search
   const [searchQuery, setSearchQuery] = useState("")
@@ -56,15 +279,17 @@ export const MaintenancePage: React.FC = () => {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
   const [deleteConfirmTicketId, setDeleteConfirmTicketId] = useState<string | null>(null)
 
-  const [activeTicket, setActiveTicket] = useState<MaintenanceTicket | null>(null)
+  const [activeTicket, setActiveTicket] = useState<TicketRow | null>(null)
   const [toastMessage, setToastMessage] = useState<string | null>(null)
 
-  // Form State (used for Create & Edit)
+  // Form State (used for Create & Edit) — mặc định khớp dữ liệu máy chủ thật
+  // (tên buồng dạng "B1", mã giường dạng "A205-B1-G03"); phiếu của nhân viên
+  // không có hồ sơ nội trú sẽ dùng đúng bộ mặc định này.
   const [formTitle, setFormTitle] = useState("")
   const [formScope, setFormScope] = useState<MaintenanceScope>("COMPARTMENT_PRIVATE")
-  const [formBuilding, setFormBuilding] = useState("Tòa A (Nam)")
+  const [formBuilding, setFormBuilding] = useState("Tòa A")
   const [formRoom, setFormRoom] = useState("A205")
-  const [formCompartment, setFormCompartment] = useState("Buồng B1")
+  const [formCompartment, setFormCompartment] = useState("B1")
   const [formBedCode, setFormBedCode] = useState("A205-B1-G03")
   const [formCategory, setFormCategory] = useState<MaintenanceCategory>("ELECTRIC")
   const [formUrgency, setFormUrgency] = useState<MaintenanceUrgency>("NORMAL")
@@ -96,59 +321,60 @@ export const MaintenancePage: React.FC = () => {
 
   // Open Create Modal
   const handleOpenCreate = () => {
+    setMutationError(null)
     setFormTitle("")
     setFormScope("COMPARTMENT_PRIVATE")
-    setFormBuilding("Tòa A (Nam)")
-    setFormRoom("A205")
-    setFormCompartment("Buồng B1")
-    setFormBedCode("A205-B1-G03")
+    setFormBuilding(user?.dormitoryStatus?.building || "Tòa A")
+    setFormRoom(user?.dormitoryStatus?.room || "A205")
+    setFormCompartment(user?.dormitoryStatus?.compartment || "B1")
+    setFormBedCode(user?.dormitoryStatus?.bedCode || "A205-B1-G03")
     setFormCategory("ELECTRIC")
     setFormUrgency("NORMAL")
     setFormDescription("")
     setIsCreateModalOpen(true)
   }
 
-  // Handle Create Ticket (C in CRUD)
-  const handleCreateSubmit = (e: React.FormEvent) => {
+  // Handle Create Ticket (C in CRUD) — POST /api/tickets
+  const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!formTitle.trim()) {
       showToast("Vui lòng nhập tiêu đề sự cố!")
       return
     }
 
-    const nextId = `TKT-${new Date().getFullYear()}-${String(tickets.length + 1).padStart(3, "0")}`
-    const newTicket: MaintenanceTicket = {
-      id: nextId,
-      title: formTitle.trim(),
-      scope: formScope,
-      building: formBuilding,
-      room: formRoom,
-      compartment: formScope === "COMPARTMENT_PRIVATE" ? formCompartment : undefined,
-      bedCode: formScope === "COMPARTMENT_PRIVATE" ? formBedCode : undefined,
-      category: formCategory,
-      urgency: formUrgency,
-      description: formDescription.trim() || "Cần kỹ thuật kiểm tra và khắc phục sự cố.",
-      studentId: user?.studentId || "QE200001",
-      studentName: user?.fullName || "Nguyễn Hoàng Vinh",
-      studentPhone: "0912 345 678",
-      evidenceImages: formPhotos.map((p) => p.dataUrl).slice(0, 5),
-      status: "PENDING",
-      createdAt: new Date().toISOString().replace("T", " ").substring(0, 16),
+    setMutationError(null)
+    try {
+      const created = await ticketApi.create({
+        title: formTitle.trim(),
+        scope: formScope,
+        building: formBuilding,
+        room: formRoom,
+        compartment: formScope === "COMPARTMENT_PRIVATE" ? formCompartment : undefined,
+        bedCode: formScope === "COMPARTMENT_PRIVATE" ? formBedCode : undefined,
+        category: formCategory,
+        urgency: formUrgency,
+        description: formDescription.trim(),
+        evidenceImages: formPhotos.map((p) => p.dataUrl).slice(0, 5),
+      })
+      mergeTicket(created)
+      setIsCreateModalOpen(false)
+      setFormPhotos([])
+      showToast(`Đã tạo thành công phiếu yêu cầu ${normalizeTicket(created).id}`)
+    } catch (error) {
+      // Máy chủ từ chối (thiếu quyền, dữ liệu sai) -> nói thẳng, không giả thành công.
+      setMutationError({ scope: "CREATE", message: describeError(error) })
     }
-
-    setTickets([newTicket, ...tickets])
-    setIsCreateModalOpen(false)
-    showToast(`Đã tạo thành công phiếu yêu cầu ${newTicket.id}`)
   }
 
   // Open Edit Modal (U in CRUD)
-  const handleOpenEdit = (ticket: MaintenanceTicket) => {
+  const handleOpenEdit = (ticket: TicketRow) => {
+    setMutationError(null)
     setActiveTicket(ticket)
     setFormTitle(ticket.title)
     setFormScope(ticket.scope)
     setFormBuilding(ticket.building)
     setFormRoom(ticket.room)
-    setFormCompartment(ticket.compartment || "Buồng B1")
+    setFormCompartment(ticket.compartment || "B1")
     setFormBedCode(ticket.bedCode || "A205-B1-G03")
     setFormCategory(ticket.category)
     setFormUrgency(ticket.urgency)
@@ -156,71 +382,76 @@ export const MaintenancePage: React.FC = () => {
     setIsEditModalOpen(true)
   }
 
-  // Handle Edit Submit
-  const handleEditSubmit = (e: React.FormEvent) => {
+  // Handle Edit Submit — PUT /api/tickets/:id
+  const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!activeTicket) return
 
-    setTickets(
-      tickets.map((t) => {
-        if (t.id === activeTicket.id) {
-          return {
-            ...t,
-            title: formTitle.trim(),
-            scope: formScope,
-            building: formBuilding,
-            room: formRoom,
-            compartment: formScope === "COMPARTMENT_PRIVATE" ? formCompartment : undefined,
-            bedCode: formScope === "COMPARTMENT_PRIVATE" ? formBedCode : undefined,
-            category: formCategory,
-            urgency: formUrgency,
-            description: formDescription.trim(),
-            evidenceImages: t.evidenceImages,
-          }
-        }
-        return t
+    setMutationError(null)
+    setSavingTicketId(activeTicket.id)
+    try {
+      const updated = await ticketApi.update(activeTicket.id, {
+        title: formTitle.trim(),
+        scope: formScope,
+        building: formBuilding,
+        room: formRoom,
+        compartment: formScope === "COMPARTMENT_PRIVATE" ? formCompartment : undefined,
+        bedCode: formScope === "COMPARTMENT_PRIVATE" ? formBedCode : undefined,
+        category: formCategory,
+        urgency: formUrgency,
+        description: formDescription.trim(),
       })
-    )
-
-    setIsEditModalOpen(false)
-    setActiveTicket(null)
-    showToast(`Đã cập nhật thông tin phiếu ${activeTicket.id}`)
+      mergeTicket(updated)
+      setIsEditModalOpen(false)
+      setActiveTicket(null)
+      showToast(`Đã cập nhật thông tin phiếu ${activeTicket.id}`)
+    } catch (error) {
+      setMutationError({ scope: "EDIT", message: describeError(error) })
+    } finally {
+      setSavingTicketId(null)
+    }
   }
 
-  // Handle Delete Ticket (D in CRUD)
-  const handleDeleteTicket = (ticketId: string) => {
-    setTickets(tickets.filter((t) => t.id !== ticketId))
-    setDeleteConfirmTicketId(null)
-    showToast(`Đã xóa thành công phiếu ${ticketId}`)
+  // Handle Delete Ticket (D in CRUD) — DELETE /api/tickets/:id
+  const handleDeleteTicket = async (ticketId: string) => {
+    setMutationError(null)
+    setSavingTicketId(ticketId)
+    try {
+      await ticketApi.remove(ticketId)
+      setTickets((prev) => prev.filter((t) => t.id !== ticketId))
+      setDeleteConfirmTicketId(null)
+      showToast(`Đã xóa thành công phiếu ${ticketId}`)
+    } catch (error) {
+      // Ví dụ: phiếu đã sang IN_PROGRESS — backend chặn xóa, hiện đúng thông điệp.
+      setMutationError({ scope: "DELETE", message: describeError(error) })
+    } finally {
+      setSavingTicketId(null)
+    }
   }
 
-  // Handle Assign Technician
-  const handleAssignSubmit = (e: React.FormEvent) => {
+  // Handle Assign Technician — POST /api/tickets/:id/transition (to: IN_PROGRESS)
+  const handleAssignSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!activeTicket) return
 
-    setTickets(
-      tickets.map((t) => {
-        if (t.id === activeTicket.id) {
-          return {
-            ...t,
-            status: "IN_PROGRESS",
-            assignedTechnician: {
-              id: `tech_${Date.now()}`,
-              name: assignTechName,
-              phone: assignTechPhone,
-              assignedAt: new Date().toISOString().replace("T", " ").substring(0, 16),
-              etaMinutes: assignEtaMinutes,
-            },
-          }
-        }
-        return t
+    setMutationError(null)
+    setSavingTicketId(activeTicket.id)
+    try {
+      // Máy chủ tự ghi `assignedTechnician` kèm giờ phân công thật; chỉ gửi ai làm.
+      const updated = await ticketApi.transition(activeTicket.id, "IN_PROGRESS", {
+        technicianName: assignTechName,
+        technicianPhone: assignTechPhone,
+        etaMinutes: assignEtaMinutes,
       })
-    )
-
-    setIsAssignModalOpen(false)
-    setActiveTicket(null)
-    showToast(`Đã phân công ${assignTechName} xử lý phiếu!`)
+      mergeTicket(updated)
+      setIsAssignModalOpen(false)
+      setActiveTicket(null)
+      showToast(`Đã phân công ${assignTechName} xử lý phiếu!`)
+    } catch (error) {
+      setMutationError({ scope: "ASSIGN", message: describeError(error) })
+    } finally {
+      setSavingTicketId(null)
+    }
   }
 
   // Handle Complete Ticket
@@ -241,62 +472,66 @@ export const MaintenancePage: React.FC = () => {
     setMaterials(materials.filter((m) => m.id !== id))
   }
 
-  const handleCompleteSubmit = (e: React.FormEvent) => {
+  const handleCompleteSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!activeTicket) return
 
-    const totalCost = materials.reduce((acc, cur) => acc + cur.quantity * cur.unitCost, 0)
-
-    setTickets(
-      tickets.map((t) => {
-        if (t.id === activeTicket.id) {
-          return {
-            ...t,
-            status: "RESOLVED",
-            resolution: {
-              completedAt: new Date().toISOString().replace("T", " ").substring(0, 16),
-              technicianNotes: completionNotes || "Đã kiểm tra và xử lý xong sự cố đạt chuẩn an toàn.",
-              completionImages: completionPhotos.map((p) => p.dataUrl).slice(0, 5),
-              materials,
-              totalMaterialCost: totalCost,
-            },
-          }
-        }
-        return t
+    setMutationError(null)
+    setSavingTicketId(activeTicket.id)
+    try {
+      // Máy chủ tự tính `totalMaterialCost` và ghi giờ nghiệm thu thật.
+      const updated = await ticketApi.transition(activeTicket.id, "RESOLVED", {
+        technicianNotes: completionNotes,
+        completionImages: completionPhotos.map((p) => p.dataUrl).slice(0, 5),
+        materials,
       })
-    )
-
-    setIsCompleteModalOpen(false)
-    setActiveTicket(null)
-    showToast("Đã nghiệm thu hoàn tất và gửi cho sinh viên đánh giá!")
+      mergeTicket(updated)
+      setIsCompleteModalOpen(false)
+      setActiveTicket(null)
+      showToast("Đã nghiệm thu hoàn tất và gửi cho sinh viên đánh giá!")
+    } catch (error) {
+      setMutationError({ scope: "COMPLETE", message: describeError(error) })
+    } finally {
+      setSavingTicketId(null)
+    }
   }
 
-  // Handle Student Rating Review
-  const handleReviewSubmit = (e: React.FormEvent) => {
+  // Handle Student Rating Review — POST /api/tickets/:id/review
+  const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!activeTicket) return
 
-    setTickets(
-      tickets.map((t) => {
-        if (t.id === activeTicket.id) {
-          return {
-            ...t,
-            status: "CLOSED",
-            review: {
-              rating: ratingStars,
-              comment: ratingComment || "Dịch vụ sửa chữa nhanh chóng và tận tình.",
-              reviewedAt: new Date().toISOString().replace("T", " ").substring(0, 16),
-              isSatisfied: ratingStars >= 4,
-            },
-          }
-        }
-        return t
-      })
-    )
+    setMutationError(null)
+    setSavingTicketId(activeTicket.id)
+    try {
+      /* Máy chủ ghi đánh giá nhưng GIỮ trạng thái RESOLVED — đúng luồng nghiệp vụ
+         PENDING → IN_PROGRESS → RESOLVED → CLOSED, bước đóng phiếu là một lượt
+         chuyển trạng thái riêng. Gọi nốt lượt đó để phiếu rời khỏi "Chờ nghiệm thu"
+         như trước, và vẫn lấy trạng thái CUỐI CÙNG từ máy chủ. */
+      const reviewed = await ticketApi.review(activeTicket.id, ratingStars, ratingComment)
+      mergeTicket(reviewed)
 
-    setIsReviewModalOpen(false)
-    setActiveTicket(null)
-    showToast(`Cảm ơn bạn! Đã ghi nhận đánh giá ${ratingStars} sao cho phiếu.`)
+      try {
+        const closed = await ticketApi.transition(activeTicket.id, "CLOSED")
+        mergeTicket(closed)
+      } catch {
+        // Đánh giá đã ghi thành công; chỉ bước đóng phiếu không xong thì vẫn báo đúng
+        // phần đã làm được, không nuốt kết quả của máy chủ.
+        showToast(`Đã ghi nhận đánh giá ${ratingStars} sao. Phiếu vẫn đang chờ đóng.`)
+        setIsReviewModalOpen(false)
+        setActiveTicket(null)
+        return
+      }
+
+      setIsReviewModalOpen(false)
+      setActiveTicket(null)
+      showToast(`Cảm ơn bạn! Đã ghi nhận đánh giá ${ratingStars} sao cho phiếu.`)
+    } catch (error) {
+      // Chỉ chủ phiếu đánh giá được — vai trò khác sẽ nhận 403 kèm thông điệp.
+      setMutationError({ scope: "REVIEW", message: describeError(error) })
+    } finally {
+      setSavingTicketId(null)
+    }
   }
 
   // Filter Logic (R in CRUD)
@@ -314,7 +549,8 @@ export const MaintenancePage: React.FC = () => {
     return matchesSearch && matchesStatus && matchesUrgency && matchesScope
   })
 
-  // Quick statistics
+  // Quick statistics — tính từ danh sách máy chủ vừa tải, không từ mảng mẫu.
+  const statsReady = ticketsState.status === "ready"
   const stats = {
     total: tickets.length,
     pending: tickets.filter((t) => t.status === "PENDING").length,
@@ -354,35 +590,36 @@ export const MaintenancePage: React.FC = () => {
         </Button>
       </div>
 
-      {/* Metric Cards */}
+      {/* Metric Cards — chưa tải xong thì hiện "—", không hiện số 0 dễ bị đọc
+          thành "không có phiếu nào" trong khi máy chủ còn đang trả lời. */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-4">
         <div className="bg-card p-4 rounded-xl border border-border shadow-xs">
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Tổng số phiếu</span>
-          <div className="mt-2 text-2xl font-bold text-foreground">{stats.total}</div>
+          <div className="mt-2 text-2xl font-bold text-foreground">{statsReady ? stats.total : "—"}</div>
           <div className="mt-1 text-xs text-muted-foreground">Tất cả các thời điểm</div>
         </div>
 
         <div className="bg-card p-4 rounded-xl border border-primary/25 bg-primary-soft shadow-xs">
           <span className="text-xs font-semibold text-primary-soft-foreground uppercase tracking-wider">Chờ tiếp nhận</span>
-          <div className="mt-2 text-2xl font-bold text-primary-soft-foreground">{stats.pending}</div>
+          <div className="mt-2 text-2xl font-bold text-primary-soft-foreground">{statsReady ? stats.pending : "—"}</div>
           <div className="mt-1 text-xs text-primary-soft-foreground">Cần phân công kỹ thuật</div>
         </div>
 
         <div className="bg-card p-4 rounded-xl border border-primary/20 bg-primary-soft shadow-xs">
           <span className="text-xs font-semibold text-primary-soft-foreground uppercase tracking-wider">Đang xử lý</span>
-          <div className="mt-2 text-2xl font-bold text-primary">{stats.inProgress}</div>
+          <div className="mt-2 text-2xl font-bold text-primary">{statsReady ? stats.inProgress : "—"}</div>
           <div className="mt-1 text-xs text-primary-soft-foreground">Thợ đang làm việc</div>
         </div>
 
         <div className="bg-card p-4 rounded-xl border border-success/25 bg-success-soft shadow-xs">
           <span className="text-xs font-semibold text-success-soft-foreground uppercase tracking-wider">Chờ nghiệm thu</span>
-          <div className="mt-2 text-2xl font-bold text-success-soft-foreground">{stats.resolved}</div>
+          <div className="mt-2 text-2xl font-bold text-success-soft-foreground">{statsReady ? stats.resolved : "—"}</div>
           <div className="mt-1 text-xs text-success-soft-foreground">Chờ sinh viên đánh giá</div>
         </div>
 
         <div className="bg-card p-4 rounded-xl border border-danger/25 bg-danger-soft shadow-xs col-span-2 lg:col-span-1">
           <span className="text-xs font-semibold text-danger-soft-foreground uppercase tracking-wider">Sự cố khẩn cấp</span>
-          <div className="mt-2 text-2xl font-bold text-danger-soft-foreground">{stats.emergency}</div>
+          <div className="mt-2 text-2xl font-bold text-danger-soft-foreground">{statsReady ? stats.emergency : "—"}</div>
           <div className="mt-1 text-xs text-danger-soft-foreground">Cam kết có mặt 2h</div>
         </div>
       </div>
@@ -462,7 +699,41 @@ export const MaintenancePage: React.FC = () => {
       </div>
 
       {/* Tickets List View (R in CRUD) */}
-      {filteredTickets.length === 0 ? (
+      {ticketsState.status === "loading" ? (
+        /* Đang tải: khung xương, tuyệt đối không vẽ bảng rỗng rồi nhảy số. */
+        <div className="bg-card rounded-2xl border border-border p-6">
+          <LoadingSkeleton rows={4} />
+        </div>
+      ) : ticketsState.status === "error" ? (
+        /* Tải lỗi: in đúng thông điệp tiếng Việt của backend, cho bấm thử lại. */
+        <div className="bg-card rounded-2xl border border-danger/25 bg-danger-soft p-12 text-center">
+          <div className="h-12 w-12 rounded-full bg-danger-soft text-danger-soft-foreground mx-auto flex items-center justify-center mb-3">
+            <CircleAlert className="h-6 w-6" />
+          </div>
+          <h3 className="font-bold text-danger-soft-foreground text-base">
+            Không tải được danh sách phiếu báo hỏng
+          </h3>
+          <p className="text-sm text-danger-soft-foreground mt-1">{ticketsState.message}</p>
+          <Button variant="outline" className="mt-4 text-xs font-bold" onClick={reloadTickets}>
+            Thử lại
+          </Button>
+        </div>
+      ) : tickets.length === 0 ? (
+        /* Máy chủ trả về rỗng thật: nói rõ chưa có phiếu nào, khác hẳn "lọc không ra". */
+        <div className="bg-card rounded-2xl border border-border p-12 text-center">
+          <div className="h-12 w-12 rounded-full bg-muted text-muted-foreground mx-auto flex items-center justify-center mb-3">
+            <Wrench className="h-6 w-6" />
+          </div>
+          <h3 className="font-bold text-foreground text-base">Chưa có phiếu báo hỏng nào</h3>
+          <p className="text-sm text-muted-foreground mt-1">
+            Máy chủ chưa ghi nhận phiếu nào. Tạo phiếu đầu tiên để đội kỹ thuật tiếp nhận.
+          </p>
+          <Button className="mt-4 text-xs font-bold" onClick={handleOpenCreate}>
+            <Plus className="h-4 w-4" />
+            <span>Tạo phiếu báo hỏng mới</span>
+          </Button>
+        </div>
+      ) : filteredTickets.length === 0 ? (
         <div className="bg-card rounded-2xl border border-border p-12 text-center">
           <div className="h-12 w-12 rounded-full bg-muted text-muted-foreground mx-auto flex items-center justify-center mb-3">
             <Info className="h-6 w-6" />
@@ -630,7 +901,8 @@ export const MaintenancePage: React.FC = () => {
                     {canEditTicket(user?.role, ticket.studentId, user?.studentId) && isPending && (
                       <button
                         onClick={() => handleOpenEdit(ticket)}
-                        className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-border bg-card hover:bg-muted text-foreground transition-colors"
+                        disabled={savingTicketId === ticket.id}
+                        className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-border bg-card hover:bg-muted text-foreground transition-colors disabled:opacity-50"
                         title="Sửa phiếu"
                       >
                         <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
@@ -642,7 +914,8 @@ export const MaintenancePage: React.FC = () => {
                     {canEditTicket(user?.role, ticket.studentId, user?.studentId) && isPending && (
                       <button
                         onClick={() => setDeleteConfirmTicketId(ticket.id)}
-                        className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-danger/25 bg-danger-soft hover:bg-danger-soft text-danger-soft-foreground transition-colors"
+                        disabled={savingTicketId === ticket.id}
+                        className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-danger/25 bg-danger-soft hover:bg-danger-soft text-danger-soft-foreground transition-colors disabled:opacity-50"
                         title="Xóa phiếu"
                       >
                         <Trash2 className="h-3.5 w-3.5 text-danger-soft-foreground" />
@@ -653,9 +926,11 @@ export const MaintenancePage: React.FC = () => {
 
                   {/* Contextual Workflow Action Buttons */}
                   <div className="flex items-center gap-1.5">
-                    {/* For Manager: Assign Tech */}
-                    {isManagerOrAdmin && isPending && (
-                      <Button onClick={() => {
+                    {/* Phân công thợ: theo quyền máy chủ cấp cho chính phiếu này
+                        (chỉ manager/admin và chỉ khi phiếu còn PENDING). */}
+                    {ticket.permissions.canAssign && (
+                      <Button disabled={savingTicketId === ticket.id} onClick={() => {
+                          setMutationError(null)
                           setActiveTicket(ticket)
                           setIsAssignModalOpen(true)
                         }}>
@@ -664,9 +939,10 @@ export const MaintenancePage: React.FC = () => {
                       </Button>
                     )}
 
-                    {/* For Technician: Mark Completed */}
-                    {isTechnician && isInProgress && (
-                      <Button variant="success" className="hover:bg-success" onClick={() => {
+                    {/* Báo hoàn thành: technician/manager/admin khi phiếu IN_PROGRESS. */}
+                    {ticket.permissions.canComplete && (
+                      <Button variant="success" className="hover:bg-success" disabled={savingTicketId === ticket.id} onClick={() => {
+                          setMutationError(null)
                           setActiveTicket(ticket)
                           setMaterials([])
                           setCompletionNotes("")
@@ -678,9 +954,10 @@ export const MaintenancePage: React.FC = () => {
                       </Button>
                     )}
 
-                    {/* For Student: Review when Resolved */}
-                    {isResolved && (
-                      <Button className="hover:bg-primary" onClick={() => {
+                    {/* Đánh giá: CHỈ chủ phiếu, chỉ khi RESOLVED — máy chủ quyết định. */}
+                    {isResolved && ticket.permissions.canReview && (
+                      <Button className="hover:bg-primary" disabled={savingTicketId === ticket.id} onClick={() => {
+                          setMutationError(null)
                           setActiveTicket(ticket)
                           setRatingStars(5)
                           setRatingComment("")
@@ -819,6 +1096,9 @@ export const MaintenancePage: React.FC = () => {
                   Gửi yêu cầu
                 </Button>
               </div>
+
+              {/* Lỗi máy chủ khi tạo phiếu (thiếu quyền, dữ liệu sai) — nói thẳng. */}
+              <MutationErrorBox error={mutationError} scope="CREATE" />
             </form>
           </div>
         </div>
@@ -903,10 +1183,13 @@ export const MaintenancePage: React.FC = () => {
                 >
                   Hủy
                 </button>
-                <Button type="submit">
+                <Button type="submit" disabled={savingTicketId === activeTicket.id}>
                   Lưu thay đổi
                 </Button>
               </div>
+
+              {/* Lỗi máy chủ khi sửa phiếu (ví dụ phiếu đã sang trạng thái khác). */}
+              <MutationErrorBox error={mutationError} scope="EDIT" />
             </form>
           </div>
         </div>
@@ -1068,10 +1351,13 @@ export const MaintenancePage: React.FC = () => {
                 >
                   Hủy
                 </button>
-                <Button type="submit">
+                <Button type="submit" disabled={savingTicketId === activeTicket.id}>
                   Xác nhận phân công
                 </Button>
               </div>
+
+              {/* Lỗi máy chủ khi phân công (ví dụ không phải quản lý/admin -> 403). */}
+              <MutationErrorBox error={mutationError} scope="ASSIGN" />
             </form>
           </div>
         </div>
@@ -1177,10 +1463,13 @@ export const MaintenancePage: React.FC = () => {
                 >
                   Hủy
                 </button>
-                <Button variant="success" className="hover:bg-success" type="submit">
+                <Button variant="success" className="hover:bg-success" type="submit" disabled={savingTicketId === activeTicket.id}>
                   Xác nhận hoàn thành
                 </Button>
               </div>
+
+              {/* Lỗi máy chủ khi nghiệm thu (ví dụ vai trò không được phép -> 403). */}
+              <MutationErrorBox error={mutationError} scope="COMPLETE" />
             </form>
           </div>
         </div>
@@ -1234,10 +1523,13 @@ export const MaintenancePage: React.FC = () => {
                 >
                   Bỏ qua
                 </button>
-                <Button className="hover:bg-primary" type="submit">
+                <Button className="hover:bg-primary" type="submit" disabled={savingTicketId === activeTicket.id}>
                   Gửi đánh giá
                 </Button>
               </div>
+
+              {/* Lỗi máy chủ khi đánh giá (chỉ chủ phiếu được đánh giá -> 403). */}
+              <MutationErrorBox error={mutationError} scope="REVIEW" />
             </form>
           </div>
         </div>
@@ -1257,14 +1549,27 @@ export const MaintenancePage: React.FC = () => {
 
             <div className="flex items-center justify-center gap-2">
               <button
-                onClick={() => setDeleteConfirmTicketId(null)}
+                onClick={() => {
+                  setDeleteConfirmTicketId(null)
+                  setMutationError(null)
+                }}
                 className="px-4 py-2 text-xs font-semibold rounded-xl border border-border text-foreground hover:bg-muted"
               >
                 Hủy bỏ
               </button>
-              <Button variant="destructive" className="hover:bg-danger" onClick={() => handleDeleteTicket(deleteConfirmTicketId)}>
+              <Button
+                variant="destructive"
+                className="hover:bg-danger"
+                disabled={savingTicketId === deleteConfirmTicketId}
+                onClick={() => handleDeleteTicket(deleteConfirmTicketId)}
+              >
                 Xóa phiếu
               </Button>
+            </div>
+
+            {/* Lỗi máy chủ khi xóa (ví dụ phiếu đã sang IN_PROGRESS -> 403). */}
+            <div className="mt-3 text-left">
+              <MutationErrorBox error={mutationError} scope="DELETE" />
             </div>
           </div>
         </div>
