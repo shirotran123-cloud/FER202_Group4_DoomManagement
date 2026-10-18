@@ -327,7 +327,7 @@ export async function buildInvoicePdfDoc(input: InvoicePdfInput): Promise<jsPDF>
   doc.text(dormName, MARGIN_X, y)
 
   doc.setFontSize(9)
-  doc.text('Ban quản lý Ký túc xá · Khu Công nghệ cao Hòa Lạc, Hà Nội', MARGIN_X, y + 5)
+  doc.text('Ban quản lý Ký túc xá · Khu đô thị An Phú Thịnh, P. Nhơn Bình, TP. Quy Nhơn, Bình Định', MARGIN_X, y + 5)
 
   doc.setFont(PDF_FONT_FAMILY, 'bold')
   doc.setFontSize(11)

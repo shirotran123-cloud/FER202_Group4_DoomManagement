@@ -79,7 +79,7 @@ export const generateContractPDF = async (data: ContractData): Promise<void> => 
   doc.setFont(PDF_FONT_FAMILY, 'normal')
   for (const line of [
     'Đơn vị: Ban quản lý Ký túc xá FPT',
-    'Địa chỉ: Khu Giáo dục và Đào tạo, KCNC Hòa Lạc, Hà Nội',
+    'Địa chỉ: Khu đô thị An Phú Thịnh, P. Nhơn Bình, TP. Quy Nhơn, Bình Định',
     'Đại diện: Trưởng Ban quản lý KTX',
   ]) {
     doc.text(line, 20, y)

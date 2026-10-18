@@ -192,7 +192,7 @@ async function buildHandoverPdfDoc(record: HandoverRecord): Promise<jsPDF> {
   doc.setTextColor(90, 96, 106)
   doc.text(INVOICE_DORM_NAME, PDF_MARGIN_X, y)
   doc.setFontSize(9)
-  doc.text("Ban quản lý Ký túc xá · Khu Công nghệ cao Hòa Lạc, Hà Nội", PDF_MARGIN_X, y + 5)
+  doc.text("Ban quản lý Ký túc xá · Khu đô thị An Phú Thịnh, P. Nhơn Bình, TP. Quy Nhơn, Bình Định", PDF_MARGIN_X, y + 5)
   doc.setFont(PDF_FONT_FAMILY, "bold")
   doc.setFontSize(9)
   doc.setTextColor(30, 34, 40)
