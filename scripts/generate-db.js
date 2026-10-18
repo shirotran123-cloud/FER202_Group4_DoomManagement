@@ -5,8 +5,11 @@
  *
  * Đặc điểm:
  *  - MSSV QE200xxx (Vinh = QE200001), giống src/data/mockUsers.ts
- *  - Cấu trúc 1:4:6 -> Tòa A, 5 tầng, 4 phòng/tầng, 4 buồng/phòng, 6 giường/buồng
- *  - Mã giường [Phòng]-[Buồng]1-[Giường], vd A205-B1-G03
+ *  - 2 tòa: Tòa A (MALE, b1) và Tòa B (FEMALE, b2)
+ *  - Cấu trúc 1:4:6 cho mỗi tòa: 5 tầng, 6 phòng/tầng, 4 buồng/phòng, 6 giường/buồng
+ *    -> mỗi tòa 5 tầng / 30 phòng / 120 buồng / 720 giường
+ *  - Mã phòng theo tòa: A101..A506 (Tòa A), B101..B506 (Tòa B)
+ *  - Mã giường [Phòng]-[Buồng]1-[Giường], vd A205-B1-G03 / B201-A1-G01
  *  - configs khớp hằng số dorm-ops (điện bậc thang, nước, wifi, vệ sinh, VAT)
  *  - tickets / invoices / visitors / notices / marketplace / lostFound /
  *    curfewRequests / gateLogs / disciplineRecords / demeritSummaries
@@ -35,19 +38,35 @@ const CLEANING_FEE_TOTAL = 60000;
 const VAT = 0.08;
 
 /* ---------- MSSV: Vinh 001, còn lại random cố định 002-310 ---------- */
+/* Sinh viên Tòa A (Nam): phòng A101..A306 */
 const STUDENTS = [
   { mssv: 'QE200001', name: 'Nguyễn Hoàng Vinh', gender: 'MALE', room: 'A205', compartment: 'B1', bed: 'G03', debt: 0, suspended: false, phone: '0912 345 678', citizenId: '079204018293', dob: '2004-05-15', hometown: 'TP. Hồ Chí Minh', major: 'Kỹ thuật Phần mềm (Software Engineering)', cohort: 'K19 - Khóa 2023-2027', parentName: 'Nguyễn Văn Hùng', parentPhone: '0903 123 456' },
   { mssv: 'QE200047', name: 'Trần Thanh Nguyên', gender: 'MALE', room: 'A205', compartment: 'B1', bed: 'G04', debt: 0, suspended: false, phone: '0905 111 222', citizenId: '049204001923', dob: '2004-08-20', hometown: 'Quảng Nam', major: 'Kỹ thuật Phần mềm', cohort: 'K19 - Khóa 2023-2027', parentName: 'Trần Văn Toàn', parentPhone: '0905 888 999' },
   { mssv: 'QE200123', name: 'Văn Thái Trung', gender: 'MALE', room: 'A205', compartment: 'B1', bed: 'G05', debt: 0, suspended: false, phone: '0934 999 888', citizenId: '052204008741', dob: '2004-11-12', hometown: 'Đà Nẵng', major: 'Khoa học Máy tính', cohort: 'K19 - Khóa 2023-2027', parentName: 'Văn Trọng Tuấn', parentPhone: '0918 333 444' },
   { mssv: 'QE200286', name: 'Huỳnh Gia Kim', gender: 'MALE', room: 'A205', compartment: 'B1', bed: 'G06', debt: 0, suspended: false, phone: '0982 777 666', citizenId: '056204009214', dob: '2004-03-30', hometown: 'Khánh Hòa', major: 'An toàn thông tin', cohort: 'K19 - Khóa 2023-2027', parentName: 'Huỳnh Minh Trí', parentPhone: '0983 456 789' },
   { mssv: 'QE200158', name: 'Lê Minh Tuấn', gender: 'MALE', room: 'A204', compartment: 'A1', bed: 'G01', debt: 218000, suspended: false, phone: '0961 223 344', citizenId: '038204001289', dob: '2004-07-04', hometown: 'Thanh Hóa', major: 'Thiết kế Đồ họa', cohort: 'K19 - Khóa 2023-2027', parentName: 'Lê Văn Tự', parentPhone: '0962 111 333' },
-  { mssv: 'QE200094', name: 'Phạm Quốc Bảo', gender: 'MALE', room: 'A203', compartment: 'C1', bed: 'G14', debt: 0, suspended: false, phone: '0971 445 566', citizenId: '075204004561', dob: '2004-09-18', hometown: 'Đồng Nai', major: 'Kỹ thuật Phần mềm', cohort: 'K19 - Khóa 2023-2027', parentName: 'Phạm Quốc Dũng', parentPhone: '0972 555 777' },
+  { mssv: 'QE200094', name: 'Phạm Quốc Bảo', gender: 'MALE', room: 'A203', compartment: 'C1', bed: 'G04', debt: 0, suspended: false, phone: '0971 445 566', citizenId: '075204004561', dob: '2004-09-18', hometown: 'Đồng Nai', major: 'Kỹ thuật Phần mềm', cohort: 'K19 - Khóa 2023-2027', parentName: 'Phạm Quốc Dũng', parentPhone: '0972 555 777' },
   { mssv: 'QE200231', name: 'Vũ Đức Anh', gender: 'MALE', room: 'A202', compartment: 'A1', bed: 'G02', debt: 0, suspended: false, phone: '0905 333 444', citizenId: '031204003344', dob: '2004-02-11', hometown: 'Hà Nội', major: 'Khoa học Máy tính', cohort: 'K19 - Khóa 2023-2027', parentName: 'Vũ Đức Long', parentPhone: '0905 444 555' },
   { mssv: 'QE200175', name: 'Đoàn Gia Bảo', gender: 'MALE', room: 'A201', compartment: 'B1', bed: 'G04', debt: 0, suspended: false, phone: '0977 123 456', citizenId: '079204007788', dob: '2004-06-22', hometown: 'TP. Hồ Chí Minh', major: 'An toàn thông tin', cohort: 'K19 - Khóa 2023-2027', parentName: 'Đoàn Gia Hân', parentPhone: '0977 654 321' },
-  { mssv: 'QE200309', name: 'Ngô Văn Khải', gender: 'MALE', room: 'A302', compartment: 'B2', bed: 'G08', debt: 1445000, suspended: false, phone: '0943 222 111', citizenId: '031204008922', dob: '2004-12-05', hometown: 'Hải Phòng', major: 'Kỹ thuật Phần mềm', cohort: 'K19 - Khóa 2023-2027', parentName: 'Ngô Văn Chiến', parentPhone: '0944 333 222' },
-  { mssv: 'QE200062', name: 'Hoàng Gia Huy', gender: 'MALE', room: 'A104', compartment: 'D1', bed: 'G22', debt: 1650000, suspended: true, phone: '0938 123 789', citizenId: '079204011122', dob: '2003-10-09', hometown: 'TP. Hồ Chí Minh', major: 'Thiết kế Đồ họa', cohort: 'K18 - Khóa 2022-2026', parentName: 'Hoàng Gia Bảo', parentPhone: '0938 987 654' },
+  { mssv: 'QE200309', name: 'Ngô Văn Khải', gender: 'MALE', room: 'A302', compartment: 'B1', bed: 'G05', debt: 1445000, suspended: false, phone: '0943 222 111', citizenId: '031204008922', dob: '2004-12-05', hometown: 'Hải Phòng', major: 'Kỹ thuật Phần mềm', cohort: 'K19 - Khóa 2023-2027', parentName: 'Ngô Văn Chiến', parentPhone: '0944 333 222' },
+  { mssv: 'QE200062', name: 'Hoàng Gia Huy', gender: 'MALE', room: 'A104', compartment: 'D1', bed: 'G06', debt: 1650000, suspended: true, phone: '0938 123 789', citizenId: '079204011122', dob: '2003-10-09', hometown: 'TP. Hồ Chí Minh', major: 'Thiết kế Đồ họa', cohort: 'K18 - Khóa 2022-2026', parentName: 'Hoàng Gia Bảo', parentPhone: '0938 987 654' },
   { mssv: 'QE200297', name: 'Trần Công Tiến', gender: 'MALE', room: 'A205', compartment: 'B1', bed: 'G01', debt: 0, suspended: false, phone: '0934 112 233', citizenId: '052204002233', dob: '2004-04-02', hometown: 'Đà Nẵng', major: 'Kỹ thuật Phần mềm', cohort: 'K19 - Khóa 2023-2027', parentName: 'Trần Công Danh', parentPhone: '0934 332 211' },
   { mssv: 'QE200204', name: 'Đinh Thanh Trung', gender: 'MALE', room: 'A205', compartment: 'B1', bed: 'G02', debt: 0, suspended: false, phone: '0988 990 011', citizenId: '038204006655', dob: '2004-01-25', hometown: 'Thanh Hóa', major: 'An toàn thông tin', cohort: 'K19 - Khóa 2023-2027', parentName: 'Đinh Thanh Sơn', parentPhone: '0988 110 022' },
+
+  /* Sinh viên Tòa B (Nữ): phòng B101..B503 — rải đều nhiều tầng, phần lớn giường vẫn AVAILABLE */
+  { mssv: 'QE200013', name: 'Nguyễn Thị Mai Linh', gender: 'FEMALE', room: 'B101', compartment: 'A1', bed: 'G01', debt: 0, suspended: false, phone: '0912 456 789', citizenId: '079204012345', dob: '2004-03-08', hometown: 'TP. Hồ Chí Minh', major: 'Kỹ thuật Phần mềm (Software Engineering)', cohort: 'K19 - Khóa 2023-2027', parentName: 'Nguyễn Thị Hồng', parentPhone: '0903 456 789' },
+  { mssv: 'QE200068', name: 'Trần Thị Thu Hà', gender: 'FEMALE', room: 'B101', compartment: 'A1', bed: 'G02', debt: 0, suspended: false, phone: '0905 234 567', citizenId: '049204015678', dob: '2004-07-19', hometown: 'Quảng Nam', major: 'Khoa học Máy tính', cohort: 'K19 - Khóa 2023-2027', parentName: 'Trần Văn Sơn', parentPhone: '0905 678 901' },
+  { mssv: 'QE200137', name: 'Lê Thị Ngọc Anh', gender: 'FEMALE', room: 'B101', compartment: 'A1', bed: 'G03', debt: 0, suspended: false, phone: '0934 567 890', citizenId: '052204019012', dob: '2004-11-27', hometown: 'Đà Nẵng', major: 'An toàn thông tin', cohort: 'K19 - Khóa 2023-2027', parentName: 'Lê Thị Bích', parentPhone: '0918 234 567' },
+  { mssv: 'QE200082', name: 'Phạm Thị Khánh Vy', gender: 'FEMALE', room: 'B102', compartment: 'C1', bed: 'G05', debt: 0, suspended: false, phone: '0982 345 671', citizenId: '056204022345', dob: '2004-01-14', hometown: 'Khánh Hòa', major: 'Thiết kế Đồ họa', cohort: 'K19 - Khóa 2023-2027', parentName: 'Phạm Văn Hải', parentPhone: '0983 567 890' },
+  { mssv: 'QE200191', name: 'Hoàng Thị Diễm Quỳnh', gender: 'FEMALE', room: 'B102', compartment: 'C1', bed: 'G06', debt: 0, suspended: false, phone: '0961 234 567', citizenId: '038204025678', dob: '2004-09-05', hometown: 'Thanh Hóa', major: 'Kỹ thuật Phần mềm', cohort: 'K19 - Khóa 2023-2027', parentName: 'Hoàng Thị Lan', parentPhone: '0962 345 678' },
+  { mssv: 'QE200106', name: 'Vũ Thị Phương Thảo', gender: 'FEMALE', room: 'B103', compartment: 'A1', bed: 'G02', debt: 218000, suspended: false, phone: '0971 456 789', citizenId: '031204028901', dob: '2004-05-21', hometown: 'Hà Nội', major: 'Khoa học Máy tính', cohort: 'K19 - Khóa 2023-2027', parentName: 'Vũ Văn Thắng', parentPhone: '0972 678 901' },
+  { mssv: 'QE200243', name: 'Đặng Thị Bích Ngọc', gender: 'FEMALE', room: 'B201', compartment: 'B1', bed: 'G01', debt: 0, suspended: false, phone: '0905 678 912', citizenId: '075204032234', dob: '2004-02-17', hometown: 'Đồng Nai', major: 'An toàn thông tin', cohort: 'K19 - Khóa 2023-2027', parentName: 'Đặng Thị Thu', parentPhone: '0905 789 012' },
+  { mssv: 'QE200269', name: 'Bùi Thị Hồng Nhung', gender: 'FEMALE', room: 'B201', compartment: 'B1', bed: 'G02', debt: 0, suspended: false, phone: '0977 234 568', citizenId: '079204035567', dob: '2004-08-30', hometown: 'TP. Hồ Chí Minh', major: 'Thiết kế Đồ họa', cohort: 'K19 - Khóa 2023-2027', parentName: 'Bùi Văn Minh', parentPhone: '0977 890 123' },
+  { mssv: 'QE200118', name: 'Ngô Thị Yến Nhi', gender: 'FEMALE', room: 'B202', compartment: 'D1', bed: 'G04', debt: 0, suspended: false, phone: '0943 345 678', citizenId: '031204038890', dob: '2004-12-03', hometown: 'Hải Phòng', major: 'Kỹ thuật Phần mềm', cohort: 'K19 - Khóa 2023-2027', parentName: 'Ngô Thị Hạnh', parentPhone: '0944 567 890' },
+  { mssv: 'QE200155', name: 'Đỗ Thị Thanh Tâm', gender: 'FEMALE', room: 'B202', compartment: 'D1', bed: 'G05', debt: 0, suspended: false, phone: '0938 456 712', citizenId: '079204041123', dob: '2004-04-26', hometown: 'TP. Hồ Chí Minh', major: 'Khoa học Máy tính', cohort: 'K19 - Khóa 2023-2027', parentName: 'Đỗ Văn Quang', parentPhone: '0938 678 901' },
+  { mssv: 'QE200227', name: 'Dương Thị Minh Châu', gender: 'FEMALE', room: 'B301', compartment: 'A1', bed: 'G03', debt: 0, suspended: false, phone: '0934 678 923', citizenId: '052204044456', dob: '2004-06-11', hometown: 'Đà Nẵng', major: 'An toàn thông tin', cohort: 'K19 - Khóa 2023-2027', parentName: 'Dương Thị Kim', parentPhone: '0934 789 012' },
+  { mssv: 'QE200294', name: 'Trịnh Thị Ánh Tuyết', gender: 'FEMALE', room: 'B401', compartment: 'B1', bed: 'G02', debt: 1650000, suspended: true, phone: '0988 123 467', citizenId: '038204047789', dob: '2003-10-22', hometown: 'Thanh Hóa', major: 'Thiết kế Đồ họa', cohort: 'K18 - Khóa 2022-2026', parentName: 'Trịnh Văn Lâm', parentPhone: '0988 234 578' },
+  { mssv: 'QE200178', name: 'Lý Thị Mỹ Duyên', gender: 'FEMALE', room: 'B503', compartment: 'C1', bed: 'G06', debt: 0, suspended: false, phone: '0982 567 834', citizenId: '056204053012', dob: '2004-09-16', hometown: 'Khánh Hòa', major: 'Kỹ thuật Phần mềm', cohort: 'K19 - Khóa 2023-2027', parentName: 'Lý Văn Phúc', parentPhone: '0983 678 901' },
 ];
 
 const STAFF = [
@@ -144,39 +163,71 @@ for (const st of STAFF) {
   });
 }
 
-/* 3. Tòa / tầng / phòng / buồng / giường — 1:4:6 */
-const buildingId = 'b1';
-db.buildings.push({ id: buildingId, name: 'Tòa A', genderType: 'MALE', totalFloors: 5 });
+/* 3. Tòa / tầng / phòng / buồng / giường — 1:4:6 cho cả 2 tòa
+ *    Tòa A (Nam) mã phòng A101..A506, Tòa B (Nữ) mã phòng B101..B506.
+ *    Bộ đếm id chạy LIÊN TỤC qua các tòa (f1..f10, r1..r60, c1..c240,
+ *    bed1..bed1440) nên id không thể trùng giữa 2 tòa. */
+const BUILDINGS = [
+  { id: 'b1', name: 'Tòa A', genderType: 'MALE', roomPrefix: 'A' },
+  { id: 'b2', name: 'Tòa B', genderType: 'FEMALE', roomPrefix: 'B' },
+];
 const COMP_NAMES = ['A', 'B', 'C', 'D'];
+const FLOORS_PER_BUILDING = 5;
+const ROOMS_PER_FLOOR = 6;
+const BEDS_PER_COMPARTMENT = 6;
+
 let fId = 1, rId = 1, cId = 1, bId = 1;
-for (let floor = 1; floor <= 5; floor++) {
-  const floorId = `f${fId++}`;
-  db.floors.push({ id: floorId, buildingId, level: floor });
-  for (let r = 1; r <= 6; r++) { // 6 phòng/tầng: A201..A206 (dữ liệu dùng tới A205)
-    const roomId = `r${rId++}`;
-    const roomName = `A${floor}0${r}`;
-    db.rooms.push({ id: roomId, floorId, name: roomName, status: 'ACTIVE' });
-    for (const comp of COMP_NAMES) {
-      const compId = `c${cId++}`;
-      const compName = `${comp}1`;
-      db.compartments.push({ id: compId, roomId, name: compName, roomName });
-      for (let g = 1; g <= 6; g++) {
-        const bedName = `G${String(g).padStart(2, '0')}`;
-        const occupant = STUDENTS.find(
-          (s) => s.room === roomName && s.compartment === compName && s.bed === bedName,
-        );
-        db.beds.push({
-          id: `bed${bId++}`,
-          compartmentId: compId,
-          roomName,
-          compartmentName: compName,
-          name: bedName,
-          fullCode: `${roomName}-${compName}-${bedName}`,
-          status: occupant ? 'OCCUPIED' : 'AVAILABLE',
-          studentId: occupant ? `usr_${occupant.mssv.toLowerCase()}` : null,
-          tier: g % 2 === 1 ? 'lower' : 'upper',
-          price: ROOM_FEE_PER_STUDENT,
-        });
+/* Thống kê thật theo từng tòa để in ở dòng tổng kết cuối file. */
+const buildingStats = new Map();
+
+for (const building of BUILDINGS) {
+  const buildingId = building.id;
+  db.buildings.push({
+    id: buildingId,
+    name: building.name,
+    genderType: building.genderType,
+    totalFloors: FLOORS_PER_BUILDING,
+  });
+  const stats = { floors: 0, rooms: 0, compartments: 0, beds: 0, occupied: 0 };
+  buildingStats.set(buildingId, stats);
+
+  for (let floor = 1; floor <= FLOORS_PER_BUILDING; floor++) {
+    const floorId = `f${fId++}`;
+    db.floors.push({ id: floorId, buildingId, level: floor });
+    stats.floors += 1;
+
+    for (let r = 1; r <= ROOMS_PER_FLOOR; r++) { // 6 phòng/tầng: A201..A206, B201..B206
+      const roomId = `r${rId++}`;
+      const roomName = `${building.roomPrefix}${floor}0${r}`;
+      db.rooms.push({ id: roomId, floorId, name: roomName, status: 'ACTIVE' });
+      stats.rooms += 1;
+
+      for (const comp of COMP_NAMES) {
+        const compId = `c${cId++}`;
+        const compName = `${comp}1`;
+        db.compartments.push({ id: compId, roomId, name: compName, roomName });
+        stats.compartments += 1;
+
+        for (let g = 1; g <= BEDS_PER_COMPARTMENT; g++) {
+          const bedName = `G${String(g).padStart(2, '0')}`;
+          const occupant = STUDENTS.find(
+            (s) => s.room === roomName && s.compartment === compName && s.bed === bedName,
+          );
+          db.beds.push({
+            id: `bed${bId++}`,
+            compartmentId: compId,
+            roomName,
+            compartmentName: compName,
+            name: bedName,
+            fullCode: `${roomName}-${compName}-${bedName}`,
+            status: occupant ? 'OCCUPIED' : 'AVAILABLE',
+            studentId: occupant ? `usr_${occupant.mssv.toLowerCase()}` : null,
+            tier: g % 2 === 1 ? 'lower' : 'upper',
+            price: ROOM_FEE_PER_STUDENT,
+          });
+          stats.beds += 1;
+          if (occupant) stats.occupied += 1;
+        }
       }
     }
   }
@@ -354,8 +405,22 @@ db.demeritSummaries.push(
 
 const outputPath = path.join(__dirname, '../db.json');
 fs.writeFileSync(outputPath, JSON.stringify(db, null, 2));
+
+/* 10. Tổng kết — số liệu lấy trực tiếp từ db vừa ghi, kèm chi tiết từng tòa */
+const studentUsers = db.users.filter((u) => u.role === 'STUDENT');
+const maleCount = studentUsers.filter((u) => u.gender === 'MALE').length;
+const femaleCount = studentUsers.filter((u) => u.gender === 'FEMALE').length;
+const perBuilding = BUILDINGS.map((b) => {
+  const s = buildingStats.get(b.id);
+  return `${b.name} (${b.id}/${b.genderType}): ${s.rooms} phòng, ${s.compartments} buồng, ` +
+    `${s.beds} giường (${s.occupied} đang ở), ${s.floors} tầng`;
+}).join(' | ');
+
 console.log(
-  `db.json ok: ${db.users.length} users, ${db.rooms.length} rooms, ` +
-  `${db.compartments.length} compartments, ${db.beds.length} beds, ` +
+  `db.json ok: ${db.users.length} users (${studentUsers.length} SV: ${maleCount} nam / ${femaleCount} nữ), ` +
+  `${db.buildings.length} tòa, ${db.floors.length} tầng, ${db.rooms.length} rooms, ` +
+  `${db.compartments.length} compartments, ${db.beds.length} beds ` +
+  `(${db.beds.filter((b) => b.status === 'OCCUPIED').length} occupied), ` +
   `${db.tickets.length} tickets, ${db.invoices.length} invoices`,
 );
+console.log(`  Theo tòa: ${perBuilding}`);

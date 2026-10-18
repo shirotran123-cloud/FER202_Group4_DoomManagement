@@ -15,6 +15,7 @@ import { LayoutDashboard, FileSpreadsheet, ChartPie, TrendingUp, Download, Searc
 
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { ExpandableText } from "@/components/ui/expandable-text"
 export const ManagerDashboardPage: React.FC = () => {
   const { user } = useAuth()
   const [activeTab, setActiveTab] = useState<"OVERVIEW" | "REPORTS">("OVERVIEW")
@@ -751,7 +752,9 @@ export const ManagerDashboardPage: React.FC = () => {
                         Trong ngưỡng an toàn
                       </p>
                     )}
-                    <p className="mt-1 text-[11px] text-muted-foreground">{item.anomalyNote}</p>
+                    <ExpandableText className="mt-1" textClassName="text-[11px] text-muted-foreground">
+                      {item.anomalyNote ?? ""}
+                    </ExpandableText>
                   </div>
                 )
               })}

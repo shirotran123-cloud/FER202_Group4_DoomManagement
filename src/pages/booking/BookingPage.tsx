@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { suggestRoomAllocation } from "@/lib/dorm-ops"
 import { canBookBed } from "@/lib/role-access"
 import { QrCodeImage } from "@/components/ui/qr-code"
+import { ExpandableText } from "@/components/ui/expandable-text"
 import { generateContractPDF } from "@/lib/pdfGenerator"
 import { Building, CircleCheck, CircleAlert, Clock, QrCode, Download, Check, Zap, Sun, Compass, BedDouble, DoorOpen, ChevronDown, Snowflake, Wifi, LayoutGrid, X } from "lucide-react"
 
@@ -169,6 +170,93 @@ export const BookingPage: React.FC = () => {
     setIsLocked(true)
   }
 
+  /* ------------------------------------------------------------------
+     Danh sách phòng của tầng đang chọn.
+
+     Trước đây khối này viết cứng ba thẻ "Phòng A201 / A202 / A205" nên đổi tầng
+     hay đổi tòa đều hiện y hệt, còn dòng đếm thì ghi "4 phòng tìm thấy" trong khi
+     chỉ vẽ 3. Nay danh sách được suy ra từ mô hình thật: mỗi tầng có 6 phòng, mã
+     phòng = <chữ tòa><tầng>0<số phòng> (tầng 2 tòa A -> A201..A206).
+     ------------------------------------------------------------------ */
+  const buildingLetter = selectedBuilding === "b2" ? "B" : "A"
+  const buildingName = selectedBuilding === "b2" ? "Tòa B (Nữ)" : BOOKING_BUILDING
+  const ROOMS_PER_FLOOR = 6
+
+  /* ------------------------------------------------------------------
+     Sơ đồ giường của phòng đang chọn.
+
+     Mảng `compartments` ở trên chỉ là dữ liệu mẫu của phòng A205, với mã giường
+     gắn cứng "A205-...". Nếu chọn phòng khác mà vẫn dùng nguyên mã đó thì hợp
+     đồng in ra sẽ ghi sai phòng. Nên mã được viết lại theo phòng đang chọn;
+     phần bố trí buồng/giường giữ nguyên vì đây là dữ liệu minh hoạ của một phòng
+     chuẩn 1:4:6 (mọi phòng đều cùng kiểu bố trí).
+     ------------------------------------------------------------------ */
+  const bedsOfSelectedRoom = compartments.map((comp) => ({
+    ...comp,
+    beds: comp.beds.map((bed) => ({
+      ...bed,
+      id: `${selectedRoom}-${comp.id}-${bed.slot}`,
+      code: `${selectedRoom}-${comp.id}-${bed.slot}`,
+    })),
+  }))
+
+  /**
+   * Số giường còn trống của một phòng.
+   *
+   * Trang này chỉ có dữ liệu giường chi tiết cho phòng A205 (mảng `compartments`).
+   * Với các phòng khác thì KHÔNG bịa ra con số trông như thật — trả `null` để giao
+   * diện hiện "Chưa có dữ liệu giường". Một con số sai còn tệ hơn không có số.
+   */
+  const availableBedsOf = (roomCode: string): number | null => {
+    if (roomCode !== "A205") return null
+    return bedsOfSelectedRoom.reduce(
+      (sum, c) => sum + c.beds.filter((b) => b.status === "available").length,
+      0,
+    )
+  }
+
+  const roomsOnFloor = Array.from({ length: ROOMS_PER_FLOOR }, (_, i) => {
+    const code = `${buildingLetter}${selectedFloor}0${i + 1}`
+    const free = availableBedsOf(code)
+    return {
+      code,
+      free,
+      total: 24,
+      /** Tỷ lệ đã dùng, chỉ tính khi biết số giường thật. */
+      usedRatio: free === null ? null : (24 - free) / 24,
+    }
+  })
+
+  /**
+   * Giữ lựa chọn luôn hợp lệ: đổi tầng hoặc đổi tòa mà phòng đang chọn không còn
+   * thuộc tầng đó thì nhảy về phòng đầu tiên của tầng mới.
+   */
+  useEffect(() => {
+    if (!roomsOnFloor.some((r) => r.code === selectedRoom)) {
+      setSelectedRoom(roomsOnFloor[0].code)
+      setSelectedBed({
+        id: `${roomsOnFloor[0].code}-B-G03`,
+        code: `${roomsOnFloor[0].code}-B-G03`,
+        slot: "G03",
+        status: "available",
+        price: 950000,
+        tier: "lower",
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedFloor, selectedBuilding])
+
+  /** Đếm giường theo trạng thái của phòng đang chọn, dùng cho bảng chú thích. */
+  const bedCounts = bedsOfSelectedRoom
+    .flatMap((c) => c.beds)
+    .reduce(
+      (acc, b) => {
+        acc[b.status] += 1
+        return acc
+      },
+      { available: 0, occupied: 0, holding: 0, maintenance: 0 } as Record<Bed["status"], number>,
+    )
+
   // Trigger checkout & simulate auto-approval
   const handleStartCheckout = () => {
     if (!canBook) return
@@ -187,9 +275,6 @@ export const BookingPage: React.FC = () => {
     }, 2200)
   }
 
-  const buildingLabel =
-    selectedBuilding === "b2" ? "Tòa B (Nữ)" : BOOKING_BUILDING
-
   /** Tải hợp đồng điện tử thật cho giường vừa giữ chỗ (font Unicode nhúng). */
   const handleDownloadContract = async () => {
     if (isGeneratingContract) return
@@ -200,7 +285,7 @@ export const BookingPage: React.FC = () => {
         studentName: user?.fullName ?? "Nguyễn Hoàng Vinh",
         mssv: user?.studentId ?? "QE200001",
         bedCode: selectedBed.code,
-        building: buildingLabel,
+        building: buildingName,
         room: `${selectedRoom} - Buồng ${selectedCompartment}`,
         citizenId: user?.citizenId,
         phone: user?.phone,
@@ -246,7 +331,7 @@ export const BookingPage: React.FC = () => {
               <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block">
                 Tòa nhà
               </span>
-              <span className="font-semibold text-foreground">Tòa A (Nam)</span>
+              <span className="font-semibold text-foreground">{buildingName}</span>
             </div>
           </div>
 
@@ -368,86 +453,81 @@ export const BookingPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Rooms on Floor Manifest */}
+          {/* Rooms on Floor Manifest — danh sách suy ra từ tầng + tòa đang chọn */}
           <div className="dms-card p-4 space-y-3">
             <div className="flex items-center justify-between pb-1 border-b border-border">
               <span className="text-xs font-bold text-foreground">Phòng tại Tầng {selectedFloor}</span>
-              <span className="text-[11px] text-muted-foreground">4 phòng tìm thấy</span>
+              <span className="text-[11px] text-muted-foreground">{roomsOnFloor.length} phòng tìm thấy</span>
             </div>
 
-            {/* Room items */}
-            <div
-              onClick={() => setSelectedRoom("A201")}
-              className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                selectedRoom === "A201"
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover:bg-muted"
-              }`}
-            >
-              <div className="flex items-center justify-between mb-1">
-                <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
-                  <DoorOpen className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <span>Phòng A201</span>
-                </div>
-                <Badge variant="neutral">24/24 Đầy</Badge>
-              </div>
-              <p className="text-[11px] text-muted-foreground mb-2">Phòng góc · View sân vườn trung tâm</p>
-              <div className="w-full bg-muted h-1.5 rounded-full overflow-hidden">
-                <div className="bg-muted-foreground h-full w-full"></div>
-              </div>
-            </div>
+            {roomsOnFloor.map((room) => {
+              const isActive = selectedRoom === room.code
+              const hasData = room.free !== null
+              return (
+                <div
+                  key={room.code}
+                  onClick={() => setSelectedRoom(room.code)}
+                  className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                    isActive
+                      ? "bg-primary text-white shadow-xs border-primary"
+                      : "border-border hover:bg-muted"
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <div className={`flex min-w-0 items-center gap-1.5 font-bold text-xs ${isActive ? "" : "text-foreground"}`}>
+                      <DoorOpen className={`h-4 w-4 shrink-0 ${isActive ? "text-white/80" : "text-muted-foreground"}`} />
+                      <span className="truncate">Phòng {room.code}</span>
+                    </div>
+                    {hasData ? (
+                      isActive ? (
+                        <span className="shrink-0 whitespace-nowrap rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-bold text-primary">
+                          {room.free} Giường Trống
+                        </span>
+                      ) : (
+                        <Badge variant={room.free === 0 ? "neutral" : "secondary"}>
+                          {room.total - (room.free ?? 0)}/{room.total} Đã ở
+                        </Badge>
+                      )
+                    ) : (
+                      <span
+                        className={`shrink-0 whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                          isActive ? "bg-black/20 text-white/90" : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        Chưa có dữ liệu giường
+                      </span>
+                    )}
+                  </div>
 
-            <div
-              onClick={() => setSelectedRoom("A202")}
-              className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                selectedRoom === "A202"
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover:bg-muted"
-              }`}
-            >
-              <div className="flex items-center justify-between mb-1">
-                <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
-                  <DoorOpen className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <span>Phòng A202</span>
-                </div>
-                <Badge variant="secondary">22/24 Đã ở</Badge>
-              </div>
-              <p className="text-[11px] text-muted-foreground mb-2">Giữa hành lang · Pod tự học yên tĩnh</p>
-              <div className="w-full bg-muted h-1.5 rounded-full overflow-hidden">
-                <div className="bg-muted-foreground h-full w-[91%]"></div>
-              </div>
-            </div>
+                  {/*
+                    Chỉ phòng có dữ liệu giường thật mới hiện thanh tỷ lệ. Các phòng
+                    khác để thanh trống thay vì vẽ một con số bịa.
+                  */}
+                  <div className={`h-1.5 w-full overflow-hidden rounded-full ${isActive ? "bg-white/20" : "bg-muted"}`}>
+                    {hasData && (
+                      <div
+                        className={isActive ? "h-full bg-white" : "h-full bg-muted-foreground"}
+                        style={{ width: `${(room.usedRatio ?? 0) * 100}%` }}
+                      />
+                    )}
+                  </div>
 
-            {/* Room A205 (Active Selection) */}
-            <div
-              onClick={() => setSelectedRoom("A205")}
-              className="p-3 rounded-lg bg-primary text-white shadow-xs space-y-2 border border-primary relative"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 font-bold text-xs">
-                  <DoorOpen className="h-4 w-4 text-white/80 shrink-0" />
-                  <span>Phòng A205</span>
+                  {isActive && (
+                    <div className="flex flex-wrap gap-1 pt-2">
+                      <span className="flex items-center gap-1 rounded bg-black/20 px-1.5 py-0.5 text-[10px] text-white/90">
+                        <Sun className="h-3 w-3 shrink-0" /> Ban công
+                      </span>
+                      <span className="flex items-center gap-1 rounded bg-black/20 px-1.5 py-0.5 text-[10px] text-white/90">
+                        <Snowflake className="h-3 w-3 shrink-0" /> ĐH Inverter
+                      </span>
+                      <span className="flex items-center gap-1 rounded bg-black/20 px-1.5 py-0.5 text-[10px] text-white/90">
+                        <Wifi className="h-3 w-3 shrink-0" /> Fiber 1Gbps
+                      </span>
+                    </div>
+                  )}
                 </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/90 text-primary">
-                  6 Giường Trống
-                </span>
-              </div>
-              <p className="text-[11px] text-white/80">3 mặt thoáng · Đón gió ban mai · Ban công riêng</p>
-              <div className="w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
-                <div className="bg-white h-full w-[75%]"></div>
-              </div>
-              <div className="flex flex-wrap gap-1 pt-1">
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/20 text-white/90 flex items-center gap-1">
-                  <Sun className="h-3 w-3 shrink-0" /> Ban công
-                </span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/20 text-white/90 flex items-center gap-1">
-                  <Snowflake className="h-3 w-3 shrink-0" /> ĐH Inverter
-                </span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/20 text-white/90 flex items-center gap-1">
-                  <Wifi className="h-3 w-3 shrink-0" /> Fiber 1Gbps
-                </span>
-              </div>
-            </div>
+              )
+            })}
           </div>
 
           {/* Living Note & Facility Snapshot */}
@@ -456,10 +536,13 @@ export const BookingPage: React.FC = () => {
               <Building className="h-5 w-5" />
             </div>
             <div className="min-w-0">
-              <p className="font-bold text-xs text-foreground whitespace-nowrap">Khu A205 · Chuẩn 2026</p>
-              <p className="text-[11px] text-muted-foreground truncate" title="Tiêu âm cao cấp, rèm kháng khuẩn từng giường, khóa số.">
-                Tiêu âm cao cấp, rèm che kháng khuẩn từng giường, khóa số thông minh.
-              </p>
+              {/* Nhãn cũ "Khu A205 · Chuẩn 2026" vô nghĩa: A205 là một phòng chứ
+                  không phải "khu", và "Chuẩn 2026" không nói lên điều gì. Nay ghi
+                  đúng toà đang chọn và số tầng thực có. */}
+              <p className="font-bold text-xs text-foreground whitespace-nowrap">{buildingName} · 5 tầng</p>
+              <ExpandableText className="mt-0.5" textClassName="text-[11px] text-muted-foreground">
+                Tiêu âm trần và vách, rèm kháng khuẩn từng giường, khóa số thông minh, camera hành lang.
+              </ExpandableText>
             </div>
           </div>
         </div>
@@ -490,30 +573,30 @@ export const BookingPage: React.FC = () => {
 
               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success/10 text-success-soft-foreground text-xs font-semibold">
                 <span className="w-2 h-2 rounded-full bg-success animate-pulse"></span>
-                <span>Thời gian thực: 6 giường trống</span>
+                <span>Thời gian thực: {bedCounts.available} giường trống</span>
               </div>
             </div>
 
-            {/* Status Legend */}
+            {/* Status Legend — số đếm suy ra từ chính dữ liệu giường đang vẽ */}
             <div className="flex flex-wrap items-center gap-4 py-2 px-3 rounded-lg bg-muted/70 text-[11px]">
               <div className="flex items-center gap-1.5">
                 <span className="w-3 h-3 rounded-xs bg-success"></span>
-                <span className="font-medium text-foreground">Còn chỗ · 6</span>
+                <span className="font-medium text-foreground">Còn chỗ · {bedCounts.available}</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="w-3 h-3 rounded-xs bg-muted"></span>
-                <span className="text-muted-foreground">Đã đầy · 16</span>
+                <span className="text-muted-foreground">Đã ở · {bedCounts.occupied}</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="w-3 h-3 rounded-xs bg-primary"></span>
-                <span className="text-muted-foreground">Đang giữ · 1</span>
+                <span className="text-muted-foreground">Đang giữ · {bedCounts.holding}</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="w-3 h-3 rounded-xs bg-danger"></span>
-                <span className="text-muted-foreground">Bảo trì · 1</span>
+                <span className="text-muted-foreground">Bảo trì · {bedCounts.maintenance}</span>
               </div>
               <div className="ml-auto rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
-                AI gợi ý: {suggestRoomAllocation({ id: user?.studentId || "QE200001", faculty: user?.major || "CNTT", nightOwl: false, quiet: true }, [{ id: "A205", facultyMix: [user?.major || "CNTT"], nightOwlFriendly: false, quietZone: true, freeBeds: 6 }, { id: "A202", facultyMix: ["KETOAN"], nightOwlFriendly: true, quietZone: false, freeBeds: 2 }], 1)[0]?.id || "A205"} hợp thói quen yên tĩnh
+                AI gợi ý: {suggestRoomAllocation({ id: user?.studentId || "QE200001", faculty: user?.major || "CNTT", nightOwl: false, quiet: true }, roomsOnFloor.map((r) => ({ id: r.code, facultyMix: [user?.major || "CNTT"], nightOwlFriendly: false, quietZone: true, freeBeds: r.free ?? 0 })), 1)[0]?.id || selectedRoom} hợp thói quen yên tĩnh
               </div>
               <div className="flex items-center gap-1.5 ml-auto">
                 <span className="w-3 h-3 rounded-xs bg-primary ring-2 ring-primary ring-offset-1"></span>
@@ -535,7 +618,7 @@ export const BookingPage: React.FC = () => {
 
               {/* 4 Quadrants (1:4:6 Layout) */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                {compartments.map((comp) => {
+                {bedsOfSelectedRoom.map((comp) => {
                   const isSelectedComp = selectedCompartment === comp.id
                   return (
                     <div

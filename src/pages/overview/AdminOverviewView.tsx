@@ -12,6 +12,7 @@ import { Users, FileText, Clock, Wrench, Search, Building2, ArrowRight, ShieldCh
 import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
+import { ExpandableText } from "@/components/ui/expandable-text"
 const STORAGE_KEY_CURFEW_REQS = "dms_curfew_requests_v1"
 const STORAGE_KEY_TICKETS = "dms_maintenance_tickets_v1"
 
@@ -605,7 +606,9 @@ export const AdminOverviewView: React.FC = () => {
                       </span>
                     </div>
 
-                    <p className="text-xs text-muted-foreground">{ticket.description}</p>
+                    <ExpandableText textClassName="text-xs text-muted-foreground" maxLinesWhenExpanded={4}>
+                      {ticket.description}
+                    </ExpandableText>
 
                     <div className="flex flex-wrap gap-4 text-[11px] bg-muted/40 p-2.5 rounded-xl border border-border/60">
                       <span>Vị trí: <strong className="text-foreground">{ticket.building} - Phòng {ticket.room}</strong></span>

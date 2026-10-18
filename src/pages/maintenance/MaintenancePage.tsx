@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
+import { ExpandableText } from "@/components/ui/expandable-text"
 import { canEditTicket, isManagerOrAdmin as isManagerOrAdminRole } from "@/lib/role-access"
 const STORAGE_KEY_TICKETS = "dms_maintenance_tickets_v1"
 
@@ -549,11 +550,12 @@ export const MaintenancePage: React.FC = () => {
                     </span>
                   </div>
 
-                  {/* Title & Description — mỗi dòng một dòng duy nhất, dài thì cắt bằng dấu ba chấm */}
+                  {/* Title & Description — một dòng, cắt bằng dấu ba chấm; mô tả dài
+                      có nút "Xem thêm" để đọc trọn nội dung (lúc đó mới xuống dòng). */}
                   <h3 className="font-bold text-base text-foreground truncate">{ticket.title}</h3>
-                  <p className="text-xs text-muted-foreground mt-1 truncate" title={ticket.description}>
+                  <ExpandableText className="mt-1" textClassName="text-xs text-muted-foreground">
                     {ticket.description}
-                  </p>
+                  </ExpandableText>
 
                   {/* Location Meta Box */}
                   <div className="mt-3 grid grid-cols-2 gap-2 text-xs bg-muted p-2.5 rounded-xl border border-border">
@@ -937,9 +939,12 @@ export const MaintenancePage: React.FC = () => {
             <div className="space-y-4 text-sm text-foreground">
               <div>
                 <span className="text-xs font-semibold text-muted-foreground uppercase">Mô tả sự cố</span>
-                <p className="mt-1 bg-muted p-3 rounded-xl border border-border text-foreground text-xs leading-relaxed">
+                <ExpandableText
+                  className="mt-1 rounded-xl border border-border bg-muted p-3"
+                  textClassName="text-xs text-foreground"
+                >
                   {activeTicket.description}
-                </p>
+                </ExpandableText>
               </div>
 
               {activeTicket.evidenceImages && activeTicket.evidenceImages.length > 0 && (
