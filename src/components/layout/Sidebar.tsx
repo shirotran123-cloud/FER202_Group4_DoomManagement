@@ -190,21 +190,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
       {/* Main Stitch Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-50 flex h-full w-[260px] flex-col justify-between border-r border-slate-200 bg-white text-slate-900 shadow-xl transition-transform duration-300 ease-in-out dark:border-slate-800 dark:bg-[#111827] dark:text-slate-100 ${
+        className={`fixed top-0 left-0 z-50 flex h-full w-[260px] flex-col justify-between border-r border-border bg-card text-card-foreground shadow-xl transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
         <div className="flex flex-1 flex-col overflow-y-auto">
           {/* Logo Header */}
-          <div className="flex h-[68px] shrink-0 items-center gap-3 border-b border-slate-200 bg-white px-4 dark:border-slate-800 dark:bg-[#111827]">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#679436] text-white shadow-xs">
-              <Building2 className="h-5 w-5 text-white" />
+          <div className="flex h-[68px] shrink-0 items-center gap-3 border-b border-border bg-card px-4">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-xs">
+              <Building2 className="h-5 w-5" />
             </div>
             <div className="flex flex-col">
-              <span className="text-base leading-none font-bold tracking-tight text-slate-900 dark:text-slate-100">
+              <span className="text-base leading-none font-bold tracking-tight text-foreground">
                 Domanage
               </span>
-              <span className="mt-1 text-[11px] font-semibold tracking-wide text-green-700 dark:text-green-400">
+              <span className="mt-1 text-[11px] font-semibold tracking-wide text-primary">
                 DMS Campus Living
               </span>
             </div>
@@ -212,9 +212,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
           {/* Hall & Zone Badge */}
           <div className="px-4 pt-3.5 pb-2">
-            <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
-              <span className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-green-600"></span>
-              <span className="truncate text-[11px] font-semibold tracking-wide text-slate-700 dark:text-slate-200">
+            <div className="flex items-center gap-2 rounded-lg border border-border bg-muted px-3 py-1.5 text-foreground">
+              <span className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-primary"></span>
+              <span className="truncate text-[11px] font-semibold tracking-wide text-foreground">
                 {getRoleBadge()}
               </span>
             </div>
@@ -224,7 +224,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           <nav className="flex-1 space-y-4 px-3 py-2 text-xs">
             {navGroups.map((group) => (
               <div key={group.groupTitle} className="space-y-1">
-                <div className="px-3 py-1 text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+                <div className="px-3 py-1 text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
                   {group.groupTitle}
                 </div>
                 {group.items.map((item) => {
@@ -241,13 +241,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                       onClick={onClose}
                       className={`flex min-w-0 items-center justify-between rounded-xl px-3 py-2.5 transition-all ${
                         isActive
-                          ? "bg-[#679436] font-semibold text-white shadow-xs"
-                          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
+                          ? "bg-primary font-semibold text-primary-foreground shadow-xs"
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
                       }`}
                     >
                       <div className="flex min-w-0 items-center gap-2.5">
                         <Icon
-                          className={`h-4 w-4 shrink-0 ${isActive ? "text-white" : "text-slate-500 dark:text-slate-400"}`}
+                          className={`h-4 w-4 shrink-0 ${isActive ? "text-primary-foreground" : "text-muted-foreground"}`}
                         />
                         <span className="truncate">{item.title}</span>
                       </div>
@@ -256,7 +256,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                           className={`ml-1.5 shrink-0 rounded-full border px-1.5 py-0.5 font-mono text-[10px] whitespace-nowrap ${
                             isActive
                               ? "border-white/30 bg-white/20 text-white"
-                              : "border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                              : "border-border bg-muted text-muted-foreground"
                           }`}
                         >
                           {item.badge}
@@ -271,18 +271,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Bottom Emergency Guard & Sign Out */}
-        <div className="shrink-0 space-y-2 border-t border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-[#0d1b2a]">
-          <div className="rounded-xl border border-slate-200 bg-white p-2.5 dark:border-slate-700 dark:bg-[#152538]">
+        <div className="shrink-0 space-y-2 border-t border-border bg-muted p-3">
+          <div className="rounded-xl border border-border bg-card p-2.5">
             <div className="mb-0.5 flex items-center gap-1.5">
-              <PhoneCall className="h-3.5 w-3.5 text-green-700" />
-              <span className="text-[11px] font-bold text-slate-900 dark:text-slate-100">
+              <PhoneCall className="h-3.5 w-3.5 text-primary" />
+              <span className="text-[11px] font-bold text-foreground">
                 Emergency Guard
               </span>
             </div>
-            <div className="font-mono text-sm font-bold tracking-wider text-slate-800 dark:text-slate-200">
+            <div className="font-mono text-sm font-bold tracking-wider text-foreground">
               1900 6868
             </div>
-            <div className="text-[10px] text-slate-500 dark:text-slate-400">
+            <div className="text-[10px] text-muted-foreground">
               24/7 Gate Patrol Desk
             </div>
           </div>
@@ -290,7 +290,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           {isAuthenticated ? (
             <button
               onClick={() => logout()}
-              className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
+              className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
               <span>Đăng xuất</span>
               <LogOut className="h-4 w-4" />
@@ -299,7 +299,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             <NavLink
               to="/login"
               onClick={onClose}
-              className="flex w-full items-center justify-between rounded-xl bg-[#679436] px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#58802d]"
+              className="flex w-full items-center justify-between rounded-xl bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
             >
               <span>Đăng nhập</span>
               <LogIn className="h-4 w-4" />
