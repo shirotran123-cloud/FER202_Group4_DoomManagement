@@ -849,9 +849,9 @@ export const BookingPage: React.FC = () => {
 
         {/* COLUMN 2: CENTER ARCHITECTURAL 1:4:6 UNIT BLUEPRINT (6 COLS) */}
         <div className="col-span-12 lg:col-span-6 flex flex-col gap-4">
-          {/* p-4 khớp với hai cột bên cạnh. Thêm `flex-1` để thẻ duy nhất này
-              giãn hết chiều cao, đáy cột thẳng hàng với hai cột kia. */}
-          <div className="dms-card flex-1 p-4 space-y-4">
+          {/* p-4 khớp với hai cột bên cạnh. `flex flex-col` + `flex-1` để thẻ này
+              giãn hết chiều cao, và để khung sơ đồ giường bên trong giãn theo. */}
+          <div className="dms-card flex flex-1 flex-col gap-4 p-4">
             {/* Header blueprint */}
             <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-border">
               <div className="flex items-center gap-2.5">
@@ -886,7 +886,7 @@ export const BookingPage: React.FC = () => {
               đều là "chưa rõ", hiện "Bảo trì · 24" sẽ là một con số bịa.
             */}
             {hasRealBeds && (
-              <div className="flex flex-wrap items-center gap-4 py-2 px-3 rounded-lg bg-muted/70 text-[11px]">
+              <div className="flex shrink-0 flex-wrap items-center gap-4 rounded-lg bg-muted/70 px-3 py-2 text-[11px]">
                 <div className="flex items-center gap-1.5">
                   <span className="w-3 h-3 rounded-xs bg-success"></span>
                   <span className="font-medium text-foreground">Còn chỗ · {bedCounts.available}</span>
@@ -910,8 +910,13 @@ export const BookingPage: React.FC = () => {
               </div>
             )}
 
-            {/* Visual Floor Canvas Matrix */}
-            <div className="p-3.5 bg-muted/70 rounded-xl border border-border relative space-y-3">
+            {/*
+              Khung sơ đồ giường: `flex-1` + `flex flex-col` để nó lấp hết chiều
+              cao còn lại của thẻ, và lưới 4 buồng bên trong cũng giãn theo
+              (`flex-1`) — trước đây lưới chỉ cao bằng nội dung nên chừa một
+              khoảng trống lớn phía dưới, nhìn rất lệch.
+            */}
+            <div className="flex flex-1 flex-col gap-3 rounded-xl border border-border bg-muted/70 p-3.5">
               {isLoadingInventory ? (
                 /* Đang tải kiểm kê: khung xương, tuyệt đối không vẽ lưới 0 giường. */
                 <LoadingSkeleton rows={4} />
@@ -943,21 +948,24 @@ export const BookingPage: React.FC = () => {
                 </div>
               ) : (
                 <>
-                  {/* 4 Quadrants (1:4:6 Layout) */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  {/* 4 Quadrants (1:4:6 Layout).
+                      `flex-1` + `grid-rows-2` để bốn buồng chia đôi chiều cao còn
+                      lại thành 2 hàng đều nhau, lấp khít khung thay vì co lại. */}
+                  <div className="grid flex-1 grid-cols-1 gap-3.5 sm:grid-cols-2 sm:grid-rows-2">
                     {activeRoomCompartments.map((comp) => {
                       const isSelectedComp = selectedCompartment === comp.id
                       return (
                         <div
                           key={comp.id}
-                          className={`bg-card p-3 rounded-xl border transition-all ${
+                          className={`flex min-h-0 flex-col rounded-xl border bg-card p-3 transition-all ${
                             isSelectedComp
                               ? "ring-2 ring-primary border-primary shadow-sm"
                               : "border-border"
                           }`}
                         >
-                          {/* Compartment Header */}
-                          <div className="mb-2 pb-1.5 border-b border-border/60">
+                          {/* Compartment Header — `shrink-0` để phần tiêu đề giữ
+                              nguyên chiều cao, nhường phần giãn cho lưới giường. */}
+                          <div className="mb-2 shrink-0 border-b border-border/60 pb-1.5">
                             <div className="flex items-center justify-between gap-1.5">
                               <span className="font-bold text-xs text-foreground whitespace-nowrap flex items-center gap-1.5 shrink-0">
                                 Buồng {comp.id}
@@ -971,8 +979,9 @@ export const BookingPage: React.FC = () => {
                             </div>
                           </div>
 
-                          {/* Bed cells */}
-                          <div className="grid grid-cols-3 gap-2">
+                          {/* Bed cells — `flex-1` + `grid-rows-2` để 6 giường chia
+                              đều chiều cao còn lại của buồng, không chừa khoảng trống. */}
+                          <div className="grid flex-1 grid-cols-3 grid-rows-2 gap-2">
                             {comp.beds.map((bed) => {
                               const isCurrentPick = activeBed.id === bed.id
                               const isAvailable = bed.status === "available"
@@ -983,15 +992,15 @@ export const BookingPage: React.FC = () => {
                                 <div
                                   key={bed.id}
                                   onClick={() => handleSelectBed(bed, comp.id)}
-                                  className={`p-2 rounded-lg text-center flex flex-col items-center justify-center transition-all border ${
+                                  className={`flex min-h-0 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-lg border p-2 text-center transition-all ${
                                     isCurrentPick
-                                      ? "bg-primary text-white border-primary shadow-md scale-105 ring-2 ring-primary ring-offset-2 z-10 cursor-pointer"
+                                      ? "bg-primary text-white border-primary shadow-md ring-2 ring-primary ring-offset-2 z-10"
                                       : isAvailable
-                                      ? "bg-success-soft border-success/25 hover:bg-success-soft cursor-pointer text-success-soft-foreground   "
+                                      ? "bg-success-soft border-success/25 hover:border-success/60 text-success-soft-foreground"
                                       : isHolding
-                                      ? "bg-primary-soft border-primary/25 text-primary-soft-foreground    cursor-not-allowed"
+                                      ? "bg-primary-soft border-primary/25 text-primary-soft-foreground cursor-not-allowed"
                                       : isMaint
-                                      ? "bg-danger-soft border-danger/25 text-danger-soft-foreground    cursor-not-allowed"
+                                      ? "bg-danger-soft border-danger/25 text-danger-soft-foreground cursor-not-allowed"
                                       : "bg-muted border-border text-muted-foreground cursor-not-allowed"
                                   }`}
                                 >
