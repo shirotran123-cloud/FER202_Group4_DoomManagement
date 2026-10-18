@@ -42,7 +42,7 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
 
   const handleDownloadContract = () => {
     alert(
-      `[e-Contract PDF Generator (UC-12)]:\nĐang tạo và tải xuống bản sao hợp đồng lưu trú điện tử cho sinh viên ${user.fullName} (Mã giường: ${user.dormitoryStatus?.bedCode || "N/A"}).`
+      `[e-Contract PDF Generator]:\nĐang tạo và tải xuống bản sao hợp đồng lưu trú điện tử cho sinh viên ${user.fullName} (Mã giường: ${user.dormitoryStatus?.bedCode || "N/A"}).`
     )
   }
 
@@ -55,7 +55,7 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
               <img
                 src={user.avatar}
                 alt={user.fullName}
-                className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl object-cover ring-4 ring-orange-500/20"
+                className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl object-cover ring-4 ring-sky-500/20"
               />
               <span className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-white text-[10px] font-bold shadow-xs">
                 ✓
@@ -67,7 +67,7 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
                 <h1 className="text-xl sm:text-2xl font-black text-foreground">
                   {user.fullName}
                 </h1>
-                <span className="rounded-full bg-orange-500/10 px-2.5 py-0.5 text-xs font-bold text-orange-600 dark:text-orange-400 border border-orange-500/20">
+                <span className="rounded-full bg-sky-500/10 px-2.5 py-0.5 text-xs font-bold text-sky-600 dark:text-sky-400 border border-sky-500/20">
                   {user.roleTitle}
                 </span>
                 <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-bold text-emerald-600 border border-emerald-500/20">
@@ -124,7 +124,7 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
                 onClick={handleDownloadContract}
                 className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-xs font-semibold text-foreground hover:bg-muted"
               >
-                <FileDown className="h-3.5 w-3.5 text-orange-600" />
+                <FileDown className="h-3.5 w-3.5 text-sky-600" />
                 <span>e-Contract PDF</span>
               </button>
             )}
@@ -136,7 +136,7 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
         <div className="lg:col-span-2 space-y-6">
           <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4">
             <div className="flex items-center gap-2 font-bold text-sm text-foreground border-b border-border pb-3">
-              <User className="h-4 w-4 text-orange-600" />
+              <User className="h-4 w-4 text-sky-600" />
               <span>Thông tin Cá nhân & Học vụ (Hồ sơ Tuyển sinh)</span>
             </div>
 
@@ -194,10 +194,10 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
           <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center gap-2 font-bold text-sm text-foreground">
-                <HeartHandshake className="h-4 w-4 text-red-500" />
+                <HeartHandshake className="h-4 w-4 text-blue-500" />
                 <span>Thông tin Liên hệ Khẩn cấp (Cha Mẹ / Người Giám Hộ)</span>
               </div>
-              <span className="text-[10px] font-mono rounded bg-red-500/10 text-red-600 px-2 py-0.5 font-bold">
+              <span className="text-[10px] font-mono rounded bg-blue-500/10 text-blue-600 px-2 py-0.5 font-bold">
                 Bắt buộc
               </span>
             </div>
@@ -216,7 +216,7 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
 
                 <div>
                   <p className="text-muted-foreground text-[11px]">Số điện thoại khẩn cấp</p>
-                  <p className="font-mono font-semibold text-red-600 dark:text-red-400">
+                  <p className="font-mono font-semibold text-blue-600 dark:text-blue-400">
                     {user.emergencyContact?.phone || "Chưa cập nhật"}
                   </p>
                 </div>
@@ -238,7 +238,7 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       required
-                      className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground focus:border-orange-500 focus:outline-none"
+                      className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground focus:border-sky-500 focus:outline-none"
                     />
                   </div>
 
@@ -251,7 +251,7 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
                       value={parentName}
                       onChange={(e) => setParentName(e.target.value)}
                       required
-                      className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground focus:border-orange-500 focus:outline-none"
+                      className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground focus:border-sky-500 focus:outline-none"
                     />
                   </div>
 
@@ -264,7 +264,7 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
                       value={relationship}
                       onChange={(e) => setRelationship(e.target.value)}
                       required
-                      className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground focus:border-orange-500 focus:outline-none"
+                      className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground focus:border-sky-500 focus:outline-none"
                     />
                   </div>
 
@@ -277,7 +277,7 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
                       value={parentPhone}
                       onChange={(e) => setParentPhone(e.target.value)}
                       required
-                      className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground focus:border-orange-500 focus:outline-none"
+                      className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground focus:border-sky-500 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -291,7 +291,7 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
                     value={parentAddress}
                     onChange={(e) => setParentAddress(e.target.value)}
                     required
-                    className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground focus:border-orange-500 focus:outline-none"
+                    className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground focus:border-sky-500 focus:outline-none"
                   />
                 </div>
 
@@ -305,10 +305,10 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
                   </button>
                   <button
                     type="submit"
-                    className="flex items-center gap-1.5 rounded-xl bg-orange-600 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-orange-700"
+                    className="flex items-center gap-1.5 rounded-xl bg-sky-600 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-sky-700"
                   >
                     <Save className="h-3.5 w-3.5" />
-                    <span>Lưu Thay Đổi (UC-04)</span>
+                    <span>Lưu Thay Đổi</span>
                   </button>
                 </div>
               </form>
@@ -318,10 +318,10 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
 
         <div className="space-y-6">
           {user.dormitoryStatus ? (
-            <div className="rounded-2xl border border-orange-500/30 bg-gradient-to-br from-card to-orange-500/5 p-6 shadow-xs space-y-4">
+            <div className="rounded-2xl border border-sky-500/30 bg-gradient-to-br from-card to-sky-500/5 p-6 shadow-xs space-y-4">
               <div className="flex items-center justify-between border-b border-border pb-3">
                 <div className="flex items-center gap-2 font-bold text-sm text-foreground">
-                  <BedDouble className="h-4 w-4 text-orange-600" />
+                  <BedDouble className="h-4 w-4 text-sky-600" />
                   <span>Vị Trí Lưu Trú Hiện Tại</span>
                 </div>
                 <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-600">
@@ -332,7 +332,7 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
               <div className="space-y-3 text-xs">
                 <div className="rounded-xl border border-border bg-card p-3.5 space-y-2">
                   <p className="text-[11px] text-muted-foreground font-semibold">Mã định danh giường (SSOT):</p>
-                  <p className="text-xl font-mono font-black text-orange-600 tracking-wider">
+                  <p className="text-xl font-mono font-black text-sky-600 tracking-wider">
                     {user.dormitoryStatus.bedCode}
                   </p>
                   <p className="text-[11px] text-muted-foreground">
@@ -374,7 +374,7 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
 
           <div className="rounded-2xl border border-border bg-card p-5 space-y-3 text-xs">
             <span className="font-bold text-foreground flex items-center gap-2">
-              <Shield className="h-4 w-4 text-orange-600" />
+              <Shield className="h-4 w-4 text-sky-600" />
               <span>Chính sách Bảo mật Dữ liệu</span>
             </span>
             <p className="text-muted-foreground text-[11px] leading-relaxed">
@@ -394,7 +394,7 @@ export const ProfilePage: React.FC = () => {
   if (!user) {
     return (
       <div className="text-center py-16 space-y-4">
-        <AlertCircle className="h-10 w-10 text-orange-600 mx-auto" />
+        <AlertCircle className="h-10 w-10 text-sky-600 mx-auto" />
         <h2 className="text-lg font-bold">Chưa đăng nhập</h2>
         <p className="text-sm text-muted-foreground">Vui lòng đăng nhập để xem thông tin hồ sơ cá nhân.</p>
       </div>
@@ -428,9 +428,9 @@ export const ProfilePage: React.FC = () => {
       <div className="rounded-2xl border border-border bg-card p-5 text-center">
         <button
           onClick={() => logout()}
-          className="text-xs font-semibold text-red-600 hover:bg-red-500/10 px-4 py-2 rounded-xl transition-colors"
+          className="text-xs font-semibold text-blue-600 hover:bg-blue-500/10 px-4 py-2 rounded-xl transition-colors"
         >
-          Đăng xuất tài khoản (UC-03)
+          Đăng xuất tài khoản
         </button>
       </div>
     </div>

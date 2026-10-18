@@ -66,7 +66,7 @@ export const BillingPage: React.FC = () => {
             <Badge variant="available">Chu kỳ T09/2026</Badge>
           </div>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Module 4 · Use Cases UC-14 đến UC-19 • Thuật toán chia đều phòng (Total ÷ N) & Đối soát ảnh công tơ
+            Module 4 · Thuật toán chia đều phòng (Total ÷ N) & Đối soát ảnh công tơ
           </p>
         </div>
 
@@ -97,7 +97,7 @@ export const BillingPage: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
               Tổng Cần Thanh Toán
             </span>
-            <span className={`p-1.5 rounded-lg ${hasPaid ? "bg-emerald-100 text-emerald-600" : "bg-red-100 text-red-600"}`}>
+            <span className={`p-1.5 rounded-lg ${hasPaid ? "bg-emerald-100 text-emerald-600" : "bg-blue-100 text-blue-600"}`}>
               <Receipt className="h-4 w-4" />
             </span>
           </div>
@@ -105,8 +105,8 @@ export const BillingPage: React.FC = () => {
             <div className="text-2xl font-black font-mono tracking-tight text-primary dark:text-[#cee6ef]">
               {hasPaid ? "₫0" : `₫${netDue.toLocaleString()}`}
             </div>
-            <div className={`flex items-center gap-1.5 mt-1 text-xs font-semibold ${hasPaid ? "text-emerald-600" : "text-red-600"}`}>
-              <span className={`w-2 h-2 rounded-full ${hasPaid ? "bg-emerald-500" : "bg-red-500"}`}></span>
+            <div className={`flex items-center gap-1.5 mt-1 text-xs font-semibold ${hasPaid ? "text-emerald-600" : "text-blue-600"}`}>
+              <span className={`w-2 h-2 rounded-full ${hasPaid ? "bg-emerald-500" : "bg-blue-500"}`}></span>
               <span>{hasPaid ? "Đã tất toán toàn bộ" : "Hạn nộp trong 3 ngày (05/10)"}</span>
             </div>
           </div>
@@ -139,7 +139,7 @@ export const BillingPage: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
               Kiểm Định Công Tơ
             </span>
-            <span className="p-1.5 rounded-lg bg-[#f4f4ee] dark:bg-[#1c262c] text-primary">
+            <span className="p-1.5 rounded-lg bg-[#eff6ff] dark:bg-[#1c262c] text-primary">
               <Zap className="h-4 w-4" />
             </span>
           </div>
@@ -181,7 +181,7 @@ export const BillingPage: React.FC = () => {
         <div className="lg:col-span-7 flex flex-col gap-6">
           {/* UTILITY DETAILS & FORMULA TABLE */}
           <div className="bg-white dark:bg-[#161e23] rounded-xl border border-border p-5 shadow-xs space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-lg bg-[#f4f4ee] dark:bg-[#1c262c] gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-lg bg-[#eff6ff] dark:bg-[#1c262c] gap-3">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">
                   Kỳ Sử Dụng Tiện Ích Phòng A205
@@ -200,7 +200,7 @@ export const BillingPage: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="bg-[#efeee8] dark:bg-[#141c21] text-muted-foreground uppercase text-[10px] font-bold tracking-wider">
+                  <tr className="bg-[#dbeafe] dark:bg-[#141c21] text-muted-foreground uppercase text-[10px] font-bold tracking-wider">
                     <th className="py-2.5 px-3 rounded-l-md">Dịch Vụ</th>
                     <th className="py-2.5 px-3">Chỉ Số Cũ → Mới</th>
                     <th className="py-2.5 px-3 text-right">Tiêu Thụ</th>
@@ -209,10 +209,10 @@ export const BillingPage: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  <tr className="hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c] transition-colors">
+                  <tr className="hover:bg-[#eff6ff] dark:hover:bg-[#1c262c] transition-colors">
                     <td className="py-3 px-3">
                       <div className="flex items-center gap-2">
-                        <span className="p-1 rounded bg-amber-100 text-amber-700">
+                        <span className="p-1 rounded bg-cyan-100 text-cyan-700">
                           <Zap className="h-3.5 w-3.5" />
                         </span>
                         <span className="font-bold text-foreground">Điện Sinh Hoạt</span>
@@ -230,7 +230,7 @@ export const BillingPage: React.FC = () => {
                     </td>
                   </tr>
 
-                  <tr className="hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c] transition-colors">
+                  <tr className="hover:bg-[#eff6ff] dark:hover:bg-[#1c262c] transition-colors">
                     <td className="py-3 px-3">
                       <div className="flex items-center gap-2">
                         <span className="p-1 rounded bg-blue-100 text-blue-700">
@@ -251,7 +251,7 @@ export const BillingPage: React.FC = () => {
                     </td>
                   </tr>
 
-                  <tr className="hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c] transition-colors">
+                  <tr className="hover:bg-[#eff6ff] dark:hover:bg-[#1c262c] transition-colors">
                     <td className="py-3 px-3">
                       <div className="flex items-center gap-2">
                         <span className="p-1 rounded bg-purple-100 text-purple-700">
@@ -268,7 +268,7 @@ export const BillingPage: React.FC = () => {
                     </td>
                   </tr>
 
-                  <tr className="hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c] transition-colors">
+                  <tr className="hover:bg-[#eff6ff] dark:hover:bg-[#1c262c] transition-colors">
                     <td className="py-3 px-3">
                       <div className="flex items-center gap-2">
                         <span className="p-1 rounded bg-gray-100 text-gray-700">
@@ -289,7 +289,7 @@ export const BillingPage: React.FC = () => {
             </div>
 
             {/* FORMULA HIGHLIGHT BOX (Module 4 Signature) */}
-            <div className="p-4 rounded-xl bg-[#f4f4ee] dark:bg-[#1c262c] border border-border space-y-2">
+            <div className="p-4 rounded-xl bg-[#eff6ff] dark:bg-[#1c262c] border border-border space-y-2">
               <div className="flex items-center justify-between font-bold text-sm text-foreground">
                 <span>Tổng chi phí cả phòng A205:</span>
                 <span className="font-mono text-base text-primary dark:text-[#cee6ef]">
@@ -343,7 +343,7 @@ export const BillingPage: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Photo 1: Electricity */}
-              <div className="rounded-xl overflow-hidden border border-border bg-[#f4f4ee] dark:bg-[#1c262c] shadow-xs">
+              <div className="rounded-xl overflow-hidden border border-border bg-[#eff6ff] dark:bg-[#1c262c] shadow-xs">
                 <div className="relative h-44 w-full bg-slate-800">
                   <img
                     src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=600&q=80"
@@ -361,7 +361,7 @@ export const BillingPage: React.FC = () => {
               </div>
 
               {/* Photo 2: Water */}
-              <div className="rounded-xl overflow-hidden border border-border bg-[#f4f4ee] dark:bg-[#1c262c] shadow-xs">
+              <div className="rounded-xl overflow-hidden border border-border bg-[#eff6ff] dark:bg-[#1c262c] shadow-xs">
                 <div className="relative h-44 w-full bg-slate-800">
                   <img
                     src="https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=600&q=80"
@@ -406,7 +406,7 @@ export const BillingPage: React.FC = () => {
                     { month: "Tháng 06/2026", amount: "₫435,000", date: "02/06/2026" },
                     { month: "Tháng 05/2026", amount: "₫412,000", date: "05/05/2026" },
                   ].map((inv, idx) => (
-                    <tr key={idx} className="hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c] transition-colors">
+                    <tr key={idx} className="hover:bg-[#eff6ff] dark:hover:bg-[#1c262c] transition-colors">
                       <td className="py-2.5 px-2 font-semibold text-foreground">{inv.month}</td>
                       <td className="py-2.5 px-2 font-mono text-foreground">{inv.amount}</td>
                       <td className="py-2.5 px-2">
@@ -417,7 +417,7 @@ export const BillingPage: React.FC = () => {
                       <td className="py-2.5 px-2 text-right">
                         <button
                           onClick={() => alert(`Đang tải biên lai ${inv.month}...`)}
-                          className="p-1 rounded text-primary hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c]"
+                          className="p-1 rounded text-primary hover:bg-[#eff6ff] dark:hover:bg-[#1c262c]"
                           title="Tải PDF"
                         >
                           <Download className="h-3.5 w-3.5 inline" />
@@ -492,7 +492,7 @@ export const BillingPage: React.FC = () => {
                 </div>
 
                 {/* Transfer Ledger Details */}
-                <div className="bg-[#f4f4ee] dark:bg-[#1c262c] p-3.5 rounded-xl text-xs space-y-2 font-mono">
+                <div className="bg-[#eff6ff] dark:bg-[#1c262c] p-3.5 rounded-xl text-xs space-y-2 font-mono">
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-muted-foreground font-sans whitespace-nowrap">Ngân hàng:</span>
                     <span className="font-bold text-foreground truncate text-right">TPBank (Tiên Phong)</span>
@@ -507,7 +507,7 @@ export const BillingPage: React.FC = () => {
                   </div>
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-muted-foreground font-sans whitespace-nowrap">Số tiền:</span>
-                    <span className="font-black text-red-600 text-sm whitespace-nowrap">₫{netDue.toLocaleString()}</span>
+                    <span className="font-black text-blue-600 text-sm whitespace-nowrap">₫{netDue.toLocaleString()}</span>
                   </div>
                   <div className="flex items-center justify-between gap-2 border-t border-border pt-1.5 font-sans">
                     <span className="text-muted-foreground whitespace-nowrap">Nội dung:</span>
@@ -529,16 +529,16 @@ export const BillingPage: React.FC = () => {
             )}
           </div>
 
-          {/* TECHNICIAN / MANAGER TOOL: INPUT MONTHLY METER (UC-16) */}
+          {/* TECHNICIAN / MANAGER TOOL: INPUT MONTHLY METER */}
           {isTechnicianOrManager && (
-            <div className="bg-white dark:bg-[#161e23] border border-amber-500/30 rounded-xl p-5 shadow-xs space-y-3 bg-gradient-to-br from-amber-500/5 to-transparent">
+            <div className="bg-white dark:bg-[#161e23] border border-cyan-500/30 rounded-xl p-5 shadow-xs space-y-3 bg-gradient-to-br from-cyan-500/5 to-transparent">
               <div className="flex items-center gap-2">
-                <span className="p-1 rounded bg-amber-500/20 text-amber-600">
+                <span className="p-1 rounded bg-cyan-500/20 text-cyan-600">
                   <Zap className="h-4 w-4" />
                 </span>
                 <div>
                   <h3 className="font-bold text-xs text-foreground uppercase tracking-wider">
-                    Dành Cho Cán Bộ / Kỹ Thuật (UC-16)
+                    Dành Cho Cán Bộ / Kỹ Thuật
                   </h3>
                   <p className="text-[11px] text-muted-foreground">
                     Cập nhật số công tơ điện nước phòng ngày 25-28 hàng tháng
@@ -563,7 +563,7 @@ export const BillingPage: React.FC = () => {
                       type="number"
                       value={elecNew}
                       onChange={(e) => setElecNew(Number(e.target.value))}
-                      className="w-full p-2 rounded-lg border border-border bg-[#f4f4ee] dark:bg-[#1c262c] font-mono text-xs font-bold"
+                      className="w-full p-2 rounded-lg border border-border bg-[#eff6ff] dark:bg-[#1c262c] font-mono text-xs font-bold"
                     />
                   </div>
                   <div>
@@ -574,13 +574,13 @@ export const BillingPage: React.FC = () => {
                       type="number"
                       value={waterNew}
                       onChange={(e) => setWaterNew(Number(e.target.value))}
-                      className="w-full p-2 rounded-lg border border-border bg-[#f4f4ee] dark:bg-[#1c262c] font-mono text-xs font-bold"
+                      className="w-full p-2 rounded-lg border border-border bg-[#eff6ff] dark:bg-[#1c262c] font-mono text-xs font-bold"
                     />
                   </div>
                 </div>
 
                 {elecNew < elecOld && (
-                  <div className="p-2 bg-red-100 text-red-700 rounded text-[11px] flex items-center gap-1.5">
+                  <div className="p-2 bg-blue-100 text-blue-700 rounded text-[11px] flex items-center gap-1.5">
                     <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
                     <span>Lỗi: Chỉ số mới ({elecNew}) không được nhỏ hơn chỉ số cũ ({elecOld})!</span>
                   </div>
@@ -644,7 +644,7 @@ export const BillingPage: React.FC = () => {
                   <label className="text-[11px] font-bold text-foreground block mb-1">
                     Loại tiện ích cần kiểm tra lại:
                   </label>
-                  <select className="w-full p-2 rounded-lg border border-border bg-[#f4f4ee] dark:bg-[#1c262c]">
+                  <select className="w-full p-2 rounded-lg border border-border bg-[#eff6ff] dark:bg-[#1c262c]">
                     <option>Chỉ số Điện (Nghi ngờ rò rỉ hoặc ghi nhầm)</option>
                     <option>Chỉ số Nước (Nghi ngờ van nước phòng hở)</option>
                     <option>Số lượng sinh viên chia tiền (Có bạn trả phòng sớm)</option>
@@ -658,7 +658,7 @@ export const BillingPage: React.FC = () => {
                   <textarea
                     rows={3}
                     placeholder="Ví dụ: Tháng này phòng em đi thực tập 2 tuần nhưng số điện lại tăng gấp đôi..."
-                    className="w-full p-2.5 rounded-lg border border-border bg-[#f4f4ee] dark:bg-[#1c262c] text-xs"
+                    className="w-full p-2.5 rounded-lg border border-border bg-[#eff6ff] dark:bg-[#1c262c] text-xs"
                     required
                   />
                 </div>

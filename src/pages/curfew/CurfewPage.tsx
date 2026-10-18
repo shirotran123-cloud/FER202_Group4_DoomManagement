@@ -36,7 +36,10 @@ const STORAGE_KEY_DEMERITS = "dms_student_demerits_v1"
 
 export const CurfewPage: React.FC = () => {
   const { user } = useAuth()
-  const isGuardOrManager = user?.role === "technician" || user?.role === "manager" || user?.role === "admin"
+  const isGuardOrManager =
+    user?.role === "technician" ||
+    user?.role === "manager" ||
+    user?.role === "admin"
 
   // 1. Curfew Requests State
   const [requests, setRequests] = useState<CurfewRequest[]>(() => {
@@ -87,9 +90,9 @@ export const CurfewPage: React.FC = () => {
   }, [requests, gateLogs, violations, demerits])
 
   // Sub-tabs: Sinh viên mặc định vào REQUESTS và không thể xem console quét thẻ của BQL
-  const [activeTab, setActiveTab] = useState<"GATE_SCAN" | "REQUESTS" | "DISCIPLINE">(() =>
-    isGuardOrManager ? "GATE_SCAN" : "REQUESTS"
-  )
+  const [activeTab, setActiveTab] = useState<
+    "GATE_SCAN" | "REQUESTS" | "DISCIPLINE"
+  >(() => (isGuardOrManager ? "GATE_SCAN" : "REQUESTS"))
   const [toastMessage, setToastMessage] = useState<string | null>(null)
 
   const showToast = (msg: string) => {
@@ -98,7 +101,7 @@ export const CurfewPage: React.FC = () => {
   }
 
   // ==========================================
-  // UC-25: SECURITY GATE CONSOLE STATE & LOGIC
+  // SECURITY GATE CONSOLE STATE & LOGIC
   // ==========================================
   // Simulated Clock for Demo: can toggle between normal time (22:30) and past curfew (23:35)
   const [simulatedHour, setSimulatedHour] = useState(23)
@@ -162,7 +165,7 @@ export const CurfewPage: React.FC = () => {
     },
   }
 
-  // Handle Scanning MSSV at Gate (UC-25 Core Logic)
+  // Handle Scanning MSSV at Gate
   const handleScanCard = (mssvToScan?: string) => {
     const targetMssv = (mssvToScan || scanInputMssv).trim().toUpperCase()
     if (!targetMssv) {
@@ -236,9 +239,11 @@ export const CurfewPage: React.FC = () => {
         guardName: user?.fullName || "Chú Đỗ Mạnh Hùng (Tổ An ninh)",
       }
       setGateLogs([newLog, ...gateLogs])
-      showToast(`🔵 [HỢP LỆ THEO ĐƠN]: ${studentInfo.name} có đơn duyệt ${approvedRequest.id}!`)
+      showToast(
+        `🔵 [HỢP LỆ THEO ĐƠN]: ${studentInfo.name} có đơn duyệt ${approvedRequest.id}!`
+      )
     } else {
-      // 3. AFTER 23:00 WITHOUT REQUEST -> UNAUTHORIZED LATE (INFRACTION UC-26)
+      // 3. AFTER 23:00 WITHOUT REQUEST -> UNAUTHORIZED LATE
       const resultObj = {
         status: "UNAUTHORIZED_LATE" as const,
         studentName: studentInfo.name,
@@ -258,7 +263,8 @@ export const CurfewPage: React.FC = () => {
         scanTimeFormatted: scanTimeFormatted,
         curfewStatus: "UNAUTHORIZED_LATE",
         penaltyPointsDeducted: 10,
-        guardNotes: "Về sau 23:00 không có đơn duyệt. Tự động lập biên bản kỷ luật.",
+        guardNotes:
+          "Về sau 23:00 không có đơn duyệt. Tự động lập biên bản kỷ luật.",
         guardName: user?.fullName || "Chú Đỗ Mạnh Hùng (Tổ An ninh)",
       }
       setGateLogs([newLog, ...gateLogs])
@@ -285,7 +291,8 @@ export const CurfewPage: React.FC = () => {
         if (existing) {
           const newDeducted = existing.totalDeducted + 10
           const remaining = Math.max(0, 100 - newDeducted)
-          const newStatus = remaining < 70 ? "SUSPENDED" : remaining < 80 ? "WARNING" : "NORMAL"
+          const newStatus =
+            remaining < 70 ? "SUSPENDED" : remaining < 80 ? "WARNING" : "NORMAL"
           return prev.map((d) =>
             d.studentId === targetMssv
               ? {
@@ -314,14 +321,16 @@ export const CurfewPage: React.FC = () => {
         }
       })
 
-      showToast(`🚨 [CẢNH BÁO VI PHẠM]: Đã trừ 10 điểm rèn luyện của sinh viên ${studentInfo.name}!`)
+      showToast(
+        `🚨 [CẢNH BÁO VI PHẠM]: Đã trừ 10 điểm rèn luyện của sinh viên ${studentInfo.name}!`
+      )
     }
 
     setScanInputMssv("")
   }
 
   // ==========================================
-  // UC-24: LEAVE REQUEST FORM STATE & LOGIC
+  // LEAVE REQUEST FORM STATE & LOGIC
   // ==========================================
   const [reqType, setReqType] = useState<CurfewRequestType>("LATE_RETURN")
   const [reqDate, setReqDate] = useState("2026-10-10")
@@ -331,7 +340,7 @@ export const CurfewPage: React.FC = () => {
   const [reqParentPhone, setReqParentPhone] = useState("0903 123 456")
   const [reqParentConfirmed, setReqParentConfirmed] = useState(true)
 
-  // Handle UC-24 Request Submission
+  // Handle Request Submission
   const handleSubmitCurfewRequest = (e: React.FormEvent) => {
     e.preventDefault()
     if (!reqDetail.trim()) {
@@ -367,14 +376,20 @@ export const CurfewPage: React.FC = () => {
   }
 
   // Handle Approve / Reject Request
-  const handleReviewRequest = (requestId: string, newStatus: "APPROVED" | "REJECTED") => {
+  const handleReviewRequest = (
+    requestId: string,
+    newStatus: "APPROVED" | "REJECTED"
+  ) => {
     const updated = requests.map((r) => {
       if (r.id === requestId) {
         return {
           ...r,
           status: newStatus,
           reviewedBy: user?.fullName || "Thầy Vũ Thành Nam (Dorm Manager)",
-          reviewedAt: new Date().toISOString().replace("T", " ").substring(0, 16),
+          reviewedAt: new Date()
+            .toISOString()
+            .replace("T", " ")
+            .substring(0, 16),
           reviewNotes:
             newStatus === "APPROVED"
               ? "Đã đối chiếu thông tin phụ huynh và phê duyệt hợp lệ."
@@ -384,23 +399,46 @@ export const CurfewPage: React.FC = () => {
       return r
     })
     setRequests(updated)
-    showToast(`Đã ${newStatus === "APPROVED" ? "phê duyệt" : "từ chối"} đơn ${requestId}!`)
+    showToast(
+      `Đã ${newStatus === "APPROVED" ? "phê duyệt" : "từ chối"} đơn ${requestId}!`
+    )
   }
 
   // ==========================================
-  // UC-26: DISCIPLINE INCIDENT FORM STATE
+  // DISCIPLINE INCIDENT FORM STATE
   // ==========================================
   const [vioStudentId, setVioStudentId] = useState("SE182053")
   const [vioType, setVioType] = useState<InfractionType>("UNAUTHORIZED_COOKING")
   const [vioDescription, setVioDescription] = useState("")
 
-  const infractionPointsMap: Record<InfractionType, { title: string; points: number }> = {
-    CURFEW_VIOLATION: { title: "Vi phạm giờ giới nghiêm 23:00 không phép", points: 10 },
-    UNAUTHORIZED_COOKING: { title: "Nấu ăn sai quy định trong phòng (Nguy cơ cháy)", points: 15 },
-    NOISE_AFTER_HOURS: { title: "Gây mất trật tự, ồn ào sau 22:30", points: 10 },
-    SMOKING_VAPING: { title: "Hút thuốc lá / thuốc lá điện tử trong buồng phòng", points: 20 },
-    UNAUTHORIZED_GUEST: { title: "Đưa người lạ vào phòng qua đêm không đăng ký", points: 25 },
-    HIGH_POWER_APPLIANCE: { title: "Sử dụng thiết bị điện công suất lớn trái phép", points: 15 },
+  const infractionPointsMap: Record<
+    InfractionType,
+    { title: string; points: number }
+  > = {
+    CURFEW_VIOLATION: {
+      title: "Vi phạm giờ giới nghiêm 23:00 không phép",
+      points: 10,
+    },
+    UNAUTHORIZED_COOKING: {
+      title: "Nấu ăn sai quy định trong phòng (Nguy cơ cháy)",
+      points: 15,
+    },
+    NOISE_AFTER_HOURS: {
+      title: "Gây mất trật tự, ồn ào sau 22:30",
+      points: 10,
+    },
+    SMOKING_VAPING: {
+      title: "Hút thuốc lá / thuốc lá điện tử trong buồng phòng",
+      points: 20,
+    },
+    UNAUTHORIZED_GUEST: {
+      title: "Đưa người lạ vào phòng qua đêm không đăng ký",
+      points: 25,
+    },
+    HIGH_POWER_APPLIANCE: {
+      title: "Sử dụng thiết bị điện công suất lớn trái phép",
+      points: 15,
+    },
     OTHER: { title: "Vi phạm nội quy khác", points: 5 },
   }
 
@@ -420,7 +458,8 @@ export const CurfewPage: React.FC = () => {
       infractionTitle: infractionInfo.title,
       pointsDeducted: infractionInfo.points,
       description:
-        vioDescription.trim() || `Lập biên bản vi phạm: ${infractionInfo.title}.`,
+        vioDescription.trim() ||
+        `Lập biên bản vi phạm: ${infractionInfo.title}.`,
       officerName: user?.fullName || "Thầy Vũ Thành Nam (Dorm Manager)",
       status: "RECORDED",
     }
@@ -433,7 +472,8 @@ export const CurfewPage: React.FC = () => {
       if (existing) {
         const newDeducted = existing.totalDeducted + infractionInfo.points
         const remaining = Math.max(0, 100 - newDeducted)
-        const newStatus = remaining < 70 ? "SUSPENDED" : remaining < 80 ? "WARNING" : "NORMAL"
+        const newStatus =
+          remaining < 70 ? "SUSPENDED" : remaining < 80 ? "WARNING" : "NORMAL"
         return prev.map((d) =>
           d.studentId === vioStudentId
             ? {
@@ -456,7 +496,12 @@ export const CurfewPage: React.FC = () => {
             initialPoints: 100,
             totalDeducted: infractionInfo.points,
             remainingPoints: remaining,
-            status: remaining < 70 ? "SUSPENDED" : remaining < 80 ? "WARNING" : "NORMAL",
+            status:
+              remaining < 70
+                ? "SUSPENDED"
+                : remaining < 80
+                  ? "WARNING"
+                  : "NORMAL",
             violationCount: 1,
           },
         ]
@@ -464,49 +509,52 @@ export const CurfewPage: React.FC = () => {
     })
 
     setVioDescription("")
-    showToast(`Đã lập biên bản ${newRecord.id} và trừ ${infractionInfo.points} điểm của ${student.name}!`)
+    showToast(
+      `Đã lập biên bản ${newRecord.id} và trừ ${infractionInfo.points} điểm của ${student.name}!`
+    )
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 pb-16">
+    <div className="mx-auto max-w-6xl space-y-6 pb-16">
       {/* Toast Alert */}
       {toastMessage && (
-        <div className="fixed top-20 right-6 z-50 flex items-center gap-2 rounded-2xl bg-foreground text-background px-4 py-3 shadow-xl text-xs font-semibold animate-in fade-in slide-in-from-top-4">
-          <Sparkles className="h-4 w-4 text-amber-400 shrink-0" />
+        <div className="fixed top-20 right-6 z-50 flex animate-in items-center gap-2 rounded-2xl bg-foreground px-4 py-3 text-xs font-semibold text-background shadow-xl fade-in slide-in-from-top-4">
+          <Sparkles className="h-4 w-4 shrink-0 text-cyan-400" />
           <span>{toastMessage}</span>
         </div>
       )}
 
       {/* Header Banner */}
-      <div className="rounded-3xl border border-red-500/20 bg-gradient-to-br from-card via-red-500/5 to-card p-6 sm:p-8 shadow-xs">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border/80 pb-6">
+      <div className="rounded-3xl border border-blue-500/20 bg-gradient-to-br from-card via-blue-500/5 to-card p-6 shadow-xs sm:p-8">
+        <div className="flex flex-col items-start justify-between gap-4 border-b border-border/80 pb-6 sm:flex-row sm:items-center">
           <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 shadow-xs">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-blue-500/20 bg-blue-500/10 text-blue-600 shadow-xs dark:text-blue-400">
               <ClockAlert className="h-7 w-7" />
             </div>
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-red-500/10 px-3 py-0.5 text-[11px] font-bold text-red-700 dark:text-red-400">
+              <div className="inline-flex items-center gap-2 rounded-full bg-blue-500/10 px-3 py-0.5 text-[11px] font-bold text-blue-700 dark:text-blue-400">
                 <span>Module 6</span>
                 <span>•</span>
-                <span>UC-24 ➔ UC-26</span>
+                <span>Đơn vắng mặt và xử lý vi phạm</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-black text-foreground mt-1">
+              <h1 className="mt-1 text-2xl font-black text-foreground sm:text-3xl">
                 Kiểm Soát Giờ Giới Nghiêm 23:00 & Kỷ Luật Nội Trú
               </h1>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Cổng bảo vệ quét thẻ đối chiếu • Đơn vắng mặt nộp trước 21:00 • Trừ điểm rèn luyện (100đ chuẩn)
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Cổng bảo vệ quét thẻ đối chiếu • Đơn vắng mặt nộp trước 21:00 •
+                Trừ điểm rèn luyện (100đ chuẩn)
               </p>
             </div>
           </div>
-          <div className="rounded-2xl border border-border bg-card/90 px-4 py-2.5 text-right shadow-xs shrink-0">
-            <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
+          <div className="shrink-0 rounded-2xl border border-border bg-card/90 px-4 py-2.5 text-right shadow-xs">
+            <p className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
               Phụ trách kỹ thuật & an ninh:
             </p>
-            <p className="text-xs font-bold text-red-600 dark:text-red-400 flex items-center justify-end gap-1 mt-0.5">
+            <p className="mt-0.5 flex items-center justify-end gap-1 text-xs font-bold text-blue-600 dark:text-blue-400">
               <span>🛡️ Đinh Thanh Trung</span>
             </p>
             {isGuardOrManager && (
-              <p className="text-[10px] text-emerald-600 font-bold mt-0.5">
+              <p className="mt-0.5 text-[10px] font-bold text-emerald-600">
                 Trực ban: {user?.fullName}
               </p>
             )}
@@ -514,95 +562,114 @@ export const CurfewPage: React.FC = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 text-xs">
-          <div className="rounded-2xl border border-border bg-card/60 p-4">
-            <p className="text-muted-foreground text-[11px] font-medium">Lượt quẹt thẻ cổng</p>
-            <p className="text-2xl font-black text-foreground mt-1">{gateLogs.length}</p>
-            <span className="text-[10px] text-muted-foreground">Ca trực hôm nay</span>
+        <div className="grid grid-cols-2 gap-3 pt-6 text-xs sm:grid-cols-4">
+          <div className="rounded-2xl border border-border bg-card p-4">
+            <p className="text-[11px] font-medium text-muted-foreground">
+              Lượt quẹt thẻ cổng
+            </p>
+            <p className="mt-1 text-2xl font-black text-foreground">
+              {gateLogs.length}
+            </p>
+            <span className="text-[10px] text-muted-foreground">
+              Ca trực hôm nay
+            </span>
           </div>
-          <div className="rounded-2xl border border-blue-500/20 bg-blue-500/5 p-4">
-            <p className="text-blue-700 dark:text-blue-400 text-[11px] font-medium flex items-center gap-1">
+          <div className="rounded-2xl border border-blue-500/20 bg-card p-4">
+            <p className="flex items-center gap-1 text-[11px] font-medium text-blue-700 dark:text-blue-400">
               <FileText className="h-3.5 w-3.5" /> Đơn về muộn đã duyệt
             </p>
-            <p className="text-2xl font-black text-blue-600 dark:text-blue-400 mt-1">
+            <p className="mt-1 text-2xl font-black text-blue-600 dark:text-blue-400">
               {requests.filter((r) => r.status === "APPROVED").length}
             </p>
-            <span className="text-[10px] text-blue-700/80 dark:text-blue-400/80">Hợp lệ ra vào ngoài giờ</span>
+            <span className="text-[10px] text-blue-700/80 dark:text-blue-400/80">
+              Hợp lệ ra vào ngoài giờ
+            </span>
           </div>
-          <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4">
-            <p className="text-amber-700 dark:text-amber-400 text-[11px] font-medium flex items-center gap-1">
+          <div className="rounded-2xl border border-cyan-500/20 bg-card p-4">
+            <p className="flex items-center gap-1 text-[11px] font-medium text-cyan-700 dark:text-cyan-400">
               <AlertTriangle className="h-3.5 w-3.5" /> SV bị cảnh cáo (&gt;20đ)
             </p>
-            <p className="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1">
+            <p className="mt-1 text-2xl font-black text-cyan-600 dark:text-cyan-400">
               {demerits.filter((d) => d.status === "WARNING").length}
             </p>
-            <span className="text-[10px] text-amber-700/80 dark:text-amber-400/80">Cần nhắc nhở rèn luyện</span>
+            <span className="text-[10px] text-cyan-700/80 dark:text-cyan-400/80">
+              Cần nhắc nhở rèn luyện
+            </span>
           </div>
-          <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-4">
-            <p className="text-red-700 dark:text-red-400 text-[11px] font-medium flex items-center gap-1">
+          <div className="rounded-2xl border border-blue-500/20 bg-card p-4">
+            <p className="flex items-center gap-1 text-[11px] font-medium text-blue-700 dark:text-blue-400">
               <UserX className="h-3.5 w-3.5" /> Đình chỉ kỳ sau (&gt;30đ)
             </p>
-            <p className="text-2xl font-black text-red-600 dark:text-red-400 mt-1">
+            <p className="mt-1 text-2xl font-black text-blue-600 dark:text-blue-400">
               {demerits.filter((d) => d.status === "SUSPENDED").length}
             </p>
-            <span className="text-[10px] text-red-700/80 dark:text-red-400/80">Không xét duyệt KTX kỳ tới</span>
+            <span className="text-[10px] text-blue-700/80 dark:text-blue-400/80">
+              Không xét duyệt KTX kỳ tới
+            </span>
           </div>
         </div>
       </div>
 
       {/* Navigation Sub-Tabs */}
-      <div className="flex rounded-2xl bg-muted/60 p-1 border border-border gap-1 overflow-x-auto">
+      <div className="flex gap-1 overflow-x-auto rounded-2xl border border-border bg-muted/60 p-1">
         {isGuardOrManager && (
           <button
             onClick={() => setActiveTab("GATE_SCAN")}
-            className={`flex-1 min-w-[180px] flex items-center justify-center gap-2 rounded-xl py-2 px-3 text-xs font-bold transition-all ${
+            className={`flex min-w-[180px] flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all ${
               activeTab === "GATE_SCAN"
                 ? "bg-card text-foreground shadow-xs"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <Scan className="h-3.5 w-3.5 text-red-500 shrink-0" />
-            <span className="truncate">Quét Thẻ Cổng 23:00 (UC-25)</span>
+            <Scan className="h-3.5 w-3.5 shrink-0 text-blue-500" />
+            <span className="truncate">Quét Thẻ Cổng 23:00</span>
           </button>
         )}
 
         <button
           onClick={() => setActiveTab("REQUESTS")}
-          className={`flex-1 min-w-[180px] flex items-center justify-center gap-2 rounded-xl py-2 px-3 text-xs font-bold transition-all ${
+          className={`flex min-w-[180px] flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all ${
             activeTab === "REQUESTS"
               ? "bg-card text-foreground shadow-xs"
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          <FileText className="h-3.5 w-3.5 text-blue-500 shrink-0" />
-          <span className="truncate">{isGuardOrManager ? "Duyệt Đơn Về Muộn (UC-24)" : "Đơn Về Muộn Của Tôi (UC-24)"}</span>
+          <FileText className="h-3.5 w-3.5 shrink-0 text-blue-500" />
+          <span className="truncate">
+            {isGuardOrManager ? "Duyệt Đơn Về Muộn" : "Đơn Về Muộn Của Tôi"}
+          </span>
         </button>
 
         <button
           onClick={() => setActiveTab("DISCIPLINE")}
-          className={`flex-1 min-w-[180px] flex items-center justify-center gap-2 rounded-xl py-2 px-3 text-xs font-bold transition-all ${
+          className={`flex min-w-[180px] flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all ${
             activeTab === "DISCIPLINE"
               ? "bg-card text-foreground shadow-xs"
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          <Shield className="h-3.5 w-3.5 text-amber-500 shrink-0" />
-          <span className="truncate">{isGuardOrManager ? "Sổ Kỷ Luật & Điểm Trừ (UC-26)" : "Điểm Rèn Luyện & Nội Quy (UC-26)"}</span>
+          <Shield className="h-3.5 w-3.5 shrink-0 text-cyan-500" />
+          <span className="truncate">
+            {isGuardOrManager
+              ? "Sổ Kỷ Luật & Điểm Trừ"
+              : "Điểm Rèn Luyện & Nội Quy"}
+          </span>
         </button>
       </div>
 
       {/* ========================================================= */}
-      {/* TAB 1: CỔNG BẢO VỆ QUÉT THẺ TRỰC TIẾP (UC-25 CONSOLE)     */}
+      {/* TAB 1: CỔNG BẢO VỆ QUÉT THẺ TRỰC TIẾP */}
       {/* ========================================================= */}
       {activeTab === "GATE_SCAN" && (
         <div className="space-y-6">
           {/* Main Console Box */}
-          <div className="rounded-3xl border border-red-500/30 bg-card p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="space-y-6 rounded-3xl border border-blue-500/30 bg-card p-6 shadow-sm sm:p-8">
             {/* Top Bar of Console */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border pb-6">
+            <div className="flex flex-col items-start justify-between gap-4 border-b border-border pb-6 sm:flex-row sm:items-center">
               <div className="space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-red-600 flex items-center gap-1.5">
-                  <ShieldCheck className="h-3.5 w-3.5" /> Bàn Trực Cổng Bảo Vệ (Security Gate Console)
+                <span className="flex items-center gap-1.5 text-[10px] font-bold tracking-wider text-blue-600 uppercase">
+                  <ShieldCheck className="h-3.5 w-3.5" /> Bàn Trực Cổng Bảo Vệ
+                  (Security Gate Console)
                 </span>
                 <h2 className="text-xl font-black text-foreground">
                   Hệ Thống Tra Cứu Thẻ & Đối Chiếu Giờ Giới Nghiêm
@@ -610,31 +677,36 @@ export const CurfewPage: React.FC = () => {
               </div>
 
               {/* Digital Clock & Simulation Controls */}
-              <div className="flex items-center gap-3 bg-muted/60 p-2.5 rounded-2xl border border-border">
+              <div className="flex items-center gap-3 rounded-2xl border border-border bg-muted/60 p-2.5">
                 <div className="text-right">
-                  <span className="text-[10px] text-muted-foreground block font-bold uppercase">
+                  <span className="block text-[10px] font-bold text-muted-foreground uppercase">
                     Đồng hồ điểm danh
                   </span>
                   <span
                     className={`font-mono text-xl font-black ${
-                      simulatedHour >= 23 ? "text-red-600 animate-pulse" : "text-emerald-600"
+                      simulatedHour >= 23
+                        ? "animate-pulse text-blue-600"
+                        : "text-emerald-600"
                     }`}
                   >
-                    {String(simulatedHour).padStart(2, "0")}:{String(simulatedMinute).padStart(2, "0")}
+                    {String(simulatedHour).padStart(2, "0")}:
+                    {String(simulatedMinute).padStart(2, "0")}
                   </span>
                 </div>
-                <div className="border-l border-border pl-3 flex flex-col gap-1">
-                  <span className="text-[9px] text-muted-foreground font-semibold">Giả lập giờ test:</span>
+                <div className="flex flex-col gap-1 border-l border-border pl-3">
+                  <span className="text-[9px] font-semibold text-muted-foreground">
+                    Giả lập giờ test:
+                  </span>
                   <div className="flex gap-1">
                     <button
                       onClick={() => {
                         setSimulatedHour(22)
                         setSimulatedMinute(30)
                       }}
-                      className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                      className={`rounded px-2 py-0.5 text-[10px] font-bold ${
                         simulatedHour === 22
                           ? "bg-emerald-600 text-white"
-                          : "bg-background border border-border hover:bg-muted"
+                          : "border border-border bg-background hover:bg-muted"
                       }`}
                     >
                       22:30 (Đúng giờ)
@@ -644,10 +716,10 @@ export const CurfewPage: React.FC = () => {
                         setSimulatedHour(23)
                         setSimulatedMinute(35)
                       }}
-                      className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                      className={`rounded px-2 py-0.5 text-[10px] font-bold ${
                         simulatedHour === 23
-                          ? "bg-red-600 text-white"
-                          : "bg-background border border-border hover:bg-muted"
+                          ? "bg-blue-600 text-white"
+                          : "border border-border bg-background hover:bg-muted"
                       }`}
                     >
                       23:35 (Quá giới nghiêm)
@@ -665,25 +737,27 @@ export const CurfewPage: React.FC = () => {
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => handleScanCard("SE182049")}
-                  className="rounded-xl border border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 px-3 py-1.5 text-xs font-semibold text-blue-700 dark:text-blue-300 flex items-center gap-1.5"
+                  className="flex items-center gap-1.5 rounded-xl border border-blue-500/30 bg-blue-500/10 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-500/20 dark:text-blue-300"
                 >
-                  <span>SE182049 (Nguyễn Hoàng Vinh - Có đơn duyệt hợp lệ)</span>
+                  <span>
+                    SE182049 (Nguyễn Hoàng Vinh - Có đơn duyệt hợp lệ)
+                  </span>
                 </button>
                 <button
                   onClick={() => handleScanCard("SE182053")}
-                  className="rounded-xl border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 px-3 py-1.5 text-xs font-semibold text-red-700 dark:text-red-300 flex items-center gap-1.5"
+                  className="flex items-center gap-1.5 rounded-xl border border-blue-500/30 bg-blue-500/10 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-500/20 dark:text-blue-300"
                 >
                   <span>SE182053 (Lê Minh Tuấn - KHÔNG CÓ ĐƠN ➔ Vi phạm)</span>
                 </button>
                 <button
                   onClick={() => handleScanCard("SE182050")}
-                  className="rounded-xl border border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20 px-3 py-1.5 text-xs font-semibold text-purple-700 dark:text-purple-300 flex items-center gap-1.5"
+                  className="flex items-center gap-1.5 rounded-xl border border-purple-500/30 bg-purple-500/10 px-3 py-1.5 text-xs font-semibold text-purple-700 hover:bg-purple-500/20 dark:text-purple-300"
                 >
                   <span>SE182050 (Trần Thanh Nguyên - Về quê qua đêm)</span>
                 </button>
                 <button
                   onClick={() => handleScanCard("SE182054")}
-                  className="rounded-xl border border-border bg-muted/60 hover:bg-muted px-3 py-1.5 text-xs font-semibold text-foreground flex items-center gap-1.5"
+                  className="flex items-center gap-1.5 rounded-xl border border-border bg-muted/60 px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-muted"
                 >
                   <span>SE182054 (Phạm Quốc Bảo - Phòng A203)</span>
                 </button>
@@ -693,19 +767,19 @@ export const CurfewPage: React.FC = () => {
             {/* Card Scan Input Form */}
             <div className="flex gap-2">
               <div className="relative flex-1">
-                <Scan className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground" />
+                <Scan className="absolute top-3 left-3.5 h-4 w-4 text-muted-foreground" />
                 <input
                   type="text"
                   value={scanInputMssv}
                   onChange={(e) => setScanInputMssv(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleScanCard()}
                   placeholder="Nhập MSSV hoặc quét mã barcode thẻ sinh viên (VD: SE182049)..."
-                  className="w-full rounded-2xl border border-border bg-card pl-10 pr-4 py-2.5 text-xs font-mono uppercase focus:outline-hidden focus:ring-2 focus:ring-red-500"
+                  className="w-full rounded-2xl border border-border bg-card py-2.5 pr-4 pl-10 font-mono text-xs uppercase focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
                 />
               </div>
               <button
                 onClick={() => handleScanCard()}
-                className="rounded-2xl bg-red-600 hover:bg-red-700 text-white px-6 py-2.5 text-xs font-bold shadow-xs transition-colors shrink-0 flex items-center gap-2"
+                className="flex shrink-0 items-center gap-2 rounded-2xl bg-blue-600 px-6 py-2.5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-blue-700"
               >
                 <Scan className="h-4 w-4" />
                 <span>Quẹt Thẻ Cổng (Scan)</span>
@@ -715,49 +789,57 @@ export const CurfewPage: React.FC = () => {
             {/* LIVE SCAN RESULT BANNER */}
             {scanResult && (
               <div
-                className={`p-5 rounded-2xl border transition-all animate-in zoom-in-95 ${
+                className={`animate-in rounded-2xl border p-5 transition-all zoom-in-95 ${
                   scanResult.status === "ON_TIME"
-                    ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-950 dark:text-emerald-200"
+                    ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-950 dark:text-emerald-200"
                     : scanResult.status === "APPROVED_LATE"
-                    ? "bg-blue-500/10 border-blue-500/40 text-blue-950 dark:text-blue-200"
-                    : "bg-red-500/15 border-red-500/50 text-red-950 dark:text-red-200 shadow-md"
+                      ? "border-blue-500/40 bg-blue-500/10 text-blue-950 dark:text-blue-200"
+                      : "border-blue-500/50 bg-blue-500/15 text-blue-950 shadow-md dark:text-blue-200"
                 }`}
               >
                 <div className="flex items-start gap-4">
                   <div
-                    className={`p-3 rounded-2xl shrink-0 ${
+                    className={`shrink-0 rounded-2xl p-3 ${
                       scanResult.status === "ON_TIME"
                         ? "bg-emerald-500/20 text-emerald-600"
                         : scanResult.status === "APPROVED_LATE"
-                        ? "bg-blue-500/20 text-blue-600"
-                        : "bg-red-500/20 text-red-600 animate-bounce"
+                          ? "bg-blue-500/20 text-blue-600"
+                          : "animate-bounce bg-blue-500/20 text-blue-600"
                     }`}
                   >
-                    {scanResult.status === "ON_TIME" && <CheckCircle2 className="h-8 w-8" />}
-                    {scanResult.status === "APPROVED_LATE" && <ShieldCheck className="h-8 w-8" />}
-                    {scanResult.status === "UNAUTHORIZED_LATE" && <AlertTriangle className="h-8 w-8" />}
+                    {scanResult.status === "ON_TIME" && (
+                      <CheckCircle2 className="h-8 w-8" />
+                    )}
+                    {scanResult.status === "APPROVED_LATE" && (
+                      <ShieldCheck className="h-8 w-8" />
+                    )}
+                    {scanResult.status === "UNAUTHORIZED_LATE" && (
+                      <AlertTriangle className="h-8 w-8" />
+                    )}
                   </div>
 
-                  <div className="space-y-1 flex-1">
+                  <div className="flex-1 space-y-1">
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <span className="font-bold text-sm tracking-wide uppercase">
-                        {scanResult.status === "ON_TIME" && "🟢 CHECK-IN THÀNH CÔNG: VỀ ĐÚNG GIỜ"}
+                      <span className="text-sm font-bold tracking-wide uppercase">
+                        {scanResult.status === "ON_TIME" &&
+                          "🟢 CHECK-IN THÀNH CÔNG: VỀ ĐÚNG GIỜ"}
                         {scanResult.status === "APPROVED_LATE" &&
                           "🔵 HỢP LỆ THEO ĐƠN: VỀ MUỘN CÓ PHÉP ĐÃ DUYỆT"}
                         {scanResult.status === "UNAUTHORIZED_LATE" &&
                           "🔴 CẢNH BÁO AN NINH: VI PHẠM GIỜ GIỚI NGHIÊM 23:00!"}
                       </span>
-                      <span className="font-mono text-xs font-bold px-2.5 py-0.5 rounded-full bg-background/80">
+                      <span className="rounded-full bg-background/80 px-2.5 py-0.5 font-mono text-xs font-bold">
                         {scanResult.timestamp}
                       </span>
                     </div>
 
                     <p className="text-xs">
-                      Sinh viên: <strong>{scanResult.studentName}</strong> • MSSV:{" "}
-                      <strong>{scanResult.studentId}</strong> • Phòng: <strong>{scanResult.room}</strong>
+                      Sinh viên: <strong>{scanResult.studentName}</strong> •
+                      MSSV: <strong>{scanResult.studentId}</strong> • Phòng:{" "}
+                      <strong>{scanResult.room}</strong>
                     </p>
 
-                    <p className="text-xs font-medium pt-1 leading-relaxed opacity-90">
+                    <p className="pt-1 text-xs leading-relaxed font-medium opacity-90">
                       {scanResult.details}
                     </p>
                   </div>
@@ -767,58 +849,65 @@ export const CurfewPage: React.FC = () => {
           </div>
 
           {/* Recent Access Logs Table */}
-          <div className="rounded-3xl border border-border bg-card p-6 shadow-xs space-y-4">
+          <div className="space-y-4 rounded-3xl border border-border bg-card p-6 shadow-xs">
             <div className="flex items-center justify-between border-b border-border pb-3">
-              <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+              <h3 className="flex items-center gap-2 text-sm font-bold text-foreground">
                 <History className="h-4 w-4 text-muted-foreground" />
                 Lịch Sử Quẹt Thẻ Cổng Thời Gian Thực (Recent Gate Logs)
               </h3>
-              <span className="text-xs text-muted-foreground font-mono">
+              <span className="font-mono text-xs text-muted-foreground">
                 {gateLogs.length} lượt ghi nhận
               </span>
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left">
-                <thead className="bg-muted/50 text-muted-foreground uppercase text-[10px] font-bold border-b border-border">
+              <table className="w-full text-left text-xs">
+                <thead className="border-b border-border bg-muted/50 text-[10px] font-bold text-muted-foreground uppercase">
                   <tr>
-                    <th className="py-2.5 px-3">Thời gian</th>
-                    <th className="py-2.5 px-3">MSSV</th>
-                    <th className="py-2.5 px-3">Họ và Tên</th>
-                    <th className="py-2.5 px-3">Phòng</th>
-                    <th className="py-2.5 px-3">Kết quả đối chiếu</th>
-                    <th className="py-2.5 px-3">Ghi chú an ninh</th>
-                    <th className="py-2.5 px-3 text-right">Bảo vệ ca trực</th>
+                    <th className="px-3 py-2.5">Thời gian</th>
+                    <th className="px-3 py-2.5">MSSV</th>
+                    <th className="px-3 py-2.5">Họ và Tên</th>
+                    <th className="px-3 py-2.5">Phòng</th>
+                    <th className="px-3 py-2.5">Kết quả đối chiếu</th>
+                    <th className="px-3 py-2.5">Ghi chú an ninh</th>
+                    <th className="px-3 py-2.5 text-right">Bảo vệ ca trực</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
                   {gateLogs.map((log) => (
                     <tr key={log.id} className="hover:bg-muted/30">
-                      <td className="py-2.5 px-3 font-mono text-[11px] font-semibold text-muted-foreground">
+                      <td className="px-3 py-2.5 font-mono text-[11px] font-semibold text-muted-foreground">
                         {log.scanTimeFormatted}
                       </td>
-                      <td className="py-2.5 px-3 font-mono font-bold text-foreground">{log.studentId}</td>
-                      <td className="py-2.5 px-3 font-semibold text-foreground">{log.studentName}</td>
-                      <td className="py-2.5 px-3">{log.room}</td>
-                      <td className="py-2.5 px-3">
+                      <td className="px-3 py-2.5 font-mono font-bold text-foreground">
+                        {log.studentId}
+                      </td>
+                      <td className="px-3 py-2.5 font-semibold text-foreground">
+                        {log.studentName}
+                      </td>
+                      <td className="px-3 py-2.5">{log.room}</td>
+                      <td className="px-3 py-2.5">
                         <span
                           className={`inline-flex items-center gap-1 rounded-lg px-2 py-0.5 text-[10px] font-bold ${
                             log.curfewStatus === "ON_TIME"
                               ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
                               : log.curfewStatus === "APPROVED_LATE"
-                              ? "bg-blue-500/10 text-blue-700 dark:text-blue-400"
-                              : "bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30"
+                                ? "bg-blue-500/10 text-blue-700 dark:text-blue-400"
+                                : "border border-blue-500/30 bg-blue-500/15 text-blue-600 dark:text-blue-400"
                           }`}
                         >
-                          {log.curfewStatus === "ON_TIME" && "Đúng giờ (Trước 23h)"}
-                          {log.curfewStatus === "APPROVED_LATE" && "Có đơn duyệt"}
-                          {log.curfewStatus === "UNAUTHORIZED_LATE" && "Vi phạm (-10đ)"}
+                          {log.curfewStatus === "ON_TIME" &&
+                            "Đúng giờ (Trước 23h)"}
+                          {log.curfewStatus === "APPROVED_LATE" &&
+                            "Có đơn duyệt"}
+                          {log.curfewStatus === "UNAUTHORIZED_LATE" &&
+                            "Vi phạm (-10đ)"}
                         </span>
                       </td>
-                      <td className="py-2.5 px-3 text-muted-foreground text-[11px] max-w-xs truncate">
+                      <td className="max-w-xs truncate px-3 py-2.5 text-[11px] text-muted-foreground">
                         {log.guardNotes}
                       </td>
-                      <td className="py-2.5 px-3 text-right text-muted-foreground text-[11px]">
+                      <td className="px-3 py-2.5 text-right text-[11px] text-muted-foreground">
                         {log.guardName}
                       </td>
                     </tr>
@@ -831,36 +920,42 @@ export const CurfewPage: React.FC = () => {
       )}
 
       {/* ========================================================= */}
-      {/* TAB 2: ĐƠN VẮNG MẶT / VỀ MUỘN NGOÀI GIỜ (UC-24)          */}
+      {/* TAB 2: ĐƠN VẮNG MẶT / VỀ MUỘN NGOÀI GIỜ */}
       {/* ========================================================= */}
       {activeTab === "REQUESTS" && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Left Column: Submit Request Form */}
-          <div className="rounded-3xl border border-border bg-card p-6 shadow-xs space-y-4">
+          <div className="space-y-4 rounded-3xl border border-border bg-card p-6 shadow-xs">
             <div className="flex items-center gap-2 border-b border-border pb-3 text-blue-600">
               <FileText className="h-5 w-5" />
-              <h3 className="font-bold text-sm text-foreground">
-                Nộp Đơn Vắng Mặt / Về Muộn (UC-24)
+              <h3 className="text-sm font-bold text-foreground">
+                Nộp Đơn Vắng Mặt / Về Muộn
               </h3>
             </div>
 
-            <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-800 dark:text-amber-300">
-              <p className="font-bold flex items-center gap-1">
+            <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/10 p-3 text-[11px] text-cyan-800 dark:text-cyan-300">
+              <p className="flex items-center gap-1 font-bold">
                 <AlertCircle className="h-3.5 w-3.5" /> Quy định nộp đơn:
               </p>
               <p className="mt-0.5 leading-relaxed">
-                Đơn phải nộp <strong>trước 21:00</strong> ngày vắng mặt. Nộp sau 21:00 hệ thống sẽ gắn cờ nộp muộn và có thể bị từ chối.
+                Đơn phải nộp <strong>trước 21:00</strong> ngày vắng mặt. Nộp sau
+                21:00 hệ thống sẽ gắn cờ nộp muộn và có thể bị từ chối.
               </p>
             </div>
 
-            <form onSubmit={handleSubmitCurfewRequest} className="space-y-3.5 text-xs">
+            <form
+              onSubmit={handleSubmitCurfewRequest}
+              className="space-y-3.5 text-xs"
+            >
               <div>
-                <label className="font-semibold text-foreground">Loại đơn</label>
-                <div className="grid grid-cols-2 gap-2 mt-1">
+                <label className="font-semibold text-foreground">
+                  Loại đơn
+                </label>
+                <div className="mt-1 grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => setReqType("LATE_RETURN")}
-                    className={`py-2 px-3 rounded-xl border text-center font-bold ${
+                    className={`rounded-xl border px-3 py-2 text-center font-bold ${
                       reqType === "LATE_RETURN"
                         ? "border-blue-500 bg-blue-500/10 text-blue-700 dark:text-blue-400"
                         : "border-border bg-card text-muted-foreground"
@@ -871,7 +966,7 @@ export const CurfewPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setReqType("OVERNIGHT")}
-                    className={`py-2 px-3 rounded-xl border text-center font-bold ${
+                    className={`rounded-xl border px-3 py-2 text-center font-bold ${
                       reqType === "OVERNIGHT"
                         ? "border-blue-500 bg-blue-500/10 text-blue-700 dark:text-blue-400"
                         : "border-border bg-card text-muted-foreground"
@@ -884,36 +979,50 @@ export const CurfewPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="font-semibold text-foreground">Ngày vắng</label>
+                  <label className="font-semibold text-foreground">
+                    Ngày vắng
+                  </label>
                   <input
                     type="date"
                     value={reqDate}
                     onChange={(e) => setReqDate(e.target.value)}
-                    className="w-full mt-1 rounded-xl border border-border bg-card px-3 py-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-border bg-card px-3 py-2 text-xs"
                   />
                 </div>
                 <div>
-                  <label className="font-semibold text-foreground">Giờ về dự kiến</label>
+                  <label className="font-semibold text-foreground">
+                    Giờ về dự kiến
+                  </label>
                   <input
                     type="text"
                     value={reqTime}
                     onChange={(e) => setReqTime(e.target.value)}
                     placeholder="VD: 23:45 hoặc 06:30 sáng"
-                    className="w-full mt-1 rounded-xl border border-border bg-card px-3 py-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-border bg-card px-3 py-2 text-xs"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="font-semibold text-foreground">Mục đích lý do</label>
+                <label className="font-semibold text-foreground">
+                  Mục đích lý do
+                </label>
                 <select
                   value={reqCategory}
-                  onChange={(e) => setReqCategory(e.target.value as CurfewReasonCategory)}
-                  className="w-full mt-1 rounded-xl border border-border bg-card px-3 py-2 text-xs"
+                  onChange={(e) =>
+                    setReqCategory(e.target.value as CurfewReasonCategory)
+                  }
+                  className="mt-1 w-full rounded-xl border border-border bg-card px-3 py-2 text-xs"
                 >
-                  <option value="STUDY">Học tập / Làm đồ án môn học Capstone</option>
-                  <option value="PART_TIME_JOB">Làm thêm ca tối có hợp đồng</option>
-                  <option value="HOME_VISIT">Về quê / Thăm gia đình cuối tuần</option>
+                  <option value="STUDY">
+                    Học tập / Làm đồ án môn học Capstone
+                  </option>
+                  <option value="PART_TIME_JOB">
+                    Làm thêm ca tối có hợp đồng
+                  </option>
+                  <option value="HOME_VISIT">
+                    Về quê / Thăm gia đình cuối tuần
+                  </option>
                   <option value="MEDICAL">Khám chữa bệnh / Lý do y tế</option>
                   <option value="FAMILY_EVENT">Việc hiếu hỉ thân nhân</option>
                   <option value="OTHER">Lý do khác</option>
@@ -921,23 +1030,27 @@ export const CurfewPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-semibold text-foreground">Giải trình chi tiết lý do</label>
+                <label className="font-semibold text-foreground">
+                  Giải trình chi tiết lý do
+                </label>
                 <textarea
                   rows={2}
                   value={reqDetail}
                   onChange={(e) => setReqDetail(e.target.value)}
                   placeholder="Ghi rõ địa điểm học tập/làm việc, người cùng đi..."
-                  className="w-full mt-1 rounded-xl border border-border bg-card p-2.5 text-xs"
+                  className="mt-1 w-full rounded-xl border border-border bg-card p-2.5 text-xs"
                 />
               </div>
 
               <div>
-                <label className="font-semibold text-foreground">Số điện thoại phụ huynh xác nhận</label>
+                <label className="font-semibold text-foreground">
+                  Số điện thoại phụ huynh xác nhận
+                </label>
                 <input
                   type="text"
                   value={reqParentPhone}
                   onChange={(e) => setReqParentPhone(e.target.value)}
-                  className="w-full mt-1 rounded-xl border border-border bg-card px-3 py-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-border bg-card px-3 py-2 text-xs"
                 />
               </div>
 
@@ -949,14 +1062,17 @@ export const CurfewPage: React.FC = () => {
                   onChange={(e) => setReqParentConfirmed(e.target.checked)}
                   className="rounded border-border text-blue-600 focus:ring-blue-500"
                 />
-                <label htmlFor="parentConfirmedCheck" className="text-[11px] text-muted-foreground">
+                <label
+                  htmlFor="parentConfirmedCheck"
+                  className="text-[11px] text-muted-foreground"
+                >
                   Phụ huynh đã được thông báo và đồng ý
                 </label>
               </div>
 
               <button
                 type="submit"
-                className="w-full mt-2 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white py-2.5 text-xs font-bold shadow-xs transition-colors"
+                className="mt-2 w-full rounded-2xl bg-blue-600 py-2.5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-blue-700"
               >
                 Gửi Đơn Xin Phép
               </button>
@@ -964,9 +1080,9 @@ export const CurfewPage: React.FC = () => {
           </div>
 
           {/* Right Column: List of Requests with Manager Action Buttons */}
-          <div className="lg:col-span-2 rounded-3xl border border-border bg-card p-6 shadow-xs space-y-4">
+          <div className="space-y-4 rounded-3xl border border-border bg-card p-6 shadow-xs lg:col-span-2">
             <div className="flex items-center justify-between border-b border-border pb-3">
-              <h3 className="font-bold text-sm text-foreground">
+              <h3 className="text-sm font-bold text-foreground">
                 {isGuardOrManager
                   ? `Danh Sách Đơn Cần Phê Duyệt (${requests.length})`
                   : `Các Đơn Của Tôi Đã Nộp (${requests.filter((r) => r.studentId === (user?.studentId || "SE182049")).length})`}
@@ -981,43 +1097,49 @@ export const CurfewPage: React.FC = () => {
             <div className="space-y-3">
               {(isGuardOrManager
                 ? requests
-                : requests.filter((r) => r.studentId === (user?.studentId || "SE182049"))
+                : requests.filter(
+                    (r) => r.studentId === (user?.studentId || "SE182049")
+                  )
               ).map((req) => (
                 <div
                   key={req.id}
-                  className="p-4 rounded-2xl border border-border bg-muted/20 space-y-2.5 hover:bg-muted/30 transition-colors"
+                  className="space-y-2.5 rounded-2xl border border-border bg-muted/20 p-4 transition-colors hover:bg-muted/30"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-bold bg-muted px-2 py-0.5 rounded-md">
+                      <span className="rounded-md bg-muted px-2 py-0.5 font-mono text-xs font-bold">
                         {req.id}
                       </span>
-                      <span className="font-bold text-xs text-foreground">
+                      <span className="text-xs font-bold text-foreground">
                         {req.studentName} ({req.studentId})
                       </span>
-                      <span className="text-[11px] text-muted-foreground">• Phòng {req.room}</span>
+                      <span className="text-[11px] text-muted-foreground">
+                        • Phòng {req.room}
+                      </span>
                     </div>
 
                     <div className="flex items-center gap-1.5">
                       {/* Before 21:00 badge */}
                       <span
-                        className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
+                        className={`rounded-full px-2 py-0.5 text-[9px] font-bold ${
                           req.isSubmittedBefore2100
                             ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
-                            : "bg-red-500/10 text-red-600"
+                            : "bg-blue-500/10 text-blue-600"
                         }`}
                       >
-                        {req.isSubmittedBefore2100 ? "Nộp trước 21:00" : "Nộp muộn sau 21:00"}
+                        {req.isSubmittedBefore2100
+                          ? "Nộp trước 21:00"
+                          : "Nộp muộn sau 21:00"}
                       </span>
 
                       {/* Status */}
                       <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                        className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
                           req.status === "APPROVED"
                             ? "bg-emerald-600 text-white"
                             : req.status === "REJECTED"
-                            ? "bg-red-600 text-white"
-                            : "bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30"
+                              ? "bg-blue-600 text-white"
+                              : "border border-cyan-500/30 bg-cyan-500/20 text-cyan-700 dark:text-cyan-400"
                         }`}
                       >
                         {req.status === "APPROVED" && "Đã phê duyệt"}
@@ -1027,27 +1149,41 @@ export const CurfewPage: React.FC = () => {
                     </div>
                   </div>
 
-                  <p className="text-xs text-foreground font-medium">
-                    Lý do: <span className="text-muted-foreground">{req.reasonDetail}</span>
+                  <p className="text-xs font-medium text-foreground">
+                    Lý do:{" "}
+                    <span className="text-muted-foreground">
+                      {req.reasonDetail}
+                    </span>
                   </p>
 
-                  <div className="flex flex-wrap items-center justify-between text-[11px] text-muted-foreground pt-1 border-t border-border/60">
+                  <div className="flex flex-wrap items-center justify-between border-t border-border/60 pt-1 text-[11px] text-muted-foreground">
                     <div>
-                      <span>Ngày: <strong>{req.date}</strong></span> • <span>Dự kiến về: <strong>{req.expectedReturnTime}</strong></span> • <span>Phụ huynh: {req.parentPhone}</span>
+                      <span>
+                        Ngày: <strong>{req.date}</strong>
+                      </span>{" "}
+                      •{" "}
+                      <span>
+                        Dự kiến về: <strong>{req.expectedReturnTime}</strong>
+                      </span>{" "}
+                      • <span>Phụ huynh: {req.parentPhone}</span>
                     </div>
 
                     {/* Review Actions: ONLY FOR BQL/MANAGER/GUARD */}
                     {isGuardOrManager && req.status === "PENDING" && (
-                      <div className="flex gap-1.5 mt-1 sm:mt-0">
+                      <div className="mt-1 flex gap-1.5 sm:mt-0">
                         <button
-                          onClick={() => handleReviewRequest(req.id, "APPROVED")}
-                          className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold shadow-xs"
+                          onClick={() =>
+                            handleReviewRequest(req.id, "APPROVED")
+                          }
+                          className="rounded-lg bg-emerald-600 px-2.5 py-1 text-[11px] font-bold text-white shadow-xs hover:bg-emerald-700"
                         >
                           Duyệt đơn
                         </button>
                         <button
-                          onClick={() => handleReviewRequest(req.id, "REJECTED")}
-                          className="px-2.5 py-1 rounded-lg bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold shadow-xs"
+                          onClick={() =>
+                            handleReviewRequest(req.id, "REJECTED")
+                          }
+                          className="rounded-lg bg-blue-600 px-2.5 py-1 text-[11px] font-bold text-white shadow-xs hover:bg-blue-700"
                         >
                           Từ chối
                         </button>
@@ -1055,7 +1191,7 @@ export const CurfewPage: React.FC = () => {
                     )}
 
                     {!isGuardOrManager && req.status === "PENDING" && (
-                      <span className="text-[11px] font-semibold text-amber-600 dark:text-amber-400 mt-1 sm:mt-0">
+                      <span className="mt-1 text-[11px] font-semibold text-cyan-600 sm:mt-0 dark:text-cyan-400">
                         Đang được BQL xem xét
                       </span>
                     )}
@@ -1065,9 +1201,11 @@ export const CurfewPage: React.FC = () => {
 
               {(isGuardOrManager
                 ? requests
-                : requests.filter((r) => r.studentId === (user?.studentId || "SE182049"))
+                : requests.filter(
+                    (r) => r.studentId === (user?.studentId || "SE182049")
+                  )
               ).length === 0 && (
-                <div className="p-8 text-center text-muted-foreground text-xs rounded-2xl border border-dashed border-border bg-muted/10">
+                <div className="rounded-2xl border border-dashed border-border bg-muted/10 p-8 text-center text-xs text-muted-foreground">
                   {isGuardOrManager
                     ? "Hiện tại không có đơn xin ra vào ngoài giờ nào trong danh sách."
                     : "Bạn chưa có đơn xin vắng mặt hoặc về muộn nào. Vui lòng điền mẫu bên trái để nộp đơn mới."}
@@ -1079,28 +1217,31 @@ export const CurfewPage: React.FC = () => {
       )}
 
       {/* ========================================================= */}
-      {/* TAB 3: BIÊN BẢN VI PHẠM & ĐIỂM KỶ LUẬT (UC-26)            */}
+      {/* TAB 3: BIÊN BẢN VI PHẠM & ĐIỂM KỶ LUẬT */}
       {/* ========================================================= */}
       {activeTab === "DISCIPLINE" && (
         <div className="space-y-6">
           {/* Summary of Student Demerit Points */}
-          <div className="rounded-3xl border border-border bg-card p-6 shadow-xs space-y-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-border pb-3">
+          <div className="space-y-4 rounded-3xl border border-border bg-card p-6 shadow-xs">
+            <div className="flex flex-col items-start justify-between gap-2 border-b border-border pb-3 sm:flex-row sm:items-center">
               <div>
-                <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                <h3 className="flex items-center gap-2 text-sm font-bold text-foreground">
                   <ShieldCheck className="h-4 w-4 text-emerald-600" />
                   Bảng Theo Dõi Điểm Rèn Luyện Lưu Trú KTX (100 Điểm Ban Đầu)
                 </h3>
                 <p className="text-xs text-muted-foreground">
-                  Quy chế: Bị trừ &gt; 20 điểm (Cảnh cáo) • Bị trừ &gt; 30 điểm (Đình chỉ lưu trú kỳ sau)
+                  Quy chế: Bị trừ &gt; 20 điểm (Cảnh cáo) • Bị trừ &gt; 30 điểm
+                  (Đình chỉ lưu trú kỳ sau)
                 </p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
               {(isGuardOrManager
                 ? demerits
-                : demerits.filter((d) => d.studentId === (user?.studentId || "SE182049"))
+                : demerits.filter(
+                    (d) => d.studentId === (user?.studentId || "SE182049")
+                  )
               ).map((student) => {
                 const percent = student.remainingPoints
                 const isWarning = student.status === "WARNING"
@@ -1109,44 +1250,54 @@ export const CurfewPage: React.FC = () => {
                 return (
                   <div
                     key={student.studentId}
-                    className={`p-4 rounded-2xl border transition-all ${
+                    className={`rounded-2xl border p-4 transition-all ${
                       isSuspended
-                        ? "border-red-500/40 bg-red-500/5"
+                        ? "border-blue-500/40 bg-blue-500/5"
                         : isWarning
-                        ? "border-amber-500/40 bg-amber-500/5"
-                        : "border-border bg-card"
+                          ? "border-cyan-500/40 bg-cyan-500/5"
+                          : "border-border bg-card"
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <span className="font-mono text-[10px] text-muted-foreground font-bold">
+                        <span className="font-mono text-[10px] font-bold text-muted-foreground">
                           {student.studentId}
                         </span>
-                        <h4 className="font-bold text-xs text-foreground">{student.studentName}</h4>
-                        <span className="text-[10px] text-muted-foreground">Phòng {student.room}</span>
+                        <h4 className="text-xs font-bold text-foreground">
+                          {student.studentName}
+                        </h4>
+                        <span className="text-[10px] text-muted-foreground">
+                          Phòng {student.room}
+                        </span>
                       </div>
 
                       <div className="text-right">
                         <span
                           className={`text-xl font-black ${
                             isSuspended
-                              ? "text-red-600"
+                              ? "text-blue-600"
                               : isWarning
-                              ? "text-amber-600"
-                              : "text-emerald-600"
+                                ? "text-cyan-600"
+                                : "text-emerald-600"
                           }`}
                         >
                           {student.remainingPoints}
                         </span>
-                        <span className="text-[10px] text-muted-foreground">/100đ</span>
+                        <span className="text-[10px] text-muted-foreground">
+                          /100đ
+                        </span>
                       </div>
                     </div>
 
                     {/* Progress Bar */}
-                    <div className="mt-3 w-full bg-muted rounded-full h-2 overflow-hidden">
+                    <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-muted">
                       <div
                         className={`h-full transition-all ${
-                          isSuspended ? "bg-red-500" : isWarning ? "bg-amber-500" : "bg-emerald-500"
+                          isSuspended
+                            ? "bg-blue-500"
+                            : isWarning
+                              ? "bg-cyan-500"
+                              : "bg-emerald-500"
                         }`}
                         style={{ width: `${percent}%` }}
                       />
@@ -1154,18 +1305,23 @@ export const CurfewPage: React.FC = () => {
 
                     <div className="mt-2.5 flex items-center justify-between text-[10px]">
                       <span className="text-muted-foreground">
-                        Đã trừ: <strong>{student.totalDeducted}đ</strong> ({student.violationCount} lần)
+                        Đã trừ: <strong>{student.totalDeducted}đ</strong> (
+                        {student.violationCount} lần)
                       </span>
                       <span
-                        className={`font-bold px-2 py-0.5 rounded-full ${
+                        className={`rounded-full px-2 py-0.5 font-bold ${
                           isSuspended
-                            ? "bg-red-600 text-white"
+                            ? "bg-blue-600 text-white"
                             : isWarning
-                            ? "bg-amber-500/20 text-amber-700 dark:text-amber-300"
-                            : "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+                              ? "bg-cyan-500/20 text-cyan-700 dark:text-cyan-300"
+                              : "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
                         }`}
                       >
-                        {isSuspended ? "ĐÌNH CHỈ KỲ SAU" : isWarning ? "CẢNH BÁO CẤP 1" : "TỐT"}
+                        {isSuspended
+                          ? "ĐÌNH CHỈ KỲ SAU"
+                          : isWarning
+                            ? "CẢNH BÁO CẤP 1"
+                            : "TỐT"}
                       </span>
                     </div>
                   </div>
@@ -1176,118 +1332,160 @@ export const CurfewPage: React.FC = () => {
 
           {/* Form to create infraction report: ONLY for Guard / Manager / Admin */}
           {isGuardOrManager ? (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="rounded-3xl border border-border bg-card p-6 shadow-xs space-y-4">
-                <div className="flex items-center gap-2 border-b border-border pb-3 text-red-600">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+              <div className="space-y-4 rounded-3xl border border-border bg-card p-6 shadow-xs">
+                <div className="flex items-center gap-2 border-b border-border pb-3 text-blue-600">
                   <AlertTriangle className="h-5 w-5" />
-                  <h3 className="font-bold text-sm text-foreground">
-                    Lập Biên Bản Vi Phạm Trực Tuyến (UC-26)
+                  <h3 className="text-sm font-bold text-foreground">
+                    Lập Biên Bản Vi Phạm Trực Tuyến
                   </h3>
                 </div>
 
-              <form onSubmit={handleCreateDisciplineReport} className="space-y-3.5 text-xs">
-                <div>
-                  <label className="font-semibold text-foreground">Sinh viên vi phạm</label>
-                  <select
-                    value={vioStudentId}
-                    onChange={(e) => setVioStudentId(e.target.value)}
-                    className="w-full mt-1 rounded-xl border border-border bg-card px-3 py-2 text-xs"
-                  >
-                    <option value="SE182053">SE182053 - Lê Minh Tuấn (A204)</option>
-                    <option value="SE182056">SE182056 - Đoàn Gia Bảo (A201)</option>
-                    <option value="SE182057">SE182057 - Ngô Văn Khải (A302)</option>
-                    <option value="SE182049">SE182049 - Nguyễn Hoàng Vinh (A205)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="font-semibold text-foreground">Hành vi vi phạm nội quy</label>
-                  <select
-                    value={vioType}
-                    onChange={(e) => setVioType(e.target.value as InfractionType)}
-                    className="w-full mt-1 rounded-xl border border-border bg-card px-3 py-2 text-xs font-semibold"
-                  >
-                    <option value="CURFEW_VIOLATION">Vi phạm giờ giới nghiêm 23:00 (-10đ)</option>
-                    <option value="UNAUTHORIZED_COOKING">Nấu ăn sai quy định trong phòng (-15đ)</option>
-                    <option value="NOISE_AFTER_HOURS">Làm ồn loa kéo sau 22:30 (-10đ)</option>
-                    <option value="SMOKING_VAPING">Hút thuốc lá / Pod trong phòng (-20đ)</option>
-                    <option value="UNAUTHORIZED_GUEST">Đưa người lạ ngủ qua đêm (-25đ)</option>
-                    <option value="HIGH_POWER_APPLIANCE">Thiết bị điện quá tải 1500W (-15đ)</option>
-                    <option value="OTHER">Vi phạm khác (-5đ)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="font-semibold text-foreground">Mô tả biên bản hiện trường</label>
-                  <textarea
-                    rows={3}
-                    value={vioDescription}
-                    onChange={(e) => setVioDescription(e.target.value)}
-                    placeholder="Ghi nhận biên bản tuần tra, tang vật thu giữ nếu có..."
-                    className="w-full mt-1 rounded-xl border border-border bg-card p-2.5 text-xs"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full mt-2 rounded-2xl bg-red-600 hover:bg-red-700 text-white py-2.5 text-xs font-bold shadow-xs transition-colors"
+                <form
+                  onSubmit={handleCreateDisciplineReport}
+                  className="space-y-3.5 text-xs"
                 >
-                  Ký Biên Bản & Trừ Điểm
-                </button>
-              </form>
-            </div>
+                  <div>
+                    <label className="font-semibold text-foreground">
+                      Sinh viên vi phạm
+                    </label>
+                    <select
+                      value={vioStudentId}
+                      onChange={(e) => setVioStudentId(e.target.value)}
+                      className="mt-1 w-full rounded-xl border border-border bg-card px-3 py-2 text-xs"
+                    >
+                      <option value="SE182053">
+                        SE182053 - Lê Minh Tuấn (A204)
+                      </option>
+                      <option value="SE182056">
+                        SE182056 - Đoàn Gia Bảo (A201)
+                      </option>
+                      <option value="SE182057">
+                        SE182057 - Ngô Văn Khải (A302)
+                      </option>
+                      <option value="SE182049">
+                        SE182049 - Nguyễn Hoàng Vinh (A205)
+                      </option>
+                    </select>
+                  </div>
 
-            {/* List of Violation Records */}
-            <div className="lg:col-span-2 rounded-3xl border border-border bg-card p-6 shadow-xs space-y-4">
-              <div className="flex items-center justify-between border-b border-border pb-3">
-                <h3 className="font-bold text-sm text-foreground">
-                  Danh Sách Biên Bản Xử Lý Kỷ Luật ({violations.length})
-                </h3>
-                <span className="text-xs text-muted-foreground font-mono">Lưu trữ chính thức KTX</span>
+                  <div>
+                    <label className="font-semibold text-foreground">
+                      Hành vi vi phạm nội quy
+                    </label>
+                    <select
+                      value={vioType}
+                      onChange={(e) =>
+                        setVioType(e.target.value as InfractionType)
+                      }
+                      className="mt-1 w-full rounded-xl border border-border bg-card px-3 py-2 text-xs font-semibold"
+                    >
+                      <option value="CURFEW_VIOLATION">
+                        Vi phạm giờ giới nghiêm 23:00 (-10đ)
+                      </option>
+                      <option value="UNAUTHORIZED_COOKING">
+                        Nấu ăn sai quy định trong phòng (-15đ)
+                      </option>
+                      <option value="NOISE_AFTER_HOURS">
+                        Làm ồn loa kéo sau 22:30 (-10đ)
+                      </option>
+                      <option value="SMOKING_VAPING">
+                        Hút thuốc lá / Pod trong phòng (-20đ)
+                      </option>
+                      <option value="UNAUTHORIZED_GUEST">
+                        Đưa người lạ ngủ qua đêm (-25đ)
+                      </option>
+                      <option value="HIGH_POWER_APPLIANCE">
+                        Thiết bị điện quá tải 1500W (-15đ)
+                      </option>
+                      <option value="OTHER">Vi phạm khác (-5đ)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="font-semibold text-foreground">
+                      Mô tả biên bản hiện trường
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={vioDescription}
+                      onChange={(e) => setVioDescription(e.target.value)}
+                      placeholder="Ghi nhận biên bản tuần tra, tang vật thu giữ nếu có..."
+                      className="mt-1 w-full rounded-xl border border-border bg-card p-2.5 text-xs"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="mt-2 w-full rounded-2xl bg-blue-600 py-2.5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-blue-700"
+                  >
+                    Ký Biên Bản & Trừ Điểm
+                  </button>
+                </form>
               </div>
 
-              <div className="space-y-3">
-                {violations.map((vio) => (
-                  <div
-                    key={vio.id}
-                    className="p-4 rounded-2xl border border-border bg-muted/20 space-y-2 hover:bg-muted/30 transition-colors"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-bold bg-muted px-2 py-0.5 rounded-md">
-                          {vio.id}
+              {/* List of Violation Records */}
+              <div className="space-y-4 rounded-3xl border border-border bg-card p-6 shadow-xs lg:col-span-2">
+                <div className="flex items-center justify-between border-b border-border pb-3">
+                  <h3 className="text-sm font-bold text-foreground">
+                    Danh Sách Biên Bản Xử Lý Kỷ Luật ({violations.length})
+                  </h3>
+                  <span className="font-mono text-xs text-muted-foreground">
+                    Lưu trữ chính thức KTX
+                  </span>
+                </div>
+
+                <div className="space-y-3">
+                  {violations.map((vio) => (
+                    <div
+                      key={vio.id}
+                      className="space-y-2 rounded-2xl border border-border bg-muted/20 p-4 transition-colors hover:bg-muted/30"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="rounded-md bg-muted px-2 py-0.5 font-mono text-xs font-bold">
+                            {vio.id}
+                          </span>
+                          <span className="text-xs font-bold text-foreground">
+                            {vio.studentName} ({vio.studentId})
+                          </span>
+                          <span className="text-[11px] text-muted-foreground">
+                            • Phòng {vio.room}
+                          </span>
+                        </div>
+
+                        <span className="rounded-md bg-blue-500/10 px-2 py-0.5 text-xs font-bold text-blue-600">
+                          -{vio.pointsDeducted} điểm
                         </span>
-                        <span className="font-bold text-xs text-foreground">
-                          {vio.studentName} ({vio.studentId})
-                        </span>
-                        <span className="text-[11px] text-muted-foreground">• Phòng {vio.room}</span>
                       </div>
 
-                      <span className="font-bold text-xs text-red-600 bg-red-500/10 px-2 py-0.5 rounded-md">
-                        -{vio.pointsDeducted} điểm
-                      </span>
-                    </div>
+                      <p className="text-xs font-semibold text-foreground">
+                        {vio.infractionTitle}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {vio.description}
+                      </p>
 
-                    <p className="font-semibold text-xs text-foreground">{vio.infractionTitle}</p>
-                    <p className="text-xs text-muted-foreground">{vio.description}</p>
-
-                    <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-1 border-t border-border/60">
-                      <span>Cán bộ lập: {vio.officerName}</span>
-                      <span className="font-mono">{vio.date}</span>
+                      <div className="flex items-center justify-between border-t border-border/60 pt-1 text-[10px] text-muted-foreground">
+                        <span>Cán bộ lập: {vio.officerName}</span>
+                        <span className="font-mono">{vio.date}</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
           ) : (
-            <div className="p-6 rounded-3xl border border-emerald-500/20 bg-emerald-500/5 text-xs text-foreground space-y-3">
-              <h4 className="font-bold text-sm text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
+            <div className="space-y-3 rounded-3xl border border-emerald-500/20 bg-emerald-500/5 p-6 text-xs text-foreground">
+              <h4 className="flex items-center gap-2 text-sm font-bold text-emerald-800 dark:text-emerald-300">
                 <ShieldCheck className="h-4 w-4" />
                 Quy Chế Khen Thưởng & Kỷ Luật Sinh Viên Nội Trú
               </h4>
-              <p className="text-muted-foreground leading-relaxed">
-                Mỗi sinh viên bắt đầu học kỳ với 100 điểm rèn luyện. Việc chấp hành đúng giờ giới nghiêm 23:00 và bảo quản tốt trang thiết bị phòng ở sẽ giúp duy trì điểm số tối đa, làm căn cứ ưu tiên xét chọn phòng và giường ở các học kỳ tiếp theo.
+              <p className="leading-relaxed text-muted-foreground">
+                Mỗi sinh viên bắt đầu học kỳ với 100 điểm rèn luyện. Việc chấp
+                hành đúng giờ giới nghiêm 23:00 và bảo quản tốt trang thiết bị
+                phòng ở sẽ giúp duy trì điểm số tối đa, làm căn cứ ưu tiên xét
+                chọn phòng và giường ở các học kỳ tiếp theo.
               </p>
             </div>
           )}

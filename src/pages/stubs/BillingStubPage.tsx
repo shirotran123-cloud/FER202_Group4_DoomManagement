@@ -12,7 +12,7 @@ export const BillingStubPage: React.FC = () => {
             </div>
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-blue-600">
-                Module 4 • Use Case UC-14 - UC-19
+                Module 4 • Quản lý điện nước và hóa đơn
               </span>
               <h1 className="text-2xl font-black text-foreground">
                 Quản Lý Chỉ Số Điện Nước Phòng & Hóa Đơn Chia Đều (Total / N)
@@ -28,7 +28,7 @@ export const BillingStubPage: React.FC = () => {
         <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
           <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
             <Camera className="h-5 w-5 text-blue-600" />
-            <h3 className="font-bold text-foreground">1. Nhập Số Công Tơ Kèm Ảnh (UC-16)</h3>
+            <h3 className="font-bold text-foreground">1. Nhập Số Công Tơ Kèm Ảnh</h3>
             <p className="text-muted-foreground leading-relaxed">
               Quản lý chụp ảnh đồng hồ điện nước ngày 25-28 hàng tháng, nhập kWh và m³ với cơ chế cảnh báo nếu tiêu thụ tăng đột biến 200%.
             </p>
@@ -36,7 +36,7 @@ export const BillingStubPage: React.FC = () => {
 
           <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
             <Calculator className="h-5 w-5 text-emerald-600" />
-            <h3 className="font-bold text-foreground">2. Thuật Toán Chia Tiền Phòng (UC-17)</h3>
+            <h3 className="font-bold text-foreground">2. Thuật Toán Chia Tiền Phòng</h3>
             <p className="text-muted-foreground leading-relaxed">
               Tự động cộng thuế VAT (Điện 8%, Nước 5%) và chia đều cho N sinh viên đang cư trú thực tế theo tỷ lệ số ngày ở (Pro-rata).
             </p>
@@ -44,7 +44,7 @@ export const BillingStubPage: React.FC = () => {
 
           <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
             <QrCode className="h-5 w-5 text-purple-600" />
-            <h3 className="font-bold text-foreground">3. Thanh Toán VietQR Cá Nhân (UC-18)</h3>
+            <h3 className="font-bold text-foreground">3. Thanh Toán VietQR Cá Nhân</h3>
             <p className="text-muted-foreground leading-relaxed">
               Mỗi sinh viên sở hữu mã VietQR riêng có cú pháp chuẩn `DMS [MãHĐ] [MSSV]`, tự động gạch nợ sau khi chuyển khoản.
             </p>
@@ -72,9 +72,9 @@ export const BillingStubPage: React.FC = () => {
             <p className="text-lg font-bold text-foreground">6 Sinh viên</p>
             <p className="text-[10px] text-muted-foreground">Buồng B1 & B2</p>
           </div>
-          <div className="p-4 rounded-2xl bg-orange-500/10 border border-orange-500/30 space-y-1">
-            <p className="text-orange-600 dark:text-orange-400 text-[11px] font-bold">Mỗi người đóng (Total / N)</p>
-            <p className="text-lg font-bold text-orange-600 dark:text-orange-400">142.500 VNĐ</p>
+          <div className="p-4 rounded-2xl bg-sky-500/10 border border-sky-500/30 space-y-1">
+            <p className="text-sky-600 dark:text-sky-400 text-[11px] font-bold">Mỗi người đóng (Total / N)</p>
+            <p className="text-lg font-bold text-sky-600 dark:text-sky-400">142.500 VNĐ</p>
             <p className="text-[10px] text-muted-foreground">Bao gồm 30k phí vệ sinh</p>
           </div>
         </div>

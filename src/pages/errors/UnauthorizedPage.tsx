@@ -15,13 +15,13 @@ export const UnauthorizedPage: React.FC = () => {
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center py-12 px-4">
-      <div className="max-w-md w-full rounded-3xl border border-red-500/20 bg-card p-8 text-center shadow-lg space-y-6">
-        <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-red-500/10 text-red-600 dark:text-red-400">
+      <div className="max-w-md w-full rounded-3xl border border-blue-500/20 bg-card p-8 text-center shadow-lg space-y-6">
+        <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
           <ShieldAlert className="h-8 w-8" />
         </div>
 
         <div className="space-y-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-red-600">
+          <span className="text-xs font-bold uppercase tracking-wider text-blue-600">
             Lỗi 403 • Không đủ thẩm quyền
           </span>
           <h1 className="text-xl sm:text-2xl font-black text-foreground">
@@ -58,7 +58,7 @@ export const UnauthorizedPage: React.FC = () => {
         <div className="flex items-center justify-center gap-3 pt-2">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 rounded-xl bg-orange-600 px-5 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-orange-700"
+            className="inline-flex items-center gap-2 rounded-xl bg-sky-600 px-5 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-sky-700"
           >
             <Home className="h-4 w-4" />
             <span>Quay lại Trang chủ</span>

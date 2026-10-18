@@ -38,13 +38,13 @@ export const ManagerHeaderStats: React.FC<ManagerHeaderStatsProps> = ({ stats })
         </span>
       </Card>
 
-      <Card className="border-amber-500/20 bg-amber-500/5 p-4 shadow-xs">
-        <div className="flex items-center justify-between text-amber-600 dark:text-amber-400 text-[11px] font-medium">
+      <Card className="border-cyan-500/20 bg-cyan-500/5 p-4 shadow-xs">
+        <div className="flex items-center justify-between text-cyan-600 dark:text-cyan-400 text-[11px] font-medium">
           <span>Sự cố đang xử lý</span>
           <Zap className="h-4 w-4" />
         </div>
-        <p className="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1">2 phiếu</p>
-        <span className="text-[10px] text-amber-600/80 dark:text-amber-400/80">
+        <p className="text-2xl font-black text-cyan-600 dark:text-cyan-400 mt-1">2 phiếu</p>
+        <span className="text-[10px] text-cyan-600/80 dark:text-cyan-400/80">
           1 ca khẩn cấp &lt;2h
         </span>
       </Card>

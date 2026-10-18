@@ -44,15 +44,15 @@ export const MaintenanceTicketCard: React.FC<MaintenanceTicketCardProps> = ({
 
   return (
     <Card
-      className={`p-5 flex flex-col justify-between hover:shadow-md transition-all ${
-        isEmergency ? "border-destructive/40 bg-destructive/5" : ""
+      className={`flex flex-col justify-between p-5 transition-all hover:shadow-md ${
+        isEmergency ? "border-destructive/40" : ""
       }`}
     >
       <div>
         {/* Card Header: Code, Badges, Status */}
-        <div className="flex items-start justify-between gap-2 mb-3">
+        <div className="mb-3 flex items-start justify-between gap-2">
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="font-mono text-xs font-bold text-foreground bg-muted px-2 py-0.5 rounded-md border border-border">
+            <span className="rounded-md border border-border bg-muted px-2 py-0.5 font-mono text-xs font-bold text-foreground">
               {ticket.id}
             </span>
 
@@ -68,7 +68,10 @@ export const MaintenanceTicketCard: React.FC<MaintenanceTicketCardProps> = ({
                 <span>Khẩn cấp (2h)</span>
               </Badge>
             ) : (
-              <Badge variant="outline" className="text-muted-foreground font-normal">
+              <Badge
+                variant="outline"
+                className="font-normal text-muted-foreground"
+              >
                 Bình thường
               </Badge>
             )}
@@ -82,13 +85,15 @@ export const MaintenanceTicketCard: React.FC<MaintenanceTicketCardProps> = ({
         </div>
 
         {/* Title & Description */}
-        <h3 className="font-bold text-base text-foreground line-clamp-1">{ticket.title}</h3>
-        <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed">
+        <h3 className="line-clamp-1 text-base font-bold text-foreground">
+          {ticket.title}
+        </h3>
+        <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
           {ticket.description}
         </p>
 
         {/* Location Meta Box */}
-        <div className="mt-3 grid grid-cols-2 gap-2 text-xs bg-muted/40 p-2.5 rounded-xl border border-border">
+        <div className="mt-3 grid grid-cols-2 gap-2 rounded-xl border border-border bg-muted p-2.5 text-xs">
           <div>
             <span className="text-muted-foreground">Vị trí: </span>
             <strong className="text-foreground">
@@ -107,17 +112,20 @@ export const MaintenanceTicketCard: React.FC<MaintenanceTicketCardProps> = ({
           </div>
           <div>
             <span className="text-muted-foreground">Thời gian: </span>
-            <span className="font-mono text-foreground/80">{ticket.createdAt}</span>
+            <span className="font-mono text-foreground/80">
+              {ticket.createdAt}
+            </span>
           </div>
         </div>
 
         {/* Assigned Technician if available */}
         {ticket.assignedTechnician && (
-          <div className="mt-2.5 flex items-center justify-between text-xs bg-secondary/10 border border-secondary/20 p-2 rounded-xl text-secondary">
+          <div className="mt-2.5 flex items-center justify-between rounded-xl border border-secondary/20 bg-muted p-2 text-xs text-secondary">
             <div className="flex items-center gap-1.5">
               <UserCheck className="h-3.5 w-3.5" />
               <span>
-                Kỹ thuật: <strong>{ticket.assignedTechnician.name}</strong> ({ticket.assignedTechnician.phone})
+                Kỹ thuật: <strong>{ticket.assignedTechnician.name}</strong> (
+                {ticket.assignedTechnician.phone})
               </span>
             </div>
             <span className="text-[11px] font-medium">
@@ -128,8 +136,8 @@ export const MaintenanceTicketCard: React.FC<MaintenanceTicketCardProps> = ({
 
         {/* Review Stars if closed */}
         {ticket.review && (
-          <div className="mt-2.5 flex items-center gap-2 text-xs bg-primary/10 border border-primary/20 p-2 rounded-xl text-primary">
-            <div className="flex text-amber-500">
+          <div className="mt-2.5 flex items-center gap-2 rounded-xl border border-primary/20 bg-muted p-2 text-xs text-primary">
+            <div className="flex text-cyan-500">
               {[...Array(ticket.review.rating)].map((_, i) => (
                 <Star key={i} className="h-3.5 w-3.5 fill-current" />
               ))}
@@ -142,7 +150,7 @@ export const MaintenanceTicketCard: React.FC<MaintenanceTicketCardProps> = ({
       </div>
 
       {/* Card Actions Footer */}
-      <div className="mt-4 pt-3 border-t border-border flex flex-wrap items-center justify-between gap-2">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3">
         <div className="flex items-center gap-1.5">
           <Button
             variant="outline"
@@ -208,7 +216,7 @@ export const MaintenanceTicketCard: React.FC<MaintenanceTicketCardProps> = ({
               variant="default"
               size="sm"
               onClick={() => onReview(ticket)}
-              className="gap-1 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white"
+              className="gap-1 bg-cyan-500 text-xs font-bold text-white hover:bg-cyan-600"
             >
               <Star className="h-3.5 w-3.5 fill-current" />
               <span>Đánh giá sao</span>

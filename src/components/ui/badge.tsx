@@ -11,10 +11,10 @@ const badgeVariants = cva(
         secondary: "bg-secondary text-secondary-foreground",
         accent: "bg-accent text-accent-foreground font-bold",
         outline: "border border-border text-foreground",
-        available: "bg-[#679436]/15 text-[#4e7426] dark:text-[#a5be00] border border-[#679436]/30",
-        holding: "bg-[#d97706]/15 text-[#b45309] dark:text-[#fbbf24] border border-[#d97706]/30",
+        available: "bg-[#679436]/15 text-[#4e7426] dark:text-[#2dd4bf] border border-[#679436]/30",
+        holding: "bg-[#0891b2]/15 text-[#0e7490] dark:text-[#67e8f9] border border-[#0891b2]/30",
         occupied: "bg-[#427AA1]/15 text-[#2b5a7c] dark:text-[#88c0e8] border border-[#427AA1]/30",
-        maintenance: "bg-destructive/15 text-destructive dark:text-red-400 border border-destructive/30",
+        maintenance: "bg-destructive/15 text-destructive dark:text-blue-400 border border-destructive/30",
       },
     },
     defaultVariants: {
@@ -41,11 +41,11 @@ function Badge({ className, variant, dot, dotColor, children, ...props }: BadgeP
               (variant === "available"
                 ? "bg-[#10B981]"
                 : variant === "holding"
-                ? "bg-[#F59E0B]"
+                ? "bg-[#06B6D4]"
                 : variant === "occupied"
                 ? "bg-[#94A3B8]"
                 : variant === "maintenance"
-                ? "bg-[#EF4444]"
+                ? "bg-[#3B82F6]"
                 : "bg-current")
           )}
         />

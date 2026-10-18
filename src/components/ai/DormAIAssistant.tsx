@@ -41,30 +41,30 @@ const INITIAL_MESSAGES: ChatMessage[] = [
 const SYSTEM_INSTRUCTION = `Bạn là DomaAI - Trợ lý Ký túc xá thông minh của Đại học FPT (Hệ thống Quản lý Ký túc xá DMS - Dormitory Management System).
 
 NGHIỆP VỤ & QUY TẮC KÝ TÚC XÁ FPT (SRS & THỰC TẾ):
-1. GIỚI NGHIÊM & AN NINH (UC-23, UC-24):
+1. GIỚI NGHIÊM & AN NINH:
 - Giờ giới nghiêm: Cổng KTX đóng lúc 23:00 hàng ngày.
 - Xin giấy về muộn: Sinh viên nộp đơn trực tuyến trước 21:00 qua mục 'Giới nghiêm & Ra vào'. Được miễn trừ tối đa 3 lần/học kỳ cho lý do học nhóm, làm thêm ca đêm.
 - Vi phạm về muộn không xin phép: Trừ 5 điểm rèn luyện (demerit points). Vi phạm 2 lần sẽ gửi cảnh cáo về phụ huynh; 3 lần sẽ bị xem xét đình chỉ lưu trú KTX.
 - Hotline bảo vệ trực ban 24/7: 1900 6868.
 
-2. MÔ HÌNH PHÒNG & GIƯỜNG 1:4:6 (UC-09, UC-10):
+2. MÔ HÌNH PHÒNG & GIƯỜNG 1:4:6:
 - Cấu trúc chuẩn: 1 Phòng = 4 Buồng (A, B, C, D); 1 Buồng = 6 Giường (G01 - G06), tổng 24 giường/phòng.
 - Giường tầng dưới (Lower): G01, G03, G05 (tiện leo trèo, giá 950.000đ/tháng).
 - Giường tầng trên (Upper): G02, G04, G06 (yên tĩnh, riêng tư, sạch sẽ, giá 950.000đ/tháng).
 - Khóa giữ chỗ: Hệ thống giữ chỗ tối đa 15 phút đếm ngược khi sinh viên chọn giường để hoàn tất thanh toán qua VietQR.
 
-3. BÁO HỎNG & BẢO TRÌ (UC-20, UC-21, UC-22):
+3. BÁO HỎNG & BẢO TRÌ:
 - Báo sự cố qua mục 'Báo hỏng thiết bị', có đính kèm ảnh chụp hiện trạng.
 - Mức độ Khẩn cấp (chập điện, cháy nổ, vỡ đường ống nước): Kỹ thuật viên xử lý trong vòng 2 giờ. Cần dặn sinh viên ngắt cầu dao (Aptomat) ngay lập tức.
 - Mức độ Tiêu chuẩn (hỏng điều hòa, bóng đèn, quạt trần): Xử lý trong 24 giờ.
 - Mức độ Thấp (bản lề kêu, khóa tủ lỏng): Xử lý trong 48 giờ.
 
-4. ĐIỆN NƯỚC & THANH TOÁN (UC-16, UC-17, UC-18):
+4. ĐIỆN NƯỚC & THANH TOÁN:
 - Chốt chỉ số công tơ vào ngày 25 hàng tháng.
 - Công thức chia tiền: Thuật toán Total / N (tổng tiền điện + nước + vệ sinh chia đều cho số sinh viên thực tế trong phòng).
 - Thanh toán: Hỗ trợ mã VietQR NAPAS 24/7 động tự động điền sẵn số tiền và nội dung 'DIENNUOC [Mã phòng] [MSSV]'.
 
-5. HỢP ĐỒNG & NHẬN/TRẢ PHÒNG (UC-14, UC-15):
+5. HỢP ĐỒNG & NHẬN/TRẢ PHÒNG:
 - Tiền cọc an ninh: 1.000.000đ, được hoàn trả 100% khi thanh lý hợp đồng và nghiệm thu phòng không hư hại.
 - Biên bản bàn giao thiết bị được ký số hóa điện tử.
 
@@ -360,7 +360,7 @@ export const DormAIAssistant: React.FC = () => {
                   <span className="font-bold text-xs tracking-tight">DomaAI Assistant</span>
                   <span
                     className={`w-2 h-2 rounded-full ${
-                      apiKey ? "bg-emerald-400" : "bg-amber-400"
+                      apiKey ? "bg-emerald-400" : "bg-cyan-400"
                     }`}
                     title={apiKey ? "Đã kết nối Gemini API" : "Chưa có API Key"}
                   ></span>
@@ -368,7 +368,7 @@ export const DormAIAssistant: React.FC = () => {
                     className={`text-[9px] font-bold px-1.5 py-0.2 rounded ${
                       apiKey
                         ? "bg-emerald-900/60 text-emerald-300 border border-emerald-700/50"
-                        : "bg-amber-900/60 text-amber-300 border border-amber-700/50"
+                        : "bg-cyan-900/60 text-cyan-300 border border-cyan-700/50"
                     }`}
                   >
                     {apiKey ? "Gemini 2.5 Flash" : "Local Mode"}
@@ -474,7 +474,7 @@ export const DormAIAssistant: React.FC = () => {
                               localStorage.removeItem("doma_gemini_api_key")
                               setShowSettings(false)
                             }}
-                            className="px-2.5 py-1 rounded bg-slate-800 hover:bg-red-950 text-red-400 border border-slate-700 text-[11px] font-semibold"
+                            className="px-2.5 py-1 rounded bg-slate-800 hover:bg-blue-950 text-blue-400 border border-slate-700 text-[11px] font-semibold"
                           >
                             Xóa Key
                           </button>
@@ -493,9 +493,9 @@ export const DormAIAssistant: React.FC = () => {
 
               {/* Notice Banner if no API key is set */}
               {!apiKey && !showSettings && (
-                <div className="bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-900/60 px-3.5 py-2 text-[11px] flex items-center justify-between text-amber-800 dark:text-amber-300">
+                <div className="bg-cyan-50 dark:bg-cyan-950/40 border-b border-cyan-200 dark:border-cyan-900/60 px-3.5 py-2 text-[11px] flex items-center justify-between text-cyan-800 dark:text-cyan-300">
                   <div className="flex items-center gap-1.5 truncate pr-2">
-                    <AlertCircle className="h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-400" />
+                    <AlertCircle className="h-3.5 w-3.5 shrink-0 text-cyan-600 dark:text-cyan-400" />
                     <span>Đang ở chế độ mẫu. Nhập API Key để trả lời chuẩn 100%.</span>
                   </div>
                   <button
@@ -503,7 +503,7 @@ export const DormAIAssistant: React.FC = () => {
                       setTempKeyInput(apiKey)
                       setShowSettings(true)
                     }}
-                    className="font-bold underline shrink-0 hover:text-amber-950 dark:hover:text-amber-200"
+                    className="font-bold underline shrink-0 hover:text-cyan-950 dark:hover:text-cyan-200"
                   >
                     Nhập Key
                   </button>

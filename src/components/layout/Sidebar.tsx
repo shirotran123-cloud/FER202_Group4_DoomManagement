@@ -60,12 +60,26 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         {
           groupTitle: "Cổng Sinh Viên (Student)",
           items: [
-            { title: "Tổng quan (Overview)", to: "/overview", icon: LayoutDashboard },
-            { title: "Phòng của tôi", to: "/my-room", icon: DoorClosed, badge: "A205" },
+            {
+              title: "Tổng quan (Overview)",
+              to: "/overview",
+              icon: LayoutDashboard,
+            },
+            {
+              title: "Phòng của tôi",
+              to: "/my-room",
+              icon: DoorClosed,
+              badge: "A205",
+            },
             { title: "Đặt giường 1:4:6", to: "/booking", icon: BedDouble },
             { title: "Điện nước & VietQR", to: "/billing", icon: Receipt },
             { title: "Báo hỏng thiết bị", to: "/maintenance", icon: Wrench },
-            { title: "Giới nghiêm & Ra vào", to: "/curfew", icon: Clock, badge: "23:00" },
+            {
+              title: "Giới nghiêm & Ra vào",
+              to: "/curfew",
+              icon: Clock,
+              badge: "23:00",
+            },
           ],
         },
         {
@@ -80,9 +94,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         {
           groupTitle: "Bàn Làm Việc Quản Lý (Ops)",
           items: [
-            { title: "Bàn làm việc Quản lý", to: "/manager", icon: ShieldCheck, badge: "Desk" },
+            {
+              title: "Bàn làm việc Quản lý",
+              to: "/manager",
+              icon: ShieldCheck,
+              badge: "Desk",
+            },
             { title: "Chốt số & Chia điện nước", to: "/billing", icon: Zap },
-            { title: "Giám sát Cổng & Giới nghiêm", to: "/curfew", icon: ShieldCheck, badge: "23:00" },
+            {
+              title: "Giám sát Cổng & Giới nghiêm",
+              to: "/curfew",
+              icon: ShieldCheck,
+              badge: "23:00",
+            },
             { title: "Điều phối Bảo trì", to: "/maintenance", icon: Wrench },
           ],
         },
@@ -98,9 +122,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         {
           groupTitle: "Tác Vụ Kỹ Thuật & An Ninh",
           items: [
-            { title: "Hàng đợi Sửa chữa", to: "/maintenance", icon: Wrench, badge: "2 Phiếu" },
+            {
+              title: "Hàng đợi Sửa chữa",
+              to: "/maintenance",
+              icon: Wrench,
+              badge: "2 Phiếu",
+            },
             { title: "Nhập số Điện Nước", to: "/billing", icon: Zap },
-            { title: "Trực Cổng An Ninh", to: "/curfew", icon: Shield, badge: "24/7" },
+            {
+              title: "Trực Cổng An Ninh",
+              to: "/curfew",
+              icon: Shield,
+              badge: "24/7",
+            },
           ],
         },
         {
@@ -115,7 +149,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       {
         groupTitle: "Quản Trị Toàn Quyền (Admin)",
         items: [
-          { title: "Tổng quan Quản trị", to: "/overview", icon: LayoutDashboard },
+          {
+            title: "Tổng quan Quản trị",
+            to: "/overview",
+            icon: LayoutDashboard,
+          },
           { title: "Bàn làm việc Quản trị", to: "/manager", icon: ShieldCheck },
           { title: "Quản lý Điện nước", to: "/billing", icon: Zap },
           { title: "Quản lý Bảo trì", to: "/maintenance", icon: Wrench },
@@ -152,21 +190,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
       {/* Main Stitch Sidebar */}
       <aside
-        className={`fixed left-0 top-0 h-full w-[260px] bg-[#142129] text-slate-100 z-50 flex flex-col justify-between shadow-xl transition-transform duration-300 ease-in-out border-r border-[#233a52] ${
+        className={`fixed top-0 left-0 z-50 flex h-full w-[260px] flex-col justify-between border-r border-slate-200 bg-white text-slate-900 shadow-xl transition-transform duration-300 ease-in-out dark:border-slate-800 dark:bg-[#111827] dark:text-slate-100 ${
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
-        <div className="flex flex-col flex-1 overflow-y-auto">
+        <div className="flex flex-1 flex-col overflow-y-auto">
           {/* Logo Header */}
-          <div className="h-[68px] px-4 flex items-center gap-3 bg-[#101b22] border-b border-[#233a52] shrink-0">
-            <div className="w-10 h-10 rounded-xl bg-[#679436] flex items-center justify-center text-white shadow-xs shrink-0">
+          <div className="flex h-[68px] shrink-0 items-center gap-3 border-b border-slate-200 bg-white px-4 dark:border-slate-800 dark:bg-[#111827]">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#679436] text-white shadow-xs">
               <Building2 className="h-5 w-5 text-white" />
             </div>
             <div className="flex flex-col">
-              <span className="font-bold text-base text-white tracking-tight leading-none">
+              <span className="text-base leading-none font-bold tracking-tight text-slate-900 dark:text-slate-100">
                 Domanage
               </span>
-              <span className="text-[11px] text-[#A5BE00] tracking-wide mt-1 font-semibold">
+              <span className="mt-1 text-[11px] font-semibold tracking-wide text-green-700 dark:text-green-400">
                 DMS Campus Living
               </span>
             </div>
@@ -174,19 +212,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
           {/* Hall & Zone Badge */}
           <div className="px-4 pt-3.5 pb-2">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#182a3a] text-slate-200 border border-[#2a455f]">
-              <span className="w-2 h-2 rounded-full bg-[#A5BE00] shrink-0 animate-pulse"></span>
-              <span className="text-[11px] text-[#ebf2fa] font-semibold tracking-wide truncate">
+            <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
+              <span className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-green-600"></span>
+              <span className="truncate text-[11px] font-semibold tracking-wide text-slate-700 dark:text-slate-200">
                 {getRoleBadge()}
               </span>
             </div>
           </div>
 
           {/* Role-tailored Navigation Links */}
-          <nav className="flex-1 px-3 py-2 space-y-4 text-xs">
+          <nav className="flex-1 space-y-4 px-3 py-2 text-xs">
             {navGroups.map((group) => (
               <div key={group.groupTitle} className="space-y-1">
-                <div className="px-3 py-1 text-[10px] uppercase tracking-wider text-slate-400 font-bold">
+                <div className="px-3 py-1 text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-slate-400">
                   {group.groupTitle}
                 </div>
                 {group.items.map((item) => {
@@ -201,22 +239,26 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                       to={item.to}
                       end={item.to === "/"}
                       onClick={onClose}
-                      className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-all min-w-0 ${
+                      className={`flex min-w-0 items-center justify-between rounded-xl px-3 py-2.5 transition-all ${
                         isActive
-                          ? "bg-[#679436] text-white font-semibold shadow-xs"
-                          : "text-slate-300 hover:bg-[#1f3448] hover:text-white"
+                          ? "bg-[#679436] font-semibold text-white shadow-xs"
+                          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                       }`}
                     >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <Icon className={`h-4 w-4 shrink-0 ${isActive ? "text-white" : "text-[#88c0e8]"}`} />
+                      <div className="flex min-w-0 items-center gap-2.5">
+                        <Icon
+                          className={`h-4 w-4 shrink-0 ${isActive ? "text-white" : "text-slate-500 dark:text-slate-400"}`}
+                        />
                         <span className="truncate">{item.title}</span>
                       </div>
                       {item.badge && (
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono border shrink-0 ml-1.5 whitespace-nowrap ${
-                          isActive 
-                            ? "bg-white/20 text-white border-white/30" 
-                            : "bg-[#182a3a] text-[#A5BE00] border-[#2a455f]"
-                        }`}>
+                        <span
+                          className={`ml-1.5 shrink-0 rounded-full border px-1.5 py-0.5 font-mono text-[10px] whitespace-nowrap ${
+                            isActive
+                              ? "border-white/30 bg-white/20 text-white"
+                              : "border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                          }`}
+                        >
                           {item.badge}
                         </span>
                       )}
@@ -229,22 +271,26 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Bottom Emergency Guard & Sign Out */}
-        <div className="p-3 bg-[#0d161c] border-t border-[#233a52] space-y-2 shrink-0">
-          <div className="p-2.5 rounded-xl bg-[#142330] border border-[#233a52]">
-            <div className="flex items-center gap-1.5 mb-0.5">
-              <PhoneCall className="h-3.5 w-3.5 text-[#A5BE00]" />
-              <span className="text-[11px] font-bold text-white">Emergency Guard</span>
+        <div className="shrink-0 space-y-2 border-t border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-[#0d1b2a]">
+          <div className="rounded-xl border border-slate-200 bg-white p-2.5 dark:border-slate-700 dark:bg-[#152538]">
+            <div className="mb-0.5 flex items-center gap-1.5">
+              <PhoneCall className="h-3.5 w-3.5 text-green-700" />
+              <span className="text-[11px] font-bold text-slate-900 dark:text-slate-100">
+                Emergency Guard
+              </span>
             </div>
-            <div className="text-sm font-bold font-mono tracking-wider text-[#ebf2fa]">
+            <div className="font-mono text-sm font-bold tracking-wider text-slate-800 dark:text-slate-200">
               1900 6868
             </div>
-            <div className="text-[10px] text-slate-400">24/7 Gate Patrol Desk</div>
+            <div className="text-[10px] text-slate-500 dark:text-slate-400">
+              24/7 Gate Patrol Desk
+            </div>
           </div>
 
           {isAuthenticated ? (
             <button
               onClick={() => logout()}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-slate-300 hover:bg-[#1f3448] hover:text-white transition-colors text-xs"
+              className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
             >
               <span>Đăng xuất</span>
               <LogOut className="h-4 w-4" />
@@ -253,7 +299,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             <NavLink
               to="/login"
               onClick={onClose}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[#679436] text-white transition-colors text-xs font-semibold hover:bg-[#58802d]"
+              className="flex w-full items-center justify-between rounded-xl bg-[#679436] px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#58802d]"
             >
               <span>Đăng nhập</span>
               <LogIn className="h-4 w-4" />

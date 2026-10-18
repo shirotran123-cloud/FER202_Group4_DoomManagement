@@ -12,7 +12,7 @@ export const ManagerDashboardStubPage: React.FC = () => {
             </div>
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-purple-600">
-                Module 7 â€¢ Use Case UC-27 - UC-28
+                Module 7 â€¢ Tá»•ng quan quáº£n trá»‹
               </span>
               <h1 className="text-2xl font-black text-foreground">
                 Tá»•ng Quan Quáº£n Trá»‹ & BÃ¡o CÃ¡o Thá»‘ng KÃª Ban Quáº£n LÃ½
@@ -28,14 +28,14 @@ export const ManagerDashboardStubPage: React.FC = () => {
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
           <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
             <PieChart className="h-5 w-5 text-purple-600" />
-            <h3 className="font-bold text-foreground">1. Dashboard CÃ´ng Suáº¥t PhÃ²ng (UC-27)</h3>
+            <h3 className="font-bold text-foreground">1. Dashboard CÃ´ng Suáº¥t PhÃ²ng</h3>
             <p className="text-muted-foreground leading-relaxed">
               Biá»ƒu Ä‘á»“ trá»±c quan tá»· lá»‡ láº¥p Ä‘áº§y giÆ°á»ng (Occupancy Rate), tráº¡ng thÃ¡i báº£o trÃ¬ vÃ  doanh thu tiá»n phÃ²ng thá»i gian thá»±c.
             </p>
           </div>
           <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
             <FileSpreadsheet className="h-5 w-5 text-emerald-600" />
-            <h3 className="font-bold text-foreground">2. Xuáº¥t BÃ¡o CÃ¡o Excel (.xlsx) (UC-28)</h3>
+            <h3 className="font-bold text-foreground">2. Xuáº¥t BÃ¡o CÃ¡o Excel (.xlsx)</h3>
             <p className="text-muted-foreground leading-relaxed">
               Tá»± Ä‘á»™ng káº¿t xuáº¥t danh sÃ¡ch sinh viÃªn táº¡m trÃº gá»­i CÃ´ng an Ä‘á»‹a phÆ°Æ¡ng vÃ  danh sÃ¡ch sinh viÃªn ná»£ cÆ°á»›c Ä‘iá»‡n nÆ°á»›c.
             </p>

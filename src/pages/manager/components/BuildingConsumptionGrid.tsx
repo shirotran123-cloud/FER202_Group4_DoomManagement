@@ -22,8 +22,8 @@ export const BuildingConsumptionGrid: React.FC<BuildingConsumptionGridProps> = (
             Phát hiện rò rỉ nước ngầm hoặc đột biến điện năng tiêu thụ tháng 09/2026
           </p>
         </div>
-        <span className="text-xs bg-amber-500/10 text-amber-700 dark:text-amber-400 font-bold px-2.5 py-1 rounded-full border border-amber-500/20 self-start sm:self-auto flex items-center gap-1.5">
-          <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />
+        <span className="text-xs bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 font-bold px-2.5 py-1 rounded-full border border-cyan-500/20 self-start sm:self-auto flex items-center gap-1.5">
+          <AlertTriangle className="h-3.5 w-3.5 text-cyan-500" />
           1 Cảnh Báo Tiêu Thụ Đột Biến
         </span>
       </div>
@@ -36,14 +36,14 @@ export const BuildingConsumptionGrid: React.FC<BuildingConsumptionGridProps> = (
               key={idx}
               className={`rounded-2xl p-4 border transition-all ${
                 isAnomaly
-                  ? "bg-amber-500/5 border-amber-500/40 shadow-xs"
+                  ? "bg-cyan-500/5 border-cyan-500/40 shadow-xs"
                   : "bg-muted/30 border-border"
               }`}
             >
               <div className="flex items-center justify-between mb-3">
                 <span className="font-bold text-sm text-foreground">{item.building}</span>
                 {isAnomaly ? (
-                  <span className="text-[10px] bg-amber-500 text-white font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <span className="text-[10px] bg-cyan-500 text-white font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
                     <AlertTriangle className="h-3 w-3" /> Cảnh Báo
                   </span>
                 ) : (

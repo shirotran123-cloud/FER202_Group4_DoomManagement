@@ -4,15 +4,15 @@ import { BedDouble } from "lucide-react"
 export const BookingStubPage: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-12">
-      <div className="rounded-3xl border border-orange-500/20 bg-gradient-to-br from-card to-orange-500/5 p-8 shadow-sm">
+      <div className="rounded-3xl border border-sky-500/20 bg-gradient-to-br from-card to-sky-500/5 p-8 shadow-sm">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border pb-6">
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-500/10 text-orange-600">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-500/10 text-sky-600">
               <BedDouble className="h-6 w-6" />
             </div>
             <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-orange-600">
-                Module 2 & 3 • Use Case UC-05 - UC-13
+              <span className="text-xs font-bold uppercase tracking-wider text-sky-600">
+                Module 2 & 3 • Đặt phòng và chọn giường
               </span>
               <h1 className="text-2xl font-black text-foreground">
                 Bản Đồ Chọn Giường Trực Quan 1:4:6 & Khóa 15 Phút
@@ -38,8 +38,8 @@ export const BookingStubPage: React.FC = () => {
 
           <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
             <h3 className="font-bold text-foreground flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-orange-500"></span>
-              <span>2. Khóa giữ chỗ 15 Phút (UC-10)</span>
+              <span className="h-2 w-2 rounded-full bg-sky-500"></span>
+              <span>2. Khóa giữ chỗ 15 Phút</span>
             </h3>
             <p className="text-muted-foreground leading-relaxed">
               Đồng hồ đếm ngược 900 giây, hiển thị mã VietQR động để thanh toán tiền cọc 1.000.000 VNĐ.
@@ -49,7 +49,7 @@ export const BookingStubPage: React.FC = () => {
           <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
             <h3 className="font-bold text-foreground flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-blue-500"></span>
-              <span>3. Auto-Approval Engine (UC-11)</span>
+              <span>3. Auto-Approval Engine</span>
             </h3>
             <p className="text-muted-foreground leading-relaxed">
               Tự động xét duyệt 0-chạm đối soát giới tính, hợp đồng và xuất e-Contract PDF tức thì.
@@ -65,7 +65,7 @@ export const BookingStubPage: React.FC = () => {
           </h2>
           <div className="flex items-center gap-3 text-xs">
             <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-md bg-emerald-500 inline-block"></span> Trống (Available)</span>
-            <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-md bg-orange-500 inline-block"></span> Đang giữ (Holding 15m)</span>
+            <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-md bg-sky-500 inline-block"></span> Đang giữ (Holding 15m)</span>
             <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-md bg-slate-400 inline-block"></span> Đã ở (Occupied)</span>
           </div>
         </div>
@@ -89,7 +89,7 @@ export const BookingStubPage: React.FC = () => {
                         isMine
                           ? "bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2"
                           : isHolding
-                          ? "bg-orange-500/20 text-orange-600 border border-orange-500/40"
+                          ? "bg-sky-500/20 text-sky-600 border border-sky-500/40"
                           : isOccupied
                           ? "bg-muted text-muted-foreground"
                           : "bg-emerald-500/15 text-emerald-600 border border-emerald-500/30"

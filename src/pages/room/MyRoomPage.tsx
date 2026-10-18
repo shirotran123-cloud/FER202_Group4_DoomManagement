@@ -105,13 +105,13 @@ const CompartmentSlide: React.FC = () => {
         {/* Nav buttons */}
         <button
           onClick={prev}
-          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white dark:bg-[#1c262c] border border-border shadow-sm flex items-center justify-center hover:bg-[#f4f4ee] dark:hover:bg-[#283740] transition-colors"
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white dark:bg-[#1c262c] border border-border shadow-sm flex items-center justify-center hover:bg-[#eff6ff] dark:hover:bg-[#283740] transition-colors"
         >
           <ChevronLeft className="h-4 w-4 text-muted-foreground" />
         </button>
         <button
           onClick={next}
-          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white dark:bg-[#1c262c] border border-border shadow-sm flex items-center justify-center hover:bg-[#f4f4ee] dark:hover:bg-[#283740] transition-colors"
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white dark:bg-[#1c262c] border border-border shadow-sm flex items-center justify-center hover:bg-[#eff6ff] dark:hover:bg-[#283740] transition-colors"
         >
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </button>
@@ -120,7 +120,7 @@ const CompartmentSlide: React.FC = () => {
         <div className={`mx-8 rounded-xl border p-4 space-y-4 transition-all ${
           comp.myComp
             ? "bg-primary/5 border-primary ring-1 ring-primary"
-            : "bg-[#f4f4ee] dark:bg-[#1c262c] border-border"
+            : "bg-[#eff6ff] dark:bg-[#1c262c] border-border"
         }`}>
           {/* Compartment header */}
           <div className="flex items-center justify-between">
@@ -208,7 +208,7 @@ const CompartmentSlide: React.FC = () => {
               className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all ${
                 i === current
                   ? "bg-primary text-white"
-                  : "bg-[#f4f4ee] dark:bg-[#1c262c] text-muted-foreground hover:text-foreground"
+                  : "bg-[#eff6ff] dark:bg-[#1c262c] text-muted-foreground hover:text-foreground"
               }`}
             >
               {c.id}
@@ -290,7 +290,7 @@ export const MyRoomPage: React.FC = () => {
               <h1 className="text-2xl font-black text-primary dark:text-[#cee6ef] tracking-tight">
                 Phòng A205
               </h1>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground px-2 py-0.5 rounded bg-[#f4f4ee] dark:bg-[#1c262c]">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground px-2 py-0.5 rounded bg-[#eff6ff] dark:bg-[#1c262c]">
                 Khu A · Tầng 2
               </span>
               <Badge variant="available" dot>
@@ -313,7 +313,7 @@ export const MyRoomPage: React.FC = () => {
           <Button
             variant="outline"
             onClick={() => alert("Đang mở bản xem trước Hợp đồng điện tử e-Contract PDF...")}
-            className="text-xs h-9 gap-1.5 bg-[#f4f4ee] dark:bg-[#1c262c] whitespace-nowrap shrink-0"
+            className="text-xs h-9 gap-1.5 bg-[#eff6ff] dark:bg-[#1c262c] whitespace-nowrap shrink-0"
           >
             <FileText className="h-4 w-4 text-primary shrink-0" />
             <span>Hợp Đồng (PDF)</span>
@@ -322,7 +322,7 @@ export const MyRoomPage: React.FC = () => {
           <Link to="/billing">
             <Button
               variant="outline"
-              className="text-xs h-9 gap-1.5 bg-[#f4f4ee] dark:bg-[#1c262c] whitespace-nowrap shrink-0"
+              className="text-xs h-9 gap-1.5 bg-[#eff6ff] dark:bg-[#1c262c] whitespace-nowrap shrink-0"
             >
               <Receipt className="h-4 w-4 text-primary shrink-0" />
               <span>Hóa Đơn Điện Nước</span>
@@ -338,7 +338,7 @@ export const MyRoomPage: React.FC = () => {
 
           <Button
             onClick={() => setShowCheckoutModal(true)}
-            className="text-xs h-9 gap-1.5 bg-red-100 hover:bg-red-200 text-red-700 whitespace-nowrap shrink-0"
+            className="text-xs h-9 gap-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 whitespace-nowrap shrink-0"
           >
             <LogOut className="h-4 w-4 shrink-0" />
             <span>Yêu Cầu Trả Phòng</span>
@@ -377,7 +377,7 @@ export const MyRoomPage: React.FC = () => {
                 className={`p-3.5 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors ${
                   rm.isMe
                     ? "bg-primary/5 border-primary/40 ring-1 ring-primary/20"
-                    : "bg-[#f4f4ee] dark:bg-[#1c262c] border-border"
+                    : "bg-[#eff6ff] dark:bg-[#1c262c] border-border"
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -416,7 +416,7 @@ export const MyRoomPage: React.FC = () => {
           </div>
         </div>
 
-        {/* DIGITAL HANDOVER & AMENITIES CHECKLIST (5 COLS - UC-14 & UC-15) */}
+        {/* DIGITAL HANDOVER & AMENITIES CHECKLIST (5 COLS) */}
         <div className="lg:col-span-5 bg-white dark:bg-[#161e23] border border-border rounded-xl p-5 shadow-xs space-y-4">
           <div className="flex items-center justify-between pb-2 border-b border-border">
             <div className="flex items-center gap-2">
@@ -425,7 +425,7 @@ export const MyRoomPage: React.FC = () => {
               </span>
               <div>
                 <h3 className="font-bold text-sm text-foreground">
-                  Biên Bản Bàn Giao Thiết Bị (UC-14)
+                  Biên Bản Bàn Giao Thiết Bị
                 </h3>
                 <p className="text-[11px] text-muted-foreground">
                   Nghiệm thu tài sản khi nhận phòng & hoàn cọc
@@ -439,7 +439,7 @@ export const MyRoomPage: React.FC = () => {
             {inventoryItems.map((item, idx) => (
               <div
                 key={idx}
-                className="p-2.5 rounded-lg bg-[#f4f4ee] dark:bg-[#1c262c] border border-border flex items-center justify-between"
+                className="p-2.5 rounded-lg bg-[#eff6ff] dark:bg-[#1c262c] border border-border flex items-center justify-between"
               >
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
@@ -488,7 +488,7 @@ export const MyRoomPage: React.FC = () => {
                 <strong>{user?.fullName || "Nguyễn Hoàng Vinh"}</strong>. Mọi tài sản hỏng hóc trong thời gian lưu trú cần báo ngay qua mục Báo Hỏng.
               </p>
 
-              <div className="p-3 bg-[#f4f4ee] dark:bg-[#1c262c] rounded-xl space-y-1 font-mono text-[11px]">
+              <div className="p-3 bg-[#eff6ff] dark:bg-[#1c262c] rounded-xl space-y-1 font-mono text-[11px]">
                 <div>Mã biên bản: BB-2026-A205-0905</div>
                 <div>Chỉ số điện ban đầu: 12,450 kWh</div>
                 <div>Chỉ số nước ban đầu: 840 m³</div>
@@ -515,13 +515,13 @@ export const MyRoomPage: React.FC = () => {
         </div>
       )}
 
-      {/* CHECKOUT MODAL (UC-15) */}
+      {/* CHECKOUT MODAL */}
       {showCheckoutModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
           <div className="bg-white dark:bg-[#161e23] border border-border w-full max-w-md rounded-2xl shadow-xl p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h3 className="font-bold text-sm text-foreground">
-                Quy Trình Trả Phòng & Quyết Toán Hoàn Cọc (UC-15)
+                Quy Trình Trả Phòng & Quyết Toán Hoàn Cọc
               </h3>
               <button
                 onClick={() => setShowCheckoutModal(false)}
@@ -553,7 +553,7 @@ export const MyRoomPage: React.FC = () => {
                     alert("Yêu cầu trả phòng đã được gửi tới Ban Quản lý KTX!")
                     setShowCheckoutModal(false)
                   }}
-                  className="flex-1 bg-red-600 hover:bg-red-700 text-white text-xs font-bold"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold"
                 >
                   Gửi Yêu Cầu Trả Phòng
                 </Button>

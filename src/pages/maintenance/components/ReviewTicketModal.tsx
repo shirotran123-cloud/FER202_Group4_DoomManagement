@@ -38,7 +38,7 @@ export const ReviewTicketModal: React.FC<ReviewTicketModalProps> = ({
       maxWidth="md"
       title={
         <div className="flex flex-col items-center text-center w-full">
-          <div className="h-12 w-12 rounded-full bg-amber-500/15 text-amber-500 flex items-center justify-center mb-2">
+          <div className="h-12 w-12 rounded-full bg-cyan-500/15 text-cyan-500 flex items-center justify-center mb-2">
             <Star className="h-6 w-6 fill-current" />
           </div>
           <span className="font-bold text-foreground text-base">Đánh giá chất lượng sửa chữa</span>
@@ -62,7 +62,7 @@ export const ReviewTicketModal: React.FC<ReviewTicketModalProps> = ({
               <Star
                 className={`h-7 w-7 ${
                   star <= ratingStars
-                    ? "text-amber-400 fill-amber-400"
+                    ? "text-cyan-400 fill-cyan-400"
                     : "text-muted-foreground/30"
                 }`}
               />

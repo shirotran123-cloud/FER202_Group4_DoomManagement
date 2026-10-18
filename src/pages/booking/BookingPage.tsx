@@ -227,7 +227,7 @@ export const BookingPage: React.FC = () => {
                     ? "bg-emerald-500 text-white"
                     : activeStep === s.n
                     ? "bg-primary text-white"
-                    : "bg-[#f4f4ee] dark:bg-[#1c262c] text-muted-foreground"
+                    : "bg-[#eff6ff] dark:bg-[#1c262c] text-muted-foreground"
                 }`}>
                   {completedSteps.has(s.n) && activeStep !== s.n ? <Check className="h-2.5 w-2.5" /> : `0${s.n}`}
                 </span>
@@ -260,7 +260,7 @@ export const BookingPage: React.FC = () => {
                   className={`p-5 rounded-xl border text-left transition-all ${
                     selectedBuilding === b.id
                       ? "border-primary bg-primary/5 ring-2 ring-primary/30"
-                      : "border-border hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c]"
+                      : "border-border hover:bg-[#eff6ff] dark:hover:bg-[#1c262c]"
                   }`}
                 >
                   <div className="text-3xl mb-2">{b.icon}</div>
@@ -293,14 +293,14 @@ export const BookingPage: React.FC = () => {
                   className={`py-4 rounded-xl font-bold text-base transition-all ${
                     selectedFloor === lvl
                       ? "bg-primary text-white shadow-sm ring-2 ring-primary/30"
-                      : "bg-[#f4f4ee] dark:bg-[#1c262c] text-muted-foreground hover:text-foreground"
+                      : "bg-[#eff6ff] dark:bg-[#1c262c] text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   T{lvl}
                 </button>
               ))}
             </div>
-            <div className="p-4 bg-[#f4f4ee] dark:bg-[#1c262c] rounded-xl text-xs text-muted-foreground">
+            <div className="p-4 bg-[#eff6ff] dark:bg-[#1c262c] rounded-xl text-xs text-muted-foreground">
               <span className="font-semibold text-foreground">Tầng {selectedFloor}:</span>{" "}
               {selectedFloor === 1 ? "Gần cổng ra vào, thuận tiện đi lại." :
                selectedFloor === 2 ? "Tầng phổ biến nhất, có ban công rộng, gần thang máy." :
@@ -335,7 +335,7 @@ export const BookingPage: React.FC = () => {
                       ? "border-primary bg-primary/5 ring-2 ring-primary/30"
                       : room.available === 0
                       ? "border-border opacity-40 cursor-not-allowed"
-                      : "border-border hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c]"
+                      : "border-border hover:bg-[#eff6ff] dark:hover:bg-[#1c262c]"
                   }`}
                 >
                   <div className="flex items-center gap-4">
@@ -347,7 +347,7 @@ export const BookingPage: React.FC = () => {
                   </div>
                   <span className={`text-xs font-bold px-3 py-1.5 rounded-lg whitespace-nowrap ${
                     room.available === 0
-                      ? "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400"
+                      ? "bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400"
                       : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400"
                   }`}>{room.badge}</span>
                 </button>
@@ -383,7 +383,7 @@ export const BookingPage: React.FC = () => {
                         ? "border-primary bg-primary/5 ring-2 ring-primary/30"
                         : avail === 0
                         ? "border-border opacity-40 cursor-not-allowed"
-                        : "border-border hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c]"
+                        : "border-border hover:bg-[#eff6ff] dark:hover:bg-[#1c262c]"
                     }`}
                   >
                     <div className="flex items-center justify-between mb-3">
@@ -398,8 +398,8 @@ export const BookingPage: React.FC = () => {
                       {comp.beds.map((b) => (
                         <span key={b.id} className={`flex-1 h-2.5 rounded-sm ${
                           b.status === "available" ? "bg-emerald-400" :
-                          b.status === "holding" ? "bg-amber-400" :
-                          b.status === "maintenance" ? "bg-red-400" :
+                          b.status === "holding" ? "bg-cyan-400" :
+                          b.status === "maintenance" ? "bg-blue-400" :
                           "bg-slate-300 dark:bg-slate-600"
                         }`} />
                       ))}
@@ -446,10 +446,10 @@ export const BookingPage: React.FC = () => {
                             : isAvail
                             ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-700 hover:bg-emerald-100 cursor-pointer"
                             : isHold
-                            ? "bg-amber-50 dark:bg-amber-950/20 border-amber-200 cursor-not-allowed opacity-60"
+                            ? "bg-cyan-50 dark:bg-cyan-950/20 border-cyan-200 cursor-not-allowed opacity-60"
                             : isMaint
-                            ? "bg-red-50 dark:bg-red-950/20 border-red-200 cursor-not-allowed opacity-60"
-                            : "bg-[#f4f4ee] dark:bg-[#1c262c] border-border cursor-not-allowed opacity-50"
+                            ? "bg-blue-50 dark:bg-blue-950/20 border-blue-200 cursor-not-allowed opacity-60"
+                            : "bg-[#eff6ff] dark:bg-[#1c262c] border-border cursor-not-allowed opacity-50"
                         }`}
                       >
                         {isPick ? (
@@ -464,8 +464,8 @@ export const BookingPage: React.FC = () => {
                         <span className={`text-[10px] font-semibold ${
                           isPick ? "text-white/90" :
                           isAvail ? "text-emerald-600 dark:text-emerald-400" :
-                          isHold ? "text-amber-600" :
-                          isMaint ? "text-red-600" : "text-muted-foreground"
+                          isHold ? "text-cyan-600" :
+                          isMaint ? "text-blue-600" : "text-muted-foreground"
                         }`}>
                           {isPick ? "Đang chọn" : isAvail ? "950k/th" : isHold ? `${bed.holdingTime} Giữ` : isMaint ? "Bảo trì" : "Đã ở"}
                         </span>
@@ -496,7 +496,7 @@ export const BookingPage: React.FC = () => {
                   )}
 
                   {/* Bảng kê chi phí */}
-                  <div className="bg-[#f4f4ee] dark:bg-[#1c262c] rounded-xl p-4 space-y-2.5 border border-border text-sm">
+                  <div className="bg-[#eff6ff] dark:bg-[#1c262c] rounded-xl p-4 space-y-2.5 border border-border text-sm">
                     <div className="flex justify-between font-bold text-foreground border-b border-border pb-2">
                       <span>Giường đã chọn:</span>
                       <span className="text-primary dark:text-[#cee6ef] font-mono">{selectedBed.code}</span>
@@ -524,7 +524,7 @@ export const BookingPage: React.FC = () => {
                       className={`flex items-center justify-between p-3.5 rounded-xl border cursor-pointer text-sm transition-all ${
                         paymentMethod === pm.id
                           ? "border-sky-500 bg-sky-500/10 ring-1 ring-sky-500/30 dark:border-sky-400"
-                          : "border-border hover:bg-[#f4f4ee] dark:hover:bg-[#1c262c]"
+                          : "border-border hover:bg-[#eff6ff] dark:hover:bg-[#1c262c]"
                       }`}
                     >
                       <div className="flex items-center gap-3">
@@ -557,7 +557,7 @@ export const BookingPage: React.FC = () => {
       {showCheckoutModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
           <div className="bg-white dark:bg-[#161e23] border border-border w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
-            <div className="p-5 bg-[#f4f4ee] dark:bg-[#1c262c] border-b border-border flex items-center justify-between">
+            <div className="p-5 bg-[#eff6ff] dark:bg-[#1c262c] border-b border-border flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="p-2 rounded-lg bg-primary text-white"><QrCode className="h-4 w-4" /></span>
                 <div>
@@ -578,13 +578,13 @@ export const BookingPage: React.FC = () => {
                     />
                     <p className="text-xs font-bold text-primary">Quét mã bằng app ngân hàng bất kỳ (NAPAS 24/7)</p>
                     <p className="text-[11px] text-muted-foreground font-mono">
-                      Số tiền: <strong>2,150,000 VNĐ</strong> · Nội dung: <span className="bg-[#f4f4ee] px-1 rounded font-semibold text-foreground">KTX {user?.studentId || "SE182049"} {selectedBed?.code}</span>
+                      Số tiền: <strong>2,150,000 VNĐ</strong> · Nội dung: <span className="bg-[#eff6ff] px-1 rounded font-semibold text-foreground">KTX {user?.studentId || "SE182049"} {selectedBed?.code}</span>
                     </p>
                   </div>
 
-                  <div className="bg-[#f4f4ee] dark:bg-[#1c262c] p-4 rounded-xl space-y-2 text-xs">
+                  <div className="bg-[#eff6ff] dark:bg-[#1c262c] p-4 rounded-xl space-y-2 text-xs">
                     <div className="flex items-center gap-2 font-bold text-foreground">
-                      <Zap className="h-4 w-4 text-amber-500" />
+                      <Zap className="h-4 w-4 text-cyan-500" />
                       <span>Cơ chế Tự Động Xét Duyệt 0-Chạm</span>
                     </div>
                     {["Đối soát giới tính: Nam khớp Tòa A", "Tình trạng nợ cũ: 0 VNĐ (Đủ điều kiện)", "Trạng thái sinh viên: Đang học chính quy K19"].map((t) => (
@@ -610,7 +610,7 @@ export const BookingPage: React.FC = () => {
                     <h4 className="font-bold text-sm text-foreground">Auto-Approval Engine đang xử lý... ({autoApprovalProgress}%)</h4>
                     <p className="text-xs text-muted-foreground max-w-xs">Kiểm tra đối soát số dư, khóa vĩnh viễn giường {selectedBed?.code} và khởi tạo Hợp đồng điện tử...</p>
                   </div>
-                  <div className="w-full bg-[#f4f4ee] dark:bg-[#1c262c] rounded-full h-2">
+                  <div className="w-full bg-[#eff6ff] dark:bg-[#1c262c] rounded-full h-2">
                     <div className="bg-primary h-2 rounded-full transition-all duration-500" style={{ width: `${autoApprovalProgress}%` }} />
                   </div>
                 </div>

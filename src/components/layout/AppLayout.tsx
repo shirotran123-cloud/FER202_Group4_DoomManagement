@@ -1,4 +1,4 @@
- import React, { useState } from "react"
+import React, { useState } from "react"
 import { Outlet } from "react-router-dom"
 import { Navbar } from "./Navbar"
 import { Sidebar } from "./Sidebar"
@@ -12,65 +12,72 @@ export const AppLayout: React.FC = () => {
   const [showDemoBanner, setShowDemoBanner] = useState(true)
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 font-sans antialiased">
+    <div className="relative isolate min-h-screen bg-transparent font-sans text-slate-900 antialiased dark:text-slate-100">
+      <div aria-hidden="true" className="nature-backdrop" />
       {/* Fixed Sidebar */}
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main Content Area Offset for Sidebar */}
-      <div className="lg:pl-[260px] min-h-screen flex flex-col">
+      <div className="flex min-h-screen flex-col lg:pl-[260px]">
         {/* Fixed Header */}
         <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
         {/* Scrollable Page Body */}
-        <main className="w-full pt-[68px] flex-1 bg-slate-50 dark:bg-[#0b0f19]">
-          <div className="max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 space-y-5">
+        <main className="relative z-10 w-full flex-1 bg-transparent pt-[68px]">
+          <div className="page-content mx-auto max-w-[1600px] space-y-6 p-4 sm:p-6 lg:p-8">
             {showDemoBanner && user && (
-              <div className="rounded-xl bg-white dark:bg-[#161e23] border border-slate-200 dark:border-slate-800 px-3.5 py-2 text-xs flex items-center justify-between gap-3 shadow-xs">
-                <div className="flex items-center gap-2 overflow-x-auto text-slate-700 dark:text-slate-200 min-w-0">
-                  <Sparkles className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
-                  <span className="whitespace-nowrap shrink-0">
-                    <strong className="text-slate-900 dark:text-white">Demo Switcher:</strong>{" "}
+              <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs shadow-xs dark:border-slate-800 dark:bg-[#161e23]">
+                <div className="flex min-w-0 items-center gap-2 overflow-x-auto text-slate-700 dark:text-slate-200">
+                  <Sparkles className="h-4 w-4 shrink-0 text-blue-600 dark:text-blue-400" />
+                  <span className="shrink-0 whitespace-nowrap">
+                    <strong className="text-slate-900 dark:text-white">
+                      Demo Switcher:
+                    </strong>{" "}
                     <span className="text-slate-600 dark:text-slate-300">
-                      Đang là <strong className="text-blue-700 dark:text-sky-400">{user.fullName}</strong> ({user.roleTitle})
+                      Đang là{" "}
+                      <strong className="text-blue-700 dark:text-sky-400">
+                        {user.fullName}
+                      </strong>{" "}
+                      ({user.roleTitle})
                     </span>
                   </span>
-                  <div className="inline-flex gap-1.5 ml-1 shrink-0">
+                  <div className="ml-1 inline-flex shrink-0 gap-1.5">
                     <button
                       onClick={() => switchRole("student")}
-                      className={`px-2 py-0.5 rounded-md text-[11px] font-semibold whitespace-nowrap transition-colors ${
+                      className={`rounded-md px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap transition-colors ${
                         user.role === "student"
-                          ? "bg-slate-900 dark:bg-sky-600 text-white shadow-xs"
-                          : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200"
+                          ? "bg-slate-900 text-white shadow-xs dark:bg-sky-600"
+                          : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                       }`}
                     >
                       Sinh viên
                     </button>
                     <button
                       onClick={() => switchRole("manager")}
-                      className={`px-2 py-0.5 rounded-md text-[11px] font-semibold whitespace-nowrap transition-colors ${
+                      className={`rounded-md px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap transition-colors ${
                         user.role === "manager"
-                          ? "bg-slate-900 dark:bg-sky-600 text-white shadow-xs"
-                          : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200"
+                          ? "bg-slate-900 text-white shadow-xs dark:bg-sky-600"
+                          : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                       }`}
                     >
                       Quản lý
                     </button>
                     <button
                       onClick={() => switchRole("technician")}
-                      className={`px-2 py-0.5 rounded-md text-[11px] font-semibold whitespace-nowrap transition-colors ${
+                      className={`rounded-md px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap transition-colors ${
                         user.role === "technician"
-                          ? "bg-slate-900 dark:bg-sky-600 text-white shadow-xs"
-                          : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200"
+                          ? "bg-slate-900 text-white shadow-xs dark:bg-sky-600"
+                          : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                       }`}
                     >
                       Kỹ thuật
                     </button>
                     <button
                       onClick={() => switchRole("admin")}
-                      className={`px-2 py-0.5 rounded-md text-[11px] font-semibold whitespace-nowrap transition-colors ${
+                      className={`rounded-md px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap transition-colors ${
                         user.role === "admin"
-                          ? "bg-slate-900 dark:bg-sky-600 text-white shadow-xs"
-                          : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200"
+                          ? "bg-slate-900 text-white shadow-xs dark:bg-sky-600"
+                          : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                       }`}
                     >
                       Admin
@@ -79,7 +86,7 @@ export const AppLayout: React.FC = () => {
                 </div>
                 <button
                   onClick={() => setShowDemoBanner(false)}
-                  className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-xs shrink-0 font-semibold p-1"
+                  className="shrink-0 p-1 text-xs font-semibold text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
                   title="Đóng thông báo"
                 >
                   ✕

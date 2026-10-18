@@ -7,8 +7,15 @@ import {
   MOCK_RESIDENTS_REGISTRY,
   MOCK_OVERDUE_DEBTS,
 } from "@/data/mockDashboard"
-import { exportToExcelXml, exportToCsv, type ExportColumn } from "@/lib/excelExport"
-import type { ResidentTemporaryRecord, OverdueDebtRecord } from "@/types/dashboard"
+import {
+  exportToExcelXml,
+  exportToCsv,
+  type ExportColumn,
+} from "@/lib/excelExport"
+import type {
+  ResidentTemporaryRecord,
+  OverdueDebtRecord,
+} from "@/types/dashboard"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -33,9 +40,9 @@ import { OverdueDebtsTable } from "./components/OverdueDebtsTable"
 export const ManagerDashboardPage: React.FC = () => {
   const { user } = useAuth()
   const [activeTab, setActiveTab] = useState<"OVERVIEW" | "REPORTS">("OVERVIEW")
-  const [reportSubTab, setReportSubTab] = useState<"TEMPORARY_RESIDENCE" | "OVERDUE_DEBTS">(
-    "TEMPORARY_RESIDENCE"
-  )
+  const [reportSubTab, setReportSubTab] = useState<
+    "TEMPORARY_RESIDENCE" | "OVERDUE_DEBTS"
+  >("TEMPORARY_RESIDENCE")
   const [searchReportQuery, setSearchReportQuery] = useState("")
   const [toastMessage, setToastMessage] = useState<string | null>(null)
 
@@ -74,7 +81,9 @@ export const ManagerDashboardPage: React.FC = () => {
       data: MOCK_RESIDENTS_REGISTRY,
     })
 
-    showToast("📊 Đã xuất file Excel: Danh_Sach_Tam_Tru_KTX_FPT.xlsx thành công!")
+    showToast(
+      "📊 Đã xuất file Excel: Danh_Sach_Tam_Tru_KTX_FPT.xlsx thành công!"
+    )
   }
 
   // Export CSV alternative
@@ -132,7 +141,9 @@ export const ManagerDashboardPage: React.FC = () => {
       data: MOCK_OVERDUE_DEBTS,
     })
 
-    showToast("📊 Đã xuất file Excel: Danh_Sach_Cong_No_Qua_Han_KTX.xlsx thành công!")
+    showToast(
+      "📊 Đã xuất file Excel: Danh_Sach_Cong_No_Qua_Han_KTX.xlsx thành công!"
+    )
   }
 
   // Filtered resident registry
@@ -159,26 +170,26 @@ export const ManagerDashboardPage: React.FC = () => {
     <div className="space-y-6 pb-12">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 rounded-xl bg-foreground text-background px-4 py-3 text-sm font-medium shadow-xl border border-border animate-in fade-in slide-in-from-bottom-5">
-          <CheckCircle2 className="h-5 w-5 text-primary shrink-0" />
+        <div className="fixed right-6 bottom-6 z-50 flex animate-in items-center gap-2.5 rounded-xl border border-border bg-foreground px-4 py-3 text-sm font-medium text-background shadow-xl slide-in-from-bottom-5 fade-in">
+          <CheckCircle2 className="h-5 w-5 shrink-0 text-primary" />
           <span>{toastMessage}</span>
         </div>
       )}
 
       {/* Hero Ops Header */}
       <Card className="p-6">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div className="flex flex-col gap-6">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-bold mb-3">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
               <Sparkles className="h-3.5 w-3.5" />
               <span>DMS Central Operations & Executive Reports</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
               Bàn Làm Việc Quản Lý Ký Túc Xá (DMS Hub)
             </h1>
-            <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
-              Hệ thống giám sát chỉ số lấp đầy buồng giường, kiểm soát tiêu thụ điện nước và xuất báo
-              cáo lưu trú định dạng chuẩn Excel (.xlsx).
+            <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+              Hệ thống giám sát chỉ số lấp đầy buồng giường, kiểm soát tiêu thụ
+              điện nước và xuất báo cáo lưu trú định dạng chuẩn Excel (.xlsx).
             </p>
           </div>
 
@@ -187,25 +198,29 @@ export const ManagerDashboardPage: React.FC = () => {
       </Card>
 
       {/* Main Tabs Navigation */}
-      <div className="flex rounded-2xl bg-muted/60 p-1 border border-border">
+      <div className="flex min-w-0 flex-col gap-1 rounded-2xl border border-border bg-muted/60 p-1 sm:flex-row">
         <Button
           variant={activeTab === "OVERVIEW" ? "default" : "ghost"}
           size="default"
           onClick={() => setActiveTab("OVERVIEW")}
-          className="flex-1 gap-2 font-bold"
+          className="min-w-0 flex-1 gap-2 font-bold whitespace-normal"
         >
           <PieChart className="h-4 w-4" />
-          <span>Dashboard Trực Quan Công Suất & Năng Lượng</span>
+          <span className="min-w-0 text-center">
+            Dashboard Trực Quan Công Suất & Năng Lượng
+          </span>
         </Button>
 
         <Button
           variant={activeTab === "REPORTS" ? "default" : "ghost"}
           size="default"
           onClick={() => setActiveTab("REPORTS")}
-          className="flex-1 gap-2 font-bold"
+          className="min-w-0 flex-1 gap-2 font-bold whitespace-normal"
         >
           <FileSpreadsheet className="h-4 w-4" />
-          <span>Xuất Báo Cáo Nghiệp Vụ Excel (.xlsx)</span>
+          <span className="min-w-0 text-center">
+            Xuất Báo Cáo Nghiệp Vụ Excel (.xlsx)
+          </span>
         </Button>
       </div>
 
@@ -215,7 +230,7 @@ export const ManagerDashboardPage: React.FC = () => {
       {activeTab === "OVERVIEW" && (
         <div className="space-y-6">
           {/* Row 1: Bed Occupancy Donut Chart + Revenue Bar Chart */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <OccupancyDonutChart stats={stats} />
             <RevenueTrendChart monthlyRevenue={MOCK_MONTHLY_REVENUE} />
           </div>
@@ -231,17 +246,19 @@ export const ManagerDashboardPage: React.FC = () => {
       {activeTab === "REPORTS" && (
         <div className="space-y-6">
           {/* Action Box to Trigger Excel Exports */}
-          <Card className="p-6 sm:p-8 space-y-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border pb-6">
+          <Card className="space-y-6 p-6 sm:p-8">
+            <div className="flex flex-col items-start justify-between gap-4 border-b border-border pb-6 sm:flex-row sm:items-center">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
-                  <FileSpreadsheet className="h-4 w-4" /> Kết Xuất Dữ Liệu Nghiệp Vụ Chuẩn
+                <span className="flex items-center gap-1.5 text-[10px] font-bold tracking-wider text-primary uppercase">
+                  <FileSpreadsheet className="h-4 w-4" /> Kết Xuất Dữ Liệu
+                  Nghiệp Vụ Chuẩn
                 </span>
-                <h2 className="text-xl font-bold text-foreground mt-0.5">
+                <h2 className="mt-0.5 text-xl font-bold text-foreground">
                   Xuất Báo Cáo Định Dạng Microsoft Excel (.xlsx) & CSV
                 </h2>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Hỗ trợ đầy đủ tiếng Việt có dấu, định dạng bảng có tiêu đề cơ quan, màu nhận diện FPT và số liệu tài chính
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Hỗ trợ đầy đủ tiếng Việt có dấu, định dạng bảng có tiêu đề cơ
+                  quan, màu nhận diện FPT và số liệu tài chính
                 </p>
               </div>
 
@@ -277,21 +294,25 @@ export const ManagerDashboardPage: React.FC = () => {
             </div>
 
             {/* Sub-Tabs for Preview Table */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-              <div className="flex rounded-xl bg-muted/60 p-1 border border-border">
+            <div className="flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-center">
+              <div className="flex rounded-xl border border-border bg-muted/60 p-1">
                 <Button
-                  variant={reportSubTab === "TEMPORARY_RESIDENCE" ? "default" : "ghost"}
+                  variant={
+                    reportSubTab === "TEMPORARY_RESIDENCE" ? "default" : "ghost"
+                  }
                   size="sm"
                   onClick={() => setReportSubTab("TEMPORARY_RESIDENCE")}
-                  className="font-bold text-xs"
+                  className="text-xs font-bold"
                 >
                   1. Danh Sách Tạm Trú ({MOCK_RESIDENTS_REGISTRY.length} SV)
                 </Button>
                 <Button
-                  variant={reportSubTab === "OVERDUE_DEBTS" ? "default" : "ghost"}
+                  variant={
+                    reportSubTab === "OVERDUE_DEBTS" ? "default" : "ghost"
+                  }
                   size="sm"
                   onClick={() => setReportSubTab("OVERDUE_DEBTS")}
-                  className="font-bold text-xs"
+                  className="text-xs font-bold"
                 >
                   2. Danh Sách Công Nợ Quá Hạn ({MOCK_OVERDUE_DEBTS.length} SV)
                 </Button>
