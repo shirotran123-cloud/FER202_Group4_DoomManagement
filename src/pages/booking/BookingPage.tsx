@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { useAuth } from "@/contexts/useAuth"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -429,13 +429,78 @@ export const BookingPage: React.FC = () => {
       : EMPTY_SELECTED_BED
 
   // Handle bed selection — chặn giữ giường nếu không đủ quyền.
-  const handleSelectBed = (bed: Bed, compId: string) => {
+  /**
+   * Chọn giường và GIỮ CHỖ THẬT trên máy chủ (`POST /api/dorm/holds`).
+   *
+   * Trước đây hàm này chỉ đổi state cục bộ: bấm chọn giường thì giao diện đếm
+   * ngược 15 phút nhưng máy chủ không biết gì, nên giường vẫn hiện "còn trống"
+   * cho người khác và hết hạn không có gì được nhả. Nay giường chuyển sang
+   * HOLDING thật, và bấm giường khác thì lượt giữ chỗ cũ được nhả trước.
+   */
+  const [holdingBedCode, setHoldingBedCode] = useState<string | null>(null)
+  const [isHolding, setIsHolding] = useState(false)
+
+  const handleSelectBed = async (bed: Bed, compId: string) => {
     if (!canBook || bed.status !== "available" || !bed.code) return
-    setSelectedBed(bed)
-    setSelectedCompartment(compId)
-    setTimeLeft(15 * 60)
-    setIsLocked(true)
+    if (isHolding) return
+
+    setIsHolding(true)
+    try {
+      const hold = await dormApi.holdBed(bed.code)
+      setSelectedBed(bed)
+      setSelectedCompartment(compId)
+      setHoldingBedCode(bed.code)
+      setTimeLeft(Math.max(0, hold.secondsLeft ?? 15 * 60))
+      setIsLocked(true)
+      // Tải lại kiểm kê để trạng thái HOLDING hiện đúng trên sơ đồ.
+      setLoadAttempt((n) => n + 1)
+    } catch (error) {
+      showToast(
+        error instanceof ApiError
+          ? error.message
+          : "Không giữ được giường này. Vui lòng chọn giường khác.",
+        "error",
+      )
+      // Tải lại để thấy trạng thái thật (có thể người khác vừa giữ mất).
+      setLoadAttempt((n) => n + 1)
+    } finally {
+      setIsHolding(false)
+    }
   }
+
+  /** Nhả lượt giữ chỗ đang có (khi đổi giường hoặc rời trang). */
+  const releaseCurrentHold = async () => {
+    if (!holdingBedCode) return
+    try {
+      // Tìm id lượt giữ chỗ hiện tại của chính sinh viên này.
+      const current = await dormApi.currentHold()
+      if (current?.id) await dormApi.releaseHold(current.id)
+    } catch {
+      // Không nhả được thì lượt giữ chỗ sẽ tự hết hạn sau 15 phút.
+    } finally {
+      setHoldingBedCode(null)
+    }
+  }
+
+  /**
+   * Rời trang khi còn giữ chỗ thì nhả ra, để giường không bị khoá 15 phút một
+   * cách vô ích. Chỉ chạy lúc unmount nên dùng ref để tránh phụ thuộc state.
+   */
+  const holdingRef = useRef<string | null>(null)
+  useEffect(() => {
+    holdingRef.current = holdingBedCode
+  }, [holdingBedCode])
+
+  useEffect(() => {
+    return () => {
+      if (!holdingRef.current) return
+      // Gọi thẳng API, không dùng state sau khi component đã unmount.
+      dormApi
+        .currentHold()
+        .then((current) => (current?.id ? dormApi.releaseHold(current.id) : null))
+        .catch(() => undefined)
+    }
+  }, [])
 
   /** Đếm giường theo trạng thái của phòng đang chọn, dùng cho bảng chú thích. */
   const bedCounts = activeRoomCompartments
@@ -462,15 +527,59 @@ export const BookingPage: React.FC = () => {
     setCheckoutStep("qr")
   }
 
-  const handleConfirmPayment = () => {
+  /**
+   * Thanh toán giữ chỗ THẬT: tạo đơn -> xác nhận cọc.
+   *
+   * Việc DUYỆT không nằm ở đây: `POST /bookings/:id/approve` chỉ dành cho quản
+   * lý/admin (`booking:approve`). Sinh viên gọi sẽ nhận 403, nên sau khi thanh
+   * toán xong giao diện báo "đã thanh toán, chờ Ban Quản lý duyệt" — đúng trạng
+   * thái PAID mà máy chủ ghi nhận.
+   *
+   * Trước đây khối này chỉ chạy ba `setTimeout` rồi hiện "thành công", nhưng
+   * máy chủ không nhận được gì: không có đơn, không có thanh toán.
+   */
+  const [isPaying, setIsPaying] = useState(false)
+  const [paidBookingId, setPaidBookingId] = useState<string | null>(null)
+
+  const handleConfirmPayment = async () => {
+    if (!canBook || isPaying) return
+    if (!selectedBed.code) {
+      showToast("Vui lòng chọn một giường còn trống trước khi thanh toán.", "error")
+      return
+    }
+
+    setIsPaying(true)
     setCheckoutStep("verifying")
-    setAutoApprovalProgress(10)
-    setTimeout(() => setAutoApprovalProgress(40), 700)
-    setTimeout(() => setAutoApprovalProgress(75), 1400)
-    setTimeout(() => {
+    setAutoApprovalProgress(15)
+
+    try {
+      // 1. Tạo đơn giữ giường (trạng thái PENDING).
+      const booking = (await dormApi.createBooking(selectedBed.code, paymentMethod)) as {
+        id: string
+      }
+      setAutoApprovalProgress(50)
+
+      // 2. Xác nhận đã thanh toán cọc -> máy chủ chuyển đơn sang PAID.
+      await dormApi.payBooking(booking.id)
       setAutoApprovalProgress(100)
+
+      setPaidBookingId(booking.id)
       setCheckoutStep("success")
-    }, 2200)
+      // Giường đang HOLDING, tải lại để sơ đồ phản ánh đúng.
+      setLoadAttempt((n) => n + 1)
+      setHoldingBedCode(null)
+    } catch (error) {
+      const message =
+        error instanceof ApiError
+          ? error.message
+          : "Không hoàn tất được đặt giường. Vui lòng thử lại."
+      showToast(message, "error")
+      setCheckoutStep("qr")
+      setAutoApprovalProgress(0)
+      setLoadAttempt((n) => n + 1)
+    } finally {
+      setIsPaying(false)
+    }
   }
 
   /** Tải hợp đồng điện tử thật cho giường vừa giữ chỗ (font Unicode nhúng). */
@@ -479,7 +588,9 @@ export const BookingPage: React.FC = () => {
     setIsGeneratingContract(true)
     try {
       await generateContractPDF({
-        contractId: BOOKING_CONTRACT_ID,
+        // Chưa duyệt thì hợp đồng ghi theo mã đơn đã thanh toán; duyệt xong
+        // Ban Quản lý cấp mã hợp đồng riêng (xem cột Mã Hợp Đồng trong hồ sơ).
+        contractId: paidBookingId ? `HĐ-${paidBookingId}` : BOOKING_CONTRACT_ID,
         studentName: user?.fullName ?? "Nguyễn Hoàng Vinh",
         mssv: user?.studentId ?? "QE200001",
         bedCode: activeBed.code,
@@ -1086,12 +1197,26 @@ export const BookingPage: React.FC = () => {
             {/* CTA Button — chỉ mở được khi đã có giường thật đang chọn. */}
             <Button
               onClick={handleStartCheckout}
-              disabled={!canBook || !activeBed.code}
+              disabled={!canBook || !activeBed.code || isHolding}
               className="w-full h-10 bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs rounded-lg"
             >
               <QrCode className="h-4 w-4 shrink-0" />
-              <span className="whitespace-nowrap">Tạo VietQR & Xác Nhận Giữ Chỗ</span>
+              <span className="whitespace-nowrap">
+                {isHolding ? "Đang giữ chỗ…" : "Tạo VietQR & Xác Nhận Giữ Chỗ"}
+              </span>
             </Button>
+
+            {/* Nhả giữ chỗ — chỉ hiện khi thật sự đang giữ một giường trên máy chủ. */}
+            {holdingBedCode && (
+              <Button
+                variant="outline"
+                onClick={() => void releaseCurrentHold()}
+                className="w-full h-9 text-xs font-bold"
+              >
+                <X className="h-4 w-4 shrink-0" />
+                <span className="whitespace-nowrap">Huỷ giữ chỗ {holdingBedCode}</span>
+              </Button>
+            )}
 
             <p className="text-[10px] text-muted-foreground text-center leading-normal">
               Tự động duyệt 0-chạm & cấp Hợp đồng điện tử PDF tức thì khi có báo Có.
@@ -1189,11 +1314,12 @@ export const BookingPage: React.FC = () => {
                       Hủy bỏ
                     </Button>
                     <Button
-                      onClick={handleConfirmPayment}
+                      onClick={() => void handleConfirmPayment()}
+                      disabled={isPaying}
                       className="flex-1 bg-success hover:bg-success text-white font-bold text-xs flex items-center justify-center gap-1.5"
                     >
                       <CircleCheck className="h-4 w-4" />
-                      <span>Mô phỏng thanh toán thành công</span>
+                      <span>{isPaying ? "Đang xử lý…" : "Xác nhận đã chuyển khoản"}</span>
                     </Button>
                   </div>
                 </>
@@ -1227,13 +1353,14 @@ export const BookingPage: React.FC = () => {
 
                   <div className="space-y-1">
                     <h4 className="font-bold text-base text-foreground">
-                      Đặt giường thành công và đã phê duyệt
+                      Đã thanh toán cọc · chờ Ban Quản lý duyệt
                     </h4>
                     <p className="text-xs text-muted-foreground">
-                      Mã hợp đồng: <strong className="font-mono text-primary">{BOOKING_CONTRACT_ID}</strong>
+                      Mã đơn: <strong className="font-mono text-primary">{paidBookingId ?? "Đang cập nhật"}</strong>
                     </p>
                     <p className="text-xs text-muted-foreground max-w-sm">
-                      Bạn đã hoàn tất đăng ký giường <strong>{activeBed.code}</strong>. Hợp đồng điện tử kèm biên nhận tiền cọc đã được lưu vào hồ sơ cá nhân.
+                      Bạn đã giữ giường <strong>{activeBed.code}</strong> và thanh toán tiền cọc. Ban Quản lý
+                      KTX sẽ duyệt tự động nếu hồ sơ đủ điều kiện, sau đó hợp đồng điện tử được cấp.
                     </p>
                   </div>
 
