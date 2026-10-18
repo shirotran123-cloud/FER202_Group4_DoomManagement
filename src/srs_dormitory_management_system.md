@@ -158,7 +158,7 @@ Hệ thống DMS giải quyết toàn bộ bài toán vận hành KTX trường 
 ### 🏢 MODULE 2: QUẢN LÝ CẤU TRÚC PHÒNG - BUỒNG - GIƯỜNG (DORM INVENTORY)
 
 - **FR-2.1 Quản lý Tòa nhà & Tầng (Block & Floor)**:
-  - Khai báo danh mục tòa (Ví dụ: Dom A, Dom B, Dom C) kèm loại hình quy định (Tòa Nam, Tòa Nữ, Tòa Quốc tế).
+  - Khai báo danh mục tòa (Ví dụ: Tòa A, Tòa B) kèm loại hình quy định (Tòa Nam, Tòa Nữ).
   - Khai báo số tầng trong mỗi tòa và danh sách lối thoát hiểm, camera an ninh.
 - **FR-2.2 Quản lý Cấu trúc Phòng (Room Management)**:
   - Mỗi phòng mang một mã định danh duy nhất (Ví dụ: `P.205-DomA`).

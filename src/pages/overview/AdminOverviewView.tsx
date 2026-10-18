@@ -327,7 +327,6 @@ export const AdminOverviewView: React.FC = () => {
                 <option value="ALL">Tất cả các tòa</option>
                 <option value="Tòa A">Tòa A (Nam - High-Rise)</option>
                 <option value="Tòa B">Tòa B (Nữ)</option>
-                <option value="Tòa C">Tòa C</option>
               </Select>
             </div>
           </div>

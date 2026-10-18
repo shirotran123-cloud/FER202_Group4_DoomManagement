@@ -339,7 +339,6 @@ export const BookingPage: React.FC = () => {
               >
                 <option value="b1">Tòa A · Khu Nam</option>
                 <option value="b2">Tòa B · Khu Nữ</option>
-                <option value="b3">Tòa C · Sinh viên Quốc tế</option>
               </Select>
               <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none h-4 w-4" />
             </div>
@@ -349,10 +348,6 @@ export const BookingPage: React.FC = () => {
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[11px] uppercase font-bold tracking-wider text-muted-foreground">
                   Chọn Tầng
-                </span>
-                <span className="text-[11px] text-muted-foreground font-medium flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-success"></span>
-                  Thang máy khả dụng
                 </span>
               </div>
               <div className="grid grid-cols-5 gap-1 p-1 bg-muted rounded-lg">
