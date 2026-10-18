@@ -44,10 +44,22 @@ export const LoginPage: React.FC = () => {
     return "/overview"
   }
 
-  const handleQuickDemo = (role: UserRole) => {
+  /**
+   * Đăng nhập nhanh bằng tài khoản demo.
+   *
+   * Phải CHỜ lưu xong phiên rồi mới điều hướng. Nếu điều hướng ngay, trang đích
+   * mount khi localStorage chưa có vai trò, nên mọi lời gọi API không kèm được
+   * header `X-Demo-Role` và bị máy chủ trả 403 — đúng lỗi "không tải được dữ
+   * liệu giường" trước đây.
+   */
+  const handleQuickDemo = async (role: UserRole) => {
     setErrorMessage(null)
-    loginAsDemoUser(role)
-    navigate(getRoleDestination(role), { replace: true })
+    const result = await loginAsDemoUser(role)
+    if (result.success) {
+      navigate(getRoleDestination(role), { replace: true })
+    } else {
+      setErrorMessage(result.message || "Không đăng nhập được bằng tài khoản demo.")
+    }
   }
 
   const handleCustomLogin = async (e: React.FormEvent) => {

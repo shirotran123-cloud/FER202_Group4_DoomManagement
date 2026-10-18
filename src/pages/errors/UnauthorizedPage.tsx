@@ -41,13 +41,13 @@ export const UnauthorizedPage: React.FC = () => {
           </p>
           <div className="grid grid-cols-2 gap-2 pt-1">
             <button
-              onClick={() => switchRole("manager")}
+              onClick={() => void switchRole("manager")}
               className="rounded-lg border border-border bg-card p-2 text-center text-[11px] font-semibold text-foreground hover:bg-muted"
             >
               Đổi sang Quản lý
             </button>
             <button
-              onClick={() => switchRole("technician")}
+              onClick={() => void switchRole("technician")}
               className="rounded-lg border border-border bg-card p-2 text-center text-[11px] font-semibold text-foreground hover:bg-muted"
             >
               Đổi sang An ninh/KT

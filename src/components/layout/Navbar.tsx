@@ -65,7 +65,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
                     <button
                       key={r}
                       onClick={() => {
-                        switchRole(r)
+                        void switchRole(r)
                         setOpenMenu(null)
                       }}
                       className={`flex w-full items-center justify-between rounded-xl px-2.5 py-2 text-[13px] transition-colors ${

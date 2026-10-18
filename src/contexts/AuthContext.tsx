@@ -113,27 +113,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }
 
-  /** Đăng nhập nhanh bằng tài khoản demo của từng vai trò (nút ở trang /login). */
-  const loginAsDemoUser = (role: UserRole) => {
+  /**
+   * Đăng nhập nhanh bằng tài khoản demo của từng vai trò (nút ở trang /login).
+   *
+   * Trả Promise để người gọi CHỜ lưu xong phiên rồi mới điều hướng. Trước đây
+   * hàm chạy nền rồi trả về ngay, nên trang đích mount trước khi có vai trò
+   * trong localStorage → mọi lời gọi API đều đi mà không kèm header vai trò và
+   * bị máy chủ trả 403.
+   */
+  const loginAsDemoUser = async (role: UserRole): Promise<{ success: boolean; message?: string }> => {
     setIsLoading(true)
-    void (async () => {
-      try {
-        const res = await authApi.demo(role)
-        saveAuthSession(res.user, res.tokens)
-      } catch {
-        // Không có hồ sơ thì phải nói thật là chưa đăng nhập được, tuyệt đối
-        // không dựng hồ sơ giả để giao diện trông như đã vào hệ thống.
-        setUser(null)
-        setTokens(null)
-      } finally {
-        setIsLoading(false)
+    try {
+      const res = await authApi.demo(role)
+      saveAuthSession(res.user, res.tokens)
+      return { success: true }
+    } catch (error) {
+      // Không có hồ sơ thì phải nói thật là chưa đăng nhập được, tuyệt đối
+      // không dựng hồ sơ giả để giao diện trông như đã vào hệ thống.
+      setUser(null)
+      setTokens(null)
+      return {
+        success: false,
+        message:
+          error instanceof ApiError
+            ? error.message
+            : "Không kết nối được máy chủ. Kiểm tra backend đã chạy chưa.",
       }
-    })()
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const switchRole = (role: UserRole) => {
-    loginAsDemoUser(role)
-  }
+  const switchRole = (role: UserRole) => loginAsDemoUser(role)
 
   /**
    * Cập nhật hồ sơ. Ghi lên máy chủ trước rồi mới lưu phiên, để hồ sơ hiển thị

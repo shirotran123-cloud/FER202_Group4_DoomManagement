@@ -54,8 +54,9 @@ export interface AuthContextType {
   isAuthenticated: boolean
   isLoading: boolean
   loginWithGoogle: (email: string, targetRole: UserRole) => Promise<{ success: boolean; message?: string }>
-  loginAsDemoUser: (role: UserRole) => void
-  switchRole: (role: UserRole) => void
+  /** Trả Promise để người gọi chờ lưu xong phiên rồi mới điều hướng. */
+  loginAsDemoUser: (role: UserRole) => Promise<{ success: boolean; message?: string }>
+  switchRole: (role: UserRole) => Promise<{ success: boolean; message?: string }>
   updateProfile: (updatedData: Partial<UserProfile>) => void
   logout: () => void
   sessionSecondsLeft: number
