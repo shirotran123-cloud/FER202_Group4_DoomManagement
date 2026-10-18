@@ -7,7 +7,7 @@ import { canBookBed } from "@/lib/role-access"
 import { QrCodeImage } from "@/components/ui/qr-code"
 import { LoadingSkeleton } from "@/components/ui/shared"
 import { generateContractPDF } from "@/lib/pdfGenerator"
-import { Building, CircleCheck, CircleAlert, Clock, QrCode, Download, Check, Zap, BedDouble, DoorOpen, ChevronDown, LayoutGrid, X } from "lucide-react"
+import { CircleCheck, CircleAlert, Clock, QrCode, Download, Check, Zap, BedDouble, DoorOpen, ChevronDown, LayoutGrid, X } from "lucide-react"
 
 import { Select } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -725,7 +725,9 @@ export const BookingPage: React.FC = () => {
       {/* 02. MAIN 3-COLUMN ERGONOMIC GRID */}
       <div className="grid grid-cols-12 gap-6 items-stretch">
         {/* COLUMN 1: BUILDING, LEVEL, ROOM LIST (3 COLS) */}
-        <div className="col-span-12 lg:col-span-3 flex flex-col gap-5">
+        {/* gap-4 khớp hai cột còn lại: trước đây cột này dùng gap-5 nên khoảng
+            cách giữa các thẻ trong ba cột không đều nhau. */}
+        <div className="col-span-12 lg:col-span-3 flex flex-col gap-4">
           {/* Building Selector */}
           <div className="dms-card p-4 space-y-3">
             <label className="text-[11px] uppercase font-bold tracking-wider text-muted-foreground block">
@@ -832,26 +834,13 @@ export const BookingPage: React.FC = () => {
               )
             })}
           </div>
-
-          {/* Living Note & Facility Snapshot */}
-          <div className="dms-card p-3 flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 text-primary">
-              <Building className="h-5 w-5" />
-            </div>
-            <div className="min-w-0">
-              {/* Nhãn cũ "Khu A205 · Chuẩn 2026" vô nghĩa: A205 là một phòng chứ
-                  không phải "khu", và "Chuẩn 2026" không nói lên điều gì. Nay ghi
-                  đúng toà đang chọn và số tầng thực có. */}
-              <p className="font-bold text-xs text-foreground whitespace-nowrap">
-                {buildingName} · {floorLevels.length} tầng
-              </p>
-            </div>
-          </div>
         </div>
 
         {/* COLUMN 2: CENTER ARCHITECTURAL 1:4:6 UNIT BLUEPRINT (6 COLS) */}
         <div className="col-span-12 lg:col-span-6 flex flex-col gap-4">
-          <div className="dms-card p-5 space-y-4">
+          {/* p-4 khớp với hai cột bên cạnh: trước đây cột giữa dùng p-5 nên lề
+              trong của ba cột lệch nhau, nhìn như bị so le. */}
+          <div className="dms-card p-4 space-y-4">
             {/* Header blueprint */}
             <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-border">
               <div className="flex items-center gap-2.5">
