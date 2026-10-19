@@ -15,7 +15,7 @@ export const BookingStubPage: React.FC = () => {
                 Module 2 & 3 • Đặt phòng và chọn giường
               </span>
               <h1 className="text-2xl font-black text-foreground">
-                Bản Đồ Chọn Giường Trực Quan 1:4:6 & Khóa 15 Phút
+                Bản Đồ Chọn Giường Trực Quan & Khóa 15 Phút
               </h1>
             </div>
           </div>
@@ -29,7 +29,7 @@ export const BookingStubPage: React.FC = () => {
           <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
             <h3 className="font-bold text-foreground flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
-              <span>1. Mô hình 1 Phòng = 4 Buồng = 24 Giường</span>
+              <span>1. Cấu trúc 1 Phòng = 4 Buồng = 24 Giường</span>
             </h3>
             <p className="text-muted-foreground leading-relaxed">
               Hiển thị phân tầng trực quan theo Tòa ➔ Tầng ➔ Phòng ➔ Buồng (A, B, C, D) ➔ Giường (G01 - G06).

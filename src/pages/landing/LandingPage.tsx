@@ -27,7 +27,7 @@ import {
 
 const FAQ_ITEMS = [
   {
-    question: "Mô hình buồng riêng 1:4:6 là gì? Tôi có được riêng tư không?",
+    question: "Phòng KTX có đảm bảo sự riêng tư không?",
     answer:
       "Mỗi căn phòng lớn tiêu chuẩn có 4 buồng riêng biệt (A, B, C, D) với 6 giường/buồng (tổng 24 giường). Mỗi giường có rèm che chống nhìn xuyên thấu, đèn bàn LED, ổ cắm đôi và tủ cá nhân khóa số riêng biệt.",
   },
@@ -253,39 +253,17 @@ export const LandingPage: React.FC = () => {
             </span>
           </h1>
 
-          <p className="text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Hệ thống đặt giường và quản lý Ký túc xá trực tuyến thông minh. Trải
-            nghiệm mô hình buồng riêng <strong>1:4:6</strong> tiện nghi, cơ chế
-            giữ chỗ 15 phút không xung đột, và hóa đơn điện nước minh bạch chia
-            theo thời gian thực.
-          </p>
-
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <Link
               to="/booking"
               className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:bg-[#3a505b]"
             >
               <BedDouble className="h-4 w-4" />
-              <span>Xem Bản Đồ & Đặt Giường 1:4:6</span>
+              <span>Đặt Phòng</span>
               <ArrowRight className="h-4 w-4" />
             </Link>
 
-            <Link
-              to="/billing"
-              className="inline-flex items-center gap-2 rounded-xl border border-border bg-white px-5 py-3.5 text-sm font-semibold text-foreground shadow-xs transition-colors hover:bg-[#eff6ff] dark:bg-[#161e23] dark:hover:bg-[#1c262c]"
-            >
-              <Receipt className="h-4 w-4 text-primary" />
-              <span>Hóa Đơn Điện Nước VietQR</span>
-            </Link>
-
-            {!isAuthenticated ? (
-              <Link
-                to="/login"
-                className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-3.5 text-sm font-semibold text-foreground shadow-xs transition-colors hover:bg-muted"
-              >
-                <span>Đăng Nhập Google</span>
-              </Link>
-            ) : (
+            {isAuthenticated && (
               <div className="flex flex-wrap items-center gap-2.5">
                 <Link
                   to={
@@ -346,12 +324,12 @@ export const LandingPage: React.FC = () => {
         <div className="pointer-events-none absolute top-0 right-0 -mt-20 -mr-20 h-96 w-96 rounded-full bg-sky-500/10 blur-3xl" />
       </section>
 
-      {/* Slide giới thiệu không gian KTX chuẩn mô hình 1-4-6 */}
+      {/* Slide giới thiệu không gian KTX */}
       <section className="space-y-4">
         <DormitoryGallerySlider />
       </section>
 
-      <section id="mo-hinh" className="scroll-mt-24 space-y-6">
+      <section id="tinh-nang" className="scroll-mt-24 space-y-6">
         <div className="mx-auto max-w-2xl space-y-2 text-center">
           <h2 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
             Tính Năng Nổi Bật Của Hệ Thống

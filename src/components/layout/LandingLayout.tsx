@@ -29,7 +29,8 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
   const [showUserDropdown, setShowUserDropdown] = useState(false)
 
   const navItems = [
-    { label: "Mô hình 1:4:6", href: "#mo-hinh" },
+    { label: "Đặt phòng", href: "/booking" },
+    { label: "Tính năng", href: "#tinh-nang" },
     { label: "Biểu phí & Tiện ích", href: "#bieu-phi" },
     { label: "Nội quy & Giới nghiêm", href: "#noi-quy" },
     { label: "Hỏi đáp (FAQ)", href: "#faq" },
@@ -54,8 +55,10 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
     )
 
     navItems.forEach((item) => {
-      const el = document.querySelector(item.href)
-      if (el) observer.observe(el)
+      if (item.href.startsWith("#")) {
+        const el = document.querySelector(item.href)
+        if (el) observer.observe(el)
+      }
     })
 
     return () => {
@@ -69,6 +72,7 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
     href: string
   ) => {
     setActiveNav(href)
+    if (!href.startsWith("#")) return
     const targetElement = document.querySelector(href)
     if (targetElement) {
       e.preventDefault()
@@ -119,6 +123,17 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
           <nav className="hidden shrink-0 items-center gap-1.5 rounded-2xl border border-slate-200 bg-slate-100 p-1 text-xs font-semibold lg:flex xl:gap-2">
             {navItems.map((item) => {
               const isActive = activeNav === item.href
+              if (!item.href.startsWith("#")) {
+                return (
+                  <Link
+                    key={item.href}
+                    to={item.href}
+                    className="cursor-pointer rounded-xl px-3.5 py-1.5 text-xs font-semibold whitespace-nowrap text-[#42474b] transition-all duration-200 hover:bg-sky-500/15 hover:text-sky-600"
+                  >
+                    {item.label}
+                  </Link>
+                )
+              }
               return (
                 <a
                   key={item.href}

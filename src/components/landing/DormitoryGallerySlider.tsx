@@ -25,7 +25,7 @@ interface SlideItem {
 const SLIDES: SlideItem[] = [
   {
     id: 1,
-    badge: "Mô hình độc quyền 1:4:6",
+    badge: "Buồng ngủ",
     icon: Bed,
     title: "Không Gian Buồng Ngủ Riêng Tư & Tiện Nghi",
     subtitle:
@@ -178,26 +178,11 @@ export const DormitoryGallerySlider: React.FC = () => {
             </div>
           </div>
 
-          {/* Bottom Captions & Feature Tags */}
-          <div className="pointer-events-auto max-w-2xl space-y-3.5">
+          {/* Bottom Captions */}
+          <div className="pointer-events-auto max-w-2xl">
             <h3 className="text-xl leading-tight font-extrabold tracking-tight text-white drop-shadow-md sm:text-3xl lg:text-4xl">
               {currentSlide.title}
             </h3>
-
-            <p className="max-w-xl text-xs leading-relaxed text-white/85 drop-shadow-sm sm:text-sm lg:text-base">
-              {currentSlide.subtitle}
-            </p>
-
-            <div className="flex flex-wrap gap-2 pt-1">
-              {currentSlide.tags.map((tag, tIdx) => (
-                <span
-                  key={tIdx}
-                  className="rounded-lg border border-white/20 bg-white/10 px-2.5 py-1 text-[11px] font-medium text-white/95 backdrop-blur-md"
-                >
-                  ✓ {tag}
-                </span>
-              ))}
-            </div>
           </div>
         </div>
 

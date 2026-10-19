@@ -48,7 +48,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         {
           groupTitle: "Cổng Thông Tin KTX",
           items: [
-            { title: "Xem phòng 1:4:6", to: "/booking", icon: BedDouble },
+            { title: "Xem phòng", to: "/booking", icon: BedDouble },
             { title: "Đăng nhập", to: "/login", icon: LogIn },
           ],
         },
@@ -71,7 +71,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               icon: DoorClosed,
               badge: "A205",
             },
-            { title: "Đặt giường 1:4:6", to: "/booking", icon: BedDouble },
+            { title: "Đặt phòng", to: "/booking", icon: BedDouble },
             { title: "Điện nước & VietQR", to: "/billing", icon: Receipt },
             { title: "Báo hỏng thiết bị", to: "/maintenance", icon: Wrench },
             {

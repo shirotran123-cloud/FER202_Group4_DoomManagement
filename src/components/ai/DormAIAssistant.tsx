@@ -47,7 +47,7 @@ NGHIỆP VỤ & QUY TẮC KÝ TÚC XÁ FPT (SRS & THỰC TẾ):
 - Vi phạm về muộn không xin phép: Trừ 5 điểm rèn luyện (demerit points). Vi phạm 2 lần sẽ gửi cảnh cáo về phụ huynh; 3 lần sẽ bị xem xét đình chỉ lưu trú KTX.
 - Hotline bảo vệ trực ban 24/7: 1900 6868.
 
-2. MÔ HÌNH PHÒNG & GIƯỜNG 1:4:6:
+2. CẤU TRÚC PHÒNG & GIƯỜNG:
 - Cấu trúc chuẩn: 1 Phòng = 4 Buồng (A, B, C, D); 1 Buồng = 6 Giường (G01 - G06), tổng 24 giường/phòng.
 - Giường tầng dưới (Lower): G01, G03, G05 (tiện leo trèo, giá 950.000đ/tháng).
 - Giường tầng trên (Upper): G02, G04, G06 (yên tĩnh, riêng tư, sạch sẽ, giá 950.000đ/tháng).
@@ -222,7 +222,7 @@ export const DormAIAssistant: React.FC = () => {
       lower.includes("tầng")
     ) {
       return (
-        "🏢 **GỢI Ý LỰA CHỌN PHÒNG & GIƯỜNG (MÔ HÌNH 1:4:6):**\n" +
+        "🏢 **GỢI Ý LỰA CHỌN PHÒNG & GIƯỜNG (TIÊU CHUẨN):**\n" +
         "• Nếu bạn thích yên tĩnh để tự học: Nên chọn các phòng ở **Tầng 4 hoặc Tầng 5** (xa sảnh sinh hoạt chung).\n" +
         "• Vị trí giường: Giường tầng dưới (**G01, G03, G05**) thuận tiện leo trèo; Giường tầng trên (**G02, G04, G06**) riêng tư hơn và ít bị bụi.\n" +
         "• Hiện tại **Phòng A205 Buồng B** còn trống giường **G03** tầng dưới rất thoáng mát gần cửa sổ!"
