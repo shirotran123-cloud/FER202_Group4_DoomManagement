@@ -11,7 +11,6 @@ import {
   Zap,
   Building2,
   Receipt,
-  Wrench,
   Clock,
   BedDouble,
   Wifi,
@@ -22,7 +21,6 @@ import {
   PieChart,
   Phone,
   ShieldCheck,
-  AlertTriangle,
   Calendar,
   HeartPulse,
   Droplets,
@@ -85,7 +83,7 @@ export const StudentOverviewPage: React.FC = () => {
       </div>
 
       {/* Top KPI 4-Card Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
         {/* Card 1: Current Room */}
         <Card className="flex flex-col justify-between hover:shadow-md transition-shadow">
           <CardHeader className="p-5 pb-2">
@@ -143,36 +141,6 @@ export const StudentOverviewPage: React.FC = () => {
                 <span>Thanh Toán VietQR</span>
               </Link>
             </Button>
-          </CardContent>
-        </Card>
-
-        {/* Card 3: Maintenance */}
-        <Card className="flex flex-col justify-between hover:shadow-md transition-shadow">
-          <CardHeader className="p-5 pb-2">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold">
-                Bảo Trì Kỹ Thuật
-              </span>
-              <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-foreground">
-                <Wrench className="h-4 w-4" />
-              </div>
-            </div>
-            <CardTitle className="text-lg font-bold">2 Yêu Cầu Đang Xử Lý</CardTitle>
-            <div className="text-xs text-destructive font-medium mt-1 flex items-center gap-1">
-              <AlertTriangle className="h-3.5 w-3.5" />
-              1 Khẩn: Ổ cắm buồng B-G03
-            </div>
-          </CardHeader>
-
-          <CardContent className="p-5 pt-0">
-            <div className="mt-4 bg-muted/50 rounded-lg p-3 border border-border/50">
-              <div className="text-[10px] uppercase text-muted-foreground tracking-wider font-bold">Trạng thái</div>
-              <div className="text-xs font-semibold text-foreground mt-0.5 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-primary"></span>
-                Kỹ thuật viên: Nguyễn Văn An
-              </div>
-              <div className="text-[11px] text-muted-foreground mt-0.5">Lịch hẹn: Hôm nay 14:30</div>
-            </div>
           </CardContent>
         </Card>
 
