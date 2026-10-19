@@ -1,7 +1,6 @@
 import React, { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
-import type { UserRole } from "@/types/auth"
 import {
   Building2,
   User,
@@ -10,7 +9,6 @@ import {
   Clock,
   RefreshCw,
   ChevronDown,
-  CheckCircle2,
   AlertCircle,
   Menu,
   UserPlus,
@@ -30,13 +28,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
     user,
     isAuthenticated,
     logout,
-    switchRole,
     sessionSecondsLeft,
     refreshSession,
   } = useAuth()
   const { theme, setTheme } = useTheme()
   const navigate = useNavigate()
-  const [showRoleDropdown, setShowRoleDropdown] = useState(false)
   const [showUserDropdown, setShowUserDropdown] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
 
@@ -45,38 +41,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
     const secs = totalSec % 60
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
   }
-
-  const roleMeta: Record<
-    UserRole,
-    { label: string; badgeClass: string; borderClass: string; icon: string }
-  > = {
-    student: {
-      label: "Sinh viên",
-      badgeClass: "bg-emerald-50 text-emerald-800 border-emerald-200",
-      borderClass: "border-emerald-500",
-      icon: "🎓",
-    },
-    manager: {
-      label: "Quản lý KTX",
-      badgeClass: "bg-blue-50 text-blue-800 border-blue-200",
-      borderClass: "border-blue-500",
-      icon: "🏢",
-    },
-    technician: {
-      label: "An ninh / Kỹ thuật",
-      badgeClass: "bg-cyan-50 text-cyan-800 border-cyan-200",
-      borderClass: "border-cyan-500",
-      icon: "🛡️",
-    },
-    admin: {
-      label: "Quản trị viên",
-      badgeClass: "bg-purple-50 text-purple-800 border-purple-200",
-      borderClass: "border-purple-500",
-      icon: "⚡",
-    },
-  }
-
-  const currentRoleMeta = user ? roleMeta[user.role] : roleMeta.student
 
   return (
     <header className="fixed top-0 right-0 left-0 z-40 flex h-[68px] items-center justify-between border-b border-slate-200 bg-white/95 px-4 shadow-xs backdrop-blur-md sm:px-8 lg:left-[260px] dark:border-slate-800 dark:bg-[#111827]/95">
@@ -130,61 +94,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
                 <RefreshCw className="h-3 w-3" />
               </button>
             </div>
-
-            {/* Role switch button */}
-            <div className="relative">
-              <button
-                onClick={() => {
-                  setShowRoleDropdown(!showRoleDropdown)
-                  setShowUserDropdown(false)
-                  setShowNotifications(false)
-                }}
-                className={`flex shrink-0 items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-medium whitespace-nowrap transition-all ${currentRoleMeta.badgeClass}`}
-              >
-                <span className="hidden text-[11px] opacity-75 sm:inline">
-                  Role:
-                </span>
-                <span className="font-semibold">{currentRoleMeta.label}</span>
-                <ChevronDown className="h-3 w-3 shrink-0 opacity-70" />
-              </button>
-
-              {showRoleDropdown && (
-                <div className="absolute right-0 z-50 mt-2 w-60 rounded-xl border border-slate-200 bg-white p-2 shadow-xl ring-1 ring-black/5">
-                  <div className="px-2 py-1.5 text-[10px] font-bold tracking-wider text-slate-500 uppercase">
-                    Chuyển đổi vai trò Demo
-                  </div>
-                  {(
-                    ["student", "manager", "technician", "admin"] as UserRole[]
-                  ).map((r) => {
-                    const meta = roleMeta[r]
-                    const isActive = user.role === r
-                    return (
-                      <button
-                        key={r}
-                        onClick={() => {
-                          switchRole(r)
-                          setShowRoleDropdown(false)
-                        }}
-                        className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs transition-colors ${
-                          isActive
-                            ? "bg-slate-100 font-bold text-slate-900"
-                            : "text-slate-700 hover:bg-slate-50"
-                        }`}
-                      >
-                        <span className="flex items-center gap-2">
-                          <span>{meta.icon}</span>
-                          <span>{meta.label}</span>
-                        </span>
-                        {isActive && (
-                          <CheckCircle2 className="h-4 w-4 text-blue-600" />
-                        )}
-                      </button>
-                    )
-                  })}
-                </div>
-              )}
-            </div>
-
             {/* Theme Toggle (Light / Dark) */}
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -208,7 +117,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
               <button
                 onClick={() => {
                   setShowNotifications(!showNotifications)
-                  setShowRoleDropdown(false)
                   setShowUserDropdown(false)
                 }}
                 className="relative rounded-lg p-2 text-slate-600 transition-colors hover:bg-slate-100"
@@ -263,7 +171,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
               <button
                 onClick={() => {
                   setShowUserDropdown(!showUserDropdown)
-                  setShowRoleDropdown(false)
                   setShowNotifications(false)
                 }}
                 className="flex items-center gap-2 rounded-lg p-1 text-left transition-all hover:bg-slate-100"

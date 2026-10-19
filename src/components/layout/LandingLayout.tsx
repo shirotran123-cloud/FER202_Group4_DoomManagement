@@ -9,7 +9,6 @@ import {
   LogOut,
   User,
   ChevronDown,
-  CheckCircle2,
   UserPlus,
   LogIn,
 } from "lucide-react"
@@ -20,12 +19,11 @@ interface LandingLayoutProps {
 }
 
 export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
-  const { user, isAuthenticated, logout, switchRole } = useAuth()
+  const { user, isAuthenticated, logout } = useAuth()
   const navigate = useNavigate()
   const [activeNav, setActiveNav] = useState<string>(() =>
     typeof window !== "undefined" ? window.location.hash : ""
   )
-  const [showRoleDropdown, setShowRoleDropdown] = useState(false)
   const [showUserDropdown, setShowUserDropdown] = useState(false)
 
   const navItems = [
@@ -164,65 +162,6 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
           <div className="flex shrink-0 items-center gap-3">
             {isAuthenticated && user ? (
               <div className="flex shrink-0 items-center gap-2.5 sm:gap-3">
-                {/* Role Switcher Pill */}
-                <div className="relative hidden shrink-0 lg:block">
-                  <button
-                    onClick={() => {
-                      setShowRoleDropdown(!showRoleDropdown)
-                      setShowUserDropdown(false)
-                    }}
-                    className="flex shrink-0 items-center gap-1.5 rounded-lg border border-[#dbeafe] bg-white px-3 py-1.5 text-xs font-semibold whitespace-nowrap text-[#233944] transition-colors hover:bg-[#eff6ff]"
-                  >
-                    <span className="shrink-0 text-[11px] text-[#73787b]">
-                      Role:
-                    </span>
-                    <span className="whitespace-nowrap">{user.roleTitle}</span>
-                    <ChevronDown className="h-3.5 w-3.5 shrink-0 opacity-70" />
-                  </button>
-
-                  {showRoleDropdown && (
-                    <div className="absolute right-0 z-50 mt-2 w-56 rounded-xl border border-[#dbeafe] bg-white p-2 shadow-xl">
-                      <div className="px-2 py-1 text-[10px] font-bold text-[#73787b] uppercase">
-                        Đổi vai trò Demo
-                      </div>
-                      {(
-                        [
-                          "student",
-                          "manager",
-                          "technician",
-                          "admin",
-                        ] as UserRole[]
-                      ).map((r) => (
-                        <button
-                          key={r}
-                          onClick={() => {
-                            switchRole(r)
-                            setShowRoleDropdown(false)
-                          }}
-                          className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs transition-colors ${
-                            user.role === r
-                              ? "bg-[#233944]/10 font-bold text-[#233944]"
-                              : "text-[#1b1c19] hover:bg-[#eff6ff]"
-                          }`}
-                        >
-                          <span className="whitespace-nowrap">
-                            {r === "student"
-                              ? "🎓 Sinh viên"
-                              : r === "manager"
-                                ? "🏢 Quản lý KTX"
-                                : r === "technician"
-                                  ? "🛡️ An ninh / Kỹ thuật"
-                                  : "⚡ Quản trị viên"}
-                          </span>
-                          {user.role === r && (
-                            <CheckCircle2 className="h-4 w-4 shrink-0 text-[#233944]" />
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
                 {/* Go to Dashboard button */}
                 <Link
                   to={getDashboardLink(user.role)}
@@ -238,7 +177,6 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
                   <button
                     onClick={() => {
                       setShowUserDropdown(!showUserDropdown)
-                      setShowRoleDropdown(false)
                     }}
                     className="flex items-center gap-2 rounded-lg p-1 transition-all hover:bg-[#dbeafe]"
                   >

@@ -114,11 +114,7 @@ export const LoginPage: React.FC = () => {
                   ? "Cổng Xác Thực Google SSO"
                   : "Đăng Ký Lưu Trú Ký Túc Xá"}
               </h1>
-              <p className="mx-auto max-w-md text-xs text-white/90">
-                {mainMode === "login"
-                  ? "Hệ thống Quản lý Ký túc xá FPT University (DMS) • Phân luồng đăng nhập chuẩn"
-                  : "Nộp hồ sơ xét duyệt lưu trú nội trú KTX FPT University • Xét duyệt tự động 0-chạm"}
-              </p>
+              
             </div>
 
             <div className="space-y-6 p-6 sm:p-8">
@@ -490,8 +486,7 @@ export const LoginPage: React.FC = () => {
                         <p className="leading-relaxed text-muted-foreground">
                           Sinh viên sử dụng{" "}
                           <strong>Gmail cá nhân (@gmail.com)</strong> đã đăng ký
-                          trong hồ sơ tuyển sinh với nhà trường. Hệ thống sẽ tự
-                          động map hồ sơ nhập học để xét duyệt giường 0-chạm.
+                          trong hồ sơ tuyển sinh với nhà trường.
                         </p>
                       </div>
 
