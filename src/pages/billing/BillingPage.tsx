@@ -42,7 +42,15 @@ export const BillingPage: React.FC = () => {
   const subtotal = elecCost + waterCost + internetCost
   const vatCost = Math.round(subtotal * 0.1)
   const totalBill = subtotal + vatCost
-  const numStudents = 6
+  const currentRoom = user?.dormitoryStatus?.room || "A205"
+  // Mật độ sinh viên thực tế trong toàn bộ phòng (căn hộ A205 có 18 SV trên 24 giường)
+  const ROOM_STUDENTS_MAP: Record<string, number> = {
+    "A205": 18,
+    "A206": 16,
+    "A207": 18,
+    "B102": 14,
+  }
+  const numStudents = ROOM_STUDENTS_MAP[currentRoom] || 18
   const perStudentUtility = Math.round(totalBill / numStudents)
   const netDue = hasPaid ? 0 : perStudentUtility
 
@@ -76,13 +84,13 @@ export const BillingPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 02. TOP KPI OPERATIONS CARDS (4 METRIC TILES) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* 02. TOP KPI OPERATIONS CARDS (3 METRIC TILES) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Metric 1 */}
         <div className="p-4 rounded-xl bg-white dark:bg-[#161e23] border border-border shadow-xs flex flex-col justify-between">
           <div className="flex items-start justify-between">
             <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-              Tổng Cần Thanh Toán
+              Tổng Cần Thanh Toán (T09/2026)
             </span>
             <span className={`p-1.5 rounded-lg ${hasPaid ? "bg-emerald-100 text-emerald-600" : "bg-blue-100 text-blue-600"}`}>
               <Receipt className="h-4 w-4" />
@@ -103,7 +111,7 @@ export const BillingPage: React.FC = () => {
         <div className="p-4 rounded-xl bg-white dark:bg-[#161e23] border border-border shadow-xs flex flex-col justify-between">
           <div className="flex items-start justify-between">
             <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-              Đã Nộp Trong Năm (2026-2027)
+              Đã Nộp Đầu Kỳ (Fall 2026)
             </span>
             <span className="p-1.5 rounded-lg bg-[#cee6ef] text-[#233944] dark:bg-[#233944] dark:text-[#cee6ef]">
               <CheckCircle2 className="h-4 w-4" />
@@ -115,32 +123,12 @@ export const BillingPage: React.FC = () => {
             </div>
             <div className="flex items-center gap-1.5 mt-1 text-xs text-muted-foreground">
               <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
-              <span>Đã nộp đầu kỳ (Tiền phòng 4 tháng + Cọc)</span>
+              <span>Đã hoàn tất tiền lưu trú Học kỳ 1 & Cọc</span>
             </div>
           </div>
         </div>
 
         {/* Metric 3 */}
-        <div className="p-4 rounded-xl bg-white dark:bg-[#161e23] border border-border shadow-xs flex flex-col justify-between">
-          <div className="flex items-start justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-              Kiểm Định Công Tơ
-            </span>
-            <span className="p-1.5 rounded-lg bg-[#eff6ff] dark:bg-[#1c262c] text-primary">
-              <Zap className="h-4 w-4" />
-            </span>
-          </div>
-          <div className="mt-3">
-            <div className="text-base font-bold text-foreground">
-              Đã Nghiệm Thu & Khóa Số
-            </div>
-            <div className="flex items-center gap-1.5 mt-1 text-xs text-muted-foreground">
-              <span>KT: Trần Văn Bình · 30/09</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Metric 4 */}
         <div className="p-4 rounded-xl bg-white dark:bg-[#161e23] border border-border shadow-xs flex flex-col justify-between">
           <div className="flex items-start justify-between">
             <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
@@ -179,7 +167,7 @@ export const BillingPage: React.FC = () => {
               </div>
               <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white dark:bg-[#161e23] shadow-2xs border border-border text-xs font-semibold text-foreground">
                 <Users className="h-4 w-4 text-primary" />
-                <span>6 Sinh Viên Cùng Chia Điện Nước</span>
+                <span>{numStudents} Sinh Viên Phòng {currentRoom} Cùng Chia</span>
               </div>
             </div>
 
@@ -275,29 +263,23 @@ export const BillingPage: React.FC = () => {
               </table>
             </div>
 
-            {/* FORMULA HIGHLIGHT BOX (Module 4 Signature) */}
-            <div className="p-4 rounded-xl bg-[#eff6ff] dark:bg-[#1c262c] border border-border space-y-2">
-              <div className="flex items-center justify-between font-bold text-sm text-foreground">
-                <span>Tổng chi phí phát sinh phòng A205 (Tháng 09/2026):</span>
-                <span className="font-mono text-base text-primary dark:text-[#cee6ef]">
+            {/* TỔNG CHI PHÍ PHÒNG TRONG THÁNG */}
+            <div className="p-4 rounded-xl bg-[#eff6ff] dark:bg-[#1c262c] border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <span className="text-xs text-muted-foreground block">
+                  Tổng chi phí phòng {currentRoom} trong tháng này:
+                </span>
+                <span className="text-xl font-black font-mono text-primary dark:text-[#cee6ef]">
                   ₫{totalBill.toLocaleString()}
                 </span>
               </div>
-
-              <div className="p-2.5 rounded-lg bg-white dark:bg-[#161e23] border border-border flex flex-col md:flex-row md:items-center justify-between gap-2 text-xs">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <span className="font-bold text-foreground">Chia đều:</span>
-                  <span>
-                    ₫{totalBill.toLocaleString()} ÷ 6 SV ={" "}
-                    <strong className="text-primary dark:text-[#cee6ef]">
-                      ₫{perStudentUtility.toLocaleString()}
-                    </strong>{" "}
-                    tiền điện nước rác/người
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5 font-semibold text-emerald-600 dark:text-emerald-400">
-                  <span>✓ Tiền buồng 6 (3.200.000đ/kỳ) đã nộp đầu kỳ</span>
-                </div>
+              <div className="sm:text-right">
+                <span className="text-xs text-muted-foreground block">
+                  Mỗi sinh viên đóng ({numStudents} người):
+                </span>
+                <span className="text-base font-bold font-mono text-foreground">
+                  ₫{perStudentUtility.toLocaleString()}
+                </span>
               </div>
             </div>
 
@@ -315,16 +297,10 @@ export const BillingPage: React.FC = () => {
 
           {/* METER PHOTOGRAPHIC PROOF GALLERY */}
           <div className="bg-white dark:bg-[#161e23] rounded-xl border border-border p-5 shadow-xs space-y-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-bold text-sm text-foreground">
-                  Ảnh Chụp Đối Soát Công Tơ (Photo Verification)
-                </h3>
-                <p className="text-[11px] text-muted-foreground">
-                  Hình ảnh đồng hồ phòng A205 được chụp trực tiếp khi chốt chỉ số
-                </p>
-              </div>
-              <Badge variant="secondary">2 Ảnh Xác Thực</Badge>
+            <div>
+              <h3 className="font-bold text-sm text-foreground">
+                Ảnh Chụp Đối Soát Công Tơ (Photo Verification)
+              </h3>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

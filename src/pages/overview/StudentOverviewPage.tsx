@@ -115,7 +115,7 @@ export const StudentOverviewPage: React.FC = () => {
               </div>
             </div>
             <div className="flex items-baseline gap-2">
-              <div className="text-2xl font-bold text-foreground tracking-tight">₫420,000</div>
+              <div className="text-2xl font-bold text-foreground tracking-tight">₫48,706</div>
               <span className="text-xs text-muted-foreground font-semibold">VND</span>
             </div>
             <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-destructive/15 text-destructive text-xs mt-2 font-medium">
