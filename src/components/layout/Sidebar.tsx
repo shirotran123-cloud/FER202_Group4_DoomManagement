@@ -71,7 +71,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               icon: DoorClosed,
               badge: "A205",
             },
-            { title: "Đặt phòng", to: "/booking", icon: BedDouble },
             { title: "Điện nước & VietQR", to: "/billing", icon: Receipt },
             { title: "Báo hỏng thiết bị", to: "/maintenance", icon: Wrench },
             {

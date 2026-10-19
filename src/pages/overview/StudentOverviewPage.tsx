@@ -3,7 +3,6 @@ import { Link } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
 import { AdminOverviewView } from "./AdminOverviewView"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Modal } from "@/components/ui/modal"
 import {
@@ -14,10 +13,7 @@ import {
   BedDouble,
   Wifi,
   Radio,
-  Phone,
-  ShieldCheck,
   Calendar,
-  HeartPulse,
 } from "lucide-react"
 
 export const StudentOverviewPage: React.FC = () => {
@@ -461,56 +457,6 @@ export const StudentOverviewPage: React.FC = () => {
 
             </div>
           </div>
-
-          {/* Dormitory Warden & Emergency Support */}
-          <Card className="p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-foreground">Ban Quản Lý & Cấp Cứu</h3>
-              <Badge variant="outline">Tòa A</Badge>
-            </div>
-
-            {/* Warden Profile */}
-            <div className="p-3.5 rounded-xl bg-muted/40 border border-border/50 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold shrink-0">
-                LQ
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-xs font-bold text-foreground truncate">Thầy Lê Quang</div>
-                <div className="text-[10px] text-muted-foreground">Trưởng BQL Ký túc xá Tòa A</div>
-                <div className="font-mono text-xs text-primary font-semibold mt-0.5">
-                  0912 345 678
-                </div>
-              </div>
-              <a
-                href="tel:0912345678"
-                className="w-8 h-8 rounded-lg bg-card hover:bg-primary hover:text-primary-foreground text-foreground flex items-center justify-center transition-colors border border-border"
-              >
-                <Phone className="h-4 w-4" />
-              </a>
-            </div>
-
-            <div className="space-y-2 text-xs">
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-muted/40 border border-border/50">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4 text-primary" />
-                  <span className="text-foreground">Phòng An Ninh Cổng Trực</span>
-                </div>
-                <span className="font-mono font-bold text-primary bg-card px-2 py-0.5 rounded border border-border">
-                  Ext #201
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-muted/40 border border-border/50">
-                <div className="flex items-center gap-2">
-                  <HeartPulse className="h-4 w-4 text-destructive" />
-                  <span className="text-foreground">Phòng Y Tế Sơ Cứu 24/7</span>
-                </div>
-                <span className="font-mono font-bold text-destructive bg-card px-2 py-0.5 rounded border border-border">
-                  Ext #115
-                </span>
-              </div>
-            </div>
-          </Card>
         </div>
       </div>
 

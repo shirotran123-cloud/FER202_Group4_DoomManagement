@@ -10,8 +10,6 @@ import {
   Wrench,
   LogOut,
   Users,
-  CheckCircle2,
-  CheckSquare,
   ChevronLeft,
   ChevronDown,
   ChevronRight,
@@ -222,7 +220,6 @@ const CompartmentSlide: React.FC = () => {
 
 export const MyRoomPage: React.FC = () => {
   const { user } = useAuth()
-  const [showHandoverModal, setShowHandoverModal] = useState(false)
   const [showCheckoutModal, setShowCheckoutModal] = useState(false)
   const [showActionsDropdown, setShowActionsDropdown] = useState(false)
 
@@ -267,15 +264,6 @@ export const MyRoomPage: React.FC = () => {
       isMe: false,
       avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=200&q=80",
     },
-  ]
-
-  const inventoryItems = [
-    { name: "Khung giường tầng & Thang leo", status: "Tốt", checked: true, note: "Chắc chắn, không rỉ sét" },
-    { name: "Đệm Foam Orthopedic 1.0m x 2.0m", status: "Tốt", checked: true, note: "Bọc ga mới nguyên vẹn" },
-    { name: "Bàn học & Giá sách cá nhân", status: "Tốt", checked: true, note: "Đèn bàn LED cảm ứng hoạt động" },
-    { name: "Tủ Locker cá nhân kèm khóa số", status: "Tốt", checked: true, note: "Đã reset mã PIN mặc định" },
-    { name: "Thẻ từ ra vào phòng A205", status: "Đã cấp", checked: true, note: "Quẹt nhận phòng ngày 05/09" },
-    { name: "Điều hòa Inverter Daikin 2HP", status: "Tốt", checked: true, note: "Remote để tại giá treo cửa" },
   ]
 
   return (
@@ -380,168 +368,67 @@ export const MyRoomPage: React.FC = () => {
       {/* 02. ARCHITECTURAL BLUEPRINT — SLIDE CAROUSEL VISUALIZER */}
       <CompartmentSlide />
 
-      {/* 03. TWO-COLUMN: ROOMMATES ROSTER & DIGITAL HANDOVER CHECKLIST */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* ROOMMATES ROSTER (7 COLS) */}
-        <div className="lg:col-span-7 bg-white dark:bg-[#161e23] border border-border rounded-xl p-5 shadow-xs space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-border">
-            <div className="flex items-center gap-2">
-              <span className="p-1.5 rounded-lg bg-primary/10 text-primary">
-                <Users className="h-4 w-4" />
-              </span>
-              <div>
-                <h3 className="font-bold text-sm text-foreground">
-                  Danh Sách Bạn Cùng Buồng B (Roommates Manifest)
-                </h3>
-              </div>
+      {/* 03. ROOMMATES ROSTER */}
+      <div className="bg-white dark:bg-[#161e23] border border-border rounded-xl p-6 shadow-xs space-y-5">
+        <div className="flex items-center justify-between pb-3 border-b border-border">
+          <div className="flex items-center gap-2.5">
+            <span className="p-2 rounded-xl bg-primary/10 text-primary">
+              <Users className="h-5 w-5" />
+            </span>
+            <div>
+              <h3 className="font-bold text-base text-foreground">
+                Danh Sách Bạn Cùng Buồng B
+              </h3>
             </div>
-            <Badge variant="available">4 Thành Viên</Badge>
           </div>
-
-          <div className="space-y-3">
-            {roommates.map((rm, idx) => (
-              <div
-                key={idx}
-                className={`p-3.5 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors ${
-                  rm.isMe
-                    ? "bg-primary/5 border-primary/40 ring-1 ring-primary/20"
-                    : "bg-[#eff6ff] dark:bg-[#1c262c] border-border"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <img
-                    src={rm.avatar}
-                    alt={rm.name}
-                    className="w-10 h-10 rounded-full object-cover border border-border shrink-0"
-                  />
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-xs text-foreground">{rm.name}</span>
-                      {rm.isMe && (
-                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-primary text-white font-semibold">
-                          Bạn
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-[11px] text-muted-foreground">
-                      MSSV: <strong className="font-mono">{rm.mssv}</strong> • Giường:{" "}
-                      <strong className="text-primary dark:text-[#cee6ef]">{rm.bed}</strong>
-                    </p>
-                    <p className="text-[10px] text-muted-foreground">{rm.major}</p>
-                  </div>
-                </div>
-
-                <div className="flex sm:flex-col items-start sm:items-end justify-between border-t sm:border-t-0 pt-2 sm:pt-0 border-border text-xs shrink-0">
-                  <span className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/40 px-2 py-0.5 rounded whitespace-nowrap shrink-0">
-                    Trực nhật: {rm.dutyDay}
-                  </span>
-                  <span className="text-[11px] font-mono text-muted-foreground mt-1 whitespace-nowrap">
-                    {rm.phone}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
+          <Badge variant="available">4 Thành Viên</Badge>
         </div>
 
-        {/* DIGITAL HANDOVER & AMENITIES CHECKLIST (5 COLS) */}
-        <div className="lg:col-span-5 bg-white dark:bg-[#161e23] border border-border rounded-xl p-5 shadow-xs space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-border">
-            <div className="flex items-center gap-2">
-              <span className="p-1.5 rounded-lg bg-emerald-100 text-emerald-700">
-                <CheckSquare className="h-4 w-4" />
-              </span>
-              <div>
-                <h3 className="font-bold text-sm text-foreground">
-                  Biên Bản Bàn Giao Thiết Bị
-                </h3>
-                <p className="text-[11px] text-muted-foreground">
-                  Nghiệm thu tài sản khi nhận phòng & hoàn cọc
-                </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {roommates.map((rm, idx) => (
+            <div
+              key={idx}
+              className={`p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 transition-all ${
+                rm.isMe
+                  ? "bg-primary/5 border-primary/40 ring-1 ring-primary/20 shadow-xs"
+                  : "bg-[#eff6ff] dark:bg-[#1c262c] border-border hover:border-primary/30"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <img
+                  src={rm.avatar}
+                  alt={rm.name}
+                  className="w-11 h-11 rounded-full object-cover border border-border shrink-0"
+                />
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-xs text-foreground">{rm.name}</span>
+                    {rm.isMe && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary text-white font-semibold">
+                        Bạn
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                    MSSV: <strong className="font-mono">{rm.mssv}</strong> • Giường:{" "}
+                    <strong className="text-primary dark:text-[#cee6ef]">{rm.bed}</strong>
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">{rm.major}</p>
+                </div>
+              </div>
+
+              <div className="flex sm:flex-col items-start sm:items-end justify-between border-t sm:border-t-0 pt-2 sm:pt-0 border-border text-xs shrink-0">
+                <span className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/40 px-2 py-0.5 rounded whitespace-nowrap shrink-0">
+                  Trực nhật: {rm.dutyDay}
+                </span>
+                <span className="text-[11px] font-mono text-muted-foreground mt-1 whitespace-nowrap">
+                  {rm.phone}
+                </span>
               </div>
             </div>
-            <Badge variant="available">Đã Ký Số</Badge>
-          </div>
-
-          <div className="space-y-2.5 text-xs">
-            {inventoryItems.map((item, idx) => (
-              <div
-                key={idx}
-                className="p-2.5 rounded-lg bg-[#eff6ff] dark:bg-[#1c262c] border border-border flex items-center justify-between"
-              >
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                  <div>
-                    <span className="font-semibold text-foreground block">{item.name}</span>
-                    <span className="text-[10px] text-muted-foreground">{item.note}</span>
-                  </div>
-                </div>
-                <Badge variant="available">{item.status}</Badge>
-              </div>
-            ))}
-          </div>
-
-          <div className="pt-2 border-t border-border">
-            <Button
-              onClick={() => setShowHandoverModal(true)}
-              variant="outline"
-              className="w-full text-xs font-semibold h-9.5 gap-2 text-slate-800 dark:text-slate-100 hover:text-primary dark:hover:text-primary bg-slate-50/50 dark:bg-slate-800/40 border-border hover:border-primary/50 transition-all shadow-xs"
-            >
-              <FileText className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span className="whitespace-nowrap truncate">Xem biên bản nghiệm thu & ảnh</span>
-            </Button>
-          </div>
+          ))}
         </div>
       </div>
-
-      {/* HANDOVER DETAILS MODAL */}
-      {showHandoverModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="bg-white dark:bg-[#161e23] border border-border w-full max-w-lg rounded-2xl shadow-xl p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <h3 className="font-bold text-sm text-foreground">
-                Biên Bản Bàn Giao & Hiện Trạng Thiết Bị Số Hóa
-              </h3>
-              <button
-                onClick={() => setShowHandoverModal(false)}
-                className="text-muted-foreground hover:text-foreground text-sm"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <p className="text-muted-foreground leading-relaxed">
-                Biên bản được lập tự động vào ngày <strong>05/09/2026</strong> giữa Ban Quản lý KTX và sinh viên{" "}
-                <strong>{user?.fullName || "Nguyễn Hoàng Vinh"}</strong>. Mọi tài sản hỏng hóc trong thời gian lưu trú cần báo ngay qua mục Báo Hỏng.
-              </p>
-
-              <div className="p-3 bg-[#eff6ff] dark:bg-[#1c262c] rounded-xl space-y-1 font-mono text-[11px]">
-                <div>Mã biên bản: BB-2026-A205-0905</div>
-                <div>Chỉ số điện ban đầu: 12,450 kWh</div>
-                <div>Chỉ số nước ban đầu: 840 m³</div>
-                <div>Tình trạng tiền cọc: 1,000,000 VNĐ (Đang giữ tại quỹ)</div>
-              </div>
-
-              <div className="flex gap-2 pt-2">
-                <Button
-                  onClick={() => alert("Đã tải biên bản bàn giao PDF!")}
-                  className="flex-1 bg-primary text-white text-xs font-bold"
-                >
-                  Tải Bản PDF Có Chữ Ký Số
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowHandoverModal(false)}
-                  className="text-xs"
-                >
-                  Đóng
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* CHECKOUT MODAL */}
       {showCheckoutModal && (
