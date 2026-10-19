@@ -3,6 +3,15 @@ import { ArrowLeft, BedDouble, DoorOpen, ShowerHead, LampDesk } from "lucide-rea
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
+/**
+ * Ảnh hành lang — ảnh thật của KTX FPT Quy Nhơn.
+ *
+ * Đã chuẩn hoá về 1920x1080 (tỉ lệ 16:9), bằng đúng tỉ lệ các ảnh khác trong
+ * tour, nên khung hiển thị không cắt mất phần nào của ảnh.
+ * Tạo lại bằng: `python scripts/prepare-tour-image.py <nguồn> <đích>`
+ */
+const CORRIDOR_SRC = "/assets/dorm-tour/corridor-hallway.jpg";
+
 const ROOMS = [
   { no: "101", side: "Trái", beds: "6 người" },
   { no: "102", side: "Phải", beds: "6 người" },
@@ -74,21 +83,24 @@ export const DormRoomTour: React.FC = () => {
       <div className="relative mt-6 overflow-hidden rounded-3xl border border-border bg-card shadow-lg">
         {phase === "corridor" && (
           <div className="relative">
+            {/* Khung 16:9 khớp đúng tỉ lệ ảnh, nên không bị cắt mất cửa phòng. */}
             <img
-              src="/assets/dorm-cinematic/dorm-keyframe-fpt-1.jpg"
-              alt="Hanh lang KTX voi 4 cua phong"
-              className="h-[380px] w-full object-cover sm:h-[460px]"
+              src={CORRIDOR_SRC}
+              alt="Hành lang KTX FPT Quy Nhơn với 4 cửa phòng"
+              width={1920}
+              height={1080}
+              className="aspect-video w-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30" />
-            {/* Door hotspots: number on the door, glow on hover */}
-            <div className="absolute inset-0 grid grid-cols-4 items-center gap-2 px-6 sm:px-12">
+            {/* Bốn nút cửa phòng: hiện số trên cửa, rê chuột thì sáng lên */}
+            <div className="absolute inset-0 grid grid-cols-2 place-items-stretch gap-3 p-4 sm:grid-cols-4 sm:gap-4 sm:px-10">
               {ROOMS.map((r) => (
                 <button
                   key={r.no}
                   type="button"
                   onClick={() => pick(r.no)}
-                  className="group flex h-48 flex-col items-center justify-end gap-2 rounded-2xl border border-white/0 pb-4 transition-all hover:border-white/60 hover:bg-white/10 hover:shadow-[0_0_24px_rgba(255,255,255,0.35)] sm:h-64"
-                  aria-label={`Chon phong ${r.no}`}
+                  className="group flex flex-col items-center justify-end gap-2 rounded-2xl border border-white/0 pb-4 transition-all hover:border-white/60 hover:bg-white/10 hover:shadow-[0_0_24px_rgba(255,255,255,0.35)]"
+                  aria-label={`Chọn phòng ${r.no}`}
                 >
                   <span className="rounded-lg bg-black/55 px-3 py-1 font-mono text-lg font-black tracking-widest text-white opacity-80 backdrop-blur-md transition-all group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground group-hover:opacity-100">
                     {r.no}
@@ -110,11 +122,14 @@ export const DormRoomTour: React.FC = () => {
 
         {phase === "entering" && (
           <div className="relative">
+            {/* Cùng khung 16:9 với bước hành lang để ảnh không nhảy kích thước. */}
             <img
               src="/assets/dorm-cinematic/dorm-keyframe-fpt-3.jpg"
-              alt={`Dang vao phong ${room}`}
-              className="h-[380px] w-full object-cover transition-transform duration-900 sm:h-[460px]"
-              style={{ transform: `scale(${1 + enterStep * 0.08})` }}
+              alt={`Đang vào phòng ${room}`}
+              width={1280}
+              height={720}
+              className="aspect-video w-full object-cover transition-transform duration-700"
+              style={{ transform: `scale(${1 + enterStep * 0.06})` }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30" />
             <div className="absolute inset-x-0 bottom-6 text-center">
@@ -136,8 +151,10 @@ export const DormRoomTour: React.FC = () => {
               <img
                 key={d.key}
                 src={d.src}
-                alt={`${d.label} buong 6 nguoi phong ${room}`}
-                className="h-[380px] w-full object-cover sm:h-[460px]"
+                alt={`${d.label} buồng 6 người phòng ${room}`}
+                width={1280}
+                height={720}
+                className="aspect-video w-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30" />
               <div className="absolute left-1/2 top-4 -translate-x-1/2">
