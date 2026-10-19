@@ -15,7 +15,6 @@ import { Card } from "@/components/ui/card"
 import { Wrench, Plus, Search, Info, CheckCircle2, X } from "lucide-react"
 
 // Decomposed components
-import { MaintenanceStats } from "./components/MaintenanceStats"
 import { MaintenanceTicketCard } from "./components/MaintenanceTicketCard"
 import { CreateTicketModal } from "./components/CreateTicketModal"
 import { EditTicketModal } from "./components/EditTicketModal"
@@ -247,15 +246,6 @@ export const MaintenancePage: React.FC = () => {
     return matchesSearch && matchesStatus && matchesUrgency && matchesScope
   })
 
-  // Quick statistics
-  const stats = {
-    total: tickets.length,
-    pending: tickets.filter((t) => t.status === "PENDING").length,
-    inProgress: tickets.filter((t) => t.status === "IN_PROGRESS").length,
-    resolved: tickets.filter((t) => t.status === "RESOLVED").length,
-    closed: tickets.filter((t) => t.status === "CLOSED").length,
-    emergency: tickets.filter((t) => t.urgency === "EMERGENCY" && t.status !== "CLOSED").length,
-  }
 
   return (
     <div className="space-y-6">
@@ -271,15 +261,12 @@ export const MaintenancePage: React.FC = () => {
       <Card className="p-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2.5 mb-1">
+            <div className="flex items-center gap-2.5">
               <div className="h-9 w-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
                 <Wrench className="h-5 w-5" />
               </div>
               <h1 className="text-xl sm:text-2xl font-bold text-foreground">Quản lý Báo hỏng & Sửa chữa</h1>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Theo dõi, điều phối kỹ thuật và nghiệm thu sửa chữa cơ sở vật chất KTX FPT
-            </p>
           </div>
 
           <Button
@@ -293,8 +280,7 @@ export const MaintenancePage: React.FC = () => {
         </div>
       </Card>
 
-      {/* Metric Cards Component */}
-      <MaintenanceStats stats={stats} />
+
 
       {/* Filters & Search Control Bar */}
       <Card className="p-4 space-y-3">
@@ -391,11 +377,12 @@ export const MaintenancePage: React.FC = () => {
           </Button>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex flex-col gap-3.5">
           {filteredTickets.map((ticket) => (
             <MaintenanceTicketCard
               key={ticket.id}
               ticket={ticket}
+              currentUser={user}
               isManagerOrAdmin={isManagerOrAdmin}
               isTechnician={isTechnician}
               onView={(t) => {

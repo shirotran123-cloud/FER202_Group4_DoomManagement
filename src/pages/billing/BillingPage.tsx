@@ -34,6 +34,25 @@ export const BillingPage: React.FC = () => {
 
   const isTechnicianOrManager = user?.role === "technician" || user?.role === "manager" || user?.role === "admin"
 
+  const handleDownloadQr = () => {
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=2|99|09182391024|KY_TUC_XA_FPT|${netDue}|DIENNUOC_${currentRoom}_${user?.studentId || "SE182049"}`
+    fetch(qrUrl)
+      .then((res) => res.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.href = url
+        a.download = `VietQR_DienNuoc_${currentRoom}_${user?.studentId || "SE182049"}.png`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        window.URL.revokeObjectURL(url)
+      })
+      .catch(() => {
+        window.open(qrUrl, "_blank")
+      })
+  }
+
   const deltaElec = Math.max(0, elecNew - elecOld)
   const deltaWater = Math.max(0, waterNew - waterOld)
   const elecCost = deltaElec * 2500
@@ -342,61 +361,12 @@ export const BillingPage: React.FC = () => {
             </div>
           </div>
 
-          {/* HISTORICAL INVOICES TABLE */}
-          <div className="bg-white dark:bg-[#161e23] rounded-xl border border-border p-5 shadow-xs space-y-3">
-            <div className="flex items-center justify-between pb-2 border-b border-border">
-              <h3 className="font-bold text-sm text-foreground">
-                Lịch Sử Hóa Đơn Các Kỳ Trước (Học kỳ 1)
-              </h3>
-              <span className="text-[11px] text-muted-foreground font-mono">Năm học 2026-2027</span>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="text-muted-foreground text-[10px] uppercase font-bold tracking-wider">
-                    <th className="py-2 px-2">Kỳ Hóa Đơn</th>
-                    <th className="py-2 px-2">Số Tiền</th>
-                    <th className="py-2 px-2">Trạng Thái</th>
-                    <th className="py-2 px-2 text-right">Biên Lai PDF</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {[
-                    { month: "Tháng 08/2026", amount: "₫148,500", date: "03/08/2026" },
-                    { month: "Tháng 07/2026", amount: "₫139,000", date: "04/07/2026" },
-                    { month: "Tháng 06/2026", amount: "₫152,000", date: "02/06/2026" },
-                    { month: "Tháng 05/2026", amount: "₫145,000", date: "05/05/2026" },
-                  ].map((inv, idx) => (
-                    <tr key={idx} className="hover:bg-[#eff6ff] dark:hover:bg-[#1c262c] transition-colors">
-                      <td className="py-2.5 px-2 font-semibold text-foreground">{inv.month}</td>
-                      <td className="py-2.5 px-2 font-mono text-foreground">{inv.amount}</td>
-                      <td className="py-2.5 px-2">
-                        <Badge variant="available" dot>
-                          Đã thanh toán ({inv.date})
-                        </Badge>
-                      </td>
-                      <td className="py-2.5 px-2 text-right">
-                        <button
-                          onClick={() => alert(`Đang tải biên lai ${inv.month}...`)}
-                          className="p-1 rounded text-primary hover:bg-[#eff6ff] dark:hover:bg-[#1c262c]"
-                          title="Tải PDF"
-                        >
-                          <Download className="h-3.5 w-3.5 inline" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
         </div>
 
         {/* RIGHT COLUMN: 5 COLS (DYNAMIC VIETQR SETTLEMENT PANEL & TECHNICIAN TOOL) */}
         <div className="lg:col-span-5 flex flex-col gap-6">
           {/* DYNAMIC VIETQR PAYMENT PANEL */}
-          <div className="bg-white dark:bg-[#161e23] border border-border rounded-xl shadow-md p-5 sticky top-20 space-y-4">
+          <div className="bg-white dark:bg-[#161e23] border border-border rounded-xl shadow-md p-5 space-y-4">
             <div className="flex items-center gap-2.5 pb-2 border-b border-border">
               <span className="p-2 rounded-lg bg-primary text-white">
                 <QrCode className="h-5 w-5" />
@@ -434,7 +404,24 @@ export const BillingPage: React.FC = () => {
             ) : (
               <>
                 {/* QR Code graphic */}
-                <div className="flex flex-col items-center justify-center p-4 bg-white rounded-xl border border-border shadow-2xs">
+                <div className="flex flex-col items-center justify-center p-4 bg-white dark:bg-[#161e23] rounded-xl border border-border shadow-2xs">
+                  <div className="flex items-center justify-between w-full mb-2.5 px-1">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                      Mã Quét VietQR
+                    </span>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleDownloadQr}
+                      className="h-7 px-2.5 text-[11px] gap-1.5 font-bold bg-primary/10 text-primary border-primary/20 hover:bg-primary hover:text-white transition-all shadow-2xs"
+                      title="Tải ảnh mã QR về máy để mở quét trong ứng dụng ngân hàng"
+                    >
+                      <Download className="h-3.5 w-3.5" />
+                      <span>Tải ảnh QR</span>
+                    </Button>
+                  </div>
+
                   <div className="relative p-2 bg-white rounded-xl shadow-xs border border-gray-100">
                     <img
                       src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=2|99|09182391024|KY_TUC_XA_FPT|${netDue}|DIENNUOC_A205_${user?.studentId || "SE182049"}`}
@@ -489,6 +476,56 @@ export const BillingPage: React.FC = () => {
                 </Button>
               </>
             )}
+          </div>
+
+{/* HISTORICAL INVOICES TABLE */}
+          <div className="bg-white dark:bg-[#161e23] rounded-xl border border-border p-5 shadow-xs space-y-3">
+            <div className="flex items-center justify-between pb-2 border-b border-border">
+              <h3 className="font-bold text-sm text-foreground">
+                Lịch Sử Hóa Đơn Các Kỳ Trước (Học kỳ 1)
+              </h3>
+              <span className="text-[11px] text-muted-foreground font-mono">Năm học 2026-2027</span>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="text-muted-foreground text-[10px] uppercase font-bold tracking-wider">
+                    <th className="py-2 px-2">Kỳ Hóa Đơn</th>
+                    <th className="py-2 px-2">Số Tiền</th>
+                    <th className="py-2 px-2">Trạng Thái</th>
+                    <th className="py-2 px-2 text-right">Biên Lai PDF</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {[
+                    { month: "Tháng 08/2026", amount: "₫148,500", date: "03/08/2026" },
+                    { month: "Tháng 07/2026", amount: "₫139,000", date: "04/07/2026" },
+                    { month: "Tháng 06/2026", amount: "₫152,000", date: "02/06/2026" },
+                    { month: "Tháng 05/2026", amount: "₫145,000", date: "05/05/2026" },
+                  ].map((inv, idx) => (
+                    <tr key={idx} className="hover:bg-[#eff6ff] dark:hover:bg-[#1c262c] transition-colors">
+                      <td className="py-2.5 px-2 font-semibold text-foreground">{inv.month}</td>
+                      <td className="py-2.5 px-2 font-mono text-foreground">{inv.amount}</td>
+                      <td className="py-2.5 px-2">
+                        <Badge variant="available" dot>
+                          Đã thanh toán ({inv.date})
+                        </Badge>
+                      </td>
+                      <td className="py-2.5 px-2 text-right">
+                        <button
+                          onClick={() => alert(`Đang tải biên lai ${inv.month}...`)}
+                          className="p-1 rounded text-primary hover:bg-[#eff6ff] dark:hover:bg-[#1c262c]"
+                          title="Tải PDF"
+                        >
+                          <Download className="h-3.5 w-3.5 inline" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* TECHNICIAN / MANAGER TOOL: INPUT MONTHLY METER */}
