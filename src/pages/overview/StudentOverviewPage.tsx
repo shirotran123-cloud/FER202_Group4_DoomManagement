@@ -7,8 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Modal } from "@/components/ui/modal"
 import {
-    DoorClosed,
-  QrCode,
+    QrCode,
   Zap,
   Building2,
   Receipt,
@@ -57,12 +56,6 @@ export const StudentOverviewPage: React.FC = () => {
 
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="outline" className="gap-1.5 font-semibold">
-                <DoorClosed className="h-3.5 w-3.5 text-primary" />
-                Phòng A205 · Buồng B · Giường G03
-              </Badge>
-            </div>
 
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight flex items-center gap-2">
@@ -86,17 +79,7 @@ export const StudentOverviewPage: React.FC = () => {
               <span>Mã Cửa Ra Vào</span>
             </Button>
 
-            <Button
-              variant="default"
-              size="lg"
-              asChild
-              className="gap-2 font-semibold shadow-sm"
-            >
-              <Link to="/billing">
-                <Zap className="h-4 w-4 text-accent" />
-                <span>VietQR Quickpay</span>
-              </Link>
-            </Button>
+
           </div>
         </div>
       </div>
