@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { useAuth } from "@/contexts/useAuth"
+import { ContractRenewalModal } from "@/components/contract/ContractRenewalModal"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
@@ -14,6 +15,7 @@ import {
   ChevronDown,
   ChevronRight,
   BedDouble,
+  CalendarCheck2,
 } from "lucide-react"
 
 // ─── Compartment Slide Carousel ───────────────────────────────────────────────
@@ -222,6 +224,7 @@ export const MyRoomPage: React.FC = () => {
   const { user } = useAuth()
   const [showCheckoutModal, setShowCheckoutModal] = useState(false)
   const [showActionsDropdown, setShowActionsDropdown] = useState(false)
+  const [showRenewModal, setShowRenewModal] = useState(false)
 
   const roommates = [
     {
@@ -329,6 +332,17 @@ export const MyRoomPage: React.FC = () => {
                   <span>Hợp Đồng (PDF)</span>
                 </button>
 
+                <button
+                  onClick={() => {
+                    setShowActionsDropdown(false)
+                    setShowRenewModal(true)
+                  }}
+                  className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs text-foreground transition-colors hover:bg-slate-100 dark:hover:bg-[#283740]"
+                >
+                  <CalendarCheck2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                  <span>Gia Hạn Hợp Đồng</span>
+                </button>
+
                 <Link
                   to="/billing"
                   onClick={() => setShowActionsDropdown(false)}
@@ -429,6 +443,15 @@ export const MyRoomPage: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {/* CONTRACT RENEWAL MODAL */}
+      {user && (
+        <ContractRenewalModal
+          isOpen={showRenewModal}
+          onClose={() => setShowRenewModal(false)}
+          user={user}
+        />
+      )}
 
       {/* CHECKOUT MODAL */}
       {showCheckoutModal && (

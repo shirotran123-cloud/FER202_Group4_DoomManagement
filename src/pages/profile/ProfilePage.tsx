@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import { ContractRenewalModal } from "@/components/contract/ContractRenewalModal"
 import { useAuth } from "@/contexts/useAuth"
 import type { UserProfile } from "@/types/auth"
 import {
@@ -14,6 +15,7 @@ import {
   FileDown,
   HeartHandshake,
   LogOut,
+  CalendarCheck2,
 } from "lucide-react"
 
 interface ProfileFormProps {
@@ -28,6 +30,8 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
   const [parentPhone, setParentPhone] = useState(user.emergencyContact?.phone || "")
   const [relationship, setRelationship] = useState(user.emergencyContact?.relationship || "")
   const [parentAddress, setParentAddress] = useState(user.emergencyContact?.address || "")
+  const [showRenewModal, setShowRenewModal] = useState(false)
+  const [isRenewed, setIsRenewed] = useState(() => localStorage.getItem("dms_renewal_status") === "submitted")
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -324,10 +328,10 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
                 <div className="rounded-xl border border-border bg-card p-3.5 space-y-2">
                   <p className="text-[11px] text-muted-foreground font-semibold">Mã định danh giường (SSOT):</p>
                   <p className="text-xl font-mono font-black text-sky-600 tracking-wider">
-                    {user.dormitoryStatus.bedCode}
+                    {user.dormitoryStatus.bedCode.replace("-B1-", "-B-")}
                   </p>
                   <p className="text-[11px] text-muted-foreground">
-                    {user.dormitoryStatus.building} • Phòng {user.dormitoryStatus.room} • {user.dormitoryStatus.compartment}
+                    {user.dormitoryStatus.building} • Phòng {user.dormitoryStatus.room} • {user.dormitoryStatus.compartment.replace("Buồng B1", "Buồng B")}
                   </p>
                 </div>
 
@@ -351,6 +355,36 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
                   </div>
                   <CheckCircle2 className="h-5 w-5 text-emerald-500" />
                 </div>
+
+                <div className="pt-2 border-t border-border">
+                  {isRenewed ? (
+                    <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <p className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          <span>Đã Nộp Đơn Gia Hạn Kỳ Spring 2027</span>
+                        </p>
+                        <p className="text-[10px] text-muted-foreground">Mã đơn: EXT-2027-049 • Đang chờ BQL duyệt</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setShowRenewModal(true)}
+                        className="text-[11px] font-semibold text-sky-600 dark:text-sky-400 hover:underline"
+                      >
+                        Chi tiết
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setShowRenewModal(true)}
+                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-sky-600 hover:bg-sky-700 py-2.5 text-xs font-bold text-white shadow-xs transition-colors"
+                    >
+                      <CalendarCheck2 className="h-4 w-4" />
+                      <span>Gia Hạn Hợp Đồng KTX (Kỳ Spring 2027)</span>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           ) : (
@@ -366,6 +400,13 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
 
         </div>
       </div>
+
+      <ContractRenewalModal
+        isOpen={showRenewModal}
+        onClose={() => setShowRenewModal(false)}
+        user={user}
+        onRenewed={() => setIsRenewed(true)}
+      />
     </>
   )
 }

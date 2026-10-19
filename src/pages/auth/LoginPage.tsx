@@ -53,7 +53,7 @@ export const LoginPage: React.FC = () => {
     phone: "0912345678",
     gender: "male",
     term: "Spring 2026",
-    roomType: "standard_4",
+    roomType: "standard_6",
     agreedRules: true,
   })
   const [regSuccess, setRegSuccess] = useState(false)
@@ -203,9 +203,9 @@ export const LoginPage: React.FC = () => {
                         <strong className="text-foreground">
                           Nguyện vọng:
                         </strong>{" "}
-                        {regData.roomType === "standard_4"
-                          ? "Buồng 4 người"
-                          : "Buồng 6 người"}
+                        {regData.roomType === "private_4"
+                          ? "Buồng riêng tư (4 giường)"
+                          : "Buồng tiêu chuẩn (6 giường)"}
                       </p>
                       <p>
                         <strong className="text-foreground">Trạng thái:</strong>{" "}
@@ -382,11 +382,11 @@ export const LoginPage: React.FC = () => {
                             }
                             className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground focus:border-emerald-500 focus:outline-none"
                           >
-                            <option value="standard_4">
-                              Buồng tiêu chuẩn (4 giường / buồng)
+                            <option value="standard_6">
+                              Buồng tiêu chuẩn (6 giường / buồng)
                             </option>
-                            <option value="private_6">
-                              Buồng riêng tư (6 giường / buồng)
+                            <option value="private_4">
+                              Buồng riêng tư (4 giường / buồng)
                             </option>
                           </select>
                         </div>

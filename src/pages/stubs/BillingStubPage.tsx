@@ -70,7 +70,7 @@ export const BillingStubPage: React.FC = () => {
           <div className="p-4 rounded-2xl bg-muted/30 border border-border space-y-1">
             <p className="text-muted-foreground text-[11px]">Số thành viên (N)</p>
             <p className="text-lg font-bold text-foreground">6 Sinh viên</p>
-            <p className="text-[10px] text-muted-foreground">Buồng B1 & B2</p>
+            <p className="text-[10px] text-muted-foreground">Buồng B & C</p>
           </div>
           <div className="p-4 rounded-2xl bg-sky-500/10 border border-sky-500/30 space-y-1">
             <p className="text-sky-600 dark:text-sky-400 text-[11px] font-bold">Mỗi người đóng (Total / N)</p>

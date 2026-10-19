@@ -14,7 +14,6 @@ import {
   User,
   ShieldCheck,
   Zap,
-  PhoneCall,
   Shield,
   type LucideIcon,
 } from "lucide-react"
@@ -271,20 +270,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
         {/* Bottom Emergency Guard & Sign Out */}
         <div className="shrink-0 space-y-2 border-t border-border bg-muted p-3">
-          <div className="rounded-xl border border-border bg-card p-2.5">
-            <div className="mb-0.5 flex items-center gap-1.5">
-              <PhoneCall className="h-3.5 w-3.5 text-primary" />
-              <span className="text-[11px] font-bold text-foreground">
-                Emergency Guard
-              </span>
-            </div>
-            <div className="font-mono text-sm font-bold tracking-wider text-foreground">
-              1900 6868
-            </div>
-            <div className="text-[10px] text-muted-foreground">
-              24/7 Gate Patrol Desk
-            </div>
-          </div>
+
 
           {isAuthenticated ? (
             <button
