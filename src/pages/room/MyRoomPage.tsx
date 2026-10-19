@@ -20,62 +20,50 @@ import {
 // ─── Compartment Slide Carousel ───────────────────────────────────────────────
 const COMPARTMENTS = [
   {
-    id: "A",
-    label: "Buồng A",
-    subtitle: "Window Bay · Hướng Đông",
-    occupancy: "5/6",
-    myComp: false,
+    id: "A", label: "Buồng A", subtitle: "Window Bay · Hướng Đông",
+    occupancy: "5/6", myComp: false,
     beds: [
-      { g: 1, tier: "Dưới", name: "H. Long", status: "occupied" },
-      { g: 2, tier: "Trên", name: "T. Tuấn", status: "occupied" },
-      { g: 3, tier: "Dưới", name: null, status: "available" },
+      { g: 1, tier: "Dưới", name: "H. Long",   status: "occupied" },
+      { g: 2, tier: "Trên", name: "T. Tuấn",  status: "occupied" },
+      { g: 3, tier: "Dưới", name: null,        status: "available" },
       { g: 4, tier: "Trên", name: "P. Quang", status: "occupied" },
-      { g: 5, tier: "Dưới", name: "Đ. Khoa", status: "occupied" },
-      { g: 6, tier: "Trên", name: "M. Đức", status: "occupied" },
+      { g: 5, tier: "Dưới", name: "Đ. Khoa",  status: "occupied" },
+      { g: 6, tier: "Trên", name: "M. Đức",   status: "occupied" },
     ],
   },
   {
-    id: "B",
-    label: "Buồng B",
-    subtitle: "Balcony Wing · Ban Công",
-    occupancy: "5/6",
-    myComp: true,
+    id: "B", label: "Buồng B", subtitle: "Balcony Wing · Ban Công",
+    occupancy: "5/6", myComp: true,
     beds: [
-      { g: 1, tier: "Dưới", name: "B. Trần", status: "occupied" },
-      { g: 2, tier: "Trên", name: "L. Nam", status: "occupied" },
-      { g: 3, tier: "Dưới", name: "Vinh", status: "mine" },
+      { g: 1, tier: "Dưới", name: "B. Trần",  status: "occupied" },
+      { g: 2, tier: "Trên", name: "L. Nam",   status: "occupied" },
+      { g: 3, tier: "Dưới", name: "Vinh",     status: "mine" },
       { g: 4, tier: "Trên", name: "V. Thanh", status: "occupied" },
-      { g: 5, tier: "Dưới", name: "N. Huy", status: "occupied" },
-      { g: 6, tier: "Trên", name: null, status: "available" },
+      { g: 5, tier: "Dưới", name: "N. Huy",   status: "occupied" },
+      { g: 6, tier: "Trên", name: null,        status: "available" },
     ],
   },
   {
-    id: "C",
-    label: "Buồng C",
-    subtitle: "Study Hub · Góc Tự Học",
-    occupancy: "4/6",
-    myComp: false,
+    id: "C", label: "Buồng C", subtitle: "Study Hub · Góc Tự Học",
+    occupancy: "4/6", myComp: false,
     beds: [
-      { g: 1, tier: "Dưới", name: "K. Minh", status: "occupied" },
-      { g: 2, tier: "Trên", name: null, status: "available" },
-      { g: 3, tier: "Dưới", name: "P. Linh", status: "occupied" },
-      { g: 4, tier: "Trên", name: "T. Dung", status: "occupied" },
-      { g: 5, tier: "Dưới", name: null, status: "available" },
-      { g: 6, tier: "Trên", name: "S. Sơn", status: "occupied" },
+      { g: 1, tier: "Dưới", name: "K. Minh",  status: "occupied" },
+      { g: 2, tier: "Trên", name: null,        status: "available" },
+      { g: 3, tier: "Dưới", name: "P. Linh",  status: "occupied" },
+      { g: 4, tier: "Trên", name: "T. Dung",  status: "occupied" },
+      { g: 5, tier: "Dưới", name: null,        status: "available" },
+      { g: 6, tier: "Trên", name: "S. Sơn",   status: "occupied" },
     ],
   },
   {
-    id: "D",
-    label: "Buồng D",
-    subtitle: "Main Hall Door · Cửa Ra Vào & WC",
-    occupancy: "4/6",
-    myComp: false,
+    id: "D", label: "Buồng D", subtitle: "Main Hall Door · Cửa Ra Vào & WC",
+    occupancy: "4/6", myComp: false,
     beds: [
-      { g: 1, tier: "Dưới", name: "A. Hiến", status: "occupied" },
-      { g: 2, tier: "Trên", name: "V. Khôi", status: "occupied" },
-      { g: 3, tier: "Dưới", name: null, status: "available" },
-      { g: 4, tier: "Trên", name: null, status: "available" },
-      { g: 5, tier: "Dưới", name: "H. Phúc", status: "occupied" },
+      { g: 1, tier: "Dưới", name: "A. Hiến",  status: "occupied" },
+      { g: 2, tier: "Trên", name: "V. Khôi",  status: "occupied" },
+      { g: 3, tier: "Dưới", name: null,        status: "available" },
+      { g: 4, tier: "Trên", name: null,        status: "available" },
+      { g: 5, tier: "Dưới", name: "H. Phúc",  status: "occupied" },
       { g: 6, tier: "Trên", name: "Q. Thắng", status: "occupied" },
     ],
   },
@@ -85,35 +73,28 @@ const CompartmentSlide: React.FC = () => {
   const [current, setCurrent] = useState(1) // default: Buồng B (index 1)
 
   const comp = COMPARTMENTS[current]
-  const prev = () =>
-    setCurrent((c) => (c - 1 + COMPARTMENTS.length) % COMPARTMENTS.length)
+  const prev = () => setCurrent((c) => (c - 1 + COMPARTMENTS.length) % COMPARTMENTS.length)
   const next = () => setCurrent((c) => (c + 1) % COMPARTMENTS.length)
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-white shadow-xs dark:bg-[#161e23]">
+    <div className="bg-white dark:bg-[#161e23] border border-border rounded-xl shadow-xs overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-border px-5 pt-4 pb-3">
+      <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-border">
         <div>
-          <h2 className="text-sm font-bold text-foreground">
-            Sơ Đồ Phân Bổ Giường Phòng A205
-          </h2>
-          <p className="text-[11px] text-muted-foreground">
-            Vuốt qua từng buồng để xem trạng thái giường
-          </p>
+          <h2 className="font-bold text-sm text-foreground">Sơ Đồ Phân Bổ Giường Phòng A205</h2>
+          <p className="text-[11px] text-muted-foreground">Vuốt qua từng buồng để xem trạng thái giường</p>
         </div>
         <div className="flex items-center gap-3 text-[11px]">
           <span className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-sm bg-primary"></span>
-            <strong className="text-primary dark:text-[#cee6ef]">
-              Giường bạn
-            </strong>
+            <span className="w-2.5 h-2.5 rounded-sm bg-primary"></span>
+            <strong className="text-primary dark:text-[#cee6ef]">Giường bạn</strong>
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-sm bg-slate-300 dark:bg-slate-600"></span>
+            <span className="w-2.5 h-2.5 rounded-sm bg-slate-300 dark:bg-slate-600"></span>
             <span>Đã ở</span>
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-sm bg-emerald-400"></span>
+            <span className="w-2.5 h-2.5 rounded-sm bg-emerald-400"></span>
             <span>Trống</span>
           </span>
         </div>
@@ -124,46 +105,36 @@ const CompartmentSlide: React.FC = () => {
         {/* Nav buttons */}
         <button
           onClick={prev}
-          className="absolute top-1/2 left-2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-white shadow-sm transition-colors hover:bg-[#f4f4ee] dark:bg-[#1c262c] dark:hover:bg-[#283740]"
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white dark:bg-[#1c262c] border border-border shadow-sm flex items-center justify-center hover:bg-[#eff6ff] dark:hover:bg-[#283740] transition-colors"
         >
           <ChevronLeft className="h-4 w-4 text-muted-foreground" />
         </button>
         <button
           onClick={next}
-          className="absolute top-1/2 right-2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-white shadow-sm transition-colors hover:bg-[#f4f4ee] dark:bg-[#1c262c] dark:hover:bg-[#283740]"
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white dark:bg-[#1c262c] border border-border shadow-sm flex items-center justify-center hover:bg-[#eff6ff] dark:hover:bg-[#283740] transition-colors"
         >
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </button>
 
         {/* Card */}
-        <div
-          className={`mx-8 space-y-4 rounded-xl border p-4 transition-all ${
-            comp.myComp
-              ? "border-primary bg-primary/5 ring-1 ring-primary"
-              : "border-border bg-[#f4f4ee] dark:bg-[#1c262c]"
-          }`}
-        >
+        <div className={`mx-8 rounded-xl border p-4 space-y-4 transition-all ${
+          comp.myComp
+            ? "bg-primary/5 border-primary ring-1 ring-primary"
+            : "bg-[#eff6ff] dark:bg-[#1c262c] border-border"
+        }`}>
           {/* Compartment header */}
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-base font-black text-foreground">
-                  {comp.label}
-                </span>
+                <span className="font-black text-base text-foreground">{comp.label}</span>
                 {comp.myComp && (
-                  <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-white">
-                    BUỒNG CỦA BẠN
-                  </span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary text-white">BUỒNG CỦA BẠN</span>
                 )}
               </div>
-              <p className="mt-0.5 text-[11px] text-muted-foreground">
-                {comp.subtitle}
-              </p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">{comp.subtitle}</p>
             </div>
             <div className="text-right">
-              <span className="text-xs font-bold text-foreground">
-                {comp.occupancy} Giường
-              </span>
+              <span className="text-xs font-bold text-foreground">{comp.occupancy} Giường</span>
             </div>
           </div>
 
@@ -175,42 +146,34 @@ const CompartmentSlide: React.FC = () => {
               return (
                 <div
                   key={bed.g}
-                  className={`rounded-xl border p-3 text-center transition-all ${
+                  className={`rounded-xl p-3 text-center border transition-all ${
                     isMine
-                      ? "border-primary bg-primary text-white shadow-md"
+                      ? "bg-primary text-white border-primary shadow-md"
                       : isAvail
-                        ? "border-emerald-300 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-950/30"
-                        : "border-border bg-white dark:bg-[#161e23]"
+                      ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-700"
+                      : "bg-white dark:bg-[#161e23] border-border"
                   }`}
                 >
-                  <div
-                    className={`mb-1.5 text-[10px] font-bold ${
-                      isMine ? "text-white/80" : "text-muted-foreground"
-                    }`}
-                  >
+                  <div className={`text-[10px] font-bold mb-1.5 ${
+                    isMine ? "text-white/80" : "text-muted-foreground"
+                  }`}>
                     G0{bed.g} · {bed.tier}
                   </div>
                   {isAvail ? (
                     <>
-                      <BedDouble className="mx-auto mb-0.5 h-5 w-5 text-emerald-500" />
-                      <div className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                        TRỐNG
-                      </div>
+                      <BedDouble className="h-5 w-5 mx-auto text-emerald-500 mb-0.5" />
+                      <div className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">TRỐNG</div>
                     </>
                   ) : (
                     <>
-                      <div
-                        className={`truncate text-xs font-bold ${
-                          isMine ? "text-white" : "text-foreground"
-                        }`}
-                      >
+                      <div className={`text-xs font-bold truncate ${
+                        isMine ? "text-white" : "text-foreground"
+                      }`}>
                         {bed.name}
                       </div>
-                      <div
-                        className={`mt-0.5 text-[10px] ${
-                          isMine ? "text-white/70" : "text-muted-foreground"
-                        }`}
-                      >
+                      <div className={`text-[10px] mt-0.5 ${
+                        isMine ? "text-white/70" : "text-muted-foreground"
+                      }`}>
                         {isMine ? "Tầng dưới" : "Đã ở"}
                       </div>
                     </>
@@ -222,30 +185,30 @@ const CompartmentSlide: React.FC = () => {
         </div>
 
         {/* Dot indicators */}
-        <div className="mt-4 flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-2 mt-4">
           {COMPARTMENTS.map((_, i) => (
             <button
               key={i}
               onClick={() => setCurrent(i)}
-              className={`rounded-full transition-all ${
+              className={`transition-all rounded-full ${
                 i === current
-                  ? "h-2 w-6 bg-primary"
-                  : "h-2 w-2 bg-border hover:bg-muted-foreground"
+                  ? "w-6 h-2 bg-primary"
+                  : "w-2 h-2 bg-border hover:bg-muted-foreground"
               }`}
             />
           ))}
         </div>
 
         {/* Compartment label row */}
-        <div className="mt-3 flex justify-center gap-1.5">
+        <div className="flex justify-center gap-1.5 mt-3">
           {COMPARTMENTS.map((c, i) => (
             <button
               key={i}
               onClick={() => setCurrent(i)}
-              className={`rounded-lg px-2.5 py-1 text-[10px] font-bold transition-all ${
+              className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all ${
                 i === current
                   ? "bg-primary text-white"
-                  : "bg-[#f4f4ee] text-muted-foreground hover:text-foreground dark:bg-[#1c262c]"
+                  : "bg-[#eff6ff] dark:bg-[#1c262c] text-muted-foreground hover:text-foreground"
               }`}
             >
               {c.id}
@@ -271,8 +234,7 @@ export const MyRoomPage: React.FC = () => {
       phone: "0912 345 678",
       dutyDay: "Thứ Hai & Thứ Năm",
       isMe: true,
-      avatar:
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
     },
     {
       name: "Trần Công Tiến",
@@ -282,8 +244,7 @@ export const MyRoomPage: React.FC = () => {
       phone: "0934 112 233",
       dutyDay: "Thứ Ba & Thứ Sáu",
       isMe: false,
-      avatar:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
     },
     {
       name: "Văn Thái Trung",
@@ -293,8 +254,7 @@ export const MyRoomPage: React.FC = () => {
       phone: "0977 445 566",
       dutyDay: "Thứ Tư & Thứ Bảy",
       isMe: false,
-      avatar:
-        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
+      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
     },
     {
       name: "Đinh Thanh Trung",
@@ -304,64 +264,33 @@ export const MyRoomPage: React.FC = () => {
       phone: "0988 990 011",
       dutyDay: "Chủ Nhật (Tổng vệ sinh)",
       isMe: false,
-      avatar:
-        "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=200&q=80",
+      avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=200&q=80",
     },
   ]
 
   const inventoryItems = [
-    {
-      name: "Khung giường tầng & Thang leo",
-      status: "Tốt",
-      checked: true,
-      note: "Chắc chắn, không rỉ sét",
-    },
-    {
-      name: "Đệm Foam Orthopedic 1.0m x 2.0m",
-      status: "Tốt",
-      checked: true,
-      note: "Bọc ga mới nguyên vẹn",
-    },
-    {
-      name: "Bàn học & Giá sách cá nhân",
-      status: "Tốt",
-      checked: true,
-      note: "Đèn bàn LED cảm ứng hoạt động",
-    },
-    {
-      name: "Tủ Locker cá nhân kèm khóa số",
-      status: "Tốt",
-      checked: true,
-      note: "Đã reset mã PIN mặc định",
-    },
-    {
-      name: "Thẻ từ ra vào phòng A205",
-      status: "Đã cấp",
-      checked: true,
-      note: "Quẹt nhận phòng ngày 05/09",
-    },
-    {
-      name: "Điều hòa Inverter Daikin 2HP",
-      status: "Tốt",
-      checked: true,
-      note: "Remote để tại giá treo cửa",
-    },
+    { name: "Khung giường tầng & Thang leo", status: "Tốt", checked: true, note: "Chắc chắn, không rỉ sét" },
+    { name: "Đệm Foam Orthopedic 1.0m x 2.0m", status: "Tốt", checked: true, note: "Bọc ga mới nguyên vẹn" },
+    { name: "Bàn học & Giá sách cá nhân", status: "Tốt", checked: true, note: "Đèn bàn LED cảm ứng hoạt động" },
+    { name: "Tủ Locker cá nhân kèm khóa số", status: "Tốt", checked: true, note: "Đã reset mã PIN mặc định" },
+    { name: "Thẻ từ ra vào phòng A205", status: "Đã cấp", checked: true, note: "Quẹt nhận phòng ngày 05/09" },
+    { name: "Điều hòa Inverter Daikin 2HP", status: "Tốt", checked: true, note: "Remote để tại giá treo cửa" },
   ]
 
   return (
-    <div className="mx-auto max-w-[1440px] space-y-6 pb-12">
+    <div className="max-w-[1440px] mx-auto space-y-6 pb-12">
       {/* 01. TOP UNIT SUMMARY & OPERATIONAL ACTION BAR */}
-      <div className="flex flex-col justify-between gap-6 rounded-xl border border-border bg-white p-6 shadow-xs xl:flex-row xl:items-center dark:bg-[#161e23]">
+      <div className="bg-white dark:bg-[#161e23] border border-border rounded-xl p-6 shadow-xs flex flex-col xl:flex-row xl:items-center justify-between gap-6">
         <div className="flex items-start gap-4">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-xs">
+          <div className="w-16 h-16 rounded-xl bg-primary text-white flex items-center justify-center shrink-0 shadow-xs">
             <DoorClosed className="h-8 w-8" />
           </div>
           <div className="space-y-1.5">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-black tracking-tight text-primary dark:text-[#cee6ef]">
+              <h1 className="text-2xl font-black text-primary dark:text-[#cee6ef] tracking-tight">
                 Phòng A205
               </h1>
-              <span className="rounded bg-[#f4f4ee] px-2 py-0.5 text-[11px] font-bold tracking-wider text-muted-foreground uppercase dark:bg-[#1c262c]">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground px-2 py-0.5 rounded bg-[#eff6ff] dark:bg-[#1c262c]">
                 Khu A · Tầng 2
               </span>
               <Badge variant="available" dot>
@@ -369,14 +298,10 @@ export const MyRoomPage: React.FC = () => {
               </Badge>
               <Badge variant="secondary">Sinh viên Chính quy K19</Badge>
             </div>
-            <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-              <span className="font-semibold text-foreground">
-                Buồng B (Balcony Wing)
-              </span>
+            <p className="text-xs text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1">
+              <span className="font-semibold text-foreground">Buồng B (Balcony Wing)</span>
               <span>•</span>
-              <span className="font-semibold text-primary dark:text-[#cee6ef]">
-                Giường G03 (Tầng dưới)
-              </span>
+              <span className="font-semibold text-primary dark:text-[#cee6ef]">Giường G03 (Tầng dưới)</span>
               <span>•</span>
               <span>Học kỳ 1 Năm học 2026–2027 (Hết hạn: 15/01/2027)</span>
             </p>
@@ -387,27 +312,25 @@ export const MyRoomPage: React.FC = () => {
         <div className="flex flex-wrap items-center gap-2">
           <Button
             variant="outline"
-            onClick={() =>
-              alert("Đang mở bản xem trước Hợp đồng điện tử e-Contract PDF...")
-            }
-            className="h-9 shrink-0 gap-1.5 bg-[#f4f4ee] text-xs whitespace-nowrap dark:bg-[#1c262c]"
+            onClick={() => alert("Đang mở bản xem trước Hợp đồng điện tử e-Contract PDF...")}
+            className="text-xs h-9 gap-1.5 bg-[#eff6ff] dark:bg-[#1c262c] whitespace-nowrap shrink-0"
           >
-            <FileText className="h-4 w-4 shrink-0 text-primary" />
+            <FileText className="h-4 w-4 text-primary shrink-0" />
             <span>Hợp Đồng (PDF)</span>
           </Button>
 
           <Link to="/billing">
             <Button
               variant="outline"
-              className="h-9 shrink-0 gap-1.5 bg-[#f4f4ee] text-xs whitespace-nowrap dark:bg-[#1c262c]"
+              className="text-xs h-9 gap-1.5 bg-[#eff6ff] dark:bg-[#1c262c] whitespace-nowrap shrink-0"
             >
-              <Receipt className="h-4 w-4 shrink-0 text-primary" />
+              <Receipt className="h-4 w-4 text-primary shrink-0" />
               <span>Hóa Đơn Điện Nước</span>
             </Button>
           </Link>
 
           <Link to="/maintenance">
-            <Button className="h-9 shrink-0 gap-1.5 bg-primary text-xs whitespace-nowrap text-white">
+            <Button className="text-xs h-9 gap-1.5 bg-primary text-white whitespace-nowrap shrink-0">
               <Wrench className="h-4 w-4 shrink-0" />
               <span>Báo Hỏng / Sửa Chữa</span>
             </Button>
@@ -415,7 +338,7 @@ export const MyRoomPage: React.FC = () => {
 
           <Button
             onClick={() => setShowCheckoutModal(true)}
-            className="h-9 shrink-0 gap-1.5 bg-red-100 text-xs whitespace-nowrap text-red-700 hover:bg-red-200"
+            className="text-xs h-9 gap-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 whitespace-nowrap shrink-0"
           >
             <LogOut className="h-4 w-4 shrink-0" />
             <span>Yêu Cầu Trả Phòng</span>
@@ -427,16 +350,16 @@ export const MyRoomPage: React.FC = () => {
       <CompartmentSlide />
 
       {/* 03. TWO-COLUMN: ROOMMATES ROSTER & DIGITAL HANDOVER CHECKLIST */}
-      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* ROOMMATES ROSTER (7 COLS) */}
-        <div className="space-y-4 rounded-xl border border-border bg-white p-5 shadow-xs lg:col-span-7 dark:bg-[#161e23]">
-          <div className="flex items-center justify-between border-b border-border pb-2">
+        <div className="lg:col-span-7 bg-white dark:bg-[#161e23] border border-border rounded-xl p-5 shadow-xs space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-border">
             <div className="flex items-center gap-2">
-              <span className="rounded-lg bg-primary/10 p-1.5 text-primary">
+              <span className="p-1.5 rounded-lg bg-primary/10 text-primary">
                 <Users className="h-4 w-4" />
               </span>
               <div>
-                <h3 className="text-sm font-bold text-foreground">
+                <h3 className="font-bold text-sm text-foreground">
                   Danh Sách Bạn Cùng Buồng B (Roommates Manifest)
                 </h3>
                 <p className="text-[11px] text-muted-foreground">
@@ -451,47 +374,40 @@ export const MyRoomPage: React.FC = () => {
             {roommates.map((rm, idx) => (
               <div
                 key={idx}
-                className={`flex flex-col justify-between gap-3 rounded-xl border p-3.5 transition-colors sm:flex-row sm:items-center ${
+                className={`p-3.5 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors ${
                   rm.isMe
-                    ? "border-primary/40 bg-primary/5 ring-1 ring-primary/20"
-                    : "border-border bg-[#f4f4ee] dark:bg-[#1c262c]"
+                    ? "bg-primary/5 border-primary/40 ring-1 ring-primary/20"
+                    : "bg-[#eff6ff] dark:bg-[#1c262c] border-border"
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <img
                     src={rm.avatar}
                     alt={rm.name}
-                    className="h-10 w-10 shrink-0 rounded-full border border-border object-cover"
+                    className="w-10 h-10 rounded-full object-cover border border-border shrink-0"
                   />
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-foreground">
-                        {rm.name}
-                      </span>
+                      <span className="font-bold text-xs text-foreground">{rm.name}</span>
                       {rm.isMe && (
-                        <span className="py-0.2 rounded bg-primary px-1.5 text-[10px] font-semibold text-white">
+                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-primary text-white font-semibold">
                           Bạn
                         </span>
                       )}
                     </div>
                     <p className="text-[11px] text-muted-foreground">
-                      MSSV: <strong className="font-mono">{rm.mssv}</strong> •
-                      Giường:{" "}
-                      <strong className="text-primary dark:text-[#cee6ef]">
-                        {rm.bed}
-                      </strong>
+                      MSSV: <strong className="font-mono">{rm.mssv}</strong> • Giường:{" "}
+                      <strong className="text-primary dark:text-[#cee6ef]">{rm.bed}</strong>
                     </p>
-                    <p className="text-[10px] text-muted-foreground">
-                      {rm.major}
-                    </p>
+                    <p className="text-[10px] text-muted-foreground">{rm.major}</p>
                   </div>
                 </div>
 
-                <div className="flex shrink-0 items-start justify-between border-t border-border pt-2 text-xs sm:flex-col sm:items-end sm:border-t-0 sm:pt-0">
-                  <span className="shrink-0 rounded bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
+                <div className="flex sm:flex-col items-start sm:items-end justify-between border-t sm:border-t-0 pt-2 sm:pt-0 border-border text-xs shrink-0">
+                  <span className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/40 px-2 py-0.5 rounded whitespace-nowrap shrink-0">
                     Trực nhật: {rm.dutyDay}
                   </span>
-                  <span className="mt-1 font-mono text-[11px] whitespace-nowrap text-muted-foreground">
+                  <span className="text-[11px] font-mono text-muted-foreground mt-1 whitespace-nowrap">
                     {rm.phone}
                   </span>
                 </div>
@@ -501,14 +417,14 @@ export const MyRoomPage: React.FC = () => {
         </div>
 
         {/* DIGITAL HANDOVER & AMENITIES CHECKLIST (5 COLS) */}
-        <div className="space-y-4 rounded-xl border border-border bg-white p-5 shadow-xs lg:col-span-5 dark:bg-[#161e23]">
-          <div className="flex items-center justify-between border-b border-border pb-2">
+        <div className="lg:col-span-5 bg-white dark:bg-[#161e23] border border-border rounded-xl p-5 shadow-xs space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-border">
             <div className="flex items-center gap-2">
-              <span className="rounded-lg bg-emerald-100 p-1.5 text-emerald-700">
+              <span className="p-1.5 rounded-lg bg-emerald-100 text-emerald-700">
                 <CheckSquare className="h-4 w-4" />
               </span>
               <div>
-                <h3 className="text-sm font-bold text-foreground">
+                <h3 className="font-bold text-sm text-foreground">
                   Biên Bản Bàn Giao Thiết Bị
                 </h3>
                 <p className="text-[11px] text-muted-foreground">
@@ -523,17 +439,13 @@ export const MyRoomPage: React.FC = () => {
             {inventoryItems.map((item, idx) => (
               <div
                 key={idx}
-                className="flex items-center justify-between rounded-lg border border-border bg-[#f4f4ee] p-2.5 dark:bg-[#1c262c]"
+                className="p-2.5 rounded-lg bg-[#eff6ff] dark:bg-[#1c262c] border border-border flex items-center justify-between"
               >
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
                   <div>
-                    <span className="block font-semibold text-foreground">
-                      {item.name}
-                    </span>
-                    <span className="text-[10px] text-muted-foreground">
-                      {item.note}
-                    </span>
+                    <span className="font-semibold text-foreground block">{item.name}</span>
+                    <span className="text-[10px] text-muted-foreground">{item.note}</span>
                   </div>
                 </div>
                 <Badge variant="available">{item.status}</Badge>
@@ -541,16 +453,14 @@ export const MyRoomPage: React.FC = () => {
             ))}
           </div>
 
-          <div className="border-t border-border pt-2">
+          <div className="pt-2 border-t border-border">
             <Button
               onClick={() => setShowHandoverModal(true)}
               variant="outline"
-              className="h-9.5 w-full gap-2 border-border bg-slate-50/50 text-xs font-semibold text-slate-800 shadow-xs transition-all hover:border-primary/50 hover:text-primary dark:bg-slate-800/40 dark:text-slate-100 dark:hover:text-primary"
+              className="w-full text-xs font-semibold h-9.5 gap-2 text-slate-800 dark:text-slate-100 hover:text-primary dark:hover:text-primary bg-slate-50/50 dark:bg-slate-800/40 border-border hover:border-primary/50 transition-all shadow-xs"
             >
-              <FileText className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-              <span className="truncate whitespace-nowrap">
-                Xem biên bản nghiệm thu & ảnh
-              </span>
+              <FileText className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <span className="whitespace-nowrap truncate">Xem biên bản nghiệm thu & ảnh</span>
             </Button>
           </div>
         </div>
@@ -558,30 +468,27 @@ export const MyRoomPage: React.FC = () => {
 
       {/* HANDOVER DETAILS MODAL */}
       {showHandoverModal && (
-        <div className="fixed inset-0 z-50 flex animate-in items-center justify-center bg-black/60 p-4 backdrop-blur-xs fade-in">
-          <div className="w-full max-w-lg space-y-4 rounded-2xl border border-border bg-white p-6 shadow-xl dark:bg-[#161e23]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
+          <div className="bg-white dark:bg-[#161e23] border border-border w-full max-w-lg rounded-2xl shadow-xl p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-3">
-              <h3 className="text-sm font-bold text-foreground">
+              <h3 className="font-bold text-sm text-foreground">
                 Biên Bản Bàn Giao & Hiện Trạng Thiết Bị Số Hóa
               </h3>
               <button
                 onClick={() => setShowHandoverModal(false)}
-                className="text-sm text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground text-sm"
               >
                 ✕
               </button>
             </div>
 
             <div className="space-y-3 text-xs">
-              <p className="leading-relaxed text-muted-foreground">
-                Biên bản được lập tự động vào ngày <strong>05/09/2026</strong>{" "}
-                giữa Ban Quản lý KTX và sinh viên{" "}
-                <strong>{user?.fullName || "Nguyễn Hoàng Vinh"}</strong>. Mọi
-                tài sản hỏng hóc trong thời gian lưu trú cần báo ngay qua mục
-                Báo Hỏng.
+              <p className="text-muted-foreground leading-relaxed">
+                Biên bản được lập tự động vào ngày <strong>05/09/2026</strong> giữa Ban Quản lý KTX và sinh viên{" "}
+                <strong>{user?.fullName || "Nguyễn Hoàng Vinh"}</strong>. Mọi tài sản hỏng hóc trong thời gian lưu trú cần báo ngay qua mục Báo Hỏng.
               </p>
 
-              <div className="space-y-1 rounded-xl bg-[#f4f4ee] p-3 font-mono text-[11px] dark:bg-[#1c262c]">
+              <div className="p-3 bg-[#eff6ff] dark:bg-[#1c262c] rounded-xl space-y-1 font-mono text-[11px]">
                 <div>Mã biên bản: BB-2026-A205-0905</div>
                 <div>Chỉ số điện ban đầu: 12,450 kWh</div>
                 <div>Chỉ số nước ban đầu: 840 m³</div>
@@ -591,7 +498,7 @@ export const MyRoomPage: React.FC = () => {
               <div className="flex gap-2 pt-2">
                 <Button
                   onClick={() => alert("Đã tải biên bản bàn giao PDF!")}
-                  className="flex-1 bg-primary text-xs font-bold text-white"
+                  className="flex-1 bg-primary text-white text-xs font-bold"
                 >
                   Tải Bản PDF Có Chữ Ký Số
                 </Button>
@@ -610,35 +517,27 @@ export const MyRoomPage: React.FC = () => {
 
       {/* CHECKOUT MODAL */}
       {showCheckoutModal && (
-        <div className="fixed inset-0 z-50 flex animate-in items-center justify-center bg-black/60 p-4 backdrop-blur-xs fade-in">
-          <div className="w-full max-w-md space-y-4 rounded-2xl border border-border bg-white p-6 shadow-xl dark:bg-[#161e23]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
+          <div className="bg-white dark:bg-[#161e23] border border-border w-full max-w-md rounded-2xl shadow-xl p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-3">
-              <h3 className="text-sm font-bold text-foreground">
+              <h3 className="font-bold text-sm text-foreground">
                 Quy Trình Trả Phòng & Quyết Toán Hoàn Cọc
               </h3>
               <button
                 onClick={() => setShowCheckoutModal(false)}
-                className="text-sm text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground text-sm"
               >
                 ✕
               </button>
             </div>
 
             <div className="space-y-3 text-xs">
-              <p className="leading-relaxed text-muted-foreground">
+              <p className="text-muted-foreground leading-relaxed">
                 Khi sinh viên gửi yêu cầu trả phòng:
               </p>
-              <ul className="list-disc space-y-1 pl-4 text-[11px] text-muted-foreground">
-                <li>
-                  Cán bộ KTX sẽ kiểm tra hiện trạng thiết bị và chỉ số công tơ
-                  cuối cùng.
-                </li>
-                <li>
-                  Nếu không có hư hại,{" "}
-                  <strong>100% tiền cọc (1,000,000 VNĐ)</strong> sẽ được hoàn
-                  trả tự động vào tài khoản ngân hàng của sinh viên trong 48
-                  giờ.
-                </li>
+              <ul className="list-disc pl-4 space-y-1 text-muted-foreground text-[11px]">
+                <li>Cán bộ KTX sẽ kiểm tra hiện trạng thiết bị và chỉ số công tơ cuối cùng.</li>
+                <li>Nếu không có hư hại, <strong>100% tiền cọc (1,000,000 VNĐ)</strong> sẽ được hoàn trả tự động vào tài khoản ngân hàng của sinh viên trong 48 giờ.</li>
               </ul>
 
               <div className="flex gap-2 pt-2">
@@ -654,7 +553,7 @@ export const MyRoomPage: React.FC = () => {
                     alert("Yêu cầu trả phòng đã được gửi tới Ban Quản lý KTX!")
                     setShowCheckoutModal(false)
                   }}
-                  className="flex-1 bg-red-600 text-xs font-bold text-white hover:bg-red-700"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold"
                 >
                   Gửi Yêu Cầu Trả Phòng
                 </Button>

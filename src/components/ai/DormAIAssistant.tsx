@@ -146,12 +146,7 @@ export const DormAIAssistant: React.FC = () => {
     }
 
     // Try Gemini 2.5 Flash, latest, and 2.5 Flash Lite
-    const models = [
-      "gemini-2.5-flash",
-      "gemini-flash-latest",
-      "gemini-2.5-flash-lite",
-      "gemini-2.0-flash",
-    ]
+    const models = ["gemini-2.5-flash", "gemini-flash-latest", "gemini-2.5-flash-lite", "gemini-2.0-flash"]
     let lastError: Error | null = null
 
     for (const model of models) {
@@ -170,8 +165,7 @@ export const DormAIAssistant: React.FC = () => {
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}))
           const errorMsg =
-            errData?.error?.message ||
-            `HTTP ${response.status}: ${response.statusText}`
+            errData?.error?.message || `HTTP ${response.status}: ${response.statusText}`
           throw new Error(errorMsg)
         }
 
@@ -326,19 +320,19 @@ export const DormAIAssistant: React.FC = () => {
             setIsOpen(true)
             setIsMinimized(false)
           }}
-          className="group fixed right-6 bottom-6 z-40 flex items-center gap-2.5 rounded-full border border-slate-700 bg-slate-900 px-4 py-3 text-white shadow-2xl transition-all hover:scale-105 hover:bg-slate-800 dark:border-sky-700 dark:bg-sky-950 dark:hover:bg-sky-900"
+          className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 px-4 py-3 rounded-full bg-slate-900 dark:bg-sky-950 text-white shadow-2xl hover:bg-slate-800 dark:hover:bg-sky-900 transition-all hover:scale-105 border border-slate-700 dark:border-sky-700 group"
           aria-label="Mở trợ lý AI KTX"
         >
           <div className="relative">
             <Bot className="h-5 w-5 text-sky-400" />
-            <span className="absolute -top-1 -right-1 h-2 w-2 animate-ping rounded-full bg-emerald-400"></span>
+            <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-emerald-400 animate-ping"></span>
           </div>
           <span className="text-xs font-bold tracking-wide">Trợ lý AI KTX</span>
           <span
-            className={`rounded border px-2 py-0.5 text-[10px] font-bold ${
+            className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
               apiKey
-                ? "border-emerald-500/40 bg-emerald-500/20 text-emerald-300"
-                : "border-blue-500/30 bg-blue-500/20 text-blue-300"
+                ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                : "bg-blue-500/20 text-blue-300 border-blue-500/30"
             }`}
           >
             {apiKey ? "Gemini LLM" : "Chế độ mẫu"}
@@ -349,43 +343,39 @@ export const DormAIAssistant: React.FC = () => {
       {/* AI Chat Window */}
       {isOpen && (
         <div
-          className={`fixed z-50 flex flex-col rounded-2xl border border-slate-200 bg-white shadow-2xl transition-all duration-200 dark:border-slate-800 dark:bg-[#161e23] ${
+          className={`fixed z-50 bg-white dark:bg-[#161e23] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col transition-all duration-200 ${
             isMinimized
-              ? "right-6 bottom-6 h-14 w-80"
-              : "right-6 bottom-6 h-[600px] max-h-[88vh] w-[94vw] sm:w-[440px]"
+              ? "bottom-6 right-6 w-80 h-14"
+              : "bottom-6 right-6 w-[94vw] sm:w-[440px] h-[600px] max-h-[88vh]"
           }`}
         >
           {/* Header */}
-          <div className="flex shrink-0 items-center justify-between rounded-t-2xl border-b border-slate-800 bg-slate-900 px-4 py-3 text-white">
+          <div className="flex items-center justify-between px-4 py-3 bg-slate-900 text-white rounded-t-2xl border-b border-slate-800 shrink-0">
             <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-sky-600 text-white shadow-xs">
+              <div className="h-8 w-8 rounded-xl bg-sky-600 flex items-center justify-center text-white shadow-xs">
                 <Sparkles className="h-4 w-4" />
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-bold tracking-tight">
-                    DomaAI Assistant
-                  </span>
+                  <span className="font-bold text-xs tracking-tight">DomaAI Assistant</span>
                   <span
-                    className={`h-2 w-2 rounded-full ${
-                      apiKey ? "bg-emerald-400" : "bg-amber-400"
+                    className={`w-2 h-2 rounded-full ${
+                      apiKey ? "bg-emerald-400" : "bg-cyan-400"
                     }`}
                     title={apiKey ? "Đã kết nối Gemini API" : "Chưa có API Key"}
                   ></span>
                   <span
-                    className={`py-0.2 rounded px-1.5 text-[9px] font-bold ${
+                    className={`text-[9px] font-bold px-1.5 py-0.2 rounded ${
                       apiKey
-                        ? "border border-emerald-700/50 bg-emerald-900/60 text-emerald-300"
-                        : "border border-amber-700/50 bg-amber-900/60 text-amber-300"
+                        ? "bg-emerald-900/60 text-emerald-300 border border-emerald-700/50"
+                        : "bg-cyan-900/60 text-cyan-300 border border-cyan-700/50"
                     }`}
                   >
                     {apiKey ? "Gemini 2.5 Flash" : "Local Mode"}
                   </span>
                 </div>
-                <span className="block text-[10px] text-slate-400">
-                  {apiKey
-                    ? "Google Gemini LLM Trực Tuyến"
-                    : "Chưa nhập API Key"}
+                <span className="text-[10px] text-slate-400 block">
+                  {apiKey ? "Google Gemini LLM Trực Tuyến" : "Chưa nhập API Key"}
                 </span>
               </div>
             </div>
@@ -396,21 +386,21 @@ export const DormAIAssistant: React.FC = () => {
                   setTempKeyInput(apiKey)
                   setShowSettings(!showSettings)
                 }}
-                className="rounded-md p-1.5 transition-colors hover:bg-slate-800 hover:text-white"
+                className="p-1.5 hover:text-white hover:bg-slate-800 rounded-md transition-colors"
                 title="Cài đặt API Key Gemini"
               >
                 <Settings className="h-4 w-4" />
               </button>
               <button
                 onClick={handleResetChat}
-                className="rounded-md p-1.5 transition-colors hover:bg-slate-800 hover:text-white"
+                className="p-1.5 hover:text-white hover:bg-slate-800 rounded-md transition-colors"
                 title="Đặt lại đoạn chat"
               >
                 <RotateCcw className="h-3.5 w-3.5" />
               </button>
               <button
                 onClick={() => setIsMinimized(!isMinimized)}
-                className="rounded-md p-1.5 transition-colors hover:bg-slate-800 hover:text-white"
+                className="p-1.5 hover:text-white hover:bg-slate-800 rounded-md transition-colors"
                 title={isMinimized ? "Phóng to" : "Thu nhỏ"}
               >
                 {isMinimized ? (
@@ -421,7 +411,7 @@ export const DormAIAssistant: React.FC = () => {
               </button>
               <button
                 onClick={() => setIsOpen(false)}
-                className="rounded-md p-1.5 transition-colors hover:bg-slate-800 hover:text-white"
+                className="p-1.5 hover:text-white hover:bg-slate-800 rounded-md transition-colors"
                 title="Đóng chat"
               >
                 <X className="h-4 w-4" />
@@ -433,7 +423,7 @@ export const DormAIAssistant: React.FC = () => {
             <>
               {/* API Key Settings Modal/Panel */}
               {showSettings && (
-                <div className="animate-in space-y-3 border-b border-slate-800 bg-slate-900 p-4 text-xs text-white fade-in">
+                <div className="p-4 bg-slate-900 border-b border-slate-800 text-white text-xs space-y-3 animate-in fade-in">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 font-bold text-sky-400">
                       <Key className="h-4 w-4" />
@@ -447,10 +437,9 @@ export const DormAIAssistant: React.FC = () => {
                     </button>
                   </div>
 
-                  <p className="text-[11px] leading-relaxed text-slate-300">
-                    Nhập API Key để kích hoạt trí tuệ nhân tạo Gemini phản hồi
-                    thông minh, linh hoạt mọi câu hỏi theo thời gian thực (lưu
-                    an toàn trên trình duyệt của bạn).
+                  <p className="text-[11px] text-slate-300 leading-relaxed">
+                    Nhập API Key để kích hoạt trí tuệ nhân tạo Gemini phản hồi thông minh, linh
+                    hoạt mọi câu hỏi theo thời gian thực (lưu an toàn trên trình duyệt của bạn).
                   </p>
 
                   <form onSubmit={handleSaveApiKey} className="space-y-2.5">
@@ -460,7 +449,7 @@ export const DormAIAssistant: React.FC = () => {
                         value={tempKeyInput}
                         onChange={(e) => setTempKeyInput(e.target.value)}
                         placeholder="Dán AIzaSy... vào đây"
-                        className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 font-mono text-xs text-white placeholder:text-slate-500 focus:border-sky-500 focus:outline-none"
+                        className="w-full px-3 py-2 text-xs rounded-lg bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 focus:outline-none focus:border-sky-500 font-mono"
                       />
                     </div>
 
@@ -469,7 +458,7 @@ export const DormAIAssistant: React.FC = () => {
                         href="https://aistudio.google.com/app/apikey"
                         target="_blank"
                         rel="noreferrer"
-                        className="flex items-center gap-1 text-[11px] font-medium text-sky-400 hover:underline"
+                        className="text-[11px] text-sky-400 hover:underline flex items-center gap-1 font-medium"
                       >
                         <span>Lấy key miễn phí tại Google AI Studio</span>
                         <ExternalLink className="h-3 w-3" />
@@ -485,14 +474,14 @@ export const DormAIAssistant: React.FC = () => {
                               localStorage.removeItem("doma_gemini_api_key")
                               setShowSettings(false)
                             }}
-                            className="rounded border border-slate-700 bg-slate-800 px-2.5 py-1 text-[11px] font-semibold text-red-400 hover:bg-red-950"
+                            className="px-2.5 py-1 rounded bg-slate-800 hover:bg-blue-950 text-blue-400 border border-slate-700 text-[11px] font-semibold"
                           >
                             Xóa Key
                           </button>
                         )}
                         <button
                           type="submit"
-                          className="rounded bg-sky-600 px-3.5 py-1 text-[11px] font-bold text-white hover:bg-sky-500"
+                          className="px-3.5 py-1 rounded bg-sky-600 hover:bg-sky-500 text-white font-bold text-[11px]"
                         >
                           Lưu Cài Đặt
                         </button>
@@ -504,19 +493,17 @@ export const DormAIAssistant: React.FC = () => {
 
               {/* Notice Banner if no API key is set */}
               {!apiKey && !showSettings && (
-                <div className="flex items-center justify-between border-b border-amber-200 bg-amber-50 px-3.5 py-2 text-[11px] text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300">
+                <div className="bg-cyan-50 dark:bg-cyan-950/40 border-b border-cyan-200 dark:border-cyan-900/60 px-3.5 py-2 text-[11px] flex items-center justify-between text-cyan-800 dark:text-cyan-300">
                   <div className="flex items-center gap-1.5 truncate pr-2">
-                    <AlertCircle className="h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-400" />
-                    <span>
-                      Đang ở chế độ mẫu. Nhập API Key để trả lời chuẩn 100%.
-                    </span>
+                    <AlertCircle className="h-3.5 w-3.5 shrink-0 text-cyan-600 dark:text-cyan-400" />
+                    <span>Đang ở chế độ mẫu. Nhập API Key để trả lời chuẩn 100%.</span>
                   </div>
                   <button
                     onClick={() => {
                       setTempKeyInput(apiKey)
                       setShowSettings(true)
                     }}
-                    className="shrink-0 font-bold underline hover:text-amber-950 dark:hover:text-amber-200"
+                    className="font-bold underline shrink-0 hover:text-cyan-950 dark:hover:text-cyan-200"
                   >
                     Nhập Key
                   </button>
@@ -524,7 +511,7 @@ export const DormAIAssistant: React.FC = () => {
               )}
 
               {/* Message History Body */}
-              <div className="flex-1 space-y-3.5 overflow-y-auto bg-slate-50 p-4 text-xs text-slate-800 dark:bg-[#111827] dark:text-slate-100">
+              <div className="flex-1 p-4 overflow-y-auto space-y-3.5 bg-slate-50 dark:bg-[#111827] text-slate-800 dark:text-slate-100 text-xs">
                 {messages.map((msg) => (
                   <div
                     key={msg.id}
@@ -533,15 +520,15 @@ export const DormAIAssistant: React.FC = () => {
                     }`}
                   >
                     <div
-                      className={`flex max-w-[90%] gap-2 ${
+                      className={`flex gap-2 max-w-[90%] ${
                         msg.sender === "user" ? "flex-row-reverse" : "flex-row"
                       }`}
                     >
                       <div
-                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
+                        className={`h-7 w-7 rounded-lg shrink-0 flex items-center justify-center text-xs font-bold ${
                           msg.sender === "user"
-                            ? "bg-slate-900 text-white dark:bg-sky-600"
-                            : "bg-sky-600 text-white dark:bg-sky-500"
+                            ? "bg-slate-900 dark:bg-sky-600 text-white"
+                            : "bg-sky-600 dark:bg-sky-500 text-white"
                         }`}
                       >
                         {msg.sender === "user" ? (
@@ -552,16 +539,16 @@ export const DormAIAssistant: React.FC = () => {
                       </div>
 
                       <div
-                        className={`rounded-2xl p-3 text-xs leading-relaxed whitespace-pre-line ${
+                        className={`p-3 rounded-2xl leading-relaxed whitespace-pre-line text-xs ${
                           msg.sender === "user"
-                            ? "rounded-tr-xs bg-slate-900 text-white dark:bg-sky-600"
-                            : "rounded-tl-xs border border-slate-200 bg-white text-slate-800 shadow-2xs dark:border-slate-800 dark:bg-[#1c262c] dark:text-slate-100"
+                            ? "bg-slate-900 dark:bg-sky-600 text-white rounded-tr-xs"
+                            : "bg-white dark:bg-[#1c262c] text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-800 shadow-2xs rounded-tl-xs"
                         }`}
                       >
                         {msg.text}
                       </div>
                     </div>
-                    <span className="mt-1 px-9 font-mono text-[10px] text-slate-400">
+                    <span className="text-[10px] text-slate-400 mt-1 px-9 font-mono">
                       {msg.timestamp}
                     </span>
 
@@ -572,7 +559,7 @@ export const DormAIAssistant: React.FC = () => {
                           <button
                             key={i}
                             onClick={() => handleSend(sug)}
-                            className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-700 shadow-2xs transition-colors hover:border-sky-300 hover:bg-sky-50 hover:text-sky-700 dark:border-slate-800 dark:bg-[#1c262c] dark:text-slate-200 dark:hover:border-sky-700 dark:hover:bg-sky-950 dark:hover:text-sky-300"
+                            className="px-2.5 py-1 text-[11px] font-medium rounded-full bg-white dark:bg-[#1c262c] border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-sky-50 dark:hover:bg-sky-950 hover:border-sky-300 dark:hover:border-sky-700 hover:text-sky-700 dark:hover:text-sky-300 transition-colors shadow-2xs"
                           >
                             {sug}
                           </button>
@@ -583,8 +570,8 @@ export const DormAIAssistant: React.FC = () => {
                 ))}
 
                 {isTyping && (
-                  <div className="flex items-center gap-2 pl-2 text-slate-500 dark:text-slate-400">
-                    <Bot className="h-4 w-4 animate-spin text-sky-600" />
+                  <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 pl-2">
+                    <Bot className="h-4 w-4 text-sky-600 animate-spin" />
                     <span className="text-xs italic">
                       {apiKey
                         ? "Gemini đang suy nghĩ & soạn câu trả lời chuẩn..."
@@ -596,7 +583,7 @@ export const DormAIAssistant: React.FC = () => {
               </div>
 
               {/* Chat Input Footer */}
-              <div className="shrink-0 border-t border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-[#161e23]">
+              <div className="p-3 bg-white dark:bg-[#161e23] border-t border-slate-200 dark:border-slate-800 shrink-0">
                 <form
                   onSubmit={(e) => {
                     e.preventDefault()
@@ -609,12 +596,12 @@ export const DormAIAssistant: React.FC = () => {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Hỏi bất kỳ điều gì về KTX (quy định, phòng, điện nước...)..."
-                    className="flex-1 rounded-xl border border-slate-200 bg-slate-100 px-3.5 py-2 text-xs text-slate-900 transition-colors placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-100 dark:focus:bg-slate-800"
+                    className="flex-1 px-3.5 py-2 text-xs rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-sky-500 transition-colors"
                   />
                   <button
                     type="submit"
                     disabled={!input.trim() || isTyping}
-                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-sky-600 text-white shadow-xs transition-colors hover:bg-sky-500 disabled:opacity-40"
+                    className="h-8 w-8 rounded-xl bg-sky-600 hover:bg-sky-500 disabled:opacity-40 text-white flex items-center justify-center transition-colors shrink-0 shadow-xs"
                     title="Gửi câu hỏi"
                   >
                     <Send className="h-3.5 w-3.5" />

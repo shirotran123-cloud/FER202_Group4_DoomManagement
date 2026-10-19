@@ -100,629 +100,640 @@ export const LoginPage: React.FC = () => {
   }
 
   return (
-    <div className="flex min-h-[85vh] items-center justify-center py-8">
-      <div className="w-full max-w-xl">
-        <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-xl">
-          <div className="space-y-2 bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-500 p-8 text-center text-white">
-            <div className="mb-1 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 shadow-inner backdrop-blur-md">
-              <Building2 className="h-6 w-6 text-white" />
-            </div>
-            <h1 className="text-2xl font-black tracking-tight">
-              {mainMode === "login"
-                ? "Cổng Xác Thực Google SSO"
-                : "Đăng Ký Lưu Trú Ký Túc Xá"}
-            </h1>
-            <p className="mx-auto max-w-md text-xs text-white/90">
-              {mainMode === "login"
-                ? "Hệ thống Quản lý Ký túc xá FPT University (DMS) • Phân luồng đăng nhập chuẩn"
-                : "Nộp hồ sơ xét duyệt lưu trú nội trú KTX FPT University • Xét duyệt tự động 0-chạm"}
-            </p>
-          </div>
-
-          <div className="space-y-6 p-6 sm:p-8">
-            {/* Top Switcher: Đăng Nhập vs Đăng Ký */}
-            <div className="grid grid-cols-2 rounded-2xl border border-border bg-muted/80 p-1.5 text-xs font-bold">
-              <button
-                type="button"
-                onClick={() => {
-                  setMainMode("login")
-                  setSearchParams({ mode: "login" })
-                  setErrorMessage(null)
-                }}
-                className={`flex items-center justify-center gap-2 rounded-xl py-2.5 transition-all ${
-                  mainMode === "login"
-                    ? "bg-white font-extrabold text-foreground shadow-sm dark:bg-card"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <LogIn className="h-4 w-4 text-orange-600" />
-                <span>Đăng Nhập</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setMainMode("register")
-                  setSearchParams({ mode: "register" })
-                  setErrorMessage(null)
-                }}
-                className={`flex items-center justify-center gap-2 rounded-xl py-2.5 transition-all ${
-                  mainMode === "register"
-                    ? "bg-white font-extrabold text-foreground shadow-sm dark:bg-card"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <UserPlus className="h-4 w-4 text-emerald-600" />
-                <span>Đăng Ký Lưu Trú</span>
-              </button>
-            </div>
-
-            {errorMessage && (
-              <div className="flex items-start gap-3 rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-xs text-red-700 dark:text-red-400">
-                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                <div className="flex-1">
-                  <p className="font-bold">Thông báo hệ thống:</p>
-                  <p className="mt-0.5 leading-relaxed">{errorMessage}</p>
-                </div>
+    <div className="relative isolate min-h-[85vh]">
+      <div aria-hidden="true" className="nature-backdrop" />
+      <div className="page-content relative z-10 flex min-h-[85vh] items-center justify-center py-8">
+        <div className="w-full max-w-xl">
+          <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-xl">
+            <div className="space-y-2 bg-gradient-to-r from-sky-600 via-cyan-500 to-teal-500 p-8 text-center text-white">
+              <div className="mb-1 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 shadow-inner backdrop-blur-md">
+                <Building2 className="h-6 w-6 text-white" />
               </div>
-            )}
+              <h1 className="text-2xl font-black tracking-tight">
+                {mainMode === "login"
+                  ? "Cổng Xác Thực Google SSO"
+                  : "Đăng Ký Lưu Trú Ký Túc Xá"}
+              </h1>
+              <p className="mx-auto max-w-md text-xs text-white/90">
+                {mainMode === "login"
+                  ? "Hệ thống Quản lý Ký túc xá FPT University (DMS) • Phân luồng đăng nhập chuẩn"
+                  : "Nộp hồ sơ xét duyệt lưu trú nội trú KTX FPT University • Xét duyệt tự động 0-chạm"}
+              </p>
+            </div>
 
-            {mainMode === "register" ? (
-              regSuccess ? (
-                <div className="space-y-5 py-2 text-center">
-                  <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-600">
-                    <CheckCircle2 className="h-8 w-8" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <h3 className="text-lg font-extrabold text-foreground">
-                      Hồ Sơ Đăng Ký Tiếp Nhận Thành Công!
-                    </h3>
-                    <p className="mx-auto max-w-sm text-xs text-muted-foreground">
-                      Mã hồ sơ:{" "}
-                      <span className="font-mono font-bold text-emerald-600">
-                        {regId}
-                      </span>
-                      . Hệ thống đã đồng bộ với cơ sở dữ liệu nhập học FPT.
-                    </p>
-                  </div>
-
-                  <div className="space-y-2 rounded-xl border border-border bg-muted/40 p-4 text-left text-xs">
-                    <p>
-                      <strong className="text-foreground">Sinh viên:</strong>{" "}
-                      {regData.fullName} ({regData.studentCode})
-                    </p>
-                    <p>
-                      <strong className="text-foreground">Email:</strong>{" "}
-                      {regData.email}
-                    </p>
-                    <p>
-                      <strong className="text-foreground">
-                        Học kỳ đăng ký:
-                      </strong>{" "}
-                      {regData.term}
-                    </p>
-                    <p>
-                      <strong className="text-foreground">Nguyện vọng:</strong>{" "}
-                      {regData.roomType === "standard_4"
-                        ? "Buồng 4 người"
-                        : "Buồng 6 người"}
-                    </p>
-                    <p>
-                      <strong className="text-foreground">Trạng thái:</strong>{" "}
-                      <span className="font-bold text-emerald-600">
-                        Đã sơ duyệt • Sẵn sàng đăng nhập giữ chỗ giường
-                      </span>
-                    </p>
-                  </div>
-
-                  <div className="flex flex-col gap-2.5 pt-2">
-                    <button
-                      type="button"
-                      onClick={() => handleQuickDemo("student")}
-                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 py-3 text-xs font-bold text-white shadow-sm transition-colors hover:bg-emerald-700"
-                    >
-                      <Sparkles className="h-4 w-4" />
-                      <span>Đăng nhập ngay để xem trạng thái giường</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setRegSuccess(false)
-                        setMainMode("login")
-                        setSearchParams({ mode: "login" })
-                      }}
-                      className="text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"
-                    >
-                      Quay lại trang Đăng nhập
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault()
-                    if (
-                      !regData.fullName ||
-                      !regData.studentCode ||
-                      !regData.email
-                    ) {
-                      setErrorMessage(
-                        "Vui lòng điền đầy đủ Họ tên, MSSV và Email."
-                      )
-                      return
-                    }
-                    setRegId(
-                      `REG-2026-${Math.floor(1000 + Math.random() * 9000)}`
-                    )
-                    setRegSuccess(true)
+            <div className="space-y-6 p-6 sm:p-8">
+              {/* Top Switcher: Đăng Nhập vs Đăng Ký */}
+              <div className="grid grid-cols-2 rounded-2xl border border-border bg-muted/80 p-1.5 text-xs font-bold">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMainMode("login")
+                    setSearchParams({ mode: "login" })
                     setErrorMessage(null)
                   }}
-                  className="space-y-4"
+                  className={`flex items-center justify-center gap-2 rounded-xl py-2.5 transition-all ${
+                    mainMode === "login"
+                      ? "bg-white font-extrabold text-foreground shadow-sm dark:bg-card"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
-                  <div className="space-y-1 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3.5 text-xs text-muted-foreground">
-                    <div className="flex items-center gap-2 font-bold text-emerald-700 dark:text-emerald-400">
-                      <Sparkles className="h-4 w-4" />
-                      <span>Đăng ký lưu trú KTX Kỳ Spring 2026</span>
-                    </div>
-                    <p>
-                      Dành cho sinh viên FPT University có nhu cầu lưu trú nội
-                      trú. Hệ thống xét duyệt hồ sơ trực tuyến và cấp quyền chọn
-                      giường.
-                    </p>
+                  <LogIn className="h-4 w-4 text-sky-600" />
+                  <span>Đăng Nhập</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMainMode("register")
+                    setSearchParams({ mode: "register" })
+                    setErrorMessage(null)
+                  }}
+                  className={`flex items-center justify-center gap-2 rounded-xl py-2.5 transition-all ${
+                    mainMode === "register"
+                      ? "bg-white font-extrabold text-foreground shadow-sm dark:bg-card"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <UserPlus className="h-4 w-4 text-emerald-600" />
+                  <span>Đăng Ký Lưu Trú</span>
+                </button>
+              </div>
+
+              {errorMessage && (
+                <div className="flex items-start gap-3 rounded-xl border border-blue-500/30 bg-blue-500/10 p-3.5 text-xs text-blue-700 dark:text-blue-400">
+                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                  <div className="flex-1">
+                    <p className="font-bold">Thông báo hệ thống:</p>
+                    <p className="mt-0.5 leading-relaxed">{errorMessage}</p>
                   </div>
-
-                  <div className="grid grid-cols-1 gap-3 text-xs sm:grid-cols-2">
-                    <div>
-                      <label className="mb-1 block font-semibold text-foreground">
-                        Họ và tên sinh viên *
-                      </label>
-                      <div className="relative">
-                        <User className="absolute top-2.5 left-3 h-4 w-4 text-muted-foreground" />
-                        <input
-                          type="text"
-                          required
-                          value={regData.fullName}
-                          onChange={(e) =>
-                            setRegData({ ...regData, fullName: e.target.value })
-                          }
-                          placeholder="Nguyễn Hoàng Vinh"
-                          className="w-full rounded-xl border border-border bg-background py-2 pr-3 pl-9 text-xs text-foreground placeholder:text-muted-foreground focus:border-emerald-500 focus:outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="mb-1 block font-semibold text-foreground">
-                        Mã số sinh viên (MSSV) *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={regData.studentCode}
-                        onChange={(e) =>
-                          setRegData({
-                            ...regData,
-                            studentCode: e.target.value.toUpperCase(),
-                          })
-                        }
-                        placeholder="SE182049"
-                        className="w-full rounded-xl border border-border bg-background px-3 py-2 font-mono text-xs text-foreground placeholder:text-muted-foreground focus:border-emerald-500 focus:outline-none"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="mb-1 block font-semibold text-foreground">
-                        Email cá nhân (Gmail) *
-                      </label>
-                      <div className="relative">
-                        <Mail className="absolute top-2.5 left-3 h-4 w-4 text-muted-foreground" />
-                        <input
-                          type="email"
-                          required
-                          value={regData.email}
-                          onChange={(e) =>
-                            setRegData({ ...regData, email: e.target.value })
-                          }
-                          placeholder="hoangvinh.student@gmail.com"
-                          className="w-full rounded-xl border border-border bg-background py-2 pr-3 pl-9 text-xs text-foreground placeholder:text-muted-foreground focus:border-emerald-500 focus:outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="mb-1 block font-semibold text-foreground">
-                        Số điện thoại liên hệ *
-                      </label>
-                      <div className="relative">
-                        <Phone className="absolute top-2.5 left-3 h-4 w-4 text-muted-foreground" />
-                        <input
-                          type="tel"
-                          required
-                          value={regData.phone}
-                          onChange={(e) =>
-                            setRegData({ ...regData, phone: e.target.value })
-                          }
-                          placeholder="0912345678"
-                          className="w-full rounded-xl border border-border bg-background py-2 pr-3 pl-9 text-xs text-foreground placeholder:text-muted-foreground focus:border-emerald-500 focus:outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="mb-1 block font-semibold text-foreground">
-                        Giới tính (để xếp tòa) *
-                      </label>
-                      <select
-                        value={regData.gender}
-                        onChange={(e) =>
-                          setRegData({ ...regData, gender: e.target.value })
-                        }
-                        className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground focus:border-emerald-500 focus:outline-none"
-                      >
-                        <option value="male">Nam (Tòa Dom A / Dom B)</option>
-                        <option value="female">Nữ (Tòa Dom C / Dom D)</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="mb-1 block font-semibold text-foreground">
-                        Loại buồng nguyện vọng *
-                      </label>
-                      <div className="relative">
-                        <select
-                          value={regData.roomType}
-                          onChange={(e) =>
-                            setRegData({ ...regData, roomType: e.target.value })
-                          }
-                          className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground focus:border-emerald-500 focus:outline-none"
-                        >
-                          <option value="standard_4">
-                            Buồng tiêu chuẩn (4 giường / buồng)
-                          </option>
-                          <option value="private_6">
-                            Buồng riêng tư (6 giường / buồng)
-                          </option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-
-                  <label className="flex cursor-pointer items-start gap-2 pt-1 text-[11px] text-muted-foreground">
-                    <input
-                      type="checkbox"
-                      checked={regData.agreedRules}
-                      onChange={(e) =>
-                        setRegData({
-                          ...regData,
-                          agreedRules: e.target.checked,
-                        })
-                      }
-                      className="mt-0.5 rounded border-border"
-                      required
-                    />
-                    <span>
-                      Tôi cam kết tuân thủ nghiêm túc Nội quy Ký túc xá FPT
-                      University (Giới nghiêm 23:00, không mang chất cấm, giữ
-                      gìn tài sản chung).
-                    </span>
-                  </label>
-
-                  <button
-                    type="submit"
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 py-3 text-xs font-bold text-white shadow-sm transition-all hover:opacity-95"
-                  >
-                    <Send className="h-4 w-4" />
-                    <span>Nộp Hồ Sơ Đăng Ký Lưu Trú</span>
-                  </button>
-
-                  <div className="pt-1 text-center">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMainMode("login")
-                        setSearchParams({ mode: "login" })
-                      }}
-                      className="text-xs text-muted-foreground hover:text-foreground"
-                    >
-                      Đã có tài khoản?{" "}
-                      <strong className="text-orange-600 underline">
-                        Đăng nhập ngay
-                      </strong>
-                    </button>
-                  </div>
-                </form>
-              )
-            ) : (
-              <div className="space-y-6">
-                <div className="grid grid-cols-2 rounded-xl bg-muted p-1 text-xs font-bold">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setActiveTab("student")
-                      setErrorMessage(null)
-                      setIsCustomMode(false)
-                    }}
-                    className={`flex items-center justify-center gap-2 rounded-lg py-2.5 transition-all ${
-                      activeTab === "student"
-                        ? "bg-card text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    <GraduationCap className="h-4 w-4 text-emerald-600" />
-                    <span>Sinh Viên Lưu Trú</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setActiveTab("staff")
-                      setErrorMessage(null)
-                      setIsCustomMode(false)
-                    }}
-                    className={`flex items-center justify-center gap-2 rounded-lg py-2.5 transition-all ${
-                      activeTab === "staff"
-                        ? "bg-card text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    <ShieldCheck className="h-4 w-4 text-orange-600" />
-                    <span>Cán Bộ / Kỹ Thuật</span>
-                  </button>
                 </div>
+              )}
 
-                {activeTab === "student" && (
-                  <div className="space-y-5">
-                    <div className="space-y-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-xs">
-                      <div className="flex items-center gap-2 font-bold text-emerald-700 dark:text-emerald-400">
-                        <CheckCircle2 className="h-4 w-4" />
-                        <span>Quy định tài khoản Sinh viên:</span>
-                      </div>
-                      <p className="leading-relaxed text-muted-foreground">
-                        Sinh viên sử dụng{" "}
-                        <strong>Gmail cá nhân (@gmail.com)</strong> đã đăng ký
-                        trong hồ sơ tuyển sinh với nhà trường. Hệ thống sẽ tự
-                        động map hồ sơ nhập học để xét duyệt giường 0-chạm.
+              {mainMode === "register" ? (
+                regSuccess ? (
+                  <div className="space-y-5 py-2 text-center">
+                    <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-600">
+                      <CheckCircle2 className="h-8 w-8" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <h3 className="text-lg font-extrabold text-foreground">
+                        Hồ Sơ Đăng Ký Tiếp Nhận Thành Công!
+                      </h3>
+                      <p className="mx-auto max-w-sm text-xs text-muted-foreground">
+                        Mã hồ sơ:{" "}
+                        <span className="font-mono font-bold text-emerald-600">
+                          {regId}
+                        </span>
+                        . Hệ thống đã đồng bộ với cơ sở dữ liệu nhập học FPT.
                       </p>
                     </div>
 
-                    <div className="space-y-2">
-                      <span className="text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
-                        Tài khoản Demo dành cho Giảng viên / Đánh giá đồ án:
-                      </span>
+                    <div className="space-y-2 rounded-xl border border-border bg-muted/40 p-4 text-left text-xs">
+                      <p>
+                        <strong className="text-foreground">Sinh viên:</strong>{" "}
+                        {regData.fullName} ({regData.studentCode})
+                      </p>
+                      <p>
+                        <strong className="text-foreground">Email:</strong>{" "}
+                        {regData.email}
+                      </p>
+                      <p>
+                        <strong className="text-foreground">
+                          Học kỳ đăng ký:
+                        </strong>{" "}
+                        {regData.term}
+                      </p>
+                      <p>
+                        <strong className="text-foreground">
+                          Nguyện vọng:
+                        </strong>{" "}
+                        {regData.roomType === "standard_4"
+                          ? "Buồng 4 người"
+                          : "Buồng 6 người"}
+                      </p>
+                      <p>
+                        <strong className="text-foreground">Trạng thái:</strong>{" "}
+                        <span className="font-bold text-emerald-600">
+                          Đã sơ duyệt • Sẵn sàng đăng nhập giữ chỗ giường
+                        </span>
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col gap-2.5 pt-2">
                       <button
                         type="button"
                         onClick={() => handleQuickDemo("student")}
-                        disabled={isLoading}
-                        className="flex w-full items-center justify-between rounded-xl border border-border bg-muted/40 p-3.5 text-left transition-all hover:border-emerald-500/50 hover:bg-emerald-500/5"
+                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 py-3 text-xs font-bold text-white shadow-sm transition-colors hover:bg-emerald-700"
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/15 text-sm font-bold text-emerald-600">
-                            VH
-                          </div>
-                          <div>
-                            <p className="text-xs font-bold text-foreground">
-                              Nguyễn Hoàng Vinh (Sinh viên K19)
-                            </p>
-                            <p className="font-mono text-[11px] text-muted-foreground">
-                              hoangvinh.student@gmail.com • SE182049
-                            </p>
-                          </div>
-                        </div>
-                        <span className="rounded-md bg-emerald-600 px-2.5 py-1 text-[10px] font-bold text-white shadow-xs">
-                          Đăng nhập nhanh
-                        </span>
+                        <Sparkles className="h-4 w-4" />
+                        <span>Đăng nhập ngay để xem trạng thái giường</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setRegSuccess(false)
+                          setMainMode("login")
+                          setSearchParams({ mode: "login" })
+                        }}
+                        className="text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"
+                      >
+                        Quay lại trang Đăng nhập
                       </button>
                     </div>
                   </div>
-                )}
-
-                {activeTab === "staff" && (
-                  <div className="space-y-5">
-                    <div className="space-y-1.5 rounded-xl border border-orange-500/20 bg-orange-500/5 p-4 text-xs">
-                      <div className="flex items-center gap-2 font-bold text-orange-700 dark:text-orange-400">
-                        <Lock className="h-4 w-4" />
-                        <span>Quy định xác thực Nghiêm ngặt:</span>
+                ) : (
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault()
+                      if (
+                        !regData.fullName ||
+                        !regData.studentCode ||
+                        !regData.email
+                      ) {
+                        setErrorMessage(
+                          "Vui lòng điền đầy đủ Họ tên, MSSV và Email."
+                        )
+                        return
+                      }
+                      setRegId(
+                        `REG-2026-${Math.floor(1000 + Math.random() * 9000)}`
+                      )
+                      setRegSuccess(true)
+                      setErrorMessage(null)
+                    }}
+                    className="space-y-4"
+                  >
+                    <div className="space-y-1 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3.5 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-2 font-bold text-emerald-700 dark:text-emerald-400">
+                        <Sparkles className="h-4 w-4" />
+                        <span>Đăng ký lưu trú KTX Kỳ Spring 2026</span>
                       </div>
-                      <p className="leading-relaxed text-muted-foreground">
-                        Cán bộ Quản lý KTX, Kỹ thuật viên bảo trì và Đội ngũ An
-                        ninh bảo vệ bắt buộc phải sử dụng email tổ chức mang tên
-                        miền <strong>@fpt.edu.vn</strong> hoặc{" "}
-                        <strong>@fe.edu.vn</strong>.
+                      <p>
+                        Dành cho sinh viên FPT University có nhu cầu lưu trú nội
+                        trú. Hệ thống xét duyệt hồ sơ trực tuyến và cấp quyền
+                        chọn giường.
                       </p>
                     </div>
 
-                    <div className="space-y-2">
-                      <span className="text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
-                        Chọn vai trò cán bộ để kiểm thử:
+                    <div className="grid grid-cols-1 gap-3 text-xs sm:grid-cols-2">
+                      <div>
+                        <label className="mb-1 block font-semibold text-foreground">
+                          Họ và tên sinh viên *
+                        </label>
+                        <div className="relative">
+                          <User className="absolute top-2.5 left-3 h-4 w-4 text-muted-foreground" />
+                          <input
+                            type="text"
+                            required
+                            value={regData.fullName}
+                            onChange={(e) =>
+                              setRegData({
+                                ...regData,
+                                fullName: e.target.value,
+                              })
+                            }
+                            placeholder="Nguyễn Hoàng Vinh"
+                            className="w-full rounded-xl border border-border bg-background py-2 pr-3 pl-9 text-xs text-foreground placeholder:text-muted-foreground focus:border-emerald-500 focus:outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="mb-1 block font-semibold text-foreground">
+                          Mã số sinh viên (MSSV) *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={regData.studentCode}
+                          onChange={(e) =>
+                            setRegData({
+                              ...regData,
+                              studentCode: e.target.value.toUpperCase(),
+                            })
+                          }
+                          placeholder="SE182049"
+                          className="w-full rounded-xl border border-border bg-background px-3 py-2 font-mono text-xs text-foreground placeholder:text-muted-foreground focus:border-emerald-500 focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="mb-1 block font-semibold text-foreground">
+                          Email cá nhân (Gmail) *
+                        </label>
+                        <div className="relative">
+                          <Mail className="absolute top-2.5 left-3 h-4 w-4 text-muted-foreground" />
+                          <input
+                            type="email"
+                            required
+                            value={regData.email}
+                            onChange={(e) =>
+                              setRegData({ ...regData, email: e.target.value })
+                            }
+                            placeholder="hoangvinh.student@gmail.com"
+                            className="w-full rounded-xl border border-border bg-background py-2 pr-3 pl-9 text-xs text-foreground placeholder:text-muted-foreground focus:border-emerald-500 focus:outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="mb-1 block font-semibold text-foreground">
+                          Số điện thoại liên hệ *
+                        </label>
+                        <div className="relative">
+                          <Phone className="absolute top-2.5 left-3 h-4 w-4 text-muted-foreground" />
+                          <input
+                            type="tel"
+                            required
+                            value={regData.phone}
+                            onChange={(e) =>
+                              setRegData({ ...regData, phone: e.target.value })
+                            }
+                            placeholder="0912345678"
+                            className="w-full rounded-xl border border-border bg-background py-2 pr-3 pl-9 text-xs text-foreground placeholder:text-muted-foreground focus:border-emerald-500 focus:outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="mb-1 block font-semibold text-foreground">
+                          Giới tính (để xếp tòa) *
+                        </label>
+                        <select
+                          value={regData.gender}
+                          onChange={(e) =>
+                            setRegData({ ...regData, gender: e.target.value })
+                          }
+                          className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground focus:border-emerald-500 focus:outline-none"
+                        >
+                          <option value="male">Nam (Tòa Dom A / Dom B)</option>
+                          <option value="female">Nữ (Tòa Dom C / Dom D)</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="mb-1 block font-semibold text-foreground">
+                          Loại buồng nguyện vọng *
+                        </label>
+                        <div className="relative">
+                          <select
+                            value={regData.roomType}
+                            onChange={(e) =>
+                              setRegData({
+                                ...regData,
+                                roomType: e.target.value,
+                              })
+                            }
+                            className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground focus:border-emerald-500 focus:outline-none"
+                          >
+                            <option value="standard_4">
+                              Buồng tiêu chuẩn (4 giường / buồng)
+                            </option>
+                            <option value="private_6">
+                              Buồng riêng tư (6 giường / buồng)
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <label className="flex cursor-pointer items-start gap-2 pt-1 text-[11px] text-muted-foreground">
+                      <input
+                        type="checkbox"
+                        checked={regData.agreedRules}
+                        onChange={(e) =>
+                          setRegData({
+                            ...regData,
+                            agreedRules: e.target.checked,
+                          })
+                        }
+                        className="mt-0.5 rounded border-border"
+                        required
+                      />
+                      <span>
+                        Tôi cam kết tuân thủ nghiêm túc Nội quy Ký túc xá FPT
+                        University (Giới nghiêm 23:00, không mang chất cấm, giữ
+                        gìn tài sản chung).
                       </span>
+                    </label>
+
+                    <button
+                      type="submit"
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 py-3 text-xs font-bold text-white shadow-sm transition-all hover:opacity-95"
+                    >
+                      <Send className="h-4 w-4" />
+                      <span>Nộp Hồ Sơ Đăng Ký Lưu Trú</span>
+                    </button>
+
+                    <div className="pt-1 text-center">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMainMode("login")
+                          setSearchParams({ mode: "login" })
+                        }}
+                        className="text-xs text-muted-foreground hover:text-foreground"
+                      >
+                        Đã có tài khoản?{" "}
+                        <strong className="text-sky-600 underline">
+                          Đăng nhập ngay
+                        </strong>
+                      </button>
+                    </div>
+                  </form>
+                )
+              ) : (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-2 rounded-xl bg-muted p-1 text-xs font-bold">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActiveTab("student")
+                        setErrorMessage(null)
+                        setIsCustomMode(false)
+                      }}
+                      className={`flex items-center justify-center gap-2 rounded-lg py-2.5 transition-all ${
+                        activeTab === "student"
+                          ? "bg-card text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      <GraduationCap className="h-4 w-4 text-emerald-600" />
+                      <span>Sinh Viên Lưu Trú</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActiveTab("staff")
+                        setErrorMessage(null)
+                        setIsCustomMode(false)
+                      }}
+                      className={`flex items-center justify-center gap-2 rounded-lg py-2.5 transition-all ${
+                        activeTab === "staff"
+                          ? "bg-card text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      <ShieldCheck className="h-4 w-4 text-sky-600" />
+                      <span>Cán Bộ / Kỹ Thuật</span>
+                    </button>
+                  </div>
+
+                  {activeTab === "student" && (
+                    <div className="space-y-5">
+                      <div className="space-y-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-xs">
+                        <div className="flex items-center gap-2 font-bold text-emerald-700 dark:text-emerald-400">
+                          <CheckCircle2 className="h-4 w-4" />
+                          <span>Quy định tài khoản Sinh viên:</span>
+                        </div>
+                        <p className="leading-relaxed text-muted-foreground">
+                          Sinh viên sử dụng{" "}
+                          <strong>Gmail cá nhân (@gmail.com)</strong> đã đăng ký
+                          trong hồ sơ tuyển sinh với nhà trường. Hệ thống sẽ tự
+                          động map hồ sơ nhập học để xét duyệt giường 0-chạm.
+                        </p>
+                      </div>
 
                       <div className="space-y-2">
+                        <span className="text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
+                          Tài khoản Demo dành cho Giảng viên / Đánh giá đồ án:
+                        </span>
                         <button
                           type="button"
-                          onClick={() => handleQuickDemo("manager")}
+                          onClick={() => handleQuickDemo("student")}
                           disabled={isLoading}
-                          className="flex w-full items-center justify-between rounded-xl border border-border bg-muted/40 p-3 text-left transition-all hover:border-blue-500/50 hover:bg-blue-500/5"
+                          className="flex w-full items-center justify-between rounded-xl border border-border bg-muted/40 p-3.5 text-left transition-all hover:border-emerald-500/50 hover:bg-emerald-500/5"
                         >
-                          <div className="flex items-center gap-2.5">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/15 text-xs font-bold text-blue-600">
-                              QL
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/15 text-sm font-bold text-emerald-600">
+                              VH
                             </div>
                             <div>
                               <p className="text-xs font-bold text-foreground">
-                                Thầy Vũ Thành Nam (Quản lý KTX)
+                                Nguyễn Hoàng Vinh (Sinh viên K19)
                               </p>
-                              <p className="font-mono text-[10px] text-muted-foreground">
-                                namvt@fpt.edu.vn • MGR-004
-                              </p>
-                            </div>
-                          </div>
-                          <span className="rounded-md bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white">
-                            Vào quyền Quản lý
-                          </span>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => handleQuickDemo("technician")}
-                          disabled={isLoading}
-                          className="flex w-full items-center justify-between rounded-xl border border-border bg-muted/40 p-3 text-left transition-all hover:border-amber-500/50 hover:bg-amber-500/5"
-                        >
-                          <div className="flex items-center gap-2.5">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/15 text-xs font-bold text-amber-600">
-                              KT
-                            </div>
-                            <div>
-                              <p className="text-xs font-bold text-foreground">
-                                Chú Đỗ Mạnh Hùng (An ninh / Kỹ thuật)
-                              </p>
-                              <p className="font-mono text-[10px] text-muted-foreground">
-                                hungbv.guard@fe.edu.vn • SEC-012
+                              <p className="font-mono text-[11px] text-muted-foreground">
+                                hoangvinh.student@gmail.com • SE182049
                               </p>
                             </div>
                           </div>
-                          <span className="rounded-md bg-amber-600 px-2 py-0.5 text-[10px] font-bold text-white">
-                            Vào quyền An ninh/KT
-                          </span>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => handleQuickDemo("admin")}
-                          disabled={isLoading}
-                          className="flex w-full items-center justify-between rounded-xl border border-border bg-muted/40 p-3 text-left transition-all hover:border-purple-500/50 hover:bg-purple-500/5"
-                        >
-                          <div className="flex items-center gap-2.5">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-500/15 text-xs font-bold text-purple-600">
-                              AD
-                            </div>
-                            <div>
-                              <p className="text-xs font-bold text-foreground">
-                                Quản trị viên Hệ thống (System Admin)
-                              </p>
-                              <p className="font-mono text-[10px] text-muted-foreground">
-                                admin.dms@fpt.edu.vn • ADM-001
-                              </p>
-                            </div>
-                          </div>
-                          <span className="rounded-md bg-purple-600 px-2 py-0.5 text-[10px] font-bold text-white">
-                            Vào quyền Admin
+                          <span className="rounded-md bg-emerald-600 px-2.5 py-1 text-[10px] font-bold text-white shadow-xs">
+                            Đăng nhập nhanh
                           </span>
                         </button>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                <div className="border-t border-border pt-4">
-                  {!isCustomMode ? (
+                  {activeTab === "staff" && (
+                    <div className="space-y-5">
+                      <div className="space-y-1.5 rounded-xl border border-sky-500/20 bg-sky-500/5 p-4 text-xs">
+                        <div className="flex items-center gap-2 font-bold text-sky-700 dark:text-sky-400">
+                          <Lock className="h-4 w-4" />
+                          <span>Quy định xác thực Nghiêm ngặt:</span>
+                        </div>
+                        <p className="leading-relaxed text-muted-foreground">
+                          Cán bộ Quản lý KTX, Kỹ thuật viên bảo trì và Đội ngũ
+                          An ninh bảo vệ bắt buộc phải sử dụng email tổ chức
+                          mang tên miền <strong>@fpt.edu.vn</strong> hoặc{" "}
+                          <strong>@fe.edu.vn</strong>.
+                        </p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <span className="text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
+                          Chọn vai trò cán bộ để kiểm thử:
+                        </span>
+
+                        <div className="space-y-2">
+                          <button
+                            type="button"
+                            onClick={() => handleQuickDemo("manager")}
+                            disabled={isLoading}
+                            className="flex w-full items-center justify-between rounded-xl border border-border bg-muted/40 p-3 text-left transition-all hover:border-blue-500/50 hover:bg-blue-500/5"
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/15 text-xs font-bold text-blue-600">
+                                QL
+                              </div>
+                              <div>
+                                <p className="text-xs font-bold text-foreground">
+                                  Thầy Vũ Thành Nam (Quản lý KTX)
+                                </p>
+                                <p className="font-mono text-[10px] text-muted-foreground">
+                                  namvt@fpt.edu.vn • MGR-004
+                                </p>
+                              </div>
+                            </div>
+                            <span className="rounded-md bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white">
+                              Vào quyền Quản lý
+                            </span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleQuickDemo("technician")}
+                            disabled={isLoading}
+                            className="flex w-full items-center justify-between rounded-xl border border-border bg-muted/40 p-3 text-left transition-all hover:border-cyan-500/50 hover:bg-cyan-500/5"
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500/15 text-xs font-bold text-cyan-600">
+                                KT
+                              </div>
+                              <div>
+                                <p className="text-xs font-bold text-foreground">
+                                  Chú Đỗ Mạnh Hùng (An ninh / Kỹ thuật)
+                                </p>
+                                <p className="font-mono text-[10px] text-muted-foreground">
+                                  hungbv.guard@fe.edu.vn • SEC-012
+                                </p>
+                              </div>
+                            </div>
+                            <span className="rounded-md bg-cyan-600 px-2 py-0.5 text-[10px] font-bold text-white">
+                              Vào quyền An ninh/KT
+                            </span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleQuickDemo("admin")}
+                            disabled={isLoading}
+                            className="flex w-full items-center justify-between rounded-xl border border-border bg-muted/40 p-3 text-left transition-all hover:border-purple-500/50 hover:bg-purple-500/5"
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-500/15 text-xs font-bold text-purple-600">
+                                AD
+                              </div>
+                              <div>
+                                <p className="text-xs font-bold text-foreground">
+                                  Quản trị viên Hệ thống (System Admin)
+                                </p>
+                                <p className="font-mono text-[10px] text-muted-foreground">
+                                  admin.dms@fpt.edu.vn • ADM-001
+                                </p>
+                              </div>
+                            </div>
+                            <span className="rounded-md bg-purple-600 px-2 py-0.5 text-[10px] font-bold text-white">
+                              Vào quyền Admin
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="border-t border-border pt-4">
+                    {!isCustomMode ? (
+                      <button
+                        type="button"
+                        onClick={() => setIsCustomMode(true)}
+                        className="w-full text-center text-xs font-medium text-muted-foreground underline underline-offset-4 hover:text-foreground"
+                      >
+                        Hoặc thử nghiệm nhập địa chỉ email Google khác (Kiểm thử
+                        logic miền)
+                      </button>
+                    ) : (
+                      <form onSubmit={handleCustomLogin} className="space-y-3">
+                        <div className="flex items-center justify-between text-xs font-semibold">
+                          <label className="text-foreground">
+                            Nhập email Google để kiểm thử:
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => setIsCustomMode(false)}
+                            className="text-[11px] text-muted-foreground hover:text-foreground"
+                          >
+                            Đóng
+                          </button>
+                        </div>
+
+                        <div className="relative">
+                          <Mail className="absolute top-3 left-3 h-4 w-4 text-muted-foreground" />
+                          <input
+                            type="email"
+                            value={customEmail}
+                            onChange={(e) => setCustomEmail(e.target.value)}
+                            placeholder={
+                              activeTab === "student"
+                                ? "vidu.sinhvien@gmail.com"
+                                : "canbo@fpt.edu.vn"
+                            }
+                            className="w-full rounded-xl border border-border bg-background py-2.5 pr-4 pl-9 text-xs text-foreground placeholder:text-muted-foreground focus:border-sky-500 focus:ring-1 focus:ring-sky-500 focus:outline-none"
+                          />
+                        </div>
+
+                        {activeTab === "staff" && (
+                          <div className="flex gap-3 text-xs">
+                            <span className="text-[11px] text-muted-foreground">
+                              Chọn vai trò cán bộ:
+                            </span>
+                            <label className="flex cursor-pointer items-center gap-1">
+                              <input
+                                type="radio"
+                                name="staffRole"
+                                checked={selectedStaffRole === "manager"}
+                                onChange={() => setSelectedStaffRole("manager")}
+                              />
+                              <span>Quản lý</span>
+                            </label>
+                            <label className="flex cursor-pointer items-center gap-1">
+                              <input
+                                type="radio"
+                                name="staffRole"
+                                checked={selectedStaffRole === "technician"}
+                                onChange={() =>
+                                  setSelectedStaffRole("technician")
+                                }
+                              />
+                              <span>An ninh / KT</span>
+                            </label>
+                            <label className="flex cursor-pointer items-center gap-1">
+                              <input
+                                type="radio"
+                                name="staffRole"
+                                checked={selectedStaffRole === "admin"}
+                                onChange={() => setSelectedStaffRole("admin")}
+                              />
+                              <span>Admin</span>
+                            </label>
+                          </div>
+                        )}
+
+                        <button
+                          type="submit"
+                          disabled={isLoading}
+                          className="flex w-full items-center justify-center gap-2 rounded-xl bg-sky-600 py-2.5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-sky-700 disabled:opacity-50"
+                        >
+                          {isLoading
+                            ? "Đang xác thực Google OAuth..."
+                            : "Xác thực & Đăng nhập"}
+                        </button>
+                      </form>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between rounded-xl bg-muted/40 p-3 text-[11px] text-muted-foreground">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 shrink-0 text-sky-600" />
+                      <span>
+                        Cơ chế JWT Access Token (15m) • HTTP-Only Refresh
+                      </span>
+                    </div>
                     <button
                       type="button"
-                      onClick={() => setIsCustomMode(true)}
-                      className="w-full text-center text-xs font-medium text-muted-foreground underline underline-offset-4 hover:text-foreground"
+                      onClick={() => {
+                        setMainMode("register")
+                        setSearchParams({ mode: "register" })
+                      }}
+                      className="font-bold text-emerald-600 hover:underline"
                     >
-                      Hoặc thử nghiệm nhập địa chỉ email Google khác (Kiểm thử
-                      logic miền)
+                      Đăng ký lưu trú &rarr;
                     </button>
-                  ) : (
-                    <form onSubmit={handleCustomLogin} className="space-y-3">
-                      <div className="flex items-center justify-between text-xs font-semibold">
-                        <label className="text-foreground">
-                          Nhập email Google để kiểm thử:
-                        </label>
-                        <button
-                          type="button"
-                          onClick={() => setIsCustomMode(false)}
-                          className="text-[11px] text-muted-foreground hover:text-foreground"
-                        >
-                          Đóng
-                        </button>
-                      </div>
-
-                      <div className="relative">
-                        <Mail className="absolute top-3 left-3 h-4 w-4 text-muted-foreground" />
-                        <input
-                          type="email"
-                          value={customEmail}
-                          onChange={(e) => setCustomEmail(e.target.value)}
-                          placeholder={
-                            activeTab === "student"
-                              ? "vidu.sinhvien@gmail.com"
-                              : "canbo@fpt.edu.vn"
-                          }
-                          className="w-full rounded-xl border border-border bg-background py-2.5 pr-4 pl-9 text-xs text-foreground placeholder:text-muted-foreground focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
-                        />
-                      </div>
-
-                      {activeTab === "staff" && (
-                        <div className="flex gap-3 text-xs">
-                          <span className="text-[11px] text-muted-foreground">
-                            Chọn vai trò cán bộ:
-                          </span>
-                          <label className="flex cursor-pointer items-center gap-1">
-                            <input
-                              type="radio"
-                              name="staffRole"
-                              checked={selectedStaffRole === "manager"}
-                              onChange={() => setSelectedStaffRole("manager")}
-                            />
-                            <span>Quản lý</span>
-                          </label>
-                          <label className="flex cursor-pointer items-center gap-1">
-                            <input
-                              type="radio"
-                              name="staffRole"
-                              checked={selectedStaffRole === "technician"}
-                              onChange={() =>
-                                setSelectedStaffRole("technician")
-                              }
-                            />
-                            <span>An ninh / KT</span>
-                          </label>
-                          <label className="flex cursor-pointer items-center gap-1">
-                            <input
-                              type="radio"
-                              name="staffRole"
-                              checked={selectedStaffRole === "admin"}
-                              onChange={() => setSelectedStaffRole("admin")}
-                            />
-                            <span>Admin</span>
-                          </label>
-                        </div>
-                      )}
-
-                      <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-orange-600 py-2.5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-orange-700 disabled:opacity-50"
-                      >
-                        {isLoading
-                          ? "Đang xác thực Google OAuth..."
-                          : "Xác thực & Đăng nhập"}
-                      </button>
-                    </form>
-                  )}
-                </div>
-
-                <div className="flex items-center justify-between rounded-xl bg-muted/40 p-3 text-[11px] text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 shrink-0 text-orange-600" />
-                    <span>
-                      Cơ chế JWT Access Token (15m) • HTTP-Only Refresh
-                    </span>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMainMode("register")
-                      setSearchParams({ mode: "register" })
-                    }}
-                    className="font-bold text-emerald-600 hover:underline"
-                  >
-                    Đăng ký lưu trú &rarr;
-                  </button>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>

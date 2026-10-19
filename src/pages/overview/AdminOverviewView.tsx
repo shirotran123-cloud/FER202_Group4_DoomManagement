@@ -1,10 +1,7 @@
 import React, { useState } from "react"
 import { Link } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
-import {
-  MOCK_RESIDENTS_REGISTRY,
-  MOCK_OCCUPANCY_STATS,
-} from "@/data/mockDashboard"
+import { MOCK_RESIDENTS_REGISTRY, MOCK_OCCUPANCY_STATS } from "@/data/mockDashboard"
 import { INITIAL_CURFEW_REQUESTS } from "@/data/mockCurfew"
 import { INITIAL_MAINTENANCE_TICKETS } from "@/data/mockMaintenance"
 import type { CurfewRequest } from "@/types/curfew"
@@ -34,9 +31,7 @@ export const AdminOverviewView: React.FC = () => {
   const { user } = useAuth()
 
   // Active view tab
-  const [activeTab, setActiveTab] = useState<"STUDENTS" | "REQUESTS">(
-    "STUDENTS"
-  )
+  const [activeTab, setActiveTab] = useState<"STUDENTS" | "REQUESTS">("STUDENTS")
 
   // Requests state
   const [curfewRequests, setCurfewRequests] = useState<CurfewRequest[]>(() => {
@@ -48,9 +43,7 @@ export const AdminOverviewView: React.FC = () => {
     }
   })
 
-  const [maintenanceTickets, setMaintenanceTickets] = useState<
-    MaintenanceTicket[]
-  >(() => {
+  const [maintenanceTickets, setMaintenanceTickets] = useState<MaintenanceTicket[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY_TICKETS)
       return saved ? JSON.parse(saved) : INITIAL_MAINTENANCE_TICKETS
@@ -68,44 +61,30 @@ export const AdminOverviewView: React.FC = () => {
   // Student list search & filter
   const [studentSearch, setStudentSearch] = useState("")
   const [buildingFilter, setBuildingFilter] = useState("ALL")
-  const [selectedStudent, setSelectedStudent] =
-    useState<ResidentTemporaryRecord | null>(null)
+  const [selectedStudent, setSelectedStudent] = useState<ResidentTemporaryRecord | null>(null)
 
   // Request list filter
-  const [requestTypeFilter, setRequestTypeFilter] = useState<
-    "ALL" | "CURFEW" | "MAINTENANCE"
-  >("ALL")
-  const [requestStatusFilter, setRequestStatusFilter] = useState<
-    "ALL" | "PENDING" | "RESOLVED"
-  >("ALL")
+  const [requestTypeFilter, setRequestTypeFilter] = useState<"ALL" | "CURFEW" | "MAINTENANCE">("ALL")
+  const [requestStatusFilter, setRequestStatusFilter] = useState<"ALL" | "PENDING" | "RESOLVED">("ALL")
 
   // Handle Curfew Review
   const handleReviewCurfew = (id: string, status: "APPROVED" | "REJECTED") => {
     const updated = curfewRequests.map((r) =>
-      r.id === id
-        ? { ...r, status, reviewedBy: user?.fullName || "Quản trị viên DMS" }
-        : r
+      r.id === id ? { ...r, status, reviewedBy: user?.fullName || "Quản trị viên DMS" } : r
     )
     setCurfewRequests(updated)
     localStorage.setItem(STORAGE_KEY_CURFEW_REQS, JSON.stringify(updated))
-    showToast(
-      `Đã ${status === "APPROVED" ? "phê duyệt" : "từ chối"} đơn ${id}!`
-    )
+    showToast(`Đã ${status === "APPROVED" ? "phê duyệt" : "từ chối"} đơn ${id}!`)
   }
 
   // Handle Maintenance Status Update
-  const handleUpdateMaintenanceStatus = (
-    id: string,
-    status: "IN_PROGRESS" | "CLOSED"
-  ) => {
+  const handleUpdateMaintenanceStatus = (id: string, status: "IN_PROGRESS" | "CLOSED") => {
     const updated = maintenanceTickets.map((t) =>
       t.id === id ? { ...t, status } : t
     )
     setMaintenanceTickets(updated)
     localStorage.setItem(STORAGE_KEY_TICKETS, JSON.stringify(updated))
-    showToast(
-      `Đã cập nhật phiếu ${id} sang trạng thái ${status === "IN_PROGRESS" ? "Đang xử lý" : "Đã hoàn thành"}!`
-    )
+    showToast(`Đã cập nhật phiếu ${id} sang trạng thái ${status === "IN_PROGRESS" ? "Đang xử lý" : "Đã hoàn thành"}!`)
   }
 
   // Filtered Students
@@ -115,63 +94,57 @@ export const AdminOverviewView: React.FC = () => {
       s.studentId.toLowerCase().includes(studentSearch.toLowerCase()) ||
       s.room.toLowerCase().includes(studentSearch.toLowerCase()) ||
       s.phone.includes(studentSearch)
-    const matchesBuilding =
-      buildingFilter === "ALL" || s.building.includes(buildingFilter)
+    const matchesBuilding = buildingFilter === "ALL" || s.building.includes(buildingFilter)
     return matchesSearch && matchesBuilding
   })
 
   // Pending counts
-  const pendingCurfewCount = curfewRequests.filter(
-    (r) => r.status === "PENDING"
-  ).length
-  const pendingMaintenanceCount = maintenanceTickets.filter(
-    (t) => t.status === "PENDING"
-  ).length
+  const pendingCurfewCount = curfewRequests.filter((r) => r.status === "PENDING").length
+  const pendingMaintenanceCount = maintenanceTickets.filter((t) => t.status === "PENDING").length
   const totalPendingRequests = pendingCurfewCount + pendingMaintenanceCount
 
   return (
     <div className="space-y-6 pb-12">
       {/* Toast Alert */}
       {toastMessage && (
-        <div className="fixed top-20 right-6 z-50 flex animate-in items-center gap-2 rounded-2xl bg-foreground px-4 py-3 text-xs font-semibold text-background shadow-xl fade-in slide-in-from-top-4">
-          <Sparkles className="h-4 w-4 shrink-0 text-amber-400" />
+        <div className="fixed top-20 right-6 z-50 flex items-center gap-2 rounded-2xl bg-foreground text-background px-4 py-3 shadow-xl text-xs font-semibold animate-in fade-in slide-in-from-top-4">
+          <Sparkles className="h-4 w-4 text-cyan-400 shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}
 
       {/* Admin Welcome & Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#233944] via-[#2c4755] to-[#1c2e37] p-6 text-white shadow-md sm:p-8">
-        <div className="pointer-events-none absolute -top-20 -right-20 h-80 w-80 rounded-full bg-[#cee6ef]/10 blur-3xl" />
-        <div className="pointer-events-none absolute right-40 -bottom-20 h-60 w-60 rounded-full bg-orange-500/10 blur-2xl" />
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#233944] via-[#2c4755] to-[#1c2e37] text-white p-6 sm:p-8 shadow-md">
+        <div className="absolute -right-20 -top-20 w-80 h-80 rounded-full bg-[#cee6ef]/10 blur-3xl pointer-events-none" />
+        <div className="absolute right-40 -bottom-20 w-60 h-60 rounded-full bg-sky-500/10 blur-2xl pointer-events-none" />
 
-        <div className="relative z-10 flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-[#cee6ef]/20 px-3 py-1 text-xs font-semibold text-[#cee6ef] backdrop-blur-md">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#cee6ef]/20 text-[#cee6ef] text-xs font-semibold backdrop-blur-md border border-white/10">
                 <ShieldCheck className="h-3.5 w-3.5" />
                 Quản Trị Viên Hệ Thống DMS
               </span>
-              <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-0.5 font-mono text-xs text-white/90">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/10 text-white/90 text-xs font-mono">
                 Vai trò: {user?.roleTitle || "Ban Quản Lý & Admin Toàn Quyền"}
               </span>
             </div>
 
             <div>
-              <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
                 Tổng Quan Điều Hành Quản Trị Ký Túc Xá 👋
               </h1>
-              <p className="mt-1 max-w-2xl text-sm leading-relaxed text-white/80">
-                Tra cứu danh bạ sinh viên nội trú, giám sát tình trạng lưu trú
-                và trực tiếp phê duyệt đơn từ, yêu cầu học viên toàn trường.
+              <p className="text-sm text-white/80 mt-1 max-w-2xl leading-relaxed">
+                Tra cứu danh bạ sinh viên nội trú, giám sát tình trạng lưu trú và trực tiếp phê duyệt đơn từ, yêu cầu học viên toàn trường.
               </p>
             </div>
           </div>
 
           {/* Quick Shortcuts for Admin */}
-          <div className="flex shrink-0 flex-wrap items-center gap-2.5 self-start lg:self-center">
+          <div className="flex flex-wrap items-center gap-2.5 self-start lg:self-center shrink-0">
             <Link
               to="/manager"
-              className="flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-xs font-semibold text-white shadow-xs backdrop-blur-md transition-all hover:bg-white/20"
+              className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-2 backdrop-blur-md border border-white/15 transition-all shadow-xs"
             >
               <Building2 className="h-4 w-4" />
               <span>Bàn Làm Việc Ops</span>
@@ -179,7 +152,7 @@ export const AdminOverviewView: React.FC = () => {
 
             <Link
               to="/curfew"
-              className="flex items-center gap-2 rounded-xl bg-orange-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition-all hover:bg-orange-700"
+              className="px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all"
             >
               <Clock className="h-4 w-4" />
               <span>Cổng Giới Nghiêm 23h</span>
@@ -189,68 +162,59 @@ export const AdminOverviewView: React.FC = () => {
       </div>
 
       {/* KPI 4-Card Grid for Admin */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
         {/* Card 1: Total Residents */}
-        <div className="flex flex-col justify-between rounded-2xl border border-border bg-card p-5 shadow-xs transition-shadow hover:shadow-md sm:p-6">
+        <div className="rounded-2xl bg-card p-5 sm:p-6 shadow-xs border border-border flex flex-col justify-between hover:shadow-md transition-shadow">
           <div>
-            <div className="mb-3 flex items-center justify-between">
-              <span className="text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold">
                 Sinh Viên Đang Ở
               </span>
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600">
+              <div className="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-600">
                 <Users className="h-5 w-5" />
               </div>
             </div>
             <div className="text-2xl font-black text-foreground">
-              {MOCK_OCCUPANCY_STATS.occupiedBeds}{" "}
-              <span className="text-sm font-normal text-muted-foreground">
-                sinh viên
-              </span>
+              {MOCK_OCCUPANCY_STATS.occupiedBeds} <span className="text-sm font-normal text-muted-foreground">sinh viên</span>
             </div>
-            <div className="mt-1 text-xs text-muted-foreground">
+            <div className="text-xs text-muted-foreground mt-1">
               Chiếm {MOCK_OCCUPANCY_STATS.occupancyRate}% công suất phòng
             </div>
           </div>
 
-          <div className="mt-4 flex items-center justify-between border-t border-border/80 pt-3 text-xs">
+          <div className="mt-4 pt-3 border-t border-border/80 flex items-center justify-between text-xs">
             <span className="text-muted-foreground">Còn trống:</span>
-            <span className="font-bold text-emerald-600">
-              {MOCK_OCCUPANCY_STATS.availableBeds} Giường
-            </span>
+            <span className="font-bold text-emerald-600">{MOCK_OCCUPANCY_STATS.availableBeds} Giường</span>
           </div>
         </div>
 
         {/* Card 2: Pending Requests */}
-        <div className="flex flex-col justify-between rounded-2xl border border-border bg-card p-5 shadow-xs transition-shadow hover:shadow-md sm:p-6">
+        <div className="rounded-2xl bg-card p-5 sm:p-6 shadow-xs border border-border flex flex-col justify-between hover:shadow-md transition-shadow">
           <div>
-            <div className="mb-3 flex items-center justify-between">
-              <span className="text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold">
                 Yêu Cầu & Đơn Chờ Duyệt
               </span>
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600">
+              <div className="w-9 h-9 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-600">
                 <FileText className="h-5 w-5" />
               </div>
             </div>
-            <div className="text-2xl font-black text-amber-600">
-              {totalPendingRequests}{" "}
-              <span className="text-sm font-normal text-muted-foreground">
-                hồ sơ
-              </span>
+            <div className="text-2xl font-black text-cyan-600">
+              {totalPendingRequests} <span className="text-sm font-normal text-muted-foreground">hồ sơ</span>
             </div>
-            <div className="mt-1 text-xs text-muted-foreground">
-              {pendingCurfewCount} đơn về muộn • {pendingMaintenanceCount} phiếu
-              bảo trì
+            <div className="text-xs text-muted-foreground mt-1">
+              {pendingCurfewCount} đơn về muộn • {pendingMaintenanceCount} phiếu bảo trì
             </div>
           </div>
 
-          <div className="mt-4 flex items-center justify-between border-t border-border/80 pt-3 text-xs">
+          <div className="mt-4 pt-3 border-t border-border/80 flex items-center justify-between text-xs">
             <span className="text-muted-foreground">Ưu tiên:</span>
             <button
               onClick={() => {
                 setActiveTab("REQUESTS")
                 setRequestStatusFilter("PENDING")
               }}
-              className="flex items-center gap-1 font-bold text-amber-600 hover:underline"
+              className="font-bold text-cyan-600 hover:underline flex items-center gap-1"
             >
               <span>Xem & Duyệt ngay</span>
               <ArrowRight className="h-3 w-3" />
@@ -259,65 +223,57 @@ export const AdminOverviewView: React.FC = () => {
         </div>
 
         {/* Card 3: Maintenance in queue */}
-        <div className="flex flex-col justify-between rounded-2xl border border-border bg-card p-5 shadow-xs transition-shadow hover:shadow-md sm:p-6">
+        <div className="rounded-2xl bg-card p-5 sm:p-6 shadow-xs border border-border flex flex-col justify-between hover:shadow-md transition-shadow">
           <div>
-            <div className="mb-3 flex items-center justify-between">
-              <span className="text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold">
                 Sự Cố Kỹ Thuật Đang Xử Lý
               </span>
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-500/10 text-orange-600">
+              <div className="w-9 h-9 rounded-xl bg-sky-500/10 flex items-center justify-center text-sky-600">
                 <Wrench className="h-5 w-5" />
               </div>
             </div>
             <div className="text-2xl font-black text-foreground">
-              {
-                maintenanceTickets.filter((t) => t.status === "IN_PROGRESS")
-                  .length
-              }{" "}
-              <span className="text-sm font-normal text-muted-foreground">
-                phiếu đang sửa
-              </span>
+              {maintenanceTickets.filter((t) => t.status === "IN_PROGRESS").length}{" "}
+              <span className="text-sm font-normal text-muted-foreground">phiếu đang sửa</span>
             </div>
-            <div className="mt-1 text-xs text-muted-foreground">
+            <div className="text-xs text-muted-foreground mt-1">
               Đội kỹ thuật đang xử lý tại các buồng
             </div>
           </div>
 
-          <div className="mt-4 flex items-center justify-between border-t border-border/80 pt-3 text-xs">
+          <div className="mt-4 pt-3 border-t border-border/80 flex items-center justify-between text-xs">
             <span className="text-muted-foreground">Đã hoàn thành:</span>
             <span className="font-bold text-emerald-600">
-              {maintenanceTickets.filter((t) => t.status === "CLOSED").length}{" "}
-              phiếu
+              {maintenanceTickets.filter((t) => t.status === "CLOSED").length} phiếu
             </span>
           </div>
         </div>
 
         {/* Card 4: Curfew & Discipline Status */}
-        <div className="flex flex-col justify-between rounded-2xl border border-border bg-card p-5 shadow-xs transition-shadow hover:shadow-md sm:p-6">
+        <div className="rounded-2xl bg-card p-5 sm:p-6 shadow-xs border border-border flex flex-col justify-between hover:shadow-md transition-shadow">
           <div>
-            <div className="mb-3 flex items-center justify-between">
-              <span className="text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold">
                 Kiểm Soát Giới Nghiêm 23:00
               </span>
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-500/10 text-red-600">
+              <div className="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-600">
                 <Clock className="h-5 w-5" />
               </div>
             </div>
             <div className="text-2xl font-black text-foreground">
               {curfewRequests.filter((r) => r.status === "APPROVED").length}{" "}
-              <span className="text-sm font-normal text-muted-foreground">
-                đơn hợp lệ
-              </span>
+              <span className="text-sm font-normal text-muted-foreground">đơn hợp lệ</span>
             </div>
-            <div className="mt-1 text-xs text-muted-foreground">
+            <div className="text-xs text-muted-foreground mt-1">
               Cho phép ra vào ngoài giờ sau 23:00
             </div>
           </div>
 
-          <div className="mt-4 flex items-center justify-between border-t border-border/80 pt-3 text-xs">
+          <div className="mt-4 pt-3 border-t border-border/80 flex items-center justify-between text-xs">
             <span className="text-muted-foreground">Trạng thái cổng:</span>
-            <span className="flex items-center gap-1 font-bold text-emerald-600">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
+            <span className="font-bold text-emerald-600 flex items-center gap-1">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
               Cổng bảo vệ sẵn sàng
             </span>
           </div>
@@ -325,12 +281,12 @@ export const AdminOverviewView: React.FC = () => {
       </div>
 
       {/* Main Switcher: Danh Sách Sinh Viên VS Yêu Cầu, Đơn Từ */}
-      <div className="flex max-w-md rounded-2xl border border-border bg-muted/70 p-1.5">
+      <div className="flex rounded-2xl bg-muted/70 p-1.5 border border-border max-w-md">
         <button
           onClick={() => setActiveTab("STUDENTS")}
-          className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold transition-all ${
+          className={`flex-1 flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold transition-all ${
             activeTab === "STUDENTS"
-              ? "bg-card font-extrabold text-foreground shadow-xs"
+              ? "bg-card text-foreground shadow-xs font-extrabold"
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
@@ -340,19 +296,16 @@ export const AdminOverviewView: React.FC = () => {
 
         <button
           onClick={() => setActiveTab("REQUESTS")}
-          className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold transition-all ${
+          className={`flex-1 flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold transition-all ${
             activeTab === "REQUESTS"
-              ? "bg-card font-extrabold text-foreground shadow-xs"
+              ? "bg-card text-foreground shadow-xs font-extrabold"
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          <FileText className="h-4 w-4 text-amber-600" />
-          <span>
-            Yêu Cầu & Đơn Từ (
-            {curfewRequests.length + maintenanceTickets.length})
-          </span>
+          <FileText className="h-4 w-4 text-cyan-600" />
+          <span>Yêu Cầu & Đơn Từ ({curfewRequests.length + maintenanceTickets.length})</span>
           {totalPendingRequests > 0 && (
-            <span className="py-0.2 ml-1 rounded-full bg-amber-500 px-1.5 text-[10px] font-black text-white">
+            <span className="ml-1 rounded-full bg-cyan-500 px-1.5 py-0.2 text-[10px] font-black text-white">
               {totalPendingRequests}
             </span>
           )}
@@ -365,15 +318,15 @@ export const AdminOverviewView: React.FC = () => {
       {activeTab === "STUDENTS" && (
         <div className="space-y-4">
           {/* Controls: Search and Filter */}
-          <div className="flex flex-col items-stretch justify-between gap-3 rounded-2xl border border-border bg-card p-4 shadow-xs sm:flex-row sm:items-center">
-            <div className="relative max-w-md flex-1">
-              <Search className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-card p-4 rounded-2xl border border-border shadow-xs">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
                 type="text"
                 placeholder="Tìm theo MSSV, Họ tên, Phòng hoặc Số điện thoại..."
                 value={studentSearch}
                 onChange={(e) => setStudentSearch(e.target.value)}
-                className="w-full rounded-xl border border-border bg-background py-2 pr-4 pl-10 text-xs focus:ring-2 focus:ring-blue-500/20 focus:outline-hidden"
+                className="w-full pl-10 pr-4 py-2 rounded-xl border border-border bg-background text-xs focus:outline-hidden focus:ring-2 focus:ring-blue-500/20"
               />
             </div>
 
@@ -397,73 +350,64 @@ export const AdminOverviewView: React.FC = () => {
           <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-xs">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="border-b border-border bg-muted/60 text-[11px] font-bold text-muted-foreground uppercase">
+                <thead className="bg-muted/60 text-muted-foreground text-[11px] uppercase border-b border-border font-bold">
                   <tr>
-                    <th className="px-4 py-3">MSSV</th>
-                    <th className="px-4 py-3">Họ và Tên</th>
-                    <th className="px-4 py-3">Phòng & Giường</th>
-                    <th className="px-4 py-3">Số Điện Thoại</th>
-                    <th className="px-4 py-3">Quê Quán</th>
-                    <th className="px-4 py-3">Hạn Hợp Đồng</th>
-                    <th className="px-4 py-3 text-center">Rèn Luyện</th>
-                    <th className="px-4 py-3 text-right">Chi Tiết</th>
+                    <th className="py-3 px-4">MSSV</th>
+                    <th className="py-3 px-4">Họ và Tên</th>
+                    <th className="py-3 px-4">Phòng & Giường</th>
+                    <th className="py-3 px-4">Số Điện Thoại</th>
+                    <th className="py-3 px-4">Quê Quán</th>
+                    <th className="py-3 px-4">Hạn Hợp Đồng</th>
+                    <th className="py-3 px-4 text-center">Rèn Luyện</th>
+                    <th className="py-3 px-4 text-right">Chi Tiết</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
                   {filteredStudents.map((st) => (
                     <tr
                       key={st.studentId}
-                      className="cursor-pointer transition-colors hover:bg-muted/40"
+                      className="hover:bg-muted/40 transition-colors cursor-pointer"
                       onClick={() => setSelectedStudent(st)}
                     >
-                      <td className="px-4 py-3.5 font-mono font-bold text-foreground">
+                      <td className="py-3.5 px-4 font-mono font-bold text-foreground">
                         {st.studentId}
                       </td>
-                      <td className="px-4 py-3.5">
-                        <div className="font-bold text-foreground">
-                          {st.fullName}
-                        </div>
+                      <td className="py-3.5 px-4">
+                        <div className="font-bold text-foreground">{st.fullName}</div>
                         <div className="text-[11px] text-muted-foreground">
-                          {st.gender === "Nam" ? "Nam" : "Nữ"} • CCCD:{" "}
-                          {st.citizenId}
+                          {st.gender === "Nam" ? "Nam" : "Nữ"} • CCCD: {st.citizenId}
                         </div>
                       </td>
-                      <td className="px-4 py-3.5">
-                        <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 font-bold text-foreground">
+                      <td className="py-3.5 px-4">
+                        <span className="inline-flex items-center gap-1 font-bold text-foreground bg-muted px-2 py-0.5 rounded-md">
                           <Bed className="h-3 w-3 text-blue-600" />
                           {st.room} • {st.bedCode}
                         </span>
-                        <div className="mt-0.5 text-[10px] text-muted-foreground">
-                          {st.building}
-                        </div>
+                        <div className="text-[10px] text-muted-foreground mt-0.5">{st.building}</div>
                       </td>
-                      <td className="px-4 py-3.5">
-                        <div className="font-medium text-foreground">
-                          {st.phone}
-                        </div>
+                      <td className="py-3.5 px-4">
+                        <div className="font-medium text-foreground">{st.phone}</div>
                         <div className="text-[10px] text-muted-foreground">
                           PH: {st.parentPhone}
                         </div>
                       </td>
-                      <td className="px-4 py-3.5 text-muted-foreground">
-                        {st.hometown}
-                      </td>
-                      <td className="px-4 py-3.5 font-mono text-[11px] text-muted-foreground">
+                      <td className="py-3.5 px-4 text-muted-foreground">{st.hometown}</td>
+                      <td className="py-3.5 px-4 font-mono text-[11px] text-muted-foreground">
                         {st.endDate}
                       </td>
-                      <td className="px-4 py-3.5 text-center">
-                        <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
+                      <td className="py-3.5 px-4 text-center">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
                           100/100 đ
                         </span>
                       </td>
-                      <td className="px-4 py-3.5 text-right">
+                      <td className="py-3.5 px-4 text-right">
                         <button
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation()
                             setSelectedStudent(st)
                           }}
-                          className="rounded-lg border border-border bg-card px-2.5 py-1 text-[11px] font-semibold text-foreground transition-colors hover:bg-muted"
+                          className="px-2.5 py-1 rounded-lg border border-border bg-card hover:bg-muted text-[11px] font-semibold text-foreground transition-colors"
                         >
                           Hồ sơ
                         </button>
@@ -475,7 +419,7 @@ export const AdminOverviewView: React.FC = () => {
             </div>
 
             {filteredStudents.length === 0 && (
-              <div className="p-8 text-center text-xs text-muted-foreground">
+              <div className="p-8 text-center text-muted-foreground text-xs">
                 Không tìm thấy sinh viên nào khớp với điều kiện tìm kiếm.
               </div>
             )}
@@ -489,15 +433,13 @@ export const AdminOverviewView: React.FC = () => {
       {activeTab === "REQUESTS" && (
         <div className="space-y-4">
           {/* Controls: Filter by Type & Status */}
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card p-4 shadow-xs">
+          <div className="flex flex-wrap items-center justify-between gap-3 bg-card p-4 rounded-2xl border border-border shadow-xs">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="mr-1 text-xs font-bold text-muted-foreground">
-                Phân loại:
-              </span>
+              <span className="text-xs font-bold text-muted-foreground mr-1">Phân loại:</span>
               <button
                 type="button"
                 onClick={() => setRequestTypeFilter("ALL")}
-                className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                   requestTypeFilter === "ALL"
                     ? "bg-foreground text-background"
                     : "bg-muted text-muted-foreground hover:text-foreground"
@@ -508,7 +450,7 @@ export const AdminOverviewView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setRequestTypeFilter("CURFEW")}
-                className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                   requestTypeFilter === "CURFEW"
                     ? "bg-blue-600 text-white"
                     : "bg-muted text-muted-foreground hover:text-foreground"
@@ -519,9 +461,9 @@ export const AdminOverviewView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setRequestTypeFilter("MAINTENANCE")}
-                className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                   requestTypeFilter === "MAINTENANCE"
-                    ? "bg-orange-600 text-white"
+                    ? "bg-sky-600 text-white"
                     : "bg-muted text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -530,9 +472,7 @@ export const AdminOverviewView: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-muted-foreground">
-                Trạng thái:
-              </span>
+              <span className="text-xs font-bold text-muted-foreground">Trạng thái:</span>
               <select
                 value={requestStatusFilter}
                 onChange={(e) => setRequestStatusFilter(e.target.value as any)}
@@ -551,54 +491,48 @@ export const AdminOverviewView: React.FC = () => {
             {(requestTypeFilter === "ALL" || requestTypeFilter === "CURFEW") &&
               curfewRequests
                 .filter((r) => {
-                  if (requestStatusFilter === "PENDING")
-                    return r.status === "PENDING"
-                  if (requestStatusFilter === "RESOLVED")
-                    return r.status !== "PENDING"
+                  if (requestStatusFilter === "PENDING") return r.status === "PENDING"
+                  if (requestStatusFilter === "RESOLVED") return r.status !== "PENDING"
                   return true
                 })
                 .map((req) => (
                   <div
                     key={req.id}
-                    className="space-y-3 rounded-2xl border border-border bg-card p-5 shadow-xs transition-colors hover:border-blue-500/40"
+                    className="p-5 rounded-2xl border border-border bg-card shadow-xs space-y-3 hover:border-blue-500/40 transition-colors"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center gap-1 rounded-lg bg-blue-500/10 px-2.5 py-1 text-xs font-bold text-blue-700 dark:text-blue-400">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-700 dark:text-blue-400 text-xs font-bold">
                           <Clock className="h-3.5 w-3.5" />
                           Đơn Về Muộn
                         </span>
-                        <span className="rounded-md bg-muted px-2 py-0.5 font-mono text-xs font-bold">
+                        <span className="font-mono text-xs font-bold bg-muted px-2 py-0.5 rounded-md">
                           {req.id}
                         </span>
-                        <span className="text-sm font-bold text-foreground">
+                        <span className="font-bold text-sm text-foreground">
                           {req.studentName} ({req.studentId})
                         </span>
-                        <span className="text-xs text-muted-foreground">
-                          • Phòng {req.room}
-                        </span>
+                        <span className="text-xs text-muted-foreground">• Phòng {req.room}</span>
                       </div>
 
                       <div className="flex items-center gap-2">
                         <span
-                          className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                             req.isSubmittedBefore2100
                               ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
-                              : "bg-red-500/10 text-red-600"
+                              : "bg-blue-500/10 text-blue-600"
                           }`}
                         >
-                          {req.isSubmittedBefore2100
-                            ? "Nộp trước 21:00"
-                            : "Nộp muộn sau 21:00"}
+                          {req.isSubmittedBefore2100 ? "Nộp trước 21:00" : "Nộp muộn sau 21:00"}
                         </span>
 
                         <span
-                          className={`rounded-full px-2.5 py-1 text-xs font-bold ${
+                          className={`text-xs font-bold px-2.5 py-1 rounded-full ${
                             req.status === "APPROVED"
                               ? "bg-emerald-600 text-white"
                               : req.status === "REJECTED"
-                                ? "bg-red-600 text-white"
-                                : "border border-amber-500/30 bg-amber-500/20 text-amber-700 dark:text-amber-400"
+                              ? "bg-blue-600 text-white"
+                              : "bg-cyan-500/20 text-cyan-700 dark:text-cyan-400 border border-cyan-500/30"
                           }`}
                         >
                           {req.status === "APPROVED" && "Đã phê duyệt"}
@@ -608,65 +542,38 @@ export const AdminOverviewView: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="rounded-xl border border-border/60 bg-muted/30 p-3 text-xs text-foreground">
+                    <div className="bg-muted/30 p-3 rounded-xl border border-border/60 text-xs text-foreground">
                       <p className="font-medium">
-                        Lý do giải trình:{" "}
-                        <span className="font-normal">{req.reasonDetail}</span>
+                        Lý do giải trình: <span className="font-normal">{req.reasonDetail}</span>
                       </p>
-                      <div className="mt-2 flex flex-wrap gap-4 text-[11px] text-muted-foreground">
-                        <span>
-                          Ngày vắng:{" "}
-                          <strong className="text-foreground">
-                            {req.date}
-                          </strong>
-                        </span>
-                        <span>
-                          Giờ về dự kiến:{" "}
-                          <strong className="text-foreground">
-                            {req.expectedReturnTime}
-                          </strong>
-                        </span>
-                        <span>
-                          SĐT liên hệ:{" "}
-                          <strong className="text-foreground">
-                            {req.phone}
-                          </strong>
-                        </span>
-                        <span>
-                          SĐT Phụ huynh xác nhận:{" "}
-                          <strong className="text-foreground">
-                            {req.parentPhone}
-                          </strong>
-                        </span>
+                      <div className="flex flex-wrap gap-4 text-muted-foreground mt-2 text-[11px]">
+                        <span>Ngày vắng: <strong className="text-foreground">{req.date}</strong></span>
+                        <span>Giờ về dự kiến: <strong className="text-foreground">{req.expectedReturnTime}</strong></span>
+                        <span>SĐT liên hệ: <strong className="text-foreground">{req.phone}</strong></span>
+                        <span>SĐT Phụ huynh xác nhận: <strong className="text-foreground">{req.parentPhone}</strong></span>
                       </div>
                     </div>
 
                     {/* Action buttons for admin */}
                     <div className="flex items-center justify-between pt-1">
                       <span className="text-[11px] text-muted-foreground">
-                        {req.reviewedBy
-                          ? `Người duyệt: ${req.reviewedBy}`
-                          : "Chờ ban quản lý ký duyệt trực tuyến"}
+                        {req.reviewedBy ? `Người duyệt: ${req.reviewedBy}` : "Chờ ban quản lý ký duyệt trực tuyến"}
                       </span>
 
                       {req.status === "PENDING" ? (
                         <div className="flex gap-2">
                           <button
                             type="button"
-                            onClick={() =>
-                              handleReviewCurfew(req.id, "APPROVED")
-                            }
-                            className="flex items-center gap-1 rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-emerald-700"
+                            onClick={() => handleReviewCurfew(req.id, "APPROVED")}
+                            className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors"
                           >
                             <Check className="h-3.5 w-3.5" />
                             <span>Duyệt đơn hợp lệ</span>
                           </button>
                           <button
                             type="button"
-                            onClick={() =>
-                              handleReviewCurfew(req.id, "REJECTED")
-                            }
-                            className="flex items-center gap-1 rounded-xl bg-red-600 px-3 py-1.5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-red-700"
+                            onClick={() => handleReviewCurfew(req.id, "REJECTED")}
+                            className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-colors"
                           >
                             <X className="h-3.5 w-3.5" />
                             <span>Từ chối</span>
@@ -682,84 +589,58 @@ export const AdminOverviewView: React.FC = () => {
                 ))}
 
             {/* 2. Maintenance Tickets */}
-            {(requestTypeFilter === "ALL" ||
-              requestTypeFilter === "MAINTENANCE") &&
+            {(requestTypeFilter === "ALL" || requestTypeFilter === "MAINTENANCE") &&
               maintenanceTickets
                 .filter((t) => {
-                  if (requestStatusFilter === "PENDING")
-                    return t.status === "PENDING"
-                  if (requestStatusFilter === "RESOLVED")
-                    return t.status === "CLOSED"
+                  if (requestStatusFilter === "PENDING") return t.status === "PENDING"
+                  if (requestStatusFilter === "RESOLVED") return t.status === "CLOSED"
                   return true
                 })
                 .map((ticket) => (
                   <div
                     key={ticket.id}
-                    className="space-y-3 rounded-2xl border border-border bg-card p-5 shadow-xs transition-colors hover:border-orange-500/40"
+                    className="p-5 rounded-2xl border border-border bg-card shadow-xs space-y-3 hover:border-sky-500/40 transition-colors"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center gap-1 rounded-lg bg-orange-500/10 px-2.5 py-1 text-xs font-bold text-orange-700 dark:text-orange-400">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-sky-500/10 text-sky-700 dark:text-sky-400 text-xs font-bold">
                           <Wrench className="h-3.5 w-3.5" />
                           Phiếu Báo Hỏng
                         </span>
-                        <span className="rounded-md bg-muted px-2 py-0.5 font-mono text-xs font-bold">
+                        <span className="font-mono text-xs font-bold bg-muted px-2 py-0.5 rounded-md">
                           {ticket.id}
                         </span>
-                        <span className="text-sm font-bold text-foreground">
-                          {ticket.title}
-                        </span>
+                        <span className="font-bold text-sm text-foreground">{ticket.title}</span>
                       </div>
 
                       <span
-                        className={`rounded-full px-2.5 py-1 text-xs font-bold ${
+                        className={`text-xs font-bold px-2.5 py-1 rounded-full ${
                           ticket.status === "CLOSED"
                             ? "bg-emerald-600 text-white"
                             : ticket.status === "IN_PROGRESS"
-                              ? "bg-blue-600 text-white"
-                              : "border border-amber-500/30 bg-amber-500/20 text-amber-700 dark:text-amber-400"
+                            ? "bg-blue-600 text-white"
+                            : "bg-cyan-500/20 text-cyan-700 dark:text-cyan-400 border border-cyan-500/30"
                         }`}
                       >
                         {ticket.status === "PENDING" && "Chờ tiếp nhận"}
-                        {ticket.status === "IN_PROGRESS" &&
-                          "Đang điều phối sửa"}
+                        {ticket.status === "IN_PROGRESS" && "Đang điều phối sửa"}
                         {ticket.status === "CLOSED" && "Đã sửa xong"}
                       </span>
                     </div>
 
-                    <p className="text-xs text-muted-foreground">
-                      {ticket.description}
-                    </p>
+                    <p className="text-xs text-muted-foreground">{ticket.description}</p>
 
-                    <div className="flex flex-wrap gap-4 rounded-xl border border-border/60 bg-muted/40 p-2.5 text-[11px]">
-                      <span>
-                        Vị trí:{" "}
-                        <strong className="text-foreground">
-                          {ticket.building} - Phòng {ticket.room}
-                        </strong>
-                      </span>
-                      <span>
-                        Người báo:{" "}
-                        <strong className="text-foreground">
-                          {ticket.studentName} ({ticket.studentId})
-                        </strong>
-                      </span>
-                      <span>
-                        Thời gian:{" "}
-                        <span className="font-mono">{ticket.createdAt}</span>
-                      </span>
-                      <span>
-                        Mức độ:{" "}
-                        <strong className="text-red-600">
-                          {ticket.urgency}
-                        </strong>
-                      </span>
+                    <div className="flex flex-wrap gap-4 text-[11px] bg-muted/40 p-2.5 rounded-xl border border-border/60">
+                      <span>Vị trí: <strong className="text-foreground">{ticket.building} - Phòng {ticket.room}</strong></span>
+                      <span>Người báo: <strong className="text-foreground">{ticket.studentName} ({ticket.studentId})</strong></span>
+                      <span>Thời gian: <span className="font-mono">{ticket.createdAt}</span></span>
+                      <span>Mức độ: <strong className="text-blue-600">{ticket.urgency}</strong></span>
                     </div>
 
                     <div className="flex items-center justify-between pt-1">
                       <Link
                         to="/maintenance"
-                        className="flex items-center gap-1 text-xs font-bold text-orange-600 hover:text-orange-700"
+                        className="text-xs font-bold text-sky-600 hover:text-sky-700 flex items-center gap-1"
                       >
                         <span>Mở phân hệ Điều phối Kỹ thuật</span>
                         <ExternalLink className="h-3.5 w-3.5" />
@@ -768,13 +649,8 @@ export const AdminOverviewView: React.FC = () => {
                       {ticket.status === "PENDING" && (
                         <button
                           type="button"
-                          onClick={() =>
-                            handleUpdateMaintenanceStatus(
-                              ticket.id,
-                              "IN_PROGRESS"
-                            )
-                          }
-                          className="rounded-xl bg-orange-600 px-3 py-1.5 text-xs font-bold text-white transition-colors hover:bg-orange-700"
+                          onClick={() => handleUpdateMaintenanceStatus(ticket.id, "IN_PROGRESS")}
+                          className="px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition-colors"
                         >
                           Tiếp nhận xử lý
                         </button>
@@ -788,63 +664,54 @@ export const AdminOverviewView: React.FC = () => {
 
       {/* Student Details Modal */}
       {selectedStudent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-lg animate-in space-y-5 rounded-3xl border border-border bg-card p-6 shadow-2xl zoom-in-95 fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="w-full max-w-lg rounded-3xl border border-border bg-card p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between border-b border-border pb-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600">
+                <div className="h-10 w-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center">
                   <Users className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-foreground">
+                  <h3 className="font-bold text-base text-foreground">
                     Hồ Sơ Sinh Viên Lưu Trú
                   </h3>
                   <p className="text-xs text-muted-foreground">
-                    MSSV: {selectedStudent.studentId} • Hợp đồng:{" "}
-                    {selectedStudent.contractCode}
+                    MSSV: {selectedStudent.studentId} • Hợp đồng: {selectedStudent.contractCode}
                   </p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedStudent(null)}
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground"
+                className="h-8 w-8 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground"
               >
                 ✕
               </button>
             </div>
 
             <div className="space-y-3 text-xs">
-              <div className="grid grid-cols-2 gap-3 rounded-2xl border border-border bg-muted/40 p-3">
+              <div className="grid grid-cols-2 gap-3 p-3 bg-muted/40 rounded-2xl border border-border">
                 <div>
                   <span className="text-muted-foreground">Họ và tên:</span>
-                  <p className="mt-0.5 text-sm font-bold text-foreground">
-                    {selectedStudent.fullName}
-                  </p>
+                  <p className="font-bold text-sm text-foreground mt-0.5">{selectedStudent.fullName}</p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">
-                    Giới tính & Ngày sinh:
-                  </span>
-                  <p className="mt-0.5 font-semibold text-foreground">
+                  <span className="text-muted-foreground">Giới tính & Ngày sinh:</span>
+                  <p className="font-semibold text-foreground mt-0.5">
                     {selectedStudent.gender} • {selectedStudent.dob}
                   </p>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Số CCCD / CMND:</span>
-                  <p className="mt-0.5 font-mono font-semibold text-foreground">
-                    {selectedStudent.citizenId}
-                  </p>
+                  <p className="font-mono font-semibold text-foreground mt-0.5">{selectedStudent.citizenId}</p>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Quê quán:</span>
-                  <p className="mt-0.5 font-semibold text-foreground">
-                    {selectedStudent.hometown}
-                  </p>
+                  <p className="font-semibold text-foreground mt-0.5">{selectedStudent.hometown}</p>
                 </div>
               </div>
 
-              <div className="space-y-2 rounded-2xl border border-blue-500/15 bg-blue-500/5 p-3">
+              <div className="p-3 bg-blue-500/5 rounded-2xl border border-blue-500/15 space-y-2">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Vị trí lưu trú:</span>
                   <strong className="text-foreground">
@@ -852,45 +719,29 @@ export const AdminOverviewView: React.FC = () => {
                   </strong>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">
-                    Mã giường cá nhân:
-                  </span>
-                  <span className="font-mono font-bold text-blue-600">
-                    {selectedStudent.bedCode}
-                  </span>
+                  <span className="text-muted-foreground">Mã giường cá nhân:</span>
+                  <span className="font-mono font-bold text-blue-600">{selectedStudent.bedCode}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">
-                    Thời hạn hợp đồng:
-                  </span>
+                  <span className="text-muted-foreground">Thời hạn hợp đồng:</span>
                   <span className="font-mono text-muted-foreground">
                     {selectedStudent.startDate} ➔ {selectedStudent.endDate}
                   </span>
                 </div>
               </div>
 
-              <div className="space-y-1.5 rounded-2xl border border-border bg-muted/40 p-3">
+              <div className="p-3 bg-muted/40 rounded-2xl border border-border space-y-1.5">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">
-                    Số điện thoại sinh viên:
-                  </span>
-                  <strong className="text-foreground">
-                    {selectedStudent.phone}
-                  </strong>
+                  <span className="text-muted-foreground">Số điện thoại sinh viên:</span>
+                  <strong className="text-foreground">{selectedStudent.phone}</strong>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">
-                    Họ tên phụ huynh:
-                  </span>
-                  <span className="font-semibold text-foreground">
-                    {selectedStudent.parentName}
-                  </span>
+                  <span className="text-muted-foreground">Họ tên phụ huynh:</span>
+                  <span className="font-semibold text-foreground">{selectedStudent.parentName}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">SĐT Phụ huynh:</span>
-                  <strong className="text-foreground">
-                    {selectedStudent.parentPhone}
-                  </strong>
+                  <strong className="text-foreground">{selectedStudent.parentPhone}</strong>
                 </div>
               </div>
             </div>
@@ -899,7 +750,7 @@ export const AdminOverviewView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setSelectedStudent(null)}
-                className="rounded-xl bg-foreground px-4 py-2 text-xs font-bold text-background"
+                className="px-4 py-2 rounded-xl bg-foreground text-background text-xs font-bold"
               >
                 Đóng
               </button>
