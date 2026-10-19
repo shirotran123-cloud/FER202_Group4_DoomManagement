@@ -482,28 +482,44 @@ export const CurfewPage: React.FC = () => {
   }
 
   // Handle Approve / Reject Request — chỉ quản lý/admin duyệt.
-  const handleReviewRequest = (requestId: string, newStatus: "APPROVED" | "REJECTED") => {
+  /**
+   * Duyệt / từ chối đơn xin về muộn.
+   *
+   * Hai lỗi cũ:
+   *  1. Hàm chỉ sửa state cục bộ rồi báo "đã duyệt", nhưng máy chủ không nhận
+   *     được gì — tải lại trang là đơn quay về trạng thái PENDING.
+   *  2. Nút bấm nằm trong `<form>` nộp đơn và không ghi `type`, nên HTML coi là
+   *     `type="submit"` → submit form → TRANG TỰ TẢI LẠI.
+   *
+   * Nay gọi `curfewApi.decide`, và chỉ cập nhật giao diện theo phản hồi thật.
+   */
+  const [decidingRequestId, setDecidingRequestId] = useState<string | null>(null)
+
+  const handleReviewRequest = async (
+    requestId: string,
+    newStatus: "APPROVED" | "REJECTED",
+  ) => {
     if (!canApprove) {
       showToast("Chỉ Ban Quản lý được duyệt đơn về muộn.")
       return
     }
-    const updated = requests.map((r) => {
-      if (r.id === requestId) {
-        return {
-          ...r,
-          status: newStatus,
-          reviewedBy: user?.fullName || "Thầy Vũ Thành Nam",
-          reviewedAt: new Date().toISOString().replace("T", " ").substring(0, 16),
-          reviewNotes:
-            newStatus === "APPROVED"
-              ? "Đã đối chiếu thông tin phụ huynh và phê duyệt hợp lệ."
-              : "Từ chối vì lý do không phù hợp quy chế KTX.",
-        }
-      }
-      return r
-    })
-    setRequests(updated)
-    showToast(`Đã ${newStatus === "APPROVED" ? "phê duyệt" : "từ chối"} đơn ${requestId}!`)
+    if (decidingRequestId) return
+
+    setDecidingRequestId(requestId)
+    try {
+      const updated = (await curfewApi.decide(requestId, newStatus === "APPROVED")) as CurfewRequest
+      // Ghi lại bản máy chủ trả về, không tự bịa trường.
+      setRequests((rows) => rows.map((r) => (r.id === requestId ? { ...r, ...updated } : r)))
+      showToast(
+        `Đã ${newStatus === "APPROVED" ? "phê duyệt" : "từ chối"} đơn ${requestId}.`,
+      )
+    } catch (error) {
+      showToast(
+        error instanceof ApiError ? error.message : "Không xử lý được đơn. Vui lòng thử lại.",
+      )
+    } finally {
+      setDecidingRequestId(null)
+    }
   }
 
   // ==========================================
@@ -1187,13 +1203,26 @@ export const CurfewPage: React.FC = () => {
                       <span>Ngày: <strong>{req.date}</strong></span> • <span>Dự kiến về: <strong>{req.expectedReturnTime}</strong></span> • <span>Phụ huynh: {req.parentPhone}</span>
                     </div>
 
-                    {/* Review Actions: chỉ quản lý/admin duyệt. Bảo vệ chỉ quét cổng. */}
+                    {/* Duyệt đơn: chỉ quản lý/admin. `type="button"` để không
+                        submit form nộp đơn ở cột bên trái (gây tải lại trang). */}
                     {canApprove && req.status === "PENDING" && (
                       <div className="flex gap-1.5 mt-1 sm:mt-0">
-                        <Button variant="success" className="py-1 hover:bg-success" onClick={() => handleReviewRequest(req.id, "APPROVED")}>
+                        <Button
+                          type="button"
+                          variant="success"
+                          className="py-1 hover:bg-success"
+                          disabled={decidingRequestId === req.id}
+                          onClick={() => void handleReviewRequest(req.id, "APPROVED")}
+                        >
                           Duyệt đơn
                         </Button>
-                        <Button variant="destructive" className="py-1 hover:bg-danger" onClick={() => handleReviewRequest(req.id, "REJECTED")}>
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          className="py-1 hover:bg-danger"
+                          disabled={decidingRequestId === req.id}
+                          onClick={() => void handleReviewRequest(req.id, "REJECTED")}
+                        >
                           Từ chối
                         </Button>
                       </div>

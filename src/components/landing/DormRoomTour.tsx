@@ -167,9 +167,11 @@ export const DormRoomTour: React.FC = () => {
           <div>
             <div className="relative">
               {/*
-                Ảnh dọc không lấp đầy khung 16:9 được, nên hiện trọn ảnh trên nền
-                mờ lấy từ chính ảnh đó (blur + tối) — vừa giữ đủ nội dung, vừa
-                không chừa hai dải trống trông như lỗi.
+                Ảnh này là ảnh DỌC (1000x1533). Không ép vào khung 16:9 được vì
+                phải bỏ 63% chiều cao, gần như chắc chắn mất bàn học. Nên giữ
+                nguyên tỉ lệ ảnh (`w-auto object-contain`) và cho ảnh cao theo
+                màn hình — chiếm phần lớn chiều cao khung, to hơn hẳn mức 460px
+                trước đây. Hai bên là nền mờ lấy từ chính ảnh nên không hở.
               */}
               {d.portrait && (
                 <img
@@ -185,7 +187,7 @@ export const DormRoomTour: React.FC = () => {
                 alt={`${d.label} buồng 6 người phòng ${room}`}
                 className={
                   d.portrait
-                    ? "relative mx-auto h-[380px] w-auto object-contain sm:h-[460px]"
+                    ? "relative mx-auto block h-[70vh] max-h-[880px] min-h-[460px] w-auto object-contain"
                     : "aspect-video w-full object-cover"
                 }
               />

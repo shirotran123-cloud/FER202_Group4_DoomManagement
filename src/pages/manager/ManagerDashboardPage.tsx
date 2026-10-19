@@ -592,7 +592,7 @@ export const ManagerDashboardPage: React.FC = () => {
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          <FileSpreadsheet className="h-3.5 w-3.5 text-success" />
+          <FileSpreadsheet className="h-3.5 w-3.5 text-primary" />
           <span>Xuất báo cáo Excel</span>
         </button>
       </div>
@@ -890,10 +890,17 @@ export const ManagerDashboardPage: React.FC = () => {
       {activeTab === "REPORTS" && (
         <div className="space-y-6">
           {/* Action Box to Trigger Excel Exports */}
-          <div className="rounded-3xl border border-success/25 bg-gradient-to-br from-card to-success p-5 sm:p-6 shadow-xs">
+          {/*
+            Khối kết xuất báo cáo.
+            Trước đây khối này dùng gradient và nút màu XANH LÁ, trong khi cả app
+            chỉ có 3 màu: indigo (chính), emerald (thành công), đỏ (cảnh báo).
+            Xuất file là thao tác thường, không phải trạng thái "thành công", nên
+            đổi về màu chủ đạo indigo cho đồng bộ.
+          */}
+          <div className="rounded-3xl border border-border bg-card p-5 shadow-xs sm:p-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border/80 pb-6">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-success-soft-foreground flex items-center gap-1.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                   <FileSpreadsheet className="h-4 w-4" /> Kết Xuất Dữ Liệu Nghiệp Vụ Chuẩn
                 </span>
                 <h2 className="text-xl font-black text-foreground mt-0.5">
@@ -907,8 +914,7 @@ export const ManagerDashboardPage: React.FC = () => {
               {/* Big Export Buttons */}
               <div className="flex flex-wrap items-center gap-2">
                 <Button
-                  variant="success"
-                  className="hover:bg-success flex"
+                  variant="default"
                   onClick={handleExportResidenceExcel}
                   disabled={exportingKind !== null}
                 >
@@ -917,9 +923,10 @@ export const ManagerDashboardPage: React.FC = () => {
                 </Button>
 
                 <button
+                  type="button"
                   onClick={handleExportResidenceCsv}
                   disabled={exportingKind !== null}
-                  className="rounded-2xl border border-success/25 bg-success/10 hover:bg-success/20 text-success-soft-foreground px-3.5 py-2.5 text-xs font-bold shadow-xs flex items-center gap-1.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="rounded-2xl border border-border bg-muted/60 hover:bg-muted text-foreground px-3.5 py-2.5 text-xs font-bold shadow-xs flex items-center gap-1.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <FileDown className="h-4 w-4" />
                   <span>{exportingKind === "RESIDENTS_CSV" ? "Đang xuất..." : "Xuất CSV (UTF-8)"}</span>
@@ -927,7 +934,6 @@ export const ManagerDashboardPage: React.FC = () => {
 
                 <Button
                   variant="destructive"
-                  className="hover:bg-danger flex"
                   onClick={handleExportOverdueDebtsExcel}
                   disabled={exportingKind !== null}
                 >
@@ -970,7 +976,7 @@ export const ManagerDashboardPage: React.FC = () => {
                   value={searchReportQuery}
                   onChange={(e) => setSearchReportQuery(e.target.value)}
                   placeholder="Tra cứu MSSV, họ tên, phòng..."
-                  className="pl-9 pr-3 focus:ring-success/30"
+                  className="pl-9 pr-3 focus:ring-primary/30"
                 />
               </div>
             </div>
@@ -981,15 +987,16 @@ export const ManagerDashboardPage: React.FC = () => {
             <div className="overflow-hidden rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-xs space-y-4">
               <div className="flex items-center justify-between border-b border-border pb-3">
                 <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-success-soft-foreground" />
+                  <Users className="h-4 w-4 text-primary" />
                   <h3 className="font-bold text-sm text-foreground">
                     Xem Trước Dữ Liệu: Danh Sách Sinh Viên Nội Trú Khai Báo Tạm Trú
                   </h3>
                 </div>
                 <button
+                  type="button"
                   onClick={handleExportResidenceExcel}
                   disabled={exportingKind !== null}
-                  className="text-xs text-success-soft-foreground hover:text-success-soft-foreground font-bold flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="text-xs text-primary hover:text-primary-soft-foreground font-bold flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Download className="h-3.5 w-3.5" /> Tải về file Excel
                 </button>
@@ -1050,9 +1057,10 @@ export const ManagerDashboardPage: React.FC = () => {
                   </h3>
                 </div>
                 <button
+                  type="button"
                   onClick={handleExportOverdueDebtsExcel}
                   disabled={exportingKind !== null}
-                  className="text-xs text-danger-soft-foreground hover:text-danger-soft-foreground font-bold flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="text-xs text-danger-soft-foreground hover:text-danger font-bold flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Download className="h-3.5 w-3.5" /> Tải về file Excel
                 </button>
