@@ -26,7 +26,6 @@ import {
   Sparkles,
   History,
   Shield,
-  UserX,
 } from "lucide-react"
 
 const STORAGE_KEY_CURFEW_REQS = "dms_curfew_requests_v1"
@@ -337,8 +336,7 @@ export const CurfewPage: React.FC = () => {
   const [reqTime, setReqTime] = useState("23:45")
   const [reqCategory, setReqCategory] = useState<CurfewReasonCategory>("STUDY")
   const [reqDetail, setReqDetail] = useState("")
-  const [reqParentPhone, setReqParentPhone] = useState("0903 123 456")
-  const [reqParentConfirmed, setReqParentConfirmed] = useState(true)
+
 
   // Handle Request Submission
   const handleSubmitCurfewRequest = (e: React.FormEvent) => {
@@ -363,8 +361,8 @@ export const CurfewPage: React.FC = () => {
       expectedReturnTime: reqTime,
       reasonCategory: reqCategory,
       reasonDetail: reqDetail,
-      parentPhone: reqParentPhone,
-      parentConfirmed: reqParentConfirmed,
+      parentPhone: user?.emergencyContact?.phone || "0903 123 456",
+      parentConfirmed: true,
       submittedAt: new Date().toISOString().replace("T", " ").substring(0, 16),
       isSubmittedBefore2100: isBefore21,
       status: "PENDING",
@@ -526,81 +524,17 @@ export const CurfewPage: React.FC = () => {
 
       {/* Header Banner */}
       <div className="rounded-3xl border border-blue-500/20 bg-gradient-to-br from-card via-blue-500/5 to-card p-6 shadow-xs sm:p-8">
-        <div className="flex flex-col items-start justify-between gap-4 border-b border-border/80 pb-6 sm:flex-row sm:items-center">
-          <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-blue-500/20 bg-blue-500/10 text-blue-600 shadow-xs dark:text-blue-400">
-              <ClockAlert className="h-7 w-7" />
-            </div>
-            <div>
-              <h1 className="mt-1 text-2xl font-black text-foreground sm:text-3xl">
-                Kiểm Soát Giờ Giới Nghiêm 23:00 & Kỷ Luật Nội Trú
-              </h1>
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                Cổng bảo vệ quét thẻ đối chiếu • Đơn vắng mặt nộp trước 21:00 •
-                Trừ điểm rèn luyện (100đ chuẩn)
-              </p>
-            </div>
+        <div className="flex items-center gap-4">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-blue-500/20 bg-blue-500/10 text-blue-600 shadow-xs dark:text-blue-400">
+            <ClockAlert className="h-7 w-7" />
           </div>
-          <div className="shrink-0 rounded-2xl border border-border bg-card/90 px-4 py-2.5 text-right shadow-xs">
-            <p className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
-              Phụ trách kỹ thuật & an ninh:
+          <div>
+            <h1 className="text-xl font-black text-foreground sm:text-2xl">
+              Kiểm Soát Giờ Giới Nghiêm 23:00 & Kỷ Luật Nội Trú
+            </h1>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Cổng bảo vệ quét thẻ đối chiếu • Đơn vắng mặt nộp trước 21:00 • Trừ điểm rèn luyện (100đ chuẩn)
             </p>
-            <p className="mt-0.5 flex items-center justify-end gap-1 text-xs font-bold text-blue-600 dark:text-blue-400">
-              <span>🛡️ Đinh Thanh Trung</span>
-            </p>
-            {isGuardOrManager && (
-              <p className="mt-0.5 text-[10px] font-bold text-emerald-600">
-                Trực ban: {user?.fullName}
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 gap-3 pt-6 text-xs sm:grid-cols-4">
-          <div className="rounded-2xl border border-border bg-card p-4">
-            <p className="text-[11px] font-medium text-muted-foreground">
-              Lượt quẹt thẻ cổng
-            </p>
-            <p className="mt-1 text-2xl font-black text-foreground">
-              {gateLogs.length}
-            </p>
-            <span className="text-[10px] text-muted-foreground">
-              Ca trực hôm nay
-            </span>
-          </div>
-          <div className="rounded-2xl border border-blue-500/20 bg-card p-4">
-            <p className="flex items-center gap-1 text-[11px] font-medium text-blue-700 dark:text-blue-400">
-              <FileText className="h-3.5 w-3.5" /> Đơn về muộn đã duyệt
-            </p>
-            <p className="mt-1 text-2xl font-black text-blue-600 dark:text-blue-400">
-              {requests.filter((r) => r.status === "APPROVED").length}
-            </p>
-            <span className="text-[10px] text-blue-700/80 dark:text-blue-400/80">
-              Hợp lệ ra vào ngoài giờ
-            </span>
-          </div>
-          <div className="rounded-2xl border border-cyan-500/20 bg-card p-4">
-            <p className="flex items-center gap-1 text-[11px] font-medium text-cyan-700 dark:text-cyan-400">
-              <AlertTriangle className="h-3.5 w-3.5" /> SV bị cảnh cáo (&gt;20đ)
-            </p>
-            <p className="mt-1 text-2xl font-black text-cyan-600 dark:text-cyan-400">
-              {demerits.filter((d) => d.status === "WARNING").length}
-            </p>
-            <span className="text-[10px] text-cyan-700/80 dark:text-cyan-400/80">
-              Cần nhắc nhở rèn luyện
-            </span>
-          </div>
-          <div className="rounded-2xl border border-blue-500/20 bg-card p-4">
-            <p className="flex items-center gap-1 text-[11px] font-medium text-blue-700 dark:text-blue-400">
-              <UserX className="h-3.5 w-3.5" /> Đình chỉ kỳ sau (&gt;30đ)
-            </p>
-            <p className="mt-1 text-2xl font-black text-blue-600 dark:text-blue-400">
-              {demerits.filter((d) => d.status === "SUSPENDED").length}
-            </p>
-            <span className="text-[10px] text-blue-700/80 dark:text-blue-400/80">
-              Không xét duyệt KTX kỳ tới
-            </span>
           </div>
         </div>
       </div>
@@ -956,7 +890,7 @@ export const CurfewPage: React.FC = () => {
                         : "border-border bg-card text-muted-foreground"
                     }`}
                   >
-                    Về muộn (Trước 01:00)
+                    Về muộn
                   </button>
                   <button
                     type="button"
@@ -1037,33 +971,7 @@ export const CurfewPage: React.FC = () => {
                 />
               </div>
 
-              <div>
-                <label className="font-semibold text-foreground">
-                  Số điện thoại phụ huynh xác nhận
-                </label>
-                <input
-                  type="text"
-                  value={reqParentPhone}
-                  onChange={(e) => setReqParentPhone(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-border bg-card px-3 py-2 text-xs"
-                />
-              </div>
-
-              <div className="flex items-center gap-2 pt-1">
-                <input
-                  type="checkbox"
-                  id="parentConfirmedCheck"
-                  checked={reqParentConfirmed}
-                  onChange={(e) => setReqParentConfirmed(e.target.checked)}
-                  className="rounded border-border text-blue-600 focus:ring-blue-500"
-                />
-                <label
-                  htmlFor="parentConfirmedCheck"
-                  className="text-[11px] text-muted-foreground"
-                >
-                  Phụ huynh đã được thông báo và đồng ý
-                </label>
-              </div>
+              
 
               <button
                 type="submit"

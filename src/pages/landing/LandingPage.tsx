@@ -197,10 +197,10 @@ export const LandingPage: React.FC = () => {
       note: "Chốt đồng hồ thực tế hàng tháng, chia đều số người",
     },
     {
-      item: "Phí rác & dịch vụ KTX, Wi-Fi",
+      item: "Phí thu gom rác & dịch vụ KTX",
       price: "120.000 VNĐ",
       unit: "phòng / tháng (VAT 10%)",
-      note: "Chi phí cố định hàng tháng, chia đều các thành viên",
+      note: "Chi phí cố định chia đều các thành viên (Wi-Fi miễn phí KTX)",
     },
   ]
 

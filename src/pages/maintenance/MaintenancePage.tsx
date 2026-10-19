@@ -24,7 +24,7 @@ import { CompleteTicketModal } from "./components/CompleteTicketModal"
 import { ReviewTicketModal } from "./components/ReviewTicketModal"
 import { DeleteConfirmModal } from "./components/DeleteConfirmModal"
 
-const STORAGE_KEY_TICKETS = "dms_maintenance_tickets_v1"
+const STORAGE_KEY_TICKETS = "dms_maintenance_tickets_v2"
 
 export const MaintenancePage: React.FC = () => {
   const { user } = useAuth()

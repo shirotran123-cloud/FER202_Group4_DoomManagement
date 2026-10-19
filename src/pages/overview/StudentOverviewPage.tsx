@@ -458,10 +458,10 @@ export const StudentOverviewPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Ban Quản Lý & Cấp Cứu (Giữ nguyên tên và số ĐT, loại bỏ icon và nhãn 201, 115) */}
+          {/* Ban Quản Lý KTX Tòa A (Chỉ hiển thị Thầy Lê Quang, xóa 2 hàng an ninh và cấp cứu theo yêu cầu) */}
           <Card className="p-5 shadow-xs border border-border space-y-4">
             <div className="flex items-center justify-between pb-2 border-b border-border">
-              <h3 className="text-sm font-bold text-foreground">Ban Quản Lý & Cấp Cứu</h3>
+              <h3 className="text-sm font-bold text-foreground">Ban Quản Lý Tòa A</h3>
               <span className="text-[10px] px-2 py-0.5 rounded bg-muted text-muted-foreground font-semibold">
                 Tòa A
               </span>
@@ -484,23 +484,6 @@ export const StudentOverviewPage: React.FC = () => {
               >
                 0912 345 678
               </a>
-            </div>
-
-            {/* Emergency Contacts without icons and without ext badges */}
-            <div className="space-y-2 text-xs">
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-muted/40">
-                <span className="font-medium text-foreground">Phòng An Ninh Cổng Trực</span>
-                <a href="tel:02473001866" className="font-mono font-bold text-primary hover:underline">
-                  024 7300 1866
-                </a>
-              </div>
-
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-muted/40">
-                <span className="font-medium text-foreground">Phòng Y Tế Sơ Cứu 24/7</span>
-                <a href="tel:115" className="font-mono font-bold text-destructive hover:underline">
-                  115
-                </a>
-              </div>
             </div>
           </Card>
         </div>

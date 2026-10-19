@@ -21,8 +21,8 @@ export const MOCK_USERS: Record<UserRole, UserProfile> = {
     dormitoryStatus: {
       building: "Tòa A (Nam)",
       room: "A205",
-      compartment: "Buồng B1",
-      bedCode: "A205-B1-G03",
+      compartment: "Buồng B",
+      bedCode: "A205-B-G03",
       contractStart: "2026-09-01",
       contractEnd: "2027-01-15",
       debtStatus: 0,

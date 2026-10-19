@@ -68,15 +68,17 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
       </div>
 
       <div className="flex items-center gap-2 sm:gap-4">
-        {/* Search bar */}
-        <div className="relative hidden w-56 shrink-0 md:block lg:w-64">
-          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Tìm phòng, sinh viên, đơn..."
-            className="w-full rounded-lg border border-border bg-muted py-1.5 pr-3 pl-9 text-xs text-foreground transition-all placeholder:text-muted-foreground focus:border-primary focus:bg-card focus:outline-hidden"
-          />
-        </div>
+        {/* Search bar - Hidden for students, only visible for management/admin */}
+        {user?.role !== "student" && (
+          <div className="relative hidden w-56 shrink-0 md:block lg:w-64">
+            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Tìm phòng, sinh viên, đơn..."
+              className="w-full rounded-lg border border-border bg-muted py-1.5 pr-3 pl-9 text-xs text-foreground transition-all placeholder:text-muted-foreground focus:border-primary focus:bg-card focus:outline-hidden"
+            />
+          </div>
+        )}
 
         {isAuthenticated && user ? (
           <>
