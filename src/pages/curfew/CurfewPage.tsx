@@ -519,20 +519,20 @@ export const CurfewPage: React.FC = () => {
       {/* Toast Alert */}
       {toastMessage && (
         <div className="fixed top-20 right-6 z-50 flex animate-in items-center gap-2 rounded-2xl bg-foreground px-4 py-3 text-xs font-semibold text-background shadow-xl fade-in slide-in-from-top-4">
-          <Sparkles className="h-4 w-4 shrink-0 text-cyan-400" />
+          <Sparkles className="h-4 w-4 shrink-0 text-amber-400" />
           <span>{toastMessage}</span>
         </div>
       )}
 
       {/* Header Banner */}
-      <div className="rounded-3xl border border-blue-500/20 bg-gradient-to-br from-card via-blue-500/5 to-card p-6 shadow-xs sm:p-8">
+      <div className="rounded-3xl border border-red-500/20 bg-gradient-to-br from-card via-red-500/5 to-card p-6 shadow-xs sm:p-8">
         <div className="flex flex-col items-start justify-between gap-4 border-b border-border/80 pb-6 sm:flex-row sm:items-center">
           <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-blue-500/20 bg-blue-500/10 text-blue-600 shadow-xs dark:text-blue-400">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-red-500/20 bg-red-500/10 text-red-600 shadow-xs dark:text-red-400">
               <ClockAlert className="h-7 w-7" />
             </div>
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-blue-500/10 px-3 py-0.5 text-[11px] font-bold text-blue-700 dark:text-blue-400">
+              <div className="inline-flex items-center gap-2 rounded-full bg-red-500/10 px-3 py-0.5 text-[11px] font-bold text-red-700 dark:text-red-400">
                 <span>Module 6</span>
                 <span>•</span>
                 <span>Đơn vắng mặt và xử lý vi phạm</span>
@@ -550,7 +550,7 @@ export const CurfewPage: React.FC = () => {
             <p className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
               Phụ trách kỹ thuật & an ninh:
             </p>
-            <p className="mt-0.5 flex items-center justify-end gap-1 text-xs font-bold text-blue-600 dark:text-blue-400">
+            <p className="mt-0.5 flex items-center justify-end gap-1 text-xs font-bold text-red-600 dark:text-red-400">
               <span>🛡️ Đinh Thanh Trung</span>
             </p>
             {isGuardOrManager && (
@@ -563,7 +563,7 @@ export const CurfewPage: React.FC = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-3 pt-6 text-xs sm:grid-cols-4">
-          <div className="rounded-2xl border border-border bg-card p-4">
+          <div className="rounded-2xl border border-border bg-card/60 p-4">
             <p className="text-[11px] font-medium text-muted-foreground">
               Lượt quẹt thẻ cổng
             </p>
@@ -574,7 +574,7 @@ export const CurfewPage: React.FC = () => {
               Ca trực hôm nay
             </span>
           </div>
-          <div className="rounded-2xl border border-blue-500/20 bg-card p-4">
+          <div className="rounded-2xl border border-blue-500/20 bg-blue-500/5 p-4">
             <p className="flex items-center gap-1 text-[11px] font-medium text-blue-700 dark:text-blue-400">
               <FileText className="h-3.5 w-3.5" /> Đơn về muộn đã duyệt
             </p>
@@ -585,25 +585,25 @@ export const CurfewPage: React.FC = () => {
               Hợp lệ ra vào ngoài giờ
             </span>
           </div>
-          <div className="rounded-2xl border border-cyan-500/20 bg-card p-4">
-            <p className="flex items-center gap-1 text-[11px] font-medium text-cyan-700 dark:text-cyan-400">
+          <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4">
+            <p className="flex items-center gap-1 text-[11px] font-medium text-amber-700 dark:text-amber-400">
               <AlertTriangle className="h-3.5 w-3.5" /> SV bị cảnh cáo (&gt;20đ)
             </p>
-            <p className="mt-1 text-2xl font-black text-cyan-600 dark:text-cyan-400">
+            <p className="mt-1 text-2xl font-black text-amber-600 dark:text-amber-400">
               {demerits.filter((d) => d.status === "WARNING").length}
             </p>
-            <span className="text-[10px] text-cyan-700/80 dark:text-cyan-400/80">
+            <span className="text-[10px] text-amber-700/80 dark:text-amber-400/80">
               Cần nhắc nhở rèn luyện
             </span>
           </div>
-          <div className="rounded-2xl border border-blue-500/20 bg-card p-4">
-            <p className="flex items-center gap-1 text-[11px] font-medium text-blue-700 dark:text-blue-400">
+          <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-4">
+            <p className="flex items-center gap-1 text-[11px] font-medium text-red-700 dark:text-red-400">
               <UserX className="h-3.5 w-3.5" /> Đình chỉ kỳ sau (&gt;30đ)
             </p>
-            <p className="mt-1 text-2xl font-black text-blue-600 dark:text-blue-400">
+            <p className="mt-1 text-2xl font-black text-red-600 dark:text-red-400">
               {demerits.filter((d) => d.status === "SUSPENDED").length}
             </p>
-            <span className="text-[10px] text-blue-700/80 dark:text-blue-400/80">
+            <span className="text-[10px] text-red-700/80 dark:text-red-400/80">
               Không xét duyệt KTX kỳ tới
             </span>
           </div>
@@ -621,7 +621,7 @@ export const CurfewPage: React.FC = () => {
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <Scan className="h-3.5 w-3.5 shrink-0 text-blue-500" />
+            <Scan className="h-3.5 w-3.5 shrink-0 text-red-500" />
             <span className="truncate">Quét Thẻ Cổng 23:00</span>
           </button>
         )}
@@ -648,7 +648,7 @@ export const CurfewPage: React.FC = () => {
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          <Shield className="h-3.5 w-3.5 shrink-0 text-cyan-500" />
+          <Shield className="h-3.5 w-3.5 shrink-0 text-amber-500" />
           <span className="truncate">
             {isGuardOrManager
               ? "Sổ Kỷ Luật & Điểm Trừ"
@@ -663,11 +663,11 @@ export const CurfewPage: React.FC = () => {
       {activeTab === "GATE_SCAN" && (
         <div className="space-y-6">
           {/* Main Console Box */}
-          <div className="space-y-6 rounded-3xl border border-blue-500/30 bg-card p-6 shadow-sm sm:p-8">
+          <div className="space-y-6 rounded-3xl border border-red-500/30 bg-card p-6 shadow-sm sm:p-8">
             {/* Top Bar of Console */}
             <div className="flex flex-col items-start justify-between gap-4 border-b border-border pb-6 sm:flex-row sm:items-center">
               <div className="space-y-1">
-                <span className="flex items-center gap-1.5 text-[10px] font-bold tracking-wider text-blue-600 uppercase">
+                <span className="flex items-center gap-1.5 text-[10px] font-bold tracking-wider text-red-600 uppercase">
                   <ShieldCheck className="h-3.5 w-3.5" /> Bàn Trực Cổng Bảo Vệ
                   (Security Gate Console)
                 </span>
@@ -685,7 +685,7 @@ export const CurfewPage: React.FC = () => {
                   <span
                     className={`font-mono text-xl font-black ${
                       simulatedHour >= 23
-                        ? "animate-pulse text-blue-600"
+                        ? "animate-pulse text-red-600"
                         : "text-emerald-600"
                     }`}
                   >
@@ -718,7 +718,7 @@ export const CurfewPage: React.FC = () => {
                       }}
                       className={`rounded px-2 py-0.5 text-[10px] font-bold ${
                         simulatedHour === 23
-                          ? "bg-blue-600 text-white"
+                          ? "bg-red-600 text-white"
                           : "border border-border bg-background hover:bg-muted"
                       }`}
                     >
@@ -745,7 +745,7 @@ export const CurfewPage: React.FC = () => {
                 </button>
                 <button
                   onClick={() => handleScanCard("SE182053")}
-                  className="flex items-center gap-1.5 rounded-xl border border-blue-500/30 bg-blue-500/10 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-500/20 dark:text-blue-300"
+                  className="flex items-center gap-1.5 rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-500/20 dark:text-red-300"
                 >
                   <span>SE182053 (Lê Minh Tuấn - KHÔNG CÓ ĐƠN ➔ Vi phạm)</span>
                 </button>
@@ -774,12 +774,12 @@ export const CurfewPage: React.FC = () => {
                   onChange={(e) => setScanInputMssv(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleScanCard()}
                   placeholder="Nhập MSSV hoặc quét mã barcode thẻ sinh viên (VD: SE182049)..."
-                  className="w-full rounded-2xl border border-border bg-card py-2.5 pr-4 pl-10 font-mono text-xs uppercase focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
+                  className="w-full rounded-2xl border border-border bg-card py-2.5 pr-4 pl-10 font-mono text-xs uppercase focus:ring-2 focus:ring-red-500 focus:outline-hidden"
                 />
               </div>
               <button
                 onClick={() => handleScanCard()}
-                className="flex shrink-0 items-center gap-2 rounded-2xl bg-blue-600 px-6 py-2.5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-blue-700"
+                className="flex shrink-0 items-center gap-2 rounded-2xl bg-red-600 px-6 py-2.5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-red-700"
               >
                 <Scan className="h-4 w-4" />
                 <span>Quẹt Thẻ Cổng (Scan)</span>
@@ -794,7 +794,7 @@ export const CurfewPage: React.FC = () => {
                     ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-950 dark:text-emerald-200"
                     : scanResult.status === "APPROVED_LATE"
                       ? "border-blue-500/40 bg-blue-500/10 text-blue-950 dark:text-blue-200"
-                      : "border-blue-500/50 bg-blue-500/15 text-blue-950 shadow-md dark:text-blue-200"
+                      : "border-red-500/50 bg-red-500/15 text-red-950 shadow-md dark:text-red-200"
                 }`}
               >
                 <div className="flex items-start gap-4">
@@ -804,7 +804,7 @@ export const CurfewPage: React.FC = () => {
                         ? "bg-emerald-500/20 text-emerald-600"
                         : scanResult.status === "APPROVED_LATE"
                           ? "bg-blue-500/20 text-blue-600"
-                          : "animate-bounce bg-blue-500/20 text-blue-600"
+                          : "animate-bounce bg-red-500/20 text-red-600"
                     }`}
                   >
                     {scanResult.status === "ON_TIME" && (
@@ -893,7 +893,7 @@ export const CurfewPage: React.FC = () => {
                               ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
                               : log.curfewStatus === "APPROVED_LATE"
                                 ? "bg-blue-500/10 text-blue-700 dark:text-blue-400"
-                                : "border border-blue-500/30 bg-blue-500/15 text-blue-600 dark:text-blue-400"
+                                : "border border-red-500/30 bg-red-500/15 text-red-600 dark:text-red-400"
                           }`}
                         >
                           {log.curfewStatus === "ON_TIME" &&
@@ -933,7 +933,7 @@ export const CurfewPage: React.FC = () => {
               </h3>
             </div>
 
-            <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/10 p-3 text-[11px] text-cyan-800 dark:text-cyan-300">
+            <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 p-3 text-[11px] text-amber-800 dark:text-amber-300">
               <p className="flex items-center gap-1 font-bold">
                 <AlertCircle className="h-3.5 w-3.5" /> Quy định nộp đơn:
               </p>
@@ -1124,7 +1124,7 @@ export const CurfewPage: React.FC = () => {
                         className={`rounded-full px-2 py-0.5 text-[9px] font-bold ${
                           req.isSubmittedBefore2100
                             ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
-                            : "bg-blue-500/10 text-blue-600"
+                            : "bg-red-500/10 text-red-600"
                         }`}
                       >
                         {req.isSubmittedBefore2100
@@ -1138,8 +1138,8 @@ export const CurfewPage: React.FC = () => {
                           req.status === "APPROVED"
                             ? "bg-emerald-600 text-white"
                             : req.status === "REJECTED"
-                              ? "bg-blue-600 text-white"
-                              : "border border-cyan-500/30 bg-cyan-500/20 text-cyan-700 dark:text-cyan-400"
+                              ? "bg-red-600 text-white"
+                              : "border border-amber-500/30 bg-amber-500/20 text-amber-700 dark:text-amber-400"
                         }`}
                       >
                         {req.status === "APPROVED" && "Đã phê duyệt"}
@@ -1183,7 +1183,7 @@ export const CurfewPage: React.FC = () => {
                           onClick={() =>
                             handleReviewRequest(req.id, "REJECTED")
                           }
-                          className="rounded-lg bg-blue-600 px-2.5 py-1 text-[11px] font-bold text-white shadow-xs hover:bg-blue-700"
+                          className="rounded-lg bg-red-600 px-2.5 py-1 text-[11px] font-bold text-white shadow-xs hover:bg-red-700"
                         >
                           Từ chối
                         </button>
@@ -1191,7 +1191,7 @@ export const CurfewPage: React.FC = () => {
                     )}
 
                     {!isGuardOrManager && req.status === "PENDING" && (
-                      <span className="mt-1 text-[11px] font-semibold text-cyan-600 sm:mt-0 dark:text-cyan-400">
+                      <span className="mt-1 text-[11px] font-semibold text-amber-600 sm:mt-0 dark:text-amber-400">
                         Đang được BQL xem xét
                       </span>
                     )}
@@ -1252,9 +1252,9 @@ export const CurfewPage: React.FC = () => {
                     key={student.studentId}
                     className={`rounded-2xl border p-4 transition-all ${
                       isSuspended
-                        ? "border-blue-500/40 bg-blue-500/5"
+                        ? "border-red-500/40 bg-red-500/5"
                         : isWarning
-                          ? "border-cyan-500/40 bg-cyan-500/5"
+                          ? "border-amber-500/40 bg-amber-500/5"
                           : "border-border bg-card"
                     }`}
                   >
@@ -1275,9 +1275,9 @@ export const CurfewPage: React.FC = () => {
                         <span
                           className={`text-xl font-black ${
                             isSuspended
-                              ? "text-blue-600"
+                              ? "text-red-600"
                               : isWarning
-                                ? "text-cyan-600"
+                                ? "text-amber-600"
                                 : "text-emerald-600"
                           }`}
                         >
@@ -1294,9 +1294,9 @@ export const CurfewPage: React.FC = () => {
                       <div
                         className={`h-full transition-all ${
                           isSuspended
-                            ? "bg-blue-500"
+                            ? "bg-red-500"
                             : isWarning
-                              ? "bg-cyan-500"
+                              ? "bg-amber-500"
                               : "bg-emerald-500"
                         }`}
                         style={{ width: `${percent}%` }}
@@ -1311,9 +1311,9 @@ export const CurfewPage: React.FC = () => {
                       <span
                         className={`rounded-full px-2 py-0.5 font-bold ${
                           isSuspended
-                            ? "bg-blue-600 text-white"
+                            ? "bg-red-600 text-white"
                             : isWarning
-                              ? "bg-cyan-500/20 text-cyan-700 dark:text-cyan-300"
+                              ? "bg-amber-500/20 text-amber-700 dark:text-amber-300"
                               : "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
                         }`}
                       >
@@ -1334,7 +1334,7 @@ export const CurfewPage: React.FC = () => {
           {isGuardOrManager ? (
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
               <div className="space-y-4 rounded-3xl border border-border bg-card p-6 shadow-xs">
-                <div className="flex items-center gap-2 border-b border-border pb-3 text-blue-600">
+                <div className="flex items-center gap-2 border-b border-border pb-3 text-red-600">
                   <AlertTriangle className="h-5 w-5" />
                   <h3 className="text-sm font-bold text-foreground">
                     Lập Biên Bản Vi Phạm Trực Tuyến
@@ -1417,7 +1417,7 @@ export const CurfewPage: React.FC = () => {
 
                   <button
                     type="submit"
-                    className="mt-2 w-full rounded-2xl bg-blue-600 py-2.5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-blue-700"
+                    className="mt-2 w-full rounded-2xl bg-red-600 py-2.5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-red-700"
                   >
                     Ký Biên Bản & Trừ Điểm
                   </button>
@@ -1454,7 +1454,7 @@ export const CurfewPage: React.FC = () => {
                           </span>
                         </div>
 
-                        <span className="rounded-md bg-blue-500/10 px-2 py-0.5 text-xs font-bold text-blue-600">
+                        <span className="rounded-md bg-red-500/10 px-2 py-0.5 text-xs font-bold text-red-600">
                           -{vio.pointsDeducted} điểm
                         </span>
                       </div>
