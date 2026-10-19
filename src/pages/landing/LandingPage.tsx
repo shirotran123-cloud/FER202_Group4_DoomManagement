@@ -11,9 +11,6 @@ import {
   ArrowRight,
   CheckCircle2,
   FileCheck,
-  Flame,
-  Wifi,
-  Coffee,
   PhoneCall,
   MapPin,
   ChevronDown,
@@ -431,60 +428,6 @@ export const LandingPage: React.FC = () => {
               </p>
             </div>
           ))}
-        </div>
-      </section>
-
-      <section
-        id="tien-ich"
-        className="space-y-6 rounded-3xl border border-border bg-muted/20 p-8 sm:p-10"
-      >
-        <div className="mx-auto max-w-xl space-y-2 text-center">
-          <h2 className="text-xl font-extrabold text-foreground sm:text-2xl">
-            Tiện Ích & Không Gian Chung Hiện Đại
-          </h2>
-          <p className="text-xs text-muted-foreground">
-            Môi trường sinh hoạt an toàn, tiện nghi giúp sinh viên tập trung tối
-            đa cho việc học.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div className="space-y-2 rounded-xl border border-border bg-card p-4 text-center">
-            <Wifi className="mx-auto h-6 w-6 text-sky-600" />
-            <h4 className="text-xs font-bold text-foreground">
-              Wi-Fi 6 Băng Thông Rộng
-            </h4>
-            <p className="text-[11px] text-muted-foreground">
-              Phủ sóng toàn bộ phòng ngủ & sảnh
-            </p>
-          </div>
-          <div className="space-y-2 rounded-xl border border-border bg-card p-4 text-center">
-            <Coffee className="mx-auto h-6 w-6 text-sky-600" />
-            <h4 className="text-xs font-bold text-foreground">
-              Phòng Tự Học 24/7
-            </h4>
-            <p className="text-[11px] text-muted-foreground">
-              Máy lạnh, bàn học nhóm yên tĩnh
-            </p>
-          </div>
-          <div className="space-y-2 rounded-xl border border-border bg-card p-4 text-center">
-            <Flame className="mx-auto h-6 w-6 text-sky-600" />
-            <h4 className="text-xs font-bold text-foreground">
-              Bếp Ăn Chung Tầng 1
-            </h4>
-            <p className="text-[11px] text-muted-foreground">
-              Khu vực nấu nướng an toàn PCCC
-            </p>
-          </div>
-          <div className="space-y-2 rounded-xl border border-border bg-card p-4 text-center">
-            <ShieldCheck className="mx-auto h-6 w-6 text-sky-600" />
-            <h4 className="text-xs font-bold text-foreground">
-              Bảo Vệ & Camera AI 24/7
-            </h4>
-            <p className="text-[11px] text-muted-foreground">
-              Kiểm soát ra vào thông minh
-            </p>
-          </div>
         </div>
       </section>
 
