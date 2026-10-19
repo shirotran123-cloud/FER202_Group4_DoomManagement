@@ -296,7 +296,6 @@ export const MyRoomPage: React.FC = () => {
               <Badge variant="available" dot>
                 Đang Lưu Trú (Active)
               </Badge>
-              <Badge variant="secondary">Sinh viên Chính quy K19</Badge>
             </div>
             <p className="text-xs text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1">
               <span className="font-semibold text-foreground">Buồng B (Balcony Wing)</span>
