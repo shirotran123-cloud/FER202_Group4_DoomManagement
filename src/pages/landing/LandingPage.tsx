@@ -152,38 +152,32 @@ export const LandingPage: React.FC = () => {
       icon: BedDouble,
       title: "Mô hình Buồng riêng 1:4:6",
       desc: "Cấu trúc tiêu chuẩn: 1 Phòng = 4 Buồng riêng biệt (A, B, C, D) = 24 Giường. Mỗi sinh viên sở hữu rèm che riêng tư, ổ điện, đèn học và tủ locker mã số.",
-      tag: "Signature Topology",
-    },
+          },
     {
       icon: Zap,
       title: "Auto-Approval 0-Chạm",
       desc: "Engine tự động đối soát giới tính, thông tin tuyển sinh, tình trạng công nợ và thanh toán cọc trong 3 giây. Cấp ngay e-Contract PDF hợp lệ.",
-      tag: "Zero-Touch",
-    },
+          },
     {
       icon: Clock,
       title: "Khóa giữ chỗ 15 Phút",
       desc: "Cơ chế khóa concurrency lock thời gian thực với đồng hồ đếm ngược 900s. Tránh trùng lặp giường khi hàng trăm tân sinh viên cùng chọn.",
-      tag: "Realtime Lock",
-    },
+          },
     {
       icon: Receipt,
       title: "Minh bạch Điện Nước (Total / N)",
       desc: "Chụp ảnh công tơ điện nước phòng ngày 25-28 hàng tháng. Tự động tính thuế VAT và chia đều chính xác cho N sinh viên đang ở kèm mã VietQR.",
-      tag: "Pro-Rata Split",
-    },
+          },
     {
       icon: ShieldCheck,
       title: "An ninh 24/7 & Giới nghiêm 23:00",
       desc: "Cổng kiểm soát quét thẻ thông minh. Đơn xin về muộn ngoài giờ nộp online trước 21:00. Quản lý điểm rèn luyện KTX minh bạch.",
-      tag: "Smart Gate",
-    },
+          },
     {
       icon: FileCheck,
       title: "Biên bản Bàn giao Số hóa",
       desc: "Checklist điện tử khi Check-in và Check-out với ảnh hiện trạng thiết bị, tự động quyết toán và hoàn cọc không thủ tục rườm rà.",
-      tag: "Digital Handover",
-    },
+          },
   ]
 
   const feeTable = [
@@ -252,14 +246,7 @@ export const LandingPage: React.FC = () => {
     <div className="space-y-16 pb-12">
       <section className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-card via-card to-sky-500/5 p-8 shadow-sm sm:p-12 lg:p-16">
         <div className="relative z-10 max-w-3xl space-y-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-500/10 px-3.5 py-1 text-xs font-semibold text-sky-600 dark:text-sky-400">
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>
-              FPT University Dormitory Management System • Kỳ Fall 2026
-            </span>
-          </div>
-
-          <h1 className="text-3xl leading-[1.15] font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+                    <h1 className="text-3xl leading-[1.15] font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
             Không Gian Sống Chuẩn Mực,{" "}
             <span className="bg-gradient-to-r from-sky-600 via-cyan-500 to-teal-500 bg-clip-text text-transparent">
               Trải Nghiệm Đại Học Trọn Vẹn
@@ -366,11 +353,8 @@ export const LandingPage: React.FC = () => {
 
       <section id="mo-hinh" className="scroll-mt-24 space-y-6">
         <div className="mx-auto max-w-2xl space-y-2 text-center">
-          <span className="text-xs font-bold tracking-wider text-sky-600 uppercase">
-            Nền tảng công nghệ
-          </span>
           <h2 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
-            Tính Năng Nổi Bật Chuẩn IEEE 830
+            Tính Năng Nổi Bật Của Hệ Thống
           </h2>
         </div>
 
@@ -386,9 +370,7 @@ export const LandingPage: React.FC = () => {
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500/10 text-sky-600 transition-transform group-hover:scale-110">
                     <Icon className="h-6 w-6" />
                   </div>
-                  <span className="rounded-md bg-muted px-2 py-1 text-[10px] font-bold text-muted-foreground uppercase">
-                    {h.tag}
-                  </span>
+                  
                 </div>
                 <h3 className="mb-2 text-base font-bold text-foreground">
                   {h.title}
@@ -420,7 +402,7 @@ export const LandingPage: React.FC = () => {
             to="/billing"
             className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-600 hover:text-sky-700"
           >
-            <span>Tra cứu chi tiết hóa đơn mẫu (Module 4)</span>
+            <span>Tra cứu chi tiết hóa đơn mẫu </span>
             <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>

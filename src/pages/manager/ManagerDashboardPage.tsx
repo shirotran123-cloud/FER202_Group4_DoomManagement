@@ -25,8 +25,7 @@ import {
   Download,
   Search,
   FileDown,
-  Sparkles,
-  CheckCircle2,
+    CheckCircle2,
 } from "lucide-react"
 
 // Decomposed components
@@ -180,12 +179,8 @@ export const ManagerDashboardPage: React.FC = () => {
       <Card className="p-6">
         <div className="flex flex-col gap-6">
           <div>
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>DMS Central Operations & Executive Reports</span>
-            </div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              Bàn Làm Việc Quản Lý Ký Túc Xá (DMS Hub)
+              Bàn Làm Việc Quản Lý Ký Túc Xá
             </h1>
             <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
               Hệ thống giám sát chỉ số lấp đầy buồng giường, kiểm soát tiêu thụ

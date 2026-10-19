@@ -204,8 +204,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               <span className="text-base leading-none font-bold tracking-tight text-foreground">
                 Domanage
               </span>
-              <span className="mt-1 text-[11px] font-semibold tracking-wide text-primary">
-                DMS Campus Living
+              <span className="mt-1 text-[11px] font-medium tracking-wide text-muted-foreground">
+                Ký túc xá FPT University
               </span>
             </div>
           </div>

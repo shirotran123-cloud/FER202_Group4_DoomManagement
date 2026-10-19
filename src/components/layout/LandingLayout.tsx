@@ -106,14 +106,9 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
               <Building2 className="h-5 w-5" />
             </div>
             <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <span className="text-base font-extrabold tracking-tight text-slate-900">
-                  DOMANAGE
-                </span>
-                <span className="rounded-md border border-blue-200 bg-blue-50 px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-blue-700">
-                  DMS Campus
-                </span>
-              </div>
+              <span className="text-base font-extrabold tracking-tight text-slate-900">
+                DOMANAGE
+              </span>
               <span className="hidden text-[11px] text-slate-500 sm:inline">
                 Hệ thống Quản lý Ký túc xá FPT University
               </span>

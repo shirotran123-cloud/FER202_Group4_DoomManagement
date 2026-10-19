@@ -7,7 +7,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Coffee,
-  Sparkles,
   TreePine,
   Users,
 } from "lucide-react"
@@ -143,8 +142,7 @@ export const DormitoryGallerySlider: React.FC = () => {
   }, [])
 
   const currentSlide = SLIDES[currentIndex]
-  const IconComponent = currentSlide.icon
-
+  
   return (
     <div className="group relative overflow-hidden rounded-3xl border border-border bg-card shadow-lg">
       {/* Main Image Banner with Smooth Crossfade */}
@@ -172,18 +170,11 @@ export const DormitoryGallerySlider: React.FC = () => {
         {/* Content Box Over the Image */}
         <div className="pointer-events-none absolute inset-0 z-20 flex flex-col justify-between p-6 text-white sm:p-10 lg:p-12">
           {/* Top Bar inside Slide */}
-          <div className="pointer-events-auto flex items-center justify-between">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-black/40 px-3.5 py-1.5 text-xs font-semibold shadow-xs backdrop-blur-md">
-              <IconComponent className="h-4 w-4 text-sky-400" />
-              <span className="text-sky-200">{currentSlide.badge}</span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div className="rounded-full border border-white/20 bg-black/40 px-3.5 py-1 font-mono text-xs font-bold backdrop-blur-md">
-                <span className="text-sky-400">0{currentIndex + 1}</span>
-                <span className="mx-1 text-white/40">/</span>
-                <span className="text-white/80">0{SLIDES.length}</span>
-              </div>
+          <div className="pointer-events-auto flex items-center justify-end">
+            <div className="rounded-full border border-white/20 bg-black/40 px-3.5 py-1 font-mono text-xs font-bold backdrop-blur-md">
+              <span className="text-sky-400">0{currentIndex + 1}</span>
+              <span className="mx-1 text-white/40">/</span>
+              <span className="text-white/80">0{SLIDES.length}</span>
             </div>
           </div>
 
@@ -234,9 +225,8 @@ export const DormitoryGallerySlider: React.FC = () => {
       <div className="border-t border-border bg-card/95 px-4 py-3 sm:px-6">
         <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-sky-600 dark:text-sky-400" />
             <span className="text-xs font-bold text-foreground">
-              Khám Phá Không Gian Ký Túc Xá FPT Chuẩn 1:4:6
+              Khám Phá Không Gian Ký Túc Xá FPT
             </span>
           </div>
 

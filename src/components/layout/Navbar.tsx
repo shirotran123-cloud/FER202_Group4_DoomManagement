@@ -93,7 +93,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
 
         <div className="flex items-center gap-2 text-sm text-slate-700">
           <span className="hidden shrink-0 font-medium whitespace-nowrap text-slate-500 sm:inline">
-            Campus Living
+            Ký túc xá FPT University
           </span>
         </div>
 

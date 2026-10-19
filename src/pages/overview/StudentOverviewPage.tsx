@@ -7,8 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Modal } from "@/components/ui/modal"
 import {
-  CheckCircle2,
-  DoorClosed,
+    DoorClosed,
   QrCode,
   Zap,
   Building2,
@@ -59,17 +58,10 @@ export const StudentOverviewPage: React.FC = () => {
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="available" className="gap-1.5 uppercase font-semibold">
-                <CheckCircle2 className="h-3.5 w-3.5" />
-                Verified Resident
-              </Badge>
               <Badge variant="outline" className="gap-1.5 font-semibold">
                 <DoorClosed className="h-3.5 w-3.5 text-primary" />
                 Phòng A205 · Buồng B · Giường G03
               </Badge>
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-muted text-muted-foreground text-xs font-mono border border-border">
-                RFID: 8492-AX-01
-              </span>
             </div>
 
             <div>
@@ -238,14 +230,9 @@ export const StudentOverviewPage: React.FC = () => {
           <Card className="p-6 sm:p-7">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
               <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-lg font-bold text-foreground">
-                    Sơ Đồ Phân Bổ Giường Phòng A205
-                  </h2>
-                  <Badge variant="outline" className="font-semibold">
-                    Chuẩn Mô Hình 24B
-                  </Badge>
-                </div>
+                <h2 className="text-lg font-bold text-foreground">
+                  Sơ Đồ Phân Bổ Giường Phòng A205
+                </h2>
                 <p className="text-xs text-muted-foreground mt-1">
                   4 Buồng riêng (A, B, C, D) · 6 Giường/buồng · 18 Đã ở, 6 Giường trống
                 </p>

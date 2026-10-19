@@ -714,12 +714,7 @@ export const LoginPage: React.FC = () => {
                   </div>
 
                   <div className="flex items-center justify-between rounded-xl bg-muted/40 p-3 text-[11px] text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 shrink-0 text-sky-600" />
-                      <span>
-                        Cơ chế JWT Access Token (15m) • HTTP-Only Refresh
-                      </span>
-                    </div>
+                    <span>Chưa có hồ sơ lưu trú KTX?</span>
                     <button
                       type="button"
                       onClick={() => {

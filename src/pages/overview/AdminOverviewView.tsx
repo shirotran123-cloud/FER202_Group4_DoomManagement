@@ -123,10 +123,7 @@ export const AdminOverviewView: React.FC = () => {
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#cee6ef]/20 text-[#cee6ef] text-xs font-semibold backdrop-blur-md border border-white/10">
                 <ShieldCheck className="h-3.5 w-3.5" />
-                Quản Trị Viên Hệ Thống DMS
-              </span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/10 text-white/90 text-xs font-mono">
-                Vai trò: {user?.roleTitle || "Ban Quản Lý & Admin Toàn Quyền"}
+                {user?.roleTitle || "Ban Quản Lý Ký Túc Xá"}
               </span>
             </div>
 

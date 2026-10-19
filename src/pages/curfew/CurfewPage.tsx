@@ -532,11 +532,6 @@ export const CurfewPage: React.FC = () => {
               <ClockAlert className="h-7 w-7" />
             </div>
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-blue-500/10 px-3 py-0.5 text-[11px] font-bold text-blue-700 dark:text-blue-400">
-                <span>Module 6</span>
-                <span>•</span>
-                <span>Đơn vắng mặt và xử lý vi phạm</span>
-              </div>
               <h1 className="mt-1 text-2xl font-black text-foreground sm:text-3xl">
                 Kiểm Soát Giờ Giới Nghiêm 23:00 & Kỷ Luật Nội Trú
               </h1>

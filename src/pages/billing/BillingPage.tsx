@@ -66,7 +66,7 @@ export const BillingPage: React.FC = () => {
             <Badge variant="available">Chu kỳ T09/2026</Badge>
           </div>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Module 4 · Thuật toán chia đều phòng (Total ÷ N) & Đối soát ảnh công tơ
+            Thuật toán chia đều phòng (Total ÷ N) & Đối soát ảnh công tơ
           </p>
         </div>
 
