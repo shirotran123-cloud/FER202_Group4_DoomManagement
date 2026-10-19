@@ -1,5 +1,6 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { AuthProvider } from "@/contexts/AuthContext"
+import { useAuth } from "@/contexts/useAuth"
 import { BookingProvider } from "@/contexts/BookingContext"
 import { AppLayout } from "@/components/layout/AppLayout"
 import { LandingLayout } from "@/components/layout/LandingLayout"
@@ -17,15 +18,41 @@ import { ManagerDashboardPage } from "@/pages/manager/ManagerDashboardPage"
 import { UnauthorizedPage } from "@/pages/errors/UnauthorizedPage"
 import { NotFoundPage } from "@/pages/errors/NotFoundPage"
 
+function HomeRoute() {
+  const { isAuthenticated, user } = useAuth()
+
+  // Chưa đăng nhập -> Hiện trang chào mừng (Landing Page)
+  if (!isAuthenticated || !user) {
+    return (
+      <LandingLayout>
+        <LandingPage />
+      </LandingLayout>
+    )
+  }
+
+  // Đã đăng nhập -> Tự động chuyển thẳng tới Bảng điều khiển tương ứng theo vai trò
+  const destination =
+    user.role === "manager"
+      ? "/manager"
+      : user.role === "technician"
+        ? "/maintenance"
+        : "/overview"
+
+  return <Navigate to={destination} replace />
+}
+
 export function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <BookingProvider>
         <Routes>
-          {/* Trang chủ KTX: Không có Sidebar, trang đầu tiên khi truy cập localhost:5173 */}
+          {/* Trang chủ KTX: Chưa đăng nhập -> Trang chào mừng; Đã đăng nhập -> Bảng điều khiển */}
+          <Route path="/" element={<HomeRoute />} />
+
+          {/* Đường dẫn xem trực tiếp trang chào mừng nếu cần */}
           <Route
-            path="/"
+            path="/welcome"
             element={
               <LandingLayout>
                 <LandingPage />
@@ -33,7 +60,7 @@ export function App() {
             }
           />
 
-          {/* Các phân hệ tác vụ có Sidebar Stitch: /overview, /my-room, /booking, etc. */}
+          {/* Các phân hệ tác vụ có Sidebar: /overview, /my-room, /booking, etc. */}
           <Route element={<AppLayout />}>
 
             {/* Bảng điều khiển sinh viên (Overview): Sau khi đăng nhập */}
