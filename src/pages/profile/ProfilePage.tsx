@@ -5,7 +5,6 @@ import {
   User,
   Phone,
   Mail,
-  Shield,
   BedDouble,
   AlertCircle,
   CheckCircle2,
@@ -14,6 +13,7 @@ import {
   X,
   FileDown,
   HeartHandshake,
+  LogOut,
 } from "lucide-react"
 
 interface ProfileFormProps {
@@ -67,12 +67,6 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
                 <h1 className="text-xl sm:text-2xl font-black text-foreground">
                   {user.fullName}
                 </h1>
-                <span className="rounded-full bg-sky-500/10 px-2.5 py-0.5 text-xs font-bold text-sky-600 dark:text-sky-400 border border-sky-500/20">
-                  {user.roleTitle}
-                </span>
-                <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-bold text-emerald-600 border border-emerald-500/20">
-                  Đang hoạt động
-                </span>
               </div>
 
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground pt-1">
@@ -146,10 +140,7 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
                 <p className="font-semibold text-foreground">{user.fullName}</p>
               </div>
 
-              <div>
-                <p className="text-muted-foreground text-[11px]">Số CCCD / Định danh</p>
-                <p className="font-mono font-semibold text-foreground">{user.citizenId}</p>
-              </div>
+
 
               <div>
                 <p className="text-muted-foreground text-[11px]">Ngày sinh</p>
@@ -372,15 +363,7 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
             </div>
           )}
 
-          <div className="rounded-2xl border border-border bg-card p-5 space-y-3 text-xs">
-            <span className="font-bold text-foreground flex items-center gap-2">
-              <Shield className="h-4 w-4 text-sky-600" />
-              <span>Chính sách Bảo mật Dữ liệu</span>
-            </span>
-            <p className="text-muted-foreground text-[11px] leading-relaxed">
-              Dữ liệu CCCD và thông tin gia đình được mã hóa tuân thủ theo Nghị định 13/2023/NĐ-CP về Bảo vệ dữ liệu cá nhân.
-            </p>
-          </div>
+
         </div>
       </div>
     </>
@@ -425,12 +408,13 @@ export const ProfilePage: React.FC = () => {
       {/* Keyed by user.id so state automatically resets when switching roles without useEffect */}
       <ProfileDetailsAndForm key={user.id} user={user} onSave={handleSave} />
 
-      <div className="rounded-2xl border border-border bg-card p-5 text-center">
+      <div className="flex justify-end pt-2">
         <button
           onClick={() => logout()}
-          className="text-xs font-semibold text-blue-600 hover:bg-blue-500/10 px-4 py-2 rounded-xl transition-colors"
+          className="inline-flex items-center gap-2 rounded-xl border border-red-200 dark:border-red-900/40 bg-red-50/60 dark:bg-red-950/20 px-4 py-2.5 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors shadow-2xs"
         >
-          Đăng xuất tài khoản
+          <LogOut className="h-3.5 w-3.5" />
+          <span>Đăng xuất tài khoản</span>
         </button>
       </div>
     </div>

@@ -80,6 +80,20 @@ export const CurfewPage: React.FC = () => {
     }
   })
 
+  const myDemerit =
+    demerits.find((d) => d.studentId === (user?.studentId || "SE182049")) || {
+      studentId: user?.studentId || "SE182049",
+      studentName: user?.fullName || "Nguyễn Hoàng Vinh",
+      room: "A205",
+      remainingPoints: 100,
+      totalDeducted: 0,
+      violationCount: 0,
+      status: "GOOD" as const,
+    }
+  const myViolations = violations.filter(
+    (v) => v.studentId === (user?.studentId || "SE182049")
+  )
+
   // Save to localStorage
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY_CURFEW_REQS, JSON.stringify(requests))
@@ -1124,276 +1138,453 @@ export const CurfewPage: React.FC = () => {
       {/* ========================================================= */}
       {activeTab === "DISCIPLINE" && (
         <div className="space-y-6">
-          {/* Summary of Student Demerit Points */}
-          <div className="space-y-4 rounded-3xl border border-border bg-card p-6 shadow-xs">
-            <div className="flex flex-col items-start justify-between gap-2 border-b border-border pb-3 sm:flex-row sm:items-center">
-              <div>
-                <h3 className="flex items-center gap-2 text-sm font-bold text-foreground">
-                  <ShieldCheck className="h-4 w-4 text-emerald-600" />
-                  Bảng Theo Dõi Điểm Rèn Luyện Lưu Trú KTX (100 Điểm Ban Đầu)
-                </h3>
-                <p className="text-xs text-muted-foreground">
-                  Quy chế: Bị trừ &gt; 20 điểm (Cảnh cáo) • Bị trừ &gt; 30 điểm
-                  (Đình chỉ lưu trú kỳ sau)
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-              {(isGuardOrManager
-                ? demerits
-                : demerits.filter(
-                    (d) => d.studentId === (user?.studentId || "SE182049")
-                  )
-              ).map((student) => {
-                const percent = student.remainingPoints
-                const isWarning = student.status === "WARNING"
-                const isSuspended = student.status === "SUSPENDED"
-
-                return (
-                  <div
-                    key={student.studentId}
-                    className={`rounded-2xl border p-4 transition-all ${
-                      isSuspended
-                        ? "border-blue-500/40 bg-blue-500/5"
-                        : isWarning
-                          ? "border-cyan-500/40 bg-cyan-500/5"
-                          : "border-border bg-card"
+          {!isGuardOrManager ? (
+            /* Sinh viên: Giao diện rộng rãi, hiện đại, thoáng đẹp */
+            <div className="space-y-6">
+              {/* Bảng điểm rèn luyện tổng quan */}
+              <div className="space-y-6 rounded-3xl border border-border bg-card p-6 shadow-xs sm:p-8">
+                <div className="flex flex-col items-start justify-between gap-4 border-b border-border pb-5 sm:flex-row sm:items-center">
+                  <div>
+                    <h3 className="flex items-center gap-2 text-base font-bold text-foreground sm:text-lg">
+                      <ShieldCheck className="h-5 w-5 text-emerald-600" />
+                      Bảng Theo Dõi Điểm Rèn Luyện Lưu Trú KTX
+                    </h3>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Điểm khởi đầu học kỳ: 100đ • Bị trừ &gt; 20 điểm (Cảnh cáo) • Bị trừ &gt; 30 điểm (Đình chỉ lưu trú kỳ sau)
+                    </p>
+                  </div>
+                  <span
+                    className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1 text-xs font-bold ${
+                      myDemerit.status === "SUSPENDED"
+                        ? "bg-blue-600 text-white"
+                        : myDemerit.status === "WARNING"
+                          ? "border border-cyan-500/30 bg-cyan-500/15 text-cyan-700 dark:text-cyan-300"
+                          : "border border-emerald-500/30 bg-emerald-500/15 text-emerald-700 dark:text-emerald-400"
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="font-mono text-[10px] font-bold text-muted-foreground">
-                          {student.studentId}
-                        </span>
-                        <h4 className="text-xs font-bold text-foreground">
-                          {student.studentName}
-                        </h4>
-                        <span className="text-[10px] text-muted-foreground">
-                          Phòng {student.room}
-                        </span>
-                      </div>
-
-                      <div className="text-right">
-                        <span
-                          className={`text-xl font-black ${
-                            isSuspended
-                              ? "text-blue-600"
-                              : isWarning
-                                ? "text-cyan-600"
-                                : "text-emerald-600"
-                          }`}
-                        >
-                          {student.remainingPoints}
-                        </span>
-                        <span className="text-[10px] text-muted-foreground">
-                          /100đ
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Progress Bar */}
-                    <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-muted">
-                      <div
-                        className={`h-full transition-all ${
-                          isSuspended
-                            ? "bg-blue-500"
-                            : isWarning
-                              ? "bg-cyan-500"
-                              : "bg-emerald-500"
-                        }`}
-                        style={{ width: `${percent}%` }}
-                      />
-                    </div>
-
-                    <div className="mt-2.5 flex items-center justify-between text-[10px]">
-                      <span className="text-muted-foreground">
-                        Đã trừ: <strong>{student.totalDeducted}đ</strong> (
-                        {student.violationCount} lần)
-                      </span>
-                      <span
-                        className={`rounded-full px-2 py-0.5 font-bold ${
-                          isSuspended
-                            ? "bg-blue-600 text-white"
-                            : isWarning
-                              ? "bg-cyan-500/20 text-cyan-700 dark:text-cyan-300"
-                              : "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
-                        }`}
-                      >
-                        {isSuspended
-                          ? "ĐÌNH CHỈ KỲ SAU"
-                          : isWarning
-                            ? "CẢNH BÁO CẤP 1"
-                            : "TỐT"}
-                      </span>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* Form to create infraction report: ONLY for Guard / Manager / Admin */}
-          {isGuardOrManager ? (
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-              <div className="space-y-4 rounded-3xl border border-border bg-card p-6 shadow-xs">
-                <div className="flex items-center gap-2 border-b border-border pb-3 text-blue-600">
-                  <AlertTriangle className="h-5 w-5" />
-                  <h3 className="text-sm font-bold text-foreground">
-                    Lập Biên Bản Vi Phạm Trực Tuyến
-                  </h3>
-                </div>
-
-                <form
-                  onSubmit={handleCreateDisciplineReport}
-                  className="space-y-3.5 text-xs"
-                >
-                  <div>
-                    <label className="font-semibold text-foreground">
-                      Sinh viên vi phạm
-                    </label>
-                    <select
-                      value={vioStudentId}
-                      onChange={(e) => setVioStudentId(e.target.value)}
-                      className="mt-1 w-full rounded-xl border border-border bg-card px-3 py-2 text-xs"
-                    >
-                      <option value="SE182053">
-                        SE182053 - Lê Minh Tuấn (A204)
-                      </option>
-                      <option value="SE182056">
-                        SE182056 - Đoàn Gia Bảo (A201)
-                      </option>
-                      <option value="SE182057">
-                        SE182057 - Ngô Văn Khải (A302)
-                      </option>
-                      <option value="SE182049">
-                        SE182049 - Nguyễn Hoàng Vinh (A205)
-                      </option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="font-semibold text-foreground">
-                      Hành vi vi phạm nội quy
-                    </label>
-                    <select
-                      value={vioType}
-                      onChange={(e) =>
-                        setVioType(e.target.value as InfractionType)
-                      }
-                      className="mt-1 w-full rounded-xl border border-border bg-card px-3 py-2 text-xs font-semibold"
-                    >
-                      <option value="CURFEW_VIOLATION">
-                        Vi phạm giờ giới nghiêm 23:00 (-10đ)
-                      </option>
-                      <option value="UNAUTHORIZED_COOKING">
-                        Nấu ăn sai quy định trong phòng (-15đ)
-                      </option>
-                      <option value="NOISE_AFTER_HOURS">
-                        Làm ồn loa kéo sau 22:30 (-10đ)
-                      </option>
-                      <option value="SMOKING_VAPING">
-                        Hút thuốc lá / Pod trong phòng (-20đ)
-                      </option>
-                      <option value="UNAUTHORIZED_GUEST">
-                        Đưa người lạ ngủ qua đêm (-25đ)
-                      </option>
-                      <option value="HIGH_POWER_APPLIANCE">
-                        Thiết bị điện quá tải 1500W (-15đ)
-                      </option>
-                      <option value="OTHER">Vi phạm khác (-5đ)</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="font-semibold text-foreground">
-                      Mô tả biên bản hiện trường
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={vioDescription}
-                      onChange={(e) => setVioDescription(e.target.value)}
-                      placeholder="Ghi nhận biên bản tuần tra, tang vật thu giữ nếu có..."
-                      className="mt-1 w-full rounded-xl border border-border bg-card p-2.5 text-xs"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="mt-2 w-full rounded-2xl bg-blue-600 py-2.5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-blue-700"
-                  >
-                    Ký Biên Bản & Trừ Điểm
-                  </button>
-                </form>
-              </div>
-
-              {/* List of Violation Records */}
-              <div className="space-y-4 rounded-3xl border border-border bg-card p-6 shadow-xs lg:col-span-2">
-                <div className="flex items-center justify-between border-b border-border pb-3">
-                  <h3 className="text-sm font-bold text-foreground">
-                    Danh Sách Biên Bản Xử Lý Kỷ Luật ({violations.length})
-                  </h3>
-                  <span className="font-mono text-xs text-muted-foreground">
-                    Lưu trữ chính thức KTX
+                    <span className="h-2 w-2 rounded-full bg-current animate-pulse" />
+                    {myDemerit.status === "SUSPENDED"
+                      ? "ĐÌNH CHỈ LƯU TRÚ KỲ SAU"
+                      : myDemerit.status === "WARNING"
+                        ? "CẢNH BÁO KỶ LUẬT CẤP 1"
+                        : "HỒ SƠ RÈN LUYỆN TỐT"}
                   </span>
                 </div>
 
-                <div className="space-y-3">
-                  {violations.map((vio) => (
+                {/* 4 Thẻ chỉ số rộng rãi, cân đối */}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  {/* Điểm hiện tại */}
+                  <div className="rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent p-5">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      Điểm hiện tại
+                    </span>
+                    <div className="mt-2 flex items-baseline gap-1.5">
+                      <span className="text-3xl font-black text-emerald-600 sm:text-4xl">
+                        {myDemerit.remainingPoints}
+                      </span>
+                      <span className="text-sm font-semibold text-muted-foreground">/ 100đ</span>
+                    </div>
+                    <p className="mt-1 text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
+                      Khởi tạo: 100 điểm
+                    </p>
+                  </div>
+
+                  {/* Số lần vi phạm */}
+                  <div className="rounded-2xl border border-border bg-muted/20 p-5">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      Số lần bị lập biên bản
+                    </span>
+                    <div className="mt-2 flex items-baseline gap-1.5">
+                      <span className="text-3xl font-black text-foreground sm:text-4xl">
+                        {myDemerit.violationCount}
+                      </span>
+                      <span className="text-sm font-semibold text-muted-foreground">lần</span>
+                    </div>
+                    <p className="mt-1 text-[11px] text-muted-foreground">
+                      Tuần tra & giám sát cổng
+                    </p>
+                  </div>
+
+                  {/* Tổng điểm đã trừ */}
+                  <div className="rounded-2xl border border-border bg-muted/20 p-5">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      Tổng số điểm đã trừ
+                    </span>
+                    <div className="mt-2 flex items-baseline gap-1.5">
+                      <span
+                        className={`text-3xl font-black sm:text-4xl ${
+                          myDemerit.totalDeducted > 0 ? "text-blue-600" : "text-emerald-600"
+                        }`}
+                      >
+                        {myDemerit.totalDeducted > 0 ? `-${myDemerit.totalDeducted}` : "0"}
+                      </span>
+                      <span className="text-sm font-semibold text-muted-foreground">điểm</span>
+                    </div>
+                    <p className="mt-1 text-[11px] text-muted-foreground">
+                      Giới hạn an toàn: &lt; 20 điểm
+                    </p>
+                  </div>
+
+                  {/* Quyền lợi lưu trú */}
+                  <div className="rounded-2xl border border-border bg-muted/20 p-5">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      Xét duyệt lưu trú kỳ tới
+                    </span>
+                    <div className="mt-2">
+                      <span className="text-base font-bold text-emerald-600">
+                        {myDemerit.status === "GOOD" ? "Đủ điều kiện ở KTX" : "Cần lưu ý rèn luyện"}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-[11px] text-muted-foreground">
+                      Ưu tiên giữ nguyên buồng & phòng
+                    </p>
+                  </div>
+                </div>
+
+                {/* Thang đo tiến độ rèn luyện toàn chiều ngang */}
+                <div className="space-y-2 rounded-2xl border border-border bg-muted/15 p-4 sm:p-5">
+                  <div className="flex items-center justify-between text-xs font-semibold">
+                    <span className="text-foreground">Thang đo mức độ rèn luyện & an toàn nội trú</span>
+                    <span className="font-mono text-muted-foreground">
+                      {myDemerit.remainingPoints} / 100 điểm ({myDemerit.remainingPoints}%)
+                    </span>
+                  </div>
+                  <div className="h-3 w-full overflow-hidden rounded-full bg-muted">
                     <div
-                      key={vio.id}
-                      className="space-y-2 rounded-2xl border border-border bg-muted/20 p-4 transition-colors hover:bg-muted/30"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="rounded-md bg-muted px-2 py-0.5 font-mono text-xs font-bold">
-                            {vio.id}
-                          </span>
-                          <span className="text-xs font-bold text-foreground">
-                            {vio.studentName} ({vio.studentId})
-                          </span>
-                          <span className="text-[11px] text-muted-foreground">
-                            • Phòng {vio.room}
+                      className={`h-full rounded-full transition-all duration-500 ${
+                        myDemerit.remainingPoints < 70
+                          ? "bg-blue-600"
+                          : myDemerit.remainingPoints < 80
+                            ? "bg-cyan-500"
+                            : "bg-emerald-500"
+                      }`}
+                      style={{ width: `${myDemerit.remainingPoints}%` }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between pt-1 text-[11px] text-muted-foreground">
+                    <span>0đ (Đình chỉ)</span>
+                    <span className="font-semibold text-blue-600">70đ (Ngưỡng đình chỉ)</span>
+                    <span className="font-semibold text-cyan-600">80đ (Ngưỡng cảnh báo)</span>
+                    <span className="font-semibold text-emerald-600">100đ (Tối đa)</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Lịch sử vi phạm của sinh viên */}
+              <div className="space-y-4 rounded-3xl border border-border bg-card p-6 shadow-xs sm:p-8">
+                <div className="flex items-center justify-between border-b border-border pb-3">
+                  <h3 className="text-sm font-bold text-foreground">
+                    Biên Bản Vi Phạm Ghi Nhận ({myViolations.length})
+                  </h3>
+                  <span className="font-mono text-xs text-muted-foreground">
+                    Phòng {myDemerit.room}
+                  </span>
+                </div>
+
+                {myViolations.length === 0 ? (
+                  <div className="space-y-2 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-8 text-center">
+                    <ShieldCheck className="mx-auto h-9 w-9 text-emerald-600" />
+                    <h4 className="text-sm font-bold text-foreground">
+                      Không có biên bản vi phạm nào
+                    </h4>
+                    <p className="mx-auto max-w-md text-xs text-muted-foreground">
+                      Hồ sơ rèn luyện của bạn hoàn toàn trong sạch. Hãy tiếp tục tuân thủ quy định giờ giới nghiêm 23:00 và nội quy phòng ở ký túc xá!
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {myViolations.map((vio) => (
+                      <div
+                        key={vio.id}
+                        className="space-y-2 rounded-2xl border border-border bg-muted/20 p-4"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="rounded-md bg-muted px-2 py-0.5 font-mono text-xs font-bold">
+                              {vio.id}
+                            </span>
+                            <span className="text-xs font-bold text-foreground">
+                              {vio.infractionTitle}
+                            </span>
+                          </div>
+                          <span className="rounded-md bg-blue-500/10 px-2 py-0.5 text-xs font-bold text-blue-600">
+                            -{vio.pointsDeducted} điểm
                           </span>
                         </div>
-
-                        <span className="rounded-md bg-blue-500/10 px-2 py-0.5 text-xs font-bold text-blue-600">
-                          -{vio.pointsDeducted} điểm
-                        </span>
+                        <p className="text-xs text-muted-foreground">{vio.description}</p>
+                        <div className="flex items-center justify-between border-t border-border/60 pt-1 text-[10px] text-muted-foreground">
+                          <span>Cán bộ lập: {vio.officerName}</span>
+                          <span className="font-mono">{vio.date}</span>
+                        </div>
                       </div>
+                    ))}
+                  </div>
+                )}
+              </div>
 
-                      <p className="text-xs font-semibold text-foreground">
-                        {vio.infractionTitle}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {vio.description}
-                      </p>
-
-                      <div className="flex items-center justify-between border-t border-border/60 pt-1 text-[10px] text-muted-foreground">
-                        <span>Cán bộ lập: {vio.officerName}</span>
-                        <span className="font-mono">{vio.date}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              {/* Hướng dẫn quy chế rèn luyện */}
+              <div className="space-y-2 rounded-3xl border border-emerald-500/20 bg-emerald-500/5 p-6 text-xs text-foreground">
+                <h4 className="flex items-center gap-2 text-sm font-bold text-emerald-800 dark:text-emerald-300">
+                  <ShieldCheck className="h-4 w-4" />
+                  Quy Chế Khen Thưởng & Kỷ Luật Sinh Viên Nội Trú
+                </h4>
+                <p className="leading-relaxed text-muted-foreground">
+                  Mỗi sinh viên bắt đầu học kỳ với 100 điểm rèn luyện. Việc chấp hành đúng giờ giới nghiêm 23:00 và bảo quản tốt trang thiết bị phòng ở sẽ giúp duy trì điểm số tối đa, làm căn cứ ưu tiên xét chọn phòng và giường ở các học kỳ tiếp theo.
+                </p>
               </div>
             </div>
           ) : (
-            <div className="space-y-3 rounded-3xl border border-emerald-500/20 bg-emerald-500/5 p-6 text-xs text-foreground">
-              <h4 className="flex items-center gap-2 text-sm font-bold text-emerald-800 dark:text-emerald-300">
-                <ShieldCheck className="h-4 w-4" />
-                Quy Chế Khen Thưởng & Kỷ Luật Sinh Viên Nội Trú
-              </h4>
-              <p className="leading-relaxed text-muted-foreground">
-                Mỗi sinh viên bắt đầu học kỳ với 100 điểm rèn luyện. Việc chấp
-                hành đúng giờ giới nghiêm 23:00 và bảo quản tốt trang thiết bị
-                phòng ở sẽ giúp duy trì điểm số tối đa, làm căn cứ ưu tiên xét
-                chọn phòng và giường ở các học kỳ tiếp theo.
-              </p>
+            /* Cán bộ quản lý / Bảo vệ: Lưới tất cả sinh viên + Form lập biên bản */
+            <div className="space-y-6">
+              <div className="space-y-4 rounded-3xl border border-border bg-card p-6 shadow-xs">
+                <div className="flex flex-col items-start justify-between gap-2 border-b border-border pb-3 sm:flex-row sm:items-center">
+                  <div>
+                    <h3 className="flex items-center gap-2 text-sm font-bold text-foreground">
+                      <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                      Bảng Theo Dõi Điểm Rèn Luyện Lưu Trú KTX ({demerits.length} Sinh Viên)
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      Quy chế: Bị trừ &gt; 20 điểm (Cảnh cáo) • Bị trừ &gt; 30 điểm (Đình chỉ lưu trú kỳ sau)
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {demerits.map((student) => {
+                    const percent = student.remainingPoints
+                    const isWarning = student.status === "WARNING"
+                    const isSuspended = student.status === "SUSPENDED"
+
+                    return (
+                      <div
+                        key={student.studentId}
+                        className={`rounded-2xl border p-4 transition-all ${
+                          isSuspended
+                            ? "border-blue-500/40 bg-blue-500/5"
+                            : isWarning
+                              ? "border-cyan-500/40 bg-cyan-500/5"
+                              : "border-border bg-card"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <span className="font-mono text-[10px] font-bold text-muted-foreground">
+                              {student.studentId}
+                            </span>
+                            <h4 className="text-xs font-bold text-foreground">
+                              {student.studentName}
+                            </h4>
+                            <span className="text-[10px] text-muted-foreground">
+                              Phòng {student.room}
+                            </span>
+                          </div>
+
+                          <div className="text-right">
+                            <span
+                              className={`text-xl font-black ${
+                                isSuspended
+                                  ? "text-blue-600"
+                                  : isWarning
+                                    ? "text-cyan-600"
+                                    : "text-emerald-600"
+                              }`}
+                            >
+                              {student.remainingPoints}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground">
+                              /100đ
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Progress Bar */}
+                        <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-muted">
+                          <div
+                            className={`h-full transition-all ${
+                              isSuspended
+                                ? "bg-blue-500"
+                                : isWarning
+                                  ? "bg-cyan-500"
+                                  : "bg-emerald-500"
+                            }`}
+                            style={{ width: `${percent}%` }}
+                          />
+                        </div>
+
+                        <div className="mt-2.5 flex items-center justify-between text-[10px]">
+                          <span className="text-muted-foreground">
+                            Đã trừ: <strong>{student.totalDeducted}đ</strong> ({student.violationCount} lần)
+                          </span>
+                          <span
+                            className={`rounded-full px-2 py-0.5 font-bold ${
+                              isSuspended
+                                ? "bg-blue-600 text-white"
+                                : isWarning
+                                  ? "bg-cyan-500/20 text-cyan-700 dark:text-cyan-300"
+                                  : "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+                            }`}
+                          >
+                            {isSuspended
+                              ? "ĐÌNH CHỈ KỲ SAU"
+                              : isWarning
+                                ? "CẢNH BÁO CẤP 1"
+                                : "TỐT"}
+                          </span>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Form to create infraction report: ONLY for Guard / Manager / Admin */}
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                <div className="space-y-4 rounded-3xl border border-border bg-card p-6 shadow-xs">
+                  <div className="flex items-center gap-2 border-b border-border pb-3 text-blue-600">
+                    <AlertTriangle className="h-5 w-5" />
+                    <h3 className="text-sm font-bold text-foreground">
+                      Lập Biên Bản Vi Phạm Trực Tuyến
+                    </h3>
+                  </div>
+
+                  <form
+                    onSubmit={handleCreateDisciplineReport}
+                    className="space-y-3.5 text-xs"
+                  >
+                    <div>
+                      <label className="font-semibold text-foreground">
+                        Sinh viên vi phạm
+                      </label>
+                      <select
+                        value={vioStudentId}
+                        onChange={(e) => setVioStudentId(e.target.value)}
+                        className="mt-1 w-full rounded-xl border border-border bg-card px-3 py-2 text-xs"
+                      >
+                        <option value="SE182053">
+                          SE182053 - Lê Minh Tuấn (A204)
+                        </option>
+                        <option value="SE182056">
+                          SE182056 - Đoàn Gia Bảo (A201)
+                        </option>
+                        <option value="SE182057">
+                          SE182057 - Ngô Văn Khải (A302)
+                        </option>
+                        <option value="SE182049">
+                          SE182049 - Nguyễn Hoàng Vinh (A205)
+                        </option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="font-semibold text-foreground">
+                        Hành vi vi phạm nội quy
+                      </label>
+                      <select
+                        value={vioType}
+                        onChange={(e) =>
+                          setVioType(e.target.value as InfractionType)
+                        }
+                        className="mt-1 w-full rounded-xl border border-border bg-card px-3 py-2 text-xs font-semibold"
+                      >
+                        <option value="CURFEW_VIOLATION">
+                          Vi phạm giờ giới nghiêm 23:00 (-10đ)
+                        </option>
+                        <option value="UNAUTHORIZED_COOKING">
+                          Nấu ăn sai quy định trong phòng (-15đ)
+                        </option>
+                        <option value="NOISE_AFTER_HOURS">
+                          Làm ồn loa kéo sau 22:30 (-10đ)
+                        </option>
+                        <option value="SMOKING_VAPING">
+                          Hút thuốc lá / Pod trong phòng (-20đ)
+                        </option>
+                        <option value="UNAUTHORIZED_GUEST">
+                          Đưa người lạ ngủ qua đêm (-25đ)
+                        </option>
+                        <option value="HIGH_POWER_APPLIANCE">
+                          Thiết bị điện quá tải 1500W (-15đ)
+                        </option>
+                        <option value="OTHER">Vi phạm khác (-5đ)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="font-semibold text-foreground">
+                        Mô tả biên bản hiện trường
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={vioDescription}
+                        onChange={(e) => setVioDescription(e.target.value)}
+                        placeholder="Ghi nhận biên bản tuần tra, tang vật thu giữ nếu có..."
+                        className="mt-1 w-full rounded-xl border border-border bg-card p-2.5 text-xs"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="mt-2 w-full rounded-2xl bg-blue-600 py-2.5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-blue-700"
+                    >
+                      Ký Biên Bản & Trừ Điểm
+                    </button>
+                  </form>
+                </div>
+
+                {/* List of Violation Records */}
+                <div className="space-y-4 rounded-3xl border border-border bg-card p-6 shadow-xs lg:col-span-2">
+                  <div className="flex items-center justify-between border-b border-border pb-3">
+                    <h3 className="text-sm font-bold text-foreground">
+                      Danh Sách Biên Bản Xử Lý Kỷ Luật ({violations.length})
+                    </h3>
+                    <span className="font-mono text-xs text-muted-foreground">
+                      Lưu trữ chính thức KTX
+                    </span>
+                  </div>
+
+                  <div className="space-y-3">
+                    {violations.map((vio) => (
+                      <div
+                        key={vio.id}
+                        className="space-y-2 rounded-2xl border border-border bg-muted/20 p-4 transition-colors hover:bg-muted/30"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="rounded-md bg-muted px-2 py-0.5 font-mono text-xs font-bold">
+                              {vio.id}
+                            </span>
+                            <span className="text-xs font-bold text-foreground">
+                              {vio.studentName} ({vio.studentId})
+                            </span>
+                            <span className="text-[11px] text-muted-foreground">
+                              • Phòng {vio.room}
+                            </span>
+                          </div>
+
+                          <span className="rounded-md bg-blue-500/10 px-2 py-0.5 text-xs font-bold text-blue-600">
+                            -{vio.pointsDeducted} điểm
+                          </span>
+                        </div>
+
+                        <p className="text-xs font-semibold text-foreground">
+                          {vio.infractionTitle}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {vio.description}
+                        </p>
+
+                        <div className="flex items-center justify-between border-t border-border/60 pt-1 text-[10px] text-muted-foreground">
+                          <span>Cán bộ lập: {vio.officerName}</span>
+                          <span className="font-mono">{vio.date}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>
-      )}
+            )}
     </div>
   )
 }
