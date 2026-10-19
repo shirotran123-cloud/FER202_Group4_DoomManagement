@@ -8,19 +8,16 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Modal } from "@/components/ui/modal"
 import {
     QrCode,
-  Zap,
   Building2,
   Receipt,
   Clock,
   BedDouble,
   Wifi,
   Radio,
-  PieChart,
   Phone,
   ShieldCheck,
   Calendar,
   HeartPulse,
-  Droplets,
 } from "lucide-react"
 
 export const StudentOverviewPage: React.FC = () => {
@@ -471,81 +468,6 @@ export const StudentOverviewPage: React.FC = () => {
               </div>
             </div>
           </div>
-
-          {/* Monthly Utility Snapshot Card */}
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-foreground">Điện Nước Tháng 09</h3>
-                <span className="text-[11px] text-muted-foreground">T09/2026</span>
-              </div>
-
-            </div>
-
-            <div className="space-y-4">
-              {/* Electricity */}
-              <div className="p-3.5 rounded-xl bg-muted/40 border border-border/50">
-                <div className="flex items-center justify-between mb-1.5">
-                  <div className="flex items-center gap-1.5">
-                    <Zap className="h-4 w-4 text-secondary" />
-                    <span className="text-xs font-bold text-foreground">Công Tơ Điện</span>
-                  </div>
-                  <span className="text-xs font-semibold text-foreground">170 kWh</span>
-                </div>
-                <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
-                  <div className="bg-secondary h-full rounded-full" style={{ width: "68%" }} />
-                </div>
-                <div className="flex items-center justify-between mt-1.5 text-[11px] text-muted-foreground">
-                  <span>Chỉ số: 12,450 → 12,620</span>
-                  <span className="font-semibold text-foreground">₫425,000 tổng</span>
-                </div>
-              </div>
-
-              {/* Water */}
-              <div className="p-3.5 rounded-xl bg-muted/40 border border-border/50">
-                <div className="flex items-center justify-between mb-1.5">
-                  <div className="flex items-center gap-1.5">
-                    <Droplets className="h-4 w-4 text-primary" />
-                    <span className="text-xs font-bold text-foreground">Đồng Hồ Nước</span>
-                  </div>
-                  <span className="text-xs font-semibold text-foreground">14 m³</span>
-                </div>
-                <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
-                  <div className="bg-primary h-full rounded-full" style={{ width: "52%" }} />
-                </div>
-                <div className="flex items-center justify-between mt-1.5 text-[11px] text-muted-foreground">
-                  <span>Chỉ số: 840 → 854</span>
-                  <span className="font-semibold text-foreground">₫252,000 tổng</span>
-                </div>
-              </div>
-
-              {/* Per-Resident Split Apportionment */}
-              <div className="p-3.5 rounded-xl bg-muted/60 space-y-2 border border-border">
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
-                  Chia đều cho phòng (6 sinh viên)
-                </div>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Phần điện nước tiêu thụ:</span>
-                  <span className="font-semibold text-foreground">₫112,833</span>
-                </div>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Wi-Fi & phí vệ sinh:</span>
-                  <span className="font-semibold text-foreground">₫20,000</span>
-                </div>
-                <div className="pt-2 border-t border-border flex items-center justify-between">
-                  <span className="text-xs font-bold text-foreground">Tiền thực đóng:</span>
-                  <span className="text-base font-bold text-primary">₫420,000 VND</span>
-                </div>
-              </div>
-
-              <Button variant="outline" size="default" asChild className="w-full gap-2 font-semibold">
-                <Link to="/billing">
-                  <PieChart className="h-4 w-4" />
-                  <span>Xem Chi Tiết Hóa Đơn & VietQR</span>
-                </Link>
-              </Button>
-            </div>
-          </Card>
 
           {/* Dormitory Warden & Emergency Support */}
           <Card className="p-6 space-y-4">
