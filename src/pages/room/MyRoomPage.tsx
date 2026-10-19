@@ -82,7 +82,6 @@ const CompartmentSlide: React.FC = () => {
       <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-border">
         <div>
           <h2 className="font-bold text-sm text-foreground">Sơ Đồ Phân Bổ Giường Phòng A205</h2>
-          <p className="text-[11px] text-muted-foreground">Vuốt qua từng buồng để xem trạng thái giường</p>
         </div>
         <div className="flex items-center gap-3 text-[11px]">
           <span className="flex items-center gap-1.5">
