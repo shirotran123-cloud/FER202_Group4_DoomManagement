@@ -14,9 +14,6 @@ import {
   Clock,
   BedDouble,
   Wifi,
-  Wind,
-  ShowerHead,
-  Shirt,
   Radio,
   PieChart,
   Phone,
@@ -398,34 +395,11 @@ export const StudentOverviewPage: React.FC = () => {
             </div>
 
             {/* Room Facilities Specs Footer */}
-            <div className="mt-6 pt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 bg-muted/40 rounded-xl p-4 border border-border">
-              <div className="flex items-center gap-3">
-                <Wifi className="h-5 w-5 text-secondary" />
-                <div>
-                  <div className="text-[10px] text-muted-foreground uppercase font-bold">Hall Wi-Fi</div>
-                  <div className="text-xs font-bold text-foreground">KTX-A205-5G</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <Wind className="h-5 w-5 text-secondary" />
-                <div>
-                  <div className="text-[10px] text-muted-foreground uppercase font-bold">Điều Hòa</div>
-                  <div className="text-xs font-bold text-foreground">Daikin Inverter 2HP</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <ShowerHead className="h-5 w-5 text-secondary" />
-                <div>
-                  <div className="text-[10px] text-muted-foreground uppercase font-bold">Phòng Tắm</div>
-                  <div className="text-xs font-bold text-foreground">2 Nhà Tắm Khép Kín</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <Shirt className="h-5 w-5 text-secondary" />
-                <div>
-                  <div className="text-[10px] text-muted-foreground uppercase font-bold">Khu Giặt Ủi</div>
-                  <div className="text-xs font-bold text-foreground">Sảnh 2F Phía Đông</div>
-                </div>
+            <div className="mt-6 flex items-center gap-3 bg-muted/40 rounded-xl p-3.5 border border-border">
+              <Wifi className="h-5 w-5 text-secondary" />
+              <div>
+                <div className="text-[10px] text-muted-foreground uppercase font-bold">Hall Wi-Fi</div>
+                <div className="text-xs font-bold text-foreground">KTX-A205-5G</div>
               </div>
             </div>
           </Card>
