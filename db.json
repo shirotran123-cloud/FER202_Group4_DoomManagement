@@ -21466,6 +21466,17 @@
       "room": "A206",
       "role": null,
       "read": false
+    },
+    {
+      "id": "NOTI-168127",
+      "title": "Đơn trả phòng đã được duyệt · hoàn 750.000đ",
+      "body": "Phòng A104 đã được trả. Tiền cọc 1.000.000đ, khấu trừ 250.000đ, hoàn lại 750.000đ.",
+      "kind": "CONTRACT",
+      "at": "2026-10-19T00:52:48.181Z",
+      "studentId": "QE200062",
+      "room": "A104",
+      "role": null,
+      "read": false
     }
   ],
   "checkoutRequests": [
@@ -21486,10 +21497,10 @@
           "cost": 250000
         }
       ],
-      "status": "PENDING",
+      "status": "APPROVED",
       "createdAt": "2026-10-16T09:20:00",
-      "reviewedBy": null,
-      "reviewedAt": null,
+      "reviewedBy": "Thầy Vũ Thành Nam",
+      "reviewedAt": "2026-10-19T00:52:48.127Z",
       "reviewNotes": ""
     }
   ]

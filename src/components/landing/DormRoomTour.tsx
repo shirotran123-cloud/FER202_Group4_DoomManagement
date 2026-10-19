@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowLeft, BedDouble, DoorOpen, ShowerHead, LampDesk } from "lucide-react";
+import { ArrowLeft, BedDouble, DoorOpen, LampDesk } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -20,9 +20,27 @@ const ROOMS = [
 ] as const;
 
 const DETAILS = [
-  { key: "room", label: "Buồng 6 người", icon: BedDouble, src: "/assets/dorm-cinematic/dorm-keyframe-fpt-3.jpg", text: "Buồng ở 6 người gọn gàng, riêng tư — mỗi giường đều có không gian cá nhân." },
-  { key: "desk", label: "Bàn học", icon: LampDesk, src: "/assets/dorm-tour/room-desk.jpg", text: "Bàn học dài theo tường, đủ ánh sáng, ghế riêng từng người." },
-  { key: "bath", label: "Vệ sinh", icon: ShowerHead, src: "/assets/dorm-tour/room-bath.jpg", text: "Khu vệ sinh khép kín trong buồng, sạch sẽ, nước nóng đầy đủ." },
+  {
+    key: "room",
+    label: "Buồng 6 người",
+    icon: BedDouble,
+    src: "/assets/dorm-cinematic/dorm-keyframe-fpt-3.jpg",
+    text: "Buồng ở 6 người gọn gàng, riêng tư — mỗi giường đều có không gian cá nhân.",
+    /** Ảnh ngang 16:9 nên lấp đầy khung được. */
+    portrait: false,
+  },
+  {
+    key: "desk",
+    label: "Bàn học",
+    icon: LampDesk,
+    src: "/assets/dorm-tour/room-desk.jpg",
+    text: "Bàn học dài theo tường, đủ ánh sáng, ghế riêng từng người.",
+    /**
+     * Ảnh này là ảnh DỌC (1000x1533). Nếu ép vào khung 16:9 thì phải bỏ tới 63%
+     * chiều cao, gần như chắc chắn mất bàn học. Nên hiện trọn ảnh trên nền mờ.
+     */
+    portrait: true,
+  },
 ] as const;
 
 type Phase = "corridor" | "entering" | "room";
@@ -77,7 +95,7 @@ export const DormRoomTour: React.FC = () => {
         Chọn phòng, bước vào xem
       </h2>
       <p className="prose mt-2 max-w-2xl text-sm text-muted-foreground">
-        Cuộn dừng ở hành lang — rê chuột sáng cửa, nhấp để vào. Trong buồng 6 người: giường, bàn học, vệ sinh. Quay lại chọn phòng khác bất cứ lúc nào.
+        Cuộn dừng ở hành lang — rê chuột sáng cửa, nhấp để vào. Trong buồng 6 người: giường và bàn học. Quay lại chọn phòng khác bất cứ lúc nào.
       </p>
 
       <div className="relative mt-6 overflow-hidden rounded-3xl border border-border bg-card shadow-lg">
@@ -148,13 +166,28 @@ export const DormRoomTour: React.FC = () => {
         {phase === "room" && (
           <div>
             <div className="relative">
+              {/*
+                Ảnh dọc không lấp đầy khung 16:9 được, nên hiện trọn ảnh trên nền
+                mờ lấy từ chính ảnh đó (blur + tối) — vừa giữ đủ nội dung, vừa
+                không chừa hai dải trống trông như lỗi.
+              */}
+              {d.portrait && (
+                <img
+                  src={d.src}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl brightness-50"
+                />
+              )}
               <img
                 key={d.key}
                 src={d.src}
                 alt={`${d.label} buồng 6 người phòng ${room}`}
-                width={1280}
-                height={720}
-                className="aspect-video w-full object-cover"
+                className={
+                  d.portrait
+                    ? "relative mx-auto h-[380px] w-auto object-contain sm:h-[460px]"
+                    : "aspect-video w-full object-cover"
+                }
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30" />
               <div className="absolute left-1/2 top-4 -translate-x-1/2">
