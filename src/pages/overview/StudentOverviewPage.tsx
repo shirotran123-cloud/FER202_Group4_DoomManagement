@@ -416,9 +416,6 @@ export const StudentOverviewPage: React.FC = () => {
                     Cổng Kiểm Soát Tòa A
                   </span>
                 </div>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/20 text-white font-bold">
-                  Dynamic NFC
-                </span>
               </div>
 
               <div className="bg-card rounded-xl p-5 text-card-foreground flex flex-col items-center shadow-xs border border-border/50">
@@ -462,10 +459,6 @@ export const StudentOverviewPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="mt-3 flex items-center justify-between gap-2 text-secondary-foreground/80 text-xs px-1">
-                <span className="truncate">Chạm NFC hoặc quét mã QR</span>
-                <span className="font-semibold text-secondary-foreground shrink-0 whitespace-nowrap">&lt; 5cm</span>
-              </div>
             </div>
           </div>
 

@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   CheckSquare,
   ChevronLeft,
+  ChevronDown,
   ChevronRight,
   BedDouble,
 } from "lucide-react"
@@ -223,6 +224,7 @@ export const MyRoomPage: React.FC = () => {
   const { user } = useAuth()
   const [showHandoverModal, setShowHandoverModal] = useState(false)
   const [showCheckoutModal, setShowCheckoutModal] = useState(false)
+  const [showActionsDropdown, setShowActionsDropdown] = useState(false)
 
   const roommates = [
     {
@@ -306,41 +308,72 @@ export const MyRoomPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Quick Action Buttons */}
-        <div className="flex flex-wrap items-center gap-2">
+        {/* Quick Action Dropdown Menu */}
+        <div className="relative">
           <Button
             variant="outline"
-            onClick={() => alert("Đang mở bản xem trước Hợp đồng điện tử e-Contract PDF...")}
-            className="text-xs h-9 gap-1.5 bg-[#eff6ff] dark:bg-[#1c262c] whitespace-nowrap shrink-0"
+            onClick={() => setShowActionsDropdown(!showActionsDropdown)}
+            className="text-xs h-9 gap-2 font-semibold bg-[#eff6ff] dark:bg-[#1c262c] text-primary dark:text-[#cee6ef] border-border hover:bg-primary/10 transition-colors"
           >
-            <FileText className="h-4 w-4 text-primary shrink-0" />
-            <span>Hợp Đồng (PDF)</span>
+            <span>Thao tác & Tiện ích phòng</span>
+            <ChevronDown
+              className={`h-3.5 w-3.5 transition-transform duration-200 ${
+                showActionsDropdown ? "rotate-180" : ""
+              }`}
+            />
           </Button>
 
-          <Link to="/billing">
-            <Button
-              variant="outline"
-              className="text-xs h-9 gap-1.5 bg-[#eff6ff] dark:bg-[#1c262c] whitespace-nowrap shrink-0"
-            >
-              <Receipt className="h-4 w-4 text-primary shrink-0" />
-              <span>Hóa Đơn Điện Nước</span>
-            </Button>
-          </Link>
+          {showActionsDropdown && (
+            <>
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setShowActionsDropdown(false)}
+              />
+              <div className="absolute right-0 z-50 mt-2 w-56 rounded-xl border border-border bg-white p-1.5 shadow-xl dark:bg-[#1c262c]">
+                <button
+                  onClick={() => {
+                    setShowActionsDropdown(false)
+                    alert("Đang mở bản xem trước Hợp đồng điện tử e-Contract PDF...")
+                  }}
+                  className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs text-foreground transition-colors hover:bg-slate-100 dark:hover:bg-[#283740]"
+                >
+                  <FileText className="h-4 w-4 text-primary shrink-0" />
+                  <span>Hợp Đồng (PDF)</span>
+                </button>
 
-          <Link to="/maintenance">
-            <Button className="text-xs h-9 gap-1.5 bg-primary text-white whitespace-nowrap shrink-0">
-              <Wrench className="h-4 w-4 shrink-0" />
-              <span>Báo Hỏng / Sửa Chữa</span>
-            </Button>
-          </Link>
+                <Link
+                  to="/billing"
+                  onClick={() => setShowActionsDropdown(false)}
+                  className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs text-foreground transition-colors hover:bg-slate-100 dark:hover:bg-[#283740]"
+                >
+                  <Receipt className="h-4 w-4 text-primary shrink-0" />
+                  <span>Hóa Đơn Điện Nước</span>
+                </Link>
 
-          <Button
-            onClick={() => setShowCheckoutModal(true)}
-            className="text-xs h-9 gap-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 whitespace-nowrap shrink-0"
-          >
-            <LogOut className="h-4 w-4 shrink-0" />
-            <span>Yêu Cầu Trả Phòng</span>
-          </Button>
+                <Link
+                  to="/maintenance"
+                  onClick={() => setShowActionsDropdown(false)}
+                  className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs text-foreground transition-colors hover:bg-slate-100 dark:hover:bg-[#283740]"
+                >
+                  <Wrench className="h-4 w-4 text-emerald-600 shrink-0" />
+                  <span>Báo Hỏng / Sửa Chữa</span>
+                </Link>
+
+                <div className="my-1 border-t border-border" />
+
+                <button
+                  onClick={() => {
+                    setShowActionsDropdown(false)
+                    setShowCheckoutModal(true)
+                  }}
+                  className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs text-blue-600 dark:text-blue-400 transition-colors hover:bg-blue-50 dark:hover:bg-blue-950/30"
+                >
+                  <LogOut className="h-4 w-4 shrink-0" />
+                  <span>Yêu Cầu Trả Phòng</span>
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
 
@@ -360,9 +393,6 @@ export const MyRoomPage: React.FC = () => {
                 <h3 className="font-bold text-sm text-foreground">
                   Danh Sách Bạn Cùng Buồng B (Roommates Manifest)
                 </h3>
-                <p className="text-[11px] text-muted-foreground">
-                  Thông tin liên hệ & Lịch trực nhật vệ sinh buồng cá nhân
-                </p>
               </div>
             </div>
             <Badge variant="available">4 Thành Viên</Badge>
