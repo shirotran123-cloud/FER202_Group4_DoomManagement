@@ -10,7 +10,6 @@ import {
   Users,
   QrCode,
   Download,
-  Printer,
   Calendar,
   CheckCircle2,
   AlertTriangle,
@@ -45,8 +44,7 @@ export const BillingPage: React.FC = () => {
   const totalBill = subtotal + vatCost
   const numStudents = 6
   const perStudentUtility = Math.round(totalBill / numStudents)
-  const baseAmenity = 273883
-  const netDue = hasPaid ? 0 : perStudentUtility + baseAmenity
+  const netDue = hasPaid ? 0 : perStudentUtility
 
   const handleRecordMeter = (e: React.FormEvent) => {
     e.preventDefault()
@@ -61,24 +59,13 @@ export const BillingPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-black text-foreground tracking-tight">
-              Điện Nước & Hóa Đơn Chia Đều (VietQR)
+              Điện Nước & Hóa Đơn (VietQR)
             </h1>
             <Badge variant="available">Chu kỳ T09/2026</Badge>
           </div>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Thuật toán chia đều phòng (Total ÷ N) & Đối soát ảnh công tơ
-          </p>
         </div>
 
         <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-          <Button
-            variant="outline"
-            onClick={() => window.print()}
-            className="text-xs h-9 gap-1.5 bg-white dark:bg-[#161e23] whitespace-nowrap shrink-0"
-          >
-            <Printer className="h-4 w-4 shrink-0" />
-            <span>In Bảng Kê</span>
-          </Button>
           <Button
             onClick={() => alert("Đang xuất tệp hóa đơn điện tử e-Invoice PDF...")}
             className="text-xs h-9 gap-1.5 bg-primary text-white whitespace-nowrap shrink-0"
@@ -124,11 +111,11 @@ export const BillingPage: React.FC = () => {
           </div>
           <div className="mt-3">
             <div className="text-2xl font-black font-mono tracking-tight text-foreground">
-              ₫3,780,000
+              ₫4,200,000
             </div>
             <div className="flex items-center gap-1.5 mt-1 text-xs text-muted-foreground">
               <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
-              <span>9/9 kỳ hóa đơn hợp lệ</span>
+              <span>Đã nộp đầu kỳ (Tiền phòng 4 tháng + Cọc)</span>
             </div>
           </div>
         </div>
@@ -291,7 +278,7 @@ export const BillingPage: React.FC = () => {
             {/* FORMULA HIGHLIGHT BOX (Module 4 Signature) */}
             <div className="p-4 rounded-xl bg-[#eff6ff] dark:bg-[#1c262c] border border-border space-y-2">
               <div className="flex items-center justify-between font-bold text-sm text-foreground">
-                <span>Tổng chi phí cả phòng A205:</span>
+                <span>Tổng chi phí phát sinh phòng A205 (Tháng 09/2026):</span>
                 <span className="font-mono text-base text-primary dark:text-[#cee6ef]">
                   ₫{totalBill.toLocaleString()}
                 </span>
@@ -299,18 +286,17 @@ export const BillingPage: React.FC = () => {
 
               <div className="p-2.5 rounded-lg bg-white dark:bg-[#161e23] border border-border flex flex-col md:flex-row md:items-center justify-between gap-2 text-xs">
                 <div className="flex items-center gap-2 text-muted-foreground">
-                  <span className="font-bold text-foreground">Thuật toán:</span>
+                  <span className="font-bold text-foreground">Chia đều:</span>
                   <span>
                     ₫{totalBill.toLocaleString()} ÷ 6 SV ={" "}
                     <strong className="text-primary dark:text-[#cee6ef]">
                       ₫{perStudentUtility.toLocaleString()}
                     </strong>{" "}
-                    tiền điện nước/người
+                    tiền điện nước rác/người
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 font-semibold text-primary dark:text-[#cee6ef]">
-                  <span>+ Tiền phòng: ₫{baseAmenity.toLocaleString()}</span>
-                  <span>= ₫{netDue.toLocaleString()} Net</span>
+                <div className="flex items-center gap-1.5 font-semibold text-emerald-600 dark:text-emerald-400">
+                  <span>✓ Tiền buồng 6 (3.200.000đ/kỳ) đã nộp đầu kỳ</span>
                 </div>
               </div>
             </div>
@@ -401,10 +387,10 @@ export const BillingPage: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-border">
                   {[
-                    { month: "Tháng 08/2026", amount: "₫410,500", date: "03/08/2026" },
-                    { month: "Tháng 07/2026", amount: "₫395,000", date: "04/07/2026" },
-                    { month: "Tháng 06/2026", amount: "₫435,000", date: "02/06/2026" },
-                    { month: "Tháng 05/2026", amount: "₫412,000", date: "05/05/2026" },
+                    { month: "Tháng 08/2026", amount: "₫148,500", date: "03/08/2026" },
+                    { month: "Tháng 07/2026", amount: "₫139,000", date: "04/07/2026" },
+                    { month: "Tháng 06/2026", amount: "₫152,000", date: "02/06/2026" },
+                    { month: "Tháng 05/2026", amount: "₫145,000", date: "05/05/2026" },
                   ].map((inv, idx) => (
                     <tr key={idx} className="hover:bg-[#eff6ff] dark:hover:bg-[#1c262c] transition-colors">
                       <td className="py-2.5 px-2 font-semibold text-foreground">{inv.month}</td>

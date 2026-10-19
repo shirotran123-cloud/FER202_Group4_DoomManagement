@@ -151,7 +151,7 @@ export const LandingPage: React.FC = () => {
     {
       icon: Receipt,
       title: "Minh bạch Điện Nước",
-      desc: "Tự động tính thuế VAT và chia đều chính xác cho số lượng sinh viên đang ở kèm mã VietQR.",
+      desc: "Tự động tính thuế VAT 10% và chia đều chi phí phát sinh hàng tháng cho các thành viên trong phòng kèm mã VietQR.",
           },
     {
       icon: ShieldCheck,
@@ -167,40 +167,40 @@ export const LandingPage: React.FC = () => {
 
   const feeTable = [
     {
-      item: "Tiền thuê giường",
-      price: "900.000 VNĐ",
+      item: "Tiền thuê buồng 6 giường",
+      price: "800.000 VNĐ",
       unit: "tháng / sinh viên",
-      note: "Thu theo kỳ 4 tháng (3.600.000 VNĐ)",
+      note: "Thu theo kỳ 4 tháng (3.200.000 VNĐ / kỳ)",
+    },
+    {
+      item: "Tiền thuê buồng 4 giường",
+      price: "1.000.000 VNĐ",
+      unit: "tháng / sinh viên",
+      note: "Thu theo kỳ 4 tháng (4.000.000 VNĐ / kỳ)",
     },
     {
       item: "Tiền ký quỹ đặt cọc tài sản",
       price: "1.000.000 VNĐ",
       unit: "lần đầu / hoàn lại khi trả phòng",
-      note: "Quyết toán sau khi trừ hư hại nếu có",
+      note: "Quyết toán hoàn cọc sau khi kết thúc hợp đồng",
     },
     {
       item: "Đơn giá điện phòng",
       price: "2.500 VNĐ",
-      unit: "kWh (chưa VAT 8%)",
-      note: "Chia đều cho số thành viên trong phòng",
+      unit: "kWh (VAT 10%)",
+      note: "Chốt công tơ thực tế hàng tháng, chia đều số người",
     },
     {
       item: "Đơn giá nước sinh hoạt",
-      price: "12.000 VNĐ",
-      unit: "m³ (chưa VAT 5%)",
-      note: "Chia đều cho số thành viên trong phòng",
+      price: "18.000 VNĐ",
+      unit: "m³ (VAT 10%)",
+      note: "Chốt đồng hồ thực tế hàng tháng, chia đều số người",
     },
     {
-      item: "Phí dịch vụ & vệ sinh hành lang",
-      price: "30.000 VNĐ",
-      unit: "tháng / sinh viên",
-      note: "Bao gồm thu gom rác, vệ sinh khu chung",
-    },
-    {
-      item: "Internet Wi-Fi tốc độ cao",
-      price: "Miễn phí",
-      unit: "phủ sóng toàn tòa nhà",
-      note: "Tích hợp tài khoản sinh viên FPT",
+      item: "Phí rác & dịch vụ KTX, Wi-Fi",
+      price: "120.000 VNĐ",
+      unit: "phòng / tháng (VAT 10%)",
+      note: "Chi phí cố định hàng tháng, chia đều các thành viên",
     },
   ]
 

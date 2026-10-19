@@ -457,6 +457,52 @@ export const StudentOverviewPage: React.FC = () => {
 
             </div>
           </div>
+
+          {/* Ban Quản Lý & Cấp Cứu (Giữ nguyên tên và số ĐT, loại bỏ icon và nhãn 201, 115) */}
+          <Card className="p-5 shadow-xs border border-border space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-border">
+              <h3 className="text-sm font-bold text-foreground">Ban Quản Lý & Cấp Cứu</h3>
+              <span className="text-[10px] px-2 py-0.5 rounded bg-muted text-muted-foreground font-semibold">
+                Tòa A
+              </span>
+            </div>
+
+            {/* Warden Profile */}
+            <div className="p-3.5 rounded-xl bg-muted/50 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold shrink-0">
+                  LQ
+                </div>
+                <div className="min-w-0">
+                  <div className="text-xs font-bold text-foreground truncate">Thầy Lê Quang</div>
+                  <div className="text-[11px] text-muted-foreground">Trưởng BQL Ký túc xá Tòa A</div>
+                </div>
+              </div>
+              <a
+                href="tel:0912345678"
+                className="font-mono text-xs text-primary font-bold hover:underline whitespace-nowrap"
+              >
+                0912 345 678
+              </a>
+            </div>
+
+            {/* Emergency Contacts without icons and without ext badges */}
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center justify-between p-2.5 rounded-lg bg-muted/40">
+                <span className="font-medium text-foreground">Phòng An Ninh Cổng Trực</span>
+                <a href="tel:02473001866" className="font-mono font-bold text-primary hover:underline">
+                  024 7300 1866
+                </a>
+              </div>
+
+              <div className="flex items-center justify-between p-2.5 rounded-lg bg-muted/40">
+                <span className="font-medium text-foreground">Phòng Y Tế Sơ Cứu 24/7</span>
+                <a href="tel:115" className="font-mono font-bold text-destructive hover:underline">
+                  115
+                </a>
+              </div>
+            </div>
+          </Card>
         </div>
       </div>
 
