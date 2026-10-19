@@ -178,11 +178,22 @@ export const DormitoryGallerySlider: React.FC = () => {
             </div>
           </div>
 
-          {/* Bottom Captions */}
-          <div className="pointer-events-auto max-w-2xl">
+          {/* Bottom Captions & Feature Tags */}
+          <div className="pointer-events-auto max-w-2xl space-y-3">
             <h3 className="text-xl leading-tight font-extrabold tracking-tight text-white drop-shadow-md sm:text-3xl lg:text-4xl">
               {currentSlide.title}
             </h3>
+
+            <div className="flex flex-wrap gap-2 pt-1">
+              {currentSlide.tags.map((tag, tIdx) => (
+                <span
+                  key={tIdx}
+                  className="rounded-lg border border-white/20 bg-white/10 px-2.5 py-1 text-[11px] font-medium text-white/95 backdrop-blur-md"
+                >
+                  ✓ {tag}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
 
