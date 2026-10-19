@@ -29,7 +29,7 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
   const [showUserDropdown, setShowUserDropdown] = useState(false)
 
   const navItems = [
-    { label: "Đặt phòng", href: "/booking" },
+    { label: "Đặt phòng", href: "#dat-phong" },
     { label: "Tính năng", href: "#tinh-nang" },
     { label: "Biểu phí & Tiện ích", href: "#bieu-phi" },
     { label: "Nội quy & Giới nghiêm", href: "#noi-quy" },
@@ -71,11 +71,20 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
     e: React.MouseEvent<HTMLAnchorElement>,
     href: string
   ) => {
+    e.preventDefault()
     setActiveNav(href)
+    if (href === "#dat-phong") {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      })
+      window.history.pushState(null, "", href)
+      return
+    }
+
     if (!href.startsWith("#")) return
     const targetElement = document.querySelector(href)
     if (targetElement) {
-      e.preventDefault()
       const headerOffset = 80
       const elementPosition = targetElement.getBoundingClientRect().top
       const offsetPosition = elementPosition + window.pageYOffset - headerOffset

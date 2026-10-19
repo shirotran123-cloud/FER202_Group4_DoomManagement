@@ -6,9 +6,7 @@ import {
   Building2,
   BedDouble,
   ShieldCheck,
-  Zap,
   Receipt,
-  Clock,
   Sparkles,
   ArrowRight,
   CheckCircle2,
@@ -150,39 +148,29 @@ export const LandingPage: React.FC = () => {
   const highlights = [
     {
       icon: BedDouble,
-      title: "Mô hình Buồng riêng 1:4:6",
-      desc: "Cấu trúc tiêu chuẩn: 1 Phòng = 4 Buồng riêng biệt (A, B, C, D) = 24 Giường. Mỗi sinh viên sở hữu rèm che riêng tư, ổ điện, đèn học và tủ locker mã số.",
-          },
-    {
-      icon: Zap,
-      title: "Auto-Approval 0-Chạm",
-      desc: "Engine tự động đối soát giới tính, thông tin tuyển sinh, tình trạng công nợ và thanh toán cọc trong 3 giây. Cấp ngay e-Contract PDF hợp lệ.",
-          },
-    {
-      icon: Clock,
-      title: "Khóa giữ chỗ 15 Phút",
-      desc: "Cơ chế khóa concurrency lock thời gian thực với đồng hồ đếm ngược 900s. Tránh trùng lặp giường khi hàng trăm tân sinh viên cùng chọn.",
-          },
+      title: "Mô hình Buồng",
+      desc: "Cấu trúc 1 Phòng = 4 Buồng riêng biệt (A, B, C, D) = 24 Giường. Mỗi sinh viên sở hữu rèm che riêng tư, ổ điện, đèn học và tủ locker mã số.",
+    },
     {
       icon: Receipt,
-      title: "Minh bạch Điện Nước (Total / N)",
-      desc: "Chụp ảnh công tơ điện nước phòng ngày 25-28 hàng tháng. Tự động tính thuế VAT và chia đều chính xác cho N sinh viên đang ở kèm mã VietQR.",
+      title: "Minh bạch Điện Nước",
+      desc: "Tự động tính thuế VAT và chia đều chính xác cho số lượng sinh viên đang ở kèm mã VietQR.",
           },
     {
       icon: ShieldCheck,
-      title: "An ninh 24/7 & Giới nghiêm 23:00",
-      desc: "Cổng kiểm soát quét thẻ thông minh. Đơn xin về muộn ngoài giờ nộp online trước 21:00. Quản lý điểm rèn luyện KTX minh bạch.",
+      title: "An ninh 24/7 & Giờ giới nghiêm",
+      desc: "Cổng kiểm soát quét thẻ thông minh. Đơn xin về muộn ngoài giờ nộp online.",
           },
     {
       icon: FileCheck,
       title: "Biên bản Bàn giao Số hóa",
-      desc: "Checklist điện tử khi Check-in và Check-out với ảnh hiện trạng thiết bị, tự động quyết toán và hoàn cọc không thủ tục rườm rà.",
+      desc: "Checklist điện tử khi Check-in và Check-out với ảnh hiện trạng, tự động quyết toán hoàn cọc.",
           },
   ]
 
   const feeTable = [
     {
-      item: "Tiền thuê giường buồng riêng",
+      item: "Tiền thuê giường",
       price: "900.000 VNĐ",
       unit: "tháng / sinh viên",
       note: "Thu theo kỳ 4 tháng (3.600.000 VNĐ)",
@@ -197,7 +185,7 @@ export const LandingPage: React.FC = () => {
       item: "Đơn giá điện phòng",
       price: "2.500 VNĐ",
       unit: "kWh (chưa VAT 8%)",
-      note: "Tính theo chỉ số công tơ phòng thực tế",
+      note: "Chia đều cho số thành viên trong phòng",
     },
     {
       item: "Đơn giá nước sinh hoạt",
@@ -244,7 +232,7 @@ export const LandingPage: React.FC = () => {
 
   return (
     <div className="space-y-16 pb-12">
-      <section className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-card via-card to-sky-500/5 p-8 shadow-sm sm:p-12 lg:p-16">
+      <section id="dat-phong" className="scroll-mt-24 relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-card via-card to-sky-500/5 p-8 shadow-sm sm:p-12 lg:p-16">
         <div className="relative z-10 max-w-3xl space-y-6">
                     <h1 className="text-3xl leading-[1.15] font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
             Không Gian Sống Chuẩn Mực,{" "}
@@ -336,7 +324,7 @@ export const LandingPage: React.FC = () => {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 max-w-5xl mx-auto">
           {highlights.map((h, i) => {
             const Icon = h.icon
             return (
@@ -365,14 +353,12 @@ export const LandingPage: React.FC = () => {
       <section id="bieu-phi" className="scroll-mt-24 space-y-6">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
-            <span className="text-xs font-bold tracking-wider text-sky-600 uppercase">
-              Chi phí công khai
-            </span>
+            
             <h2 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
               Biểu Phí Lưu Trú & Dịch Vụ
             </h2>
             <p className="text-sm text-muted-foreground">
-              Áp dụng thống nhất cho Tòa nhà A (Nam) và Tòa nhà B (Nữ) năm học
+              Áp dụng thống nhất cho năm học
               2026-2027.
             </p>
           </div>
@@ -420,9 +406,7 @@ export const LandingPage: React.FC = () => {
 
       <section id="noi-quy" className="scroll-mt-24 space-y-6">
         <div>
-          <span className="text-xs font-bold tracking-wider text-sky-600 uppercase">
-            Nội quy bắt buộc
-          </span>
+          
           <h2 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
             Quy Định Chung & Kỷ Luật Lưu Trú
           </h2>
