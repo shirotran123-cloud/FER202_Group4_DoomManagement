@@ -479,9 +479,7 @@ export const StudentOverviewPage: React.FC = () => {
                 <h3 className="text-sm font-bold text-foreground">Điện Nước Tháng 09</h3>
                 <span className="text-[11px] text-muted-foreground">T09/2026</span>
               </div>
-              <Badge variant="outline" className="font-semibold">
-                Auto-Split Matrix
-              </Badge>
+
             </div>
 
             <div className="space-y-4">
