@@ -184,9 +184,7 @@ export const StudentOverviewPage: React.FC = () => {
                 <h2 className="text-lg font-bold text-foreground">
                   Sơ Đồ Phân Bổ Giường Phòng A205
                 </h2>
-                <p className="text-xs text-muted-foreground mt-1">
-                  4 Buồng riêng (A, B, C, D) · 6 Giường/buồng · 18 Đã ở, 6 Giường trống
-                </p>
+
               </div>
 
               {/* Legend */}
