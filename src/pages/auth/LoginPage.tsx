@@ -170,7 +170,7 @@ export const LoginPage: React.FC = () => {
       dormitoryStatus: {
         roomStatus: "OCCUPIED",
         bedCode: assignedRoom.bedCode,
-        building: "Tòa A (Nam)",
+        building: regData.gender === "female" ? "Tòa C (Nữ)" : "Tòa A (Nam)",
         room: assignedRoom.room,
         compartment: assignedRoom.compartment,
         contractStart: "2026-09-01",
@@ -247,6 +247,12 @@ export const LoginPage: React.FC = () => {
                   ? "Cổng Xác Thực Google SSO"
                   : "Đăng Ký Lưu Trú Ký Túc Xá"}
               </h1>
+              <div className="inline-flex flex-wrap items-center justify-center gap-1.5 rounded-full bg-white/20 px-3.5 py-1 text-xs font-semibold backdrop-blur-md">
+                <span>Phân khu lưu trú:</span>
+                <span className="font-extrabold text-amber-200">Tòa A & B (Nam)</span>
+                <span>•</span>
+                <span className="font-extrabold text-teal-100">Tòa C & D (Nữ)</span>
+              </div>
               
             </div>
 
@@ -459,7 +465,7 @@ export const LoginPage: React.FC = () => {
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-muted-foreground">Tòa & Phòng ở:</span>
-                        <span className="font-bold text-foreground">Tòa A • Phòng {assignedRoom?.room} • {assignedRoom?.compartment}</span>
+                        <span className="font-bold text-foreground">{regData.gender === "female" ? "Tòa C (Nữ)" : "Tòa A (Nam)"} • Phòng {assignedRoom?.room} • {assignedRoom?.compartment}</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-muted-foreground">Mã giường (SSOT):</span>
@@ -615,8 +621,8 @@ export const LoginPage: React.FC = () => {
                           }
                           className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground focus:border-emerald-500 focus:outline-none"
                         >
-                          <option value="male">Nam (Tòa Dom A / Dom B)</option>
-                          <option value="female">Nữ (Tòa Dom C / Dom D)</option>
+                          <option value="male">Nam sinh viên (Xếp Tòa A hoặc Tòa B)</option>
+                          <option value="female">Nữ sinh viên (Xếp Tòa C hoặc Tòa D)</option>
                         </select>
                       </div>
 
@@ -733,12 +739,10 @@ export const LoginPage: React.FC = () => {
                       <div className="space-y-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-xs">
                         <div className="flex items-center gap-2 font-bold text-emerald-700 dark:text-emerald-400">
                           <CheckCircle2 className="h-4 w-4" />
-                          <span>Quy định tài khoản Sinh viên:</span>
+                          <span>Quy định phân tòa lưu trú theo giới tính:</span>
                         </div>
                         <p className="leading-relaxed text-muted-foreground">
-                          Sinh viên sử dụng{" "}
-                          <strong>Gmail cá nhân (@gmail.com)</strong> đã đăng ký
-                          trong hồ sơ tuyển sinh với nhà trường.
+                          Ký túc xá phân bổ: <strong>Tòa A & Tòa B (Nam sinh viên)</strong> • <strong>Tòa C & Tòa D (Nữ sinh viên)</strong>. Đăng nhập bằng Gmail cá nhân (@gmail.com) đã đăng ký tuyển sinh.
                         </p>
                       </div>
 
@@ -806,7 +810,7 @@ export const LoginPage: React.FC = () => {
                               </div>
                               <div>
                                 <p className="text-xs font-bold text-foreground">
-                                  Thầy Vũ Thành Nam (Quản lý KTX)
+                                  Thầy Vũ Thành Nam (Trưởng BQL Tòa A & B - Nam)
                                 </p>
                                 <p className="font-mono text-[10px] text-muted-foreground">
                                   namvt@fpt.edu.vn • MGR-004
@@ -830,7 +834,7 @@ export const LoginPage: React.FC = () => {
                               </div>
                               <div>
                                 <p className="text-xs font-bold text-foreground">
-                                  Chú Đỗ Mạnh Hùng (An ninh / Kỹ thuật)
+                                  Chú Đỗ Mạnh Hùng (Trưởng Kỹ thuật viên - Tòa A & B)
                                 </p>
                                 <p className="font-mono text-[10px] text-muted-foreground">
                                   hungbv.guard@fe.edu.vn • SEC-012
@@ -854,7 +858,7 @@ export const LoginPage: React.FC = () => {
                               </div>
                               <div>
                                 <p className="text-xs font-bold text-foreground">
-                                  Quản trị viên Hệ thống (System Admin)
+                                  Quản trị viên Hệ thống (System Admin - Quản lý 4 Tòa)
                                 </p>
                                 <p className="font-mono text-[10px] text-muted-foreground">
                                   admin.dms@fpt.edu.vn • ADM-001

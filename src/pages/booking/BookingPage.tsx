@@ -124,7 +124,14 @@ export const BookingPage: React.FC = () => {
     { id: "A208", label: "Phòng A208", desc: "Cuối hành lang · Gần thang máy", available: 4, badge: "4 Trống" },
   ]
 
-  const buildingLabel = selectedBuilding === "b1" ? "Tòa A · Khu Nam" : selectedBuilding === "b2" ? "Tòa B · Khu Nữ" : "Tòa C · Quốc Tế"
+  const buildingLabel =
+    selectedBuilding === "b1"
+      ? "Tòa A · Khu Nam"
+      : selectedBuilding === "b2"
+      ? "Tòa B · Khu Nam"
+      : selectedBuilding === "b3"
+      ? "Tòa C · Khu Nữ"
+      : "Tòa D · Khu Nữ"
 
   const handleSelectBed = (bed: Bed, compId: string) => {
     if (bed.status !== "available") return
@@ -587,7 +594,7 @@ export const BookingPage: React.FC = () => {
                       <Zap className="h-4 w-4 text-cyan-500" />
                       <span>Cơ chế Tự Động Xét Duyệt 0-Chạm</span>
                     </div>
-                    {["Đối soát giới tính: Nam khớp Tòa A", "Tình trạng nợ cũ: 0 VNĐ (Đủ điều kiện)", "Trạng thái sinh viên: Đang học chính quy K19"].map((t) => (
+                    {["Đối soát giới tính: Nam khớp Tòa A/B • Nữ khớp Tòa C/D", "Tình trạng nợ cũ: 0 VNĐ (Đủ điều kiện)", "Trạng thái sinh viên: Đang học chính quy K19"].map((t) => (
                       <div key={t} className="flex items-center gap-1.5 text-muted-foreground">
                         <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />{t}
                       </div>

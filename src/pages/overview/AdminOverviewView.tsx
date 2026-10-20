@@ -22,12 +22,28 @@ import {
   Layers,
 } from "lucide-react"
 
-// Data full 4 Tòa Ký Túc Xá trường Đại học FPT
+// Data full 4 Tòa Ký Túc Xá trường Đại học FPT (Tòa A & B: Nam, Tòa C & D: Nữ)
+interface RoomTypeBreakdown {
+  type: "Buồng 4 giường" | "Buồng 6 giường"
+  roomCount: number
+  totalBeds: number
+  occupiedBeds: number
+  emptyBeds: number
+  occupancyRate: number
+}
+
+interface BuildingStaff {
+  role: string
+  name: string
+  phone: string
+}
+
 interface CampusBuildingData {
   id: string
   code: string
   name: string
   type: string
+  genderZone: "Nam" | "Nữ"
   totalRooms: number
   totalBeds: number
   occupiedBeds: number
@@ -37,8 +53,14 @@ interface CampusBuildingData {
   managerPhone: string
   technicianName: string
   technicianPhone: string
-    powerStatus: "NORMAL" | "WARNING"
+  powerStatus: "NORMAL" | "WARNING"
   waterStatus: "NORMAL" | "WARNING"
+  roomBreakdown: {
+    room4: RoomTypeBreakdown
+    room6: RoomTypeBreakdown
+  }
+  managementTeam: BuildingStaff[]
+  technicalTeam: BuildingStaff[]
 }
 
 const CAMPUS_BUILDINGS: CampusBuildingData[] = [
@@ -47,6 +69,7 @@ const CAMPUS_BUILDINGS: CampusBuildingData[] = [
     code: "Tòa A",
     name: "Tòa A (Ký túc xá Nam)",
     type: "Nam sinh viên",
+    genderZone: "Nam",
     totalRooms: 44,
     totalBeds: 192,
     occupiedBeds: 154,
@@ -56,31 +79,93 @@ const CAMPUS_BUILDINGS: CampusBuildingData[] = [
     managerPhone: "0988 765 432",
     technicianName: "Đỗ Mạnh Hùng",
     technicianPhone: "0977 112 233",
-        powerStatus: "NORMAL",
+    powerStatus: "NORMAL",
     waterStatus: "NORMAL",
+    roomBreakdown: {
+      room4: {
+        type: "Buồng 4 giường",
+        roomCount: 36,
+        totalBeds: 144,
+        occupiedBeds: 116,
+        emptyBeds: 28,
+        occupancyRate: 80.6,
+      },
+      room6: {
+        type: "Buồng 6 giường",
+        roomCount: 8,
+        totalBeds: 48,
+        occupiedBeds: 38,
+        emptyBeds: 10,
+        occupancyRate: 79.2,
+      },
+    },
+    managementTeam: [
+      { role: "Trưởng Ban Quản Lý", name: "Vũ Thành Nam", phone: "0988 765 432" },
+      { role: "Phó Ban Quản Lý", name: "Lê Hoàng Long", phone: "0912 345 678" },
+      { role: "Cán bộ QL Tầng 1-3", name: "Nguyễn Văn Hưng", phone: "0934 567 890" },
+      { role: "Cán bộ QL Tầng 4-5", name: "Trần Minh Quang", phone: "0945 678 901" },
+    ],
+    technicalTeam: [
+      { role: "Trưởng Kỹ Thuật Viên", name: "Đỗ Mạnh Hùng", phone: "0977 112 233" },
+      { role: "KTV Phụ trách Điện nước", name: "Phạm Tuấn Anh", phone: "0966 223 344" },
+      { role: "KTV Phụ trách Điện lạnh", name: "Bùi Quốc Việt", phone: "0955 334 455" },
+      { role: "KTV Thiết bị buồng", name: "Hoàng Văn Bình", phone: "0988 445 566" },
+    ],
   },
   {
     id: "BUILDING_B",
     code: "Tòa B",
-    name: "Tòa B (Ký túc xá Nữ)",
-    type: "Nữ sinh viên",
+    name: "Tòa B (Ký túc xá Nam)",
+    type: "Nam sinh viên",
+    genderZone: "Nam",
     totalRooms: 44,
     totalBeds: 192,
     occupiedBeds: 176,
     emptyBeds: 16,
     occupancyRate: 91.7,
-    managerName: "Trần Thị Kim Yến",
+    managerName: "Trần Văn Bảo",
     managerPhone: "0914 223 344",
     technicianName: "Lê Văn Phước",
     technicianPhone: "0905 667 889",
-        powerStatus: "NORMAL",
+    powerStatus: "NORMAL",
     waterStatus: "NORMAL",
+    roomBreakdown: {
+      room4: {
+        type: "Buồng 4 giường",
+        roomCount: 36,
+        totalBeds: 144,
+        occupiedBeds: 132,
+        emptyBeds: 12,
+        occupancyRate: 91.7,
+      },
+      room6: {
+        type: "Buồng 6 giường",
+        roomCount: 8,
+        totalBeds: 48,
+        occupiedBeds: 44,
+        emptyBeds: 4,
+        occupancyRate: 91.7,
+      },
+    },
+    managementTeam: [
+      { role: "Trưởng Ban Quản Lý", name: "Trần Văn Bảo", phone: "0914 223 344" },
+      { role: "Phó Ban Quản Lý", name: "Nguyễn Hữu Đạt", phone: "0923 456 789" },
+      { role: "Cán bộ QL Tầng 1-3", name: "Võ Văn An", phone: "0933 678 912" },
+      { role: "Cán bộ QL Tầng 4-5", name: "Đặng Tiến Dũng", phone: "0944 890 123" },
+    ],
+    technicalTeam: [
+      { role: "Trưởng Kỹ Thuật Viên", name: "Lê Văn Phước", phone: "0905 667 889" },
+      { role: "KTV Phụ trách Điện nước", name: "Mai Văn Hải", phone: "0911 334 556" },
+      { role: "KTV Phụ trách Điện lạnh", name: "Trương Quốc Huy", phone: "0922 445 667" },
+      { role: "KTV Thiết bị buồng", name: "Đoàn Hữu Phước", phone: "0933 556 778" },
+    ],
   },
   {
     id: "BUILDING_C",
     code: "Tòa C",
-    name: "Tòa C (Quốc Tế & Sau ĐH)",
-    type: "Du học sinh & Sau ĐH",
+    name: "Tòa C (Ký túc xá Nữ)",
+    type: "Nữ sinh viên",
+    genderZone: "Nữ",
     totalRooms: 44,
     totalBeds: 192,
     occupiedBeds: 144,
@@ -90,14 +175,45 @@ const CAMPUS_BUILDINGS: CampusBuildingData[] = [
     managerPhone: "0935 445 566",
     technicianName: "Nguyễn Bá Đạt",
     technicianPhone: "0983 112 244",
-        powerStatus: "NORMAL",
+    powerStatus: "NORMAL",
     waterStatus: "NORMAL",
+    roomBreakdown: {
+      room4: {
+        type: "Buồng 4 giường",
+        roomCount: 36,
+        totalBeds: 144,
+        occupiedBeds: 108,
+        emptyBeds: 36,
+        occupancyRate: 75.0,
+      },
+      room6: {
+        type: "Buồng 6 giường",
+        roomCount: 8,
+        totalBeds: 48,
+        occupiedBeds: 36,
+        emptyBeds: 12,
+        occupancyRate: 75.0,
+      },
+    },
+    managementTeam: [
+      { role: "Trưởng Ban Quản Lý", name: "Hoàng Minh Trí", phone: "0935 445 566" },
+      { role: "Phó Ban Quản Lý", name: "Nguyễn Thị Mai Loan", phone: "0978 123 456" },
+      { role: "Cán bộ QL Tầng 1-3", name: "Phạm Thị Hương", phone: "0989 234 567" },
+      { role: "Cán bộ QL Tầng 4-5", name: "Lê Thị Tuyết Mai", phone: "0990 345 678" },
+    ],
+    technicalTeam: [
+      { role: "Trưởng Kỹ Thuật Viên", name: "Nguyễn Bá Đạt", phone: "0983 112 244" },
+      { role: "KTV Phụ trách Điện nước", name: "Trần Đình Khang", phone: "0944 556 677" },
+      { role: "KTV Phụ trách Điện lạnh", name: "Lương Văn Tín", phone: "0955 667 788" },
+      { role: "KTV Thiết bị buồng", name: "Phan Văn Hậu", phone: "0966 778 899" },
+    ],
   },
   {
     id: "BUILDING_D",
     code: "Tòa D",
-    name: "Tòa D (Tân Sinh Viên K20)",
-    type: "Tân sinh viên khóa mới",
+    name: "Tòa D (Ký túc xá Nữ)",
+    type: "Nữ sinh viên",
+    genderZone: "Nữ",
     totalRooms: 44,
     totalBeds: 192,
     occupiedBeds: 168,
@@ -107,8 +223,38 @@ const CAMPUS_BUILDINGS: CampusBuildingData[] = [
     managerPhone: "0979 889 900",
     technicianName: "Võ Quốc Cường",
     technicianPhone: "0918 334 455",
-        powerStatus: "NORMAL",
+    powerStatus: "NORMAL",
     waterStatus: "NORMAL",
+    roomBreakdown: {
+      room4: {
+        type: "Buồng 4 giường",
+        roomCount: 36,
+        totalBeds: 144,
+        occupiedBeds: 126,
+        emptyBeds: 18,
+        occupancyRate: 87.5,
+      },
+      room6: {
+        type: "Buồng 6 giường",
+        roomCount: 8,
+        totalBeds: 48,
+        occupiedBeds: 42,
+        emptyBeds: 6,
+        occupancyRate: 87.5,
+      },
+    },
+    managementTeam: [
+      { role: "Trưởng Ban Quản Lý", name: "Phạm Ngọc Toàn", phone: "0979 889 900" },
+      { role: "Phó Ban Quản Lý", name: "Vũ Thị Ngọc Ánh", phone: "0902 345 678" },
+      { role: "Cán bộ QL Tầng 1-3", name: "Nguyễn Thị Thúy Hằng", phone: "0913 456 789" },
+      { role: "Cán bộ QL Tầng 4-5", name: "Đỗ Thị Minh Châu", phone: "0924 567 890" },
+    ],
+    technicalTeam: [
+      { role: "Trưởng Kỹ Thuật Viên", name: "Võ Quốc Cường", phone: "0918 334 455" },
+      { role: "KTV Phụ trách Điện nước", name: "Đinh Văn Hùng", phone: "0977 889 900" },
+      { role: "KTV Phụ trách Điện lạnh", name: "Nguyễn Tấn Sang", phone: "0988 990 011" },
+      { role: "KTV Thiết bị buồng", name: "Hà Văn Thịnh", phone: "0999 001 122" },
+    ],
   },
 ]
 
@@ -355,10 +501,7 @@ export const AdminOverviewView: React.FC = () => {
                     <p className="text-xs text-muted-foreground mt-0.5">{b.type}</p>
                   </div>
 
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 flex items-center gap-1 shrink-0">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                    <span>Vận hành ổn định</span>
-                  </span>
+                  
                 </div>
 
                 {/* Occupancy Stats */}
@@ -392,7 +535,7 @@ export const AdminOverviewView: React.FC = () => {
                   </div>
                   <div>
                     <span className="text-[10px] text-muted-foreground font-bold uppercase block">
-                      Kỹ Thuật Viên Phụ Trách:
+                      Trưởng Kỹ Thuật Viên:
                     </span>
                     <p className="font-semibold text-foreground mt-0.5">{b.technicianName}</p>
                     <span className="font-mono text-[11px] text-muted-foreground block">{b.technicianPhone}</span>
@@ -411,44 +554,7 @@ export const AdminOverviewView: React.FC = () => {
             ))}
           </div>
 
-          {/* Bảng so sánh tổng hợp 4 tòa */}
-          <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4">
-            <h3 className="font-bold text-sm text-foreground">
-              Bảng Tổng Hợp Thông Số Kỹ Thuật & Vận Hành Toàn Trường
-            </h3>
-            <div className="overflow-x-auto rounded-xl border border-border/70">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-muted/70 text-[10px] font-bold text-muted-foreground uppercase border-b border-border">
-                  <tr>
-                    <th className="py-2.5 px-3">Tòa Nhà</th>
-                    <th className="py-2.5 px-3">Đối Tượng Phục Vụ</th>
-                    <th className="py-2.5 px-3">Số Phòng</th>
-                    <th className="py-2.5 px-3">Số Giường</th>
-                    <th className="py-2.5 px-3">Đang Ở</th>
-                    <th className="py-2.5 px-3">Chỗ Trống</th>
-                    <th className="py-2.5 px-3">Tỷ Lệ Lấp Đầy</th>
-                    <th className="py-2.5 px-3">Trưởng BQL</th>
-                    <th className="py-2.5 px-3">Kỹ Thuật Viên</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {CAMPUS_BUILDINGS.map((b) => (
-                    <tr key={b.id} className="hover:bg-muted/30">
-                      <td className="py-3 px-3 font-bold text-foreground font-mono">{b.code}</td>
-                      <td className="py-3 px-3 text-muted-foreground">{b.type}</td>
-                      <td className="py-3 px-3 font-mono">{b.totalRooms} phòng</td>
-                      <td className="py-3 px-3 font-mono">{b.totalBeds} giường</td>
-                      <td className="py-3 px-3 font-mono font-bold text-foreground">{b.occupiedBeds}</td>
-                      <td className="py-3 px-3 font-mono text-emerald-600 font-bold">{b.emptyBeds}</td>
-                      <td className="py-3 px-3 font-mono font-bold text-primary">{b.occupancyRate}%</td>
-                      <td className="py-3 px-3 text-foreground">{b.managerName}</td>
-                      <td className="py-3 px-3 text-foreground">{b.technicianName}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          
         </div>
       )}
 
@@ -480,9 +586,9 @@ export const AdminOverviewView: React.FC = () => {
               >
                 <option value="ALL">Toàn bộ 4 Tòa (Tất cả)</option>
                 <option value="Tòa A">Tòa A (Ký túc xá Nam)</option>
-                <option value="Tòa B">Tòa B (Ký túc xá Nữ)</option>
-                <option value="Tòa C">Tòa C (Quốc Tế & Sau ĐH)</option>
-                <option value="Tòa D">Tòa D (Tân Sinh Viên)</option>
+                <option value="Tòa B">Tòa B (Ký túc xá Nam)</option>
+                <option value="Tòa C">Tòa C (Ký túc xá Nữ)</option>
+                <option value="Tòa D">Tòa D (Ký túc xá Nữ)</option>
               </select>
             </div>
           </div>
@@ -799,66 +905,214 @@ export const AdminOverviewView: React.FC = () => {
       {selectedBuilding && (
         <div
           onClick={() => setSelectedBuilding(null)}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-lg rounded-2xl border border-border bg-card p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95"
+            className="w-full max-w-2xl rounded-2xl border border-border bg-card p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 max-h-[90vh] overflow-y-auto"
           >
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <div className="flex items-center gap-2">
-                <Building2 className="h-5 w-5 text-primary" />
-                <h3 className="font-bold text-base text-foreground">
-                  Cấu Hình & Vận Hành {selectedBuilding.name}
-                </h3>
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-border pb-3.5">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <Building2 className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-bold text-base text-foreground">
+                      Cấu Hình & Vận Hành {selectedBuilding.name}
+                    </h3>
+                    <span className="font-bold text-[11px] px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">
+                      {selectedBuilding.genderZone === "Nam" ? "Khu Nam" : "Khu Nữ"}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{selectedBuilding.type}</p>
+                </div>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedBuilding(null)}
-                className="text-xs text-muted-foreground hover:text-foreground font-bold cursor-pointer"
+                className="text-xs text-muted-foreground hover:text-foreground font-bold cursor-pointer rounded-lg p-1.5 hover:bg-muted"
               >
-                Đóng
+                Đóng ✕
               </button>
             </div>
 
-            <div className="space-y-3 text-xs">
-              <div className="grid grid-cols-2 gap-3 p-3.5 rounded-xl bg-muted/40">
+            <div className="space-y-4 text-xs">
+              {/* Tổng quan quy mô tòa */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3.5 rounded-xl bg-muted/40 border border-border/60">
                 <div>
-                  <span className="text-[10px] text-muted-foreground block">Quy mô phòng ở:</span>
-                  <strong className="text-foreground text-sm">{selectedBuilding.totalRooms} Phòng</strong>
+                  <span className="text-[10px] text-muted-foreground block font-semibold">Quy mô phòng ở:</span>
+                  <strong className="text-foreground text-sm font-mono">{selectedBuilding.totalRooms} Phòng</strong>
                 </div>
                 <div>
-                  <span className="text-[10px] text-muted-foreground block">Công suất giường:</span>
-                  <strong className="text-foreground text-sm">{selectedBuilding.totalBeds} Giường</strong>
+                  <span className="text-[10px] text-muted-foreground block font-semibold">Công suất giường:</span>
+                  <strong className="text-foreground text-sm font-mono">{selectedBuilding.totalBeds} Giường</strong>
                 </div>
                 <div>
-                  <span className="text-[10px] text-muted-foreground block">Sinh viên đang ở:</span>
-                  <strong className="text-primary text-sm">{selectedBuilding.occupiedBeds} Sinh viên</strong>
+                  <span className="text-[10px] text-muted-foreground block font-semibold">Sinh viên đang ở:</span>
+                  <strong className="text-primary text-sm font-mono">{selectedBuilding.occupiedBeds} Sinh viên</strong>
                 </div>
                 <div>
-                  <span className="text-[10px] text-muted-foreground block">Tỷ lệ lấp đầy:</span>
-                  <strong className="text-emerald-600 text-sm">{selectedBuilding.occupancyRate}%</strong>
+                  <span className="text-[10px] text-muted-foreground block font-semibold">Tỷ lệ lấp đầy:</span>
+                  <strong className="text-emerald-600 text-sm font-mono">{selectedBuilding.occupancyRate}%</strong>
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-xl border border-border space-y-2">
-                <span className="text-[11px] font-bold text-muted-foreground uppercase block">
-                  Cán bộ Quản lý & Kỹ thuật phụ trách:
+              {/* Chi tiết Buồng 4 và Buồng 6 */}
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
+                    <Layers className="h-4 w-4 text-primary" />
+                    Chi Tiết Cơ Cấu Buồng 4 & Buồng 6 ({selectedBuilding.code})
+                  </span>
+                  <span className="text-[11px] text-muted-foreground">
+                    Tổng cộng: {selectedBuilding.totalRooms} buồng phòng
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Card Buồng 4 */}
+                  <div className="rounded-xl border border-border bg-background p-3.5 space-y-2.5 shadow-2xs">
+                    <div className="flex items-center justify-between border-b border-border/60 pb-2">
+                      <div className="flex items-center gap-1.5">
+                        <Bed className="h-4 w-4 text-sky-600" />
+                        <strong className="text-foreground text-xs font-bold">Buồng 4 Giường (Riêng Tư)</strong>
+                      </div>
+                      <span className="font-mono text-[11px] font-bold text-sky-600 bg-sky-500/10 px-2 py-0.5 rounded-md">
+                        {selectedBuilding.roomBreakdown.room4.roomCount} buồng ({selectedBuilding.roomBreakdown.room4.totalBeds} giường)
+                      </span>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between text-[11px]">
+                        <span className="text-muted-foreground">Đã lấp đầy:</span>
+                        <span className="font-mono font-bold text-foreground">
+                          {selectedBuilding.roomBreakdown.room4.occupiedBeds} / {selectedBuilding.roomBreakdown.room4.totalBeds} giường ({selectedBuilding.roomBreakdown.room4.occupancyRate}%)
+                        </span>
+                      </div>
+                      <div className="w-full h-1.5 rounded-full bg-muted overflow-hidden">
+                        <div
+                          className="h-full bg-sky-600 rounded-full transition-all"
+                          style={{ width: `${selectedBuilding.roomBreakdown.room4.occupancyRate}%` }}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between text-[11px] pt-0.5">
+                        <span className="text-muted-foreground">Chỗ còn trống:</span>
+                        <strong className="font-mono text-emerald-600 font-bold">
+                          {selectedBuilding.roomBreakdown.room4.emptyBeds} chỗ trống
+                        </strong>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Card Buồng 6 */}
+                  <div className="rounded-xl border border-border bg-background p-3.5 space-y-2.5 shadow-2xs">
+                    <div className="flex items-center justify-between border-b border-border/60 pb-2">
+                      <div className="flex items-center gap-1.5">
+                        <Bed className="h-4 w-4 text-emerald-600" />
+                        <strong className="text-foreground text-xs font-bold">Buồng 6 Giường (Tiêu Chuẩn)</strong>
+                      </div>
+                      <span className="font-mono text-[11px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-md">
+                        {selectedBuilding.roomBreakdown.room6.roomCount} buồng ({selectedBuilding.roomBreakdown.room6.totalBeds} giường)
+                      </span>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between text-[11px]">
+                        <span className="text-muted-foreground">Đã lấp đầy:</span>
+                        <span className="font-mono font-bold text-foreground">
+                          {selectedBuilding.roomBreakdown.room6.occupiedBeds} / {selectedBuilding.roomBreakdown.room6.totalBeds} giường ({selectedBuilding.roomBreakdown.room6.occupancyRate}%)
+                        </span>
+                      </div>
+                      <div className="w-full h-1.5 rounded-full bg-muted overflow-hidden">
+                        <div
+                          className="h-full bg-emerald-600 rounded-full transition-all"
+                          style={{ width: `${selectedBuilding.roomBreakdown.room6.occupancyRate}%` }}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between text-[11px] pt-0.5">
+                        <span className="text-muted-foreground">Chỗ còn trống:</span>
+                        <strong className="font-mono text-emerald-600 font-bold">
+                          {selectedBuilding.roomBreakdown.room6.emptyBeds} chỗ trống
+                        </strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Danh sách thành viên Ban Quản Lý & Đội Kỹ Thuật */}
+              <div className="space-y-3 pt-1">
+                {/* 1. Ban Quản Lý */}
+                <div className="rounded-xl border border-border p-3.5 space-y-2 bg-card">
+                  <div className="flex items-center justify-between border-b border-border/60 pb-2">
+                    <span className="text-[11px] font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
+                      <Users className="h-3.5 w-3.5 text-blue-600" />
+                      Ban Quản Lý {selectedBuilding.code} ({selectedBuilding.managementTeam.length} Cán Bộ)
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">Phụ trách hành chính & quản lý cư dân</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                    {selectedBuilding.managementTeam.map((member, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between p-2 rounded-lg bg-muted/40 text-xs border border-border/40"
+                      >
+                        <div>
+                          <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 block">
+                            {member.role}
+                          </span>
+                          <strong className="text-foreground">{member.name}</strong>
+                        </div>
+                        <span className="font-mono text-[11px] text-muted-foreground bg-card px-2 py-0.5 rounded border border-border/50">
+                          {member.phone}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 2. Đội Ngũ Kỹ Thuật Viên */}
+                <div className="rounded-xl border border-border p-3.5 space-y-2 bg-card">
+                  <div className="flex items-center justify-between border-b border-border/60 pb-2">
+                    <span className="text-[11px] font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
+                      <Cpu className="h-3.5 w-3.5 text-cyan-600" />
+                      Đội Ngũ Kỹ Thuật Viên {selectedBuilding.code} ({selectedBuilding.technicalTeam.length} Kỹ Thuật Viên)
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">Phụ trách điện nước, lạnh & thiết bị</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                    {selectedBuilding.technicalTeam.map((member, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between p-2 rounded-lg bg-muted/40 text-xs border border-border/40"
+                      >
+                        <div>
+                          <span className="text-[10px] font-bold text-cyan-600 dark:text-cyan-400 block">
+                            {member.role}
+                          </span>
+                          <strong className="text-foreground">{member.name}</strong>
+                        </div>
+                        <span className="font-mono text-[11px] text-muted-foreground bg-card px-2 py-0.5 rounded border border-border/50">
+                          {member.phone}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Tình trạng vận hành cơ sở vật chất */}
+              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 space-y-1">
+                <span className="font-bold flex items-center gap-1.5 text-xs">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                  Tình trạng cơ sở vật chất & hạ tầng:
                 </span>
-                <div className="flex items-center justify-between">
-                  <span className="text-foreground">Trưởng ban quản lý:</span>
-                  <strong className="text-foreground font-mono">{selectedBuilding.managerName} ({selectedBuilding.managerPhone})</strong>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-foreground">Kỹ thuật viên chuyên trách:</span>
-                  <strong className="text-foreground font-mono">{selectedBuilding.technicianName} ({selectedBuilding.technicianPhone})</strong>
-                </div>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 space-y-1">
-                <span className="font-bold block">Tình trạng cơ sở vật chất:</span>
-                <p className="text-[11px]">
-                  Hệ thống điện nước, trang thiết bị buồng phòng và cơ sở vật chất của tòa nhà đang vận hành ổn định, sẵn sàng phục vụ sinh viên.
+                <p className="text-[11px] leading-relaxed">
+                  Hệ thống điện nước, trang thiết bị buồng 4 và buồng 6 của {selectedBuilding.name} đang vận hành ổn định, sẵn sàng phục vụ sinh viên lưu trú.
                 </p>
               </div>
             </div>
@@ -866,7 +1120,7 @@ export const AdminOverviewView: React.FC = () => {
             <button
               type="button"
               onClick={() => setSelectedBuilding(null)}
-              className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs cursor-pointer"
+              className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs cursor-pointer hover:bg-primary/90 transition-all shadow-xs"
             >
               Xác Nhận & Đóng
             </button>

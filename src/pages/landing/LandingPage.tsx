@@ -22,6 +22,11 @@ import {
 
 const FAQ_ITEMS = [
   {
+    question: "Ký túc xá phân chia các tòa nhà theo giới tính như thế nào?",
+    answer:
+      "Ký túc xá FPT gồm 4 tòa nhà hiện đại: Tòa A và Tòa B dành cho Nam sinh viên; Tòa C và Tòa D dành cho Nữ sinh viên. Phân khu nam nữ riêng biệt đảm bảo an ninh, trật tự và không gian sinh hoạt chuẩn mực.",
+  },
+  {
     question: "Phòng KTX có đảm bảo sự riêng tư không?",
     answer:
       "Mỗi căn phòng lớn tiêu chuẩn có 4 buồng riêng biệt (A, B, C, D) với 6 giường/buồng (tổng 24 giường). Mỗi giường có rèm che chống nhìn xuyên thấu, đèn bàn LED, ổ cắm đôi và tủ cá nhân khóa số riêng biệt.",

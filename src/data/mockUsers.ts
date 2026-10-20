@@ -47,7 +47,7 @@ export const MOCK_USERS: Record<UserRole, UserProfile> = {
     avatar:
       "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80",
     role: "manager",
-    roleTitle: "Quản lý Ký túc xá Tòa A",
+    roleTitle: "Trưởng Ban Quản Lý (Tòa A & B - Nam)",
     staffId: "MGR-004",
     phone: "0988 765 432",
     citizenId: "001082001924",
@@ -73,14 +73,14 @@ export const MOCK_USERS: Record<UserRole, UserProfile> = {
     avatar:
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
     role: "technician",
-    roleTitle: "Kỹ thuật viên Tòa A",
+    roleTitle: "Trưởng Kỹ Thuật Viên (Tòa A & B)",
     staffId: "TECH-012",
     phone: "0977 112 233",
     citizenId: "034076008123",
     dob: "1976-08-10",
     gender: "male",
     hometown: "Đà Nẵng",
-    department: "Đội Kỹ thuật & Cơ điện Tòa A",
+    department: "Đội Kỹ thuật & Cơ điện (Tòa A & B)",
     status: "active",
     joinedDate: "2021-08-01",
     emergencyContact: {

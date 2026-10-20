@@ -1,6 +1,6 @@
 import React from "react"
 import { Card } from "@/components/ui/card"
-import { Building, DollarSign, Zap, Users } from "lucide-react"
+import { Building, DollarSign, CheckCircle2, Users } from "lucide-react"
 
 interface ManagerHeaderStatsProps {
   stats: {
@@ -38,14 +38,14 @@ export const ManagerHeaderStats: React.FC<ManagerHeaderStatsProps> = ({ stats })
         </span>
       </Card>
 
-      <Card className="border-cyan-500/20 bg-cyan-500/5 p-4 shadow-xs">
-        <div className="flex items-center justify-between text-cyan-600 dark:text-cyan-400 text-[11px] font-medium">
-          <span>Sự cố đang xử lý</span>
-          <Zap className="h-4 w-4" />
+      <Card className="border-teal-500/20 bg-teal-500/5 p-4 shadow-xs">
+        <div className="flex items-center justify-between text-teal-600 dark:text-teal-400 text-[11px] font-medium">
+          <span>Hồ sơ lưu trú mới</span>
+          <CheckCircle2 className="h-4 w-4" />
         </div>
-        <p className="text-2xl font-black text-cyan-600 dark:text-cyan-400 mt-1">2 phiếu</p>
-        <span className="text-[10px] text-cyan-600/80 dark:text-cyan-400/80">
-          1 ca khẩn cấp
+        <p className="text-2xl font-black text-teal-600 dark:text-teal-400 mt-1">48 hồ sơ</p>
+        <span className="text-[10px] text-muted-foreground">
+          Kỳ Fall 2026 hoàn tất
         </span>
       </Card>
 

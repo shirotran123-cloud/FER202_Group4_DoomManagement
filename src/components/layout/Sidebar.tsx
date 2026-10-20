@@ -152,10 +152,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   // Hall label by role
   const getRoleBadge = () => {
     if (!isAuthenticated || !user) return "Ký túc xá FPT University"
-    if (currentRole === "student") return "Phòng A205 · Tòa A"
-    if (currentRole === "manager") return "BQL Ký túc xá · Tòa A"
-    if (currentRole === "technician") return "Kỹ thuật viên · Tòa A"
-    return "Quản trị viên Hệ thống DMS"
+    if (currentRole === "student") return "Phòng A205 · Tòa A (Nam)"
+    if (currentRole === "manager") return "BQL Ký túc xá · Tòa A & B (Nam)"
+    if (currentRole === "technician") return "Đội Kỹ thuật viên · Tòa A & B"
+    return "Quản trị viên Hệ thống DMS (4 Tòa)"
   }
 
   return (
