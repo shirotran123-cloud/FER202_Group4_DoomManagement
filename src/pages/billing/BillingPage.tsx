@@ -17,6 +17,8 @@ import {
   Clock,
   ExternalLink,
   ShieldCheck,
+  Maximize2,
+  X,
 } from "lucide-react"
 
 export const BillingPage: React.FC = () => {
@@ -24,6 +26,11 @@ export const BillingPage: React.FC = () => {
   const [hasPaid, setHasPaid] = useState(false)
   const [showDisputeModal, setShowDisputeModal] = useState(false)
   const [disputeSent, setDisputeSent] = useState(false)
+  const [previewImage, setPreviewImage] = useState<{
+    url: string
+    title: string
+    subtext: string
+  } | null>(null)
 
   // Technician / Manager record meter state
   const elecOld = 12450
@@ -327,16 +334,40 @@ export const BillingPage: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Photo 1: Electricity */}
-              <div className="rounded-xl overflow-hidden border border-border bg-[#eff6ff] dark:bg-[#1c262c] shadow-xs">
+              <div className="rounded-xl overflow-hidden border border-border bg-[#eff6ff] dark:bg-[#1c262c] shadow-xs group">
                 <div className="relative h-44 w-full bg-slate-800">
                   <img
                     src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=600&q=80"
                     alt="Công tơ điện A205"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover cursor-pointer transition-transform duration-300 group-hover:scale-102"
+                    onClick={() =>
+                      setPreviewImage({
+                        url: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1600&q=90",
+                        title: "Ảnh Chụp Chỉ Số Công Tơ Điện Phòng A205",
+                        subtext: "Chỉ số chốt: 12.620 kWh • Thời gian chụp: 30/09, 09:14 AM • Mã đồng hồ: Submeter E-A205",
+                      })
+                    }
                   />
                   <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/80 backdrop-blur-xs text-white font-mono text-[10px] font-bold">
                     ĐIỆN: #12620 kWh
                   </div>
+
+                  {/* Nút xem nhỏ trên góc */}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setPreviewImage({
+                        url: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1600&q=90",
+                        title: "Ảnh Chụp Chỉ Số Công Tơ Điện Phòng A205",
+                        subtext: "Chỉ số chốt: 12.620 kWh • Thời gian chụp: 30/09, 09:14 AM • Mã đồng hồ: Submeter E-A205",
+                      })
+                    }
+                    className="absolute top-2 right-2 flex items-center gap-1 rounded-lg bg-black/70 hover:bg-black/90 text-white px-2 py-1 text-[10px] font-semibold backdrop-blur-xs transition-all shadow-md"
+                    title="Xem ảnh cỡ lớn rõ nét"
+                  >
+                    <Maximize2 className="h-3 w-3" />
+                    <span>Xem lớn</span>
+                  </button>
                 </div>
                 <div className="p-2.5 flex items-center justify-between text-xs text-muted-foreground">
                   <span className="font-mono text-[11px]">30/09, 09:14 AM</span>
@@ -345,16 +376,40 @@ export const BillingPage: React.FC = () => {
               </div>
 
               {/* Photo 2: Water */}
-              <div className="rounded-xl overflow-hidden border border-border bg-[#eff6ff] dark:bg-[#1c262c] shadow-xs">
+              <div className="rounded-xl overflow-hidden border border-border bg-[#eff6ff] dark:bg-[#1c262c] shadow-xs group">
                 <div className="relative h-44 w-full bg-slate-800">
                   <img
                     src="https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=600&q=80"
                     alt="Đồng hồ nước A205"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover cursor-pointer transition-transform duration-300 group-hover:scale-102"
+                    onClick={() =>
+                      setPreviewImage({
+                        url: "https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=1600&q=90",
+                        title: "Ảnh Chụp Chỉ Số Đồng Hồ Nước Phòng A205",
+                        subtext: "Chỉ số chốt: 854 m³ • Thời gian chụp: 30/09, 09:18 AM • Mã đồng hồ: Submeter W-A205",
+                      })
+                    }
                   />
                   <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/80 backdrop-blur-xs text-white font-mono text-[10px] font-bold">
                     NƯỚC: #854 m³
                   </div>
+
+                  {/* Nút xem nhỏ trên góc */}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setPreviewImage({
+                        url: "https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=1600&q=90",
+                        title: "Ảnh Chụp Chỉ Số Đồng Hồ Nước Phòng A205",
+                        subtext: "Chỉ số chốt: 854 m³ • Thời gian chụp: 30/09, 09:18 AM • Mã đồng hồ: Submeter W-A205",
+                      })
+                    }
+                    className="absolute top-2 right-2 flex items-center gap-1 rounded-lg bg-black/70 hover:bg-black/90 text-white px-2 py-1 text-[10px] font-semibold backdrop-blur-xs transition-all shadow-md"
+                    title="Xem ảnh cỡ lớn rõ nét"
+                  >
+                    <Maximize2 className="h-3 w-3" />
+                    <span>Xem lớn</span>
+                  </button>
                 </div>
                 <div className="p-2.5 flex items-center justify-between text-xs text-muted-foreground">
                   <span className="font-mono text-[11px]">30/09, 09:18 AM</span>
@@ -680,6 +735,44 @@ export const BillingPage: React.FC = () => {
                 </div>
               </form>
             )}
+          </div>
+        </div>
+      )}
+      {/* LIGHTBOX MODAL: FULL RESOLUTION METER PHOTO */}
+      {previewImage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="relative max-w-3xl w-full bg-card rounded-2xl overflow-hidden border border-border shadow-2xl space-y-3">
+            <div className="flex items-center justify-between p-4 border-b border-border bg-muted/40">
+              <div>
+                <h3 className="font-bold text-sm text-foreground">{previewImage.title}</h3>
+                <p className="text-[11px] text-muted-foreground">{previewImage.subtext}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPreviewImage(null)}
+                className="p-1.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="p-3 bg-black/20 flex items-center justify-center max-h-[70vh] overflow-hidden">
+              <img
+                src={previewImage.url}
+                alt={previewImage.title}
+                className="max-h-[65vh] w-auto max-w-full rounded-xl object-contain shadow-lg"
+              />
+            </div>
+
+            <div className="p-3.5 bg-muted/30 border-t border-border flex justify-end">
+              <button
+                type="button"
+                onClick={() => setPreviewImage(null)}
+                className="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary/90 transition-colors"
+              >
+                Đóng ảnh
+              </button>
+            </div>
           </div>
         </div>
       )}

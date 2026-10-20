@@ -12,7 +12,6 @@ import {
   UserPlus,
   LogIn,
 } from "lucide-react"
-import { DormAIAssistant } from "@/components/ai/DormAIAssistant"
 
 interface LandingLayoutProps {
   children: React.ReactNode
@@ -254,8 +253,6 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
         {children}
       </main>
 
-      {/* AI Assistant */}
-      <DormAIAssistant />
     </div>
   )
 }

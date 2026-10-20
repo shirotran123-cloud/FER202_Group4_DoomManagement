@@ -559,10 +559,7 @@ export const StudentOverviewPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Security Note */}
-          <div className="rounded-xl border border-border bg-muted/20 p-3 text-[11px] text-muted-foreground text-center leading-relaxed">
-            * Mã QR động (Dynamic Pass) tự động làm mới ngẫu nhiên mỗi 15 giây để chống sao chép và chụp ảnh màn hình. Đưa màn hình lại gần đầu đọc quang học tại cổng an ninh.
-          </div>
+
         </div>
       </Modal>
     </div>

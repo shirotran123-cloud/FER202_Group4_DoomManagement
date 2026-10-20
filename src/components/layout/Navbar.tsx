@@ -6,8 +6,6 @@ import {
   User,
   LogOut,
   Bell,
-  Clock,
-  RefreshCw,
   ChevronDown,
   AlertCircle,
   Menu,
@@ -28,19 +26,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
     user,
     isAuthenticated,
     logout,
-    sessionSecondsLeft,
-    refreshSession,
-  } = useAuth()
+    } = useAuth()
   const { theme, setTheme } = useTheme()
   const navigate = useNavigate()
   const [showUserDropdown, setShowUserDropdown] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
 
-  const formatTimer = (totalSec: number) => {
-    const mins = Math.floor(totalSec / 60)
-    const secs = totalSec % 60
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
-  }
 
   return (
     <header className="fixed top-0 right-0 left-0 z-40 flex h-[68px] items-center justify-between border-b border-slate-200 bg-white/95 px-4 shadow-xs backdrop-blur-md sm:px-8 lg:left-[260px] dark:border-slate-800 dark:bg-[#111827]/95">
@@ -82,20 +73,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
 
         {isAuthenticated && user ? (
           <>
-            {/* JWT Timer */}
-            <div className="hidden items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600 2xl:flex">
-              <Clock className="h-3.5 w-3.5 text-blue-600" />
-              <span className="font-mono font-semibold text-slate-900">
-                {formatTimer(sessionSecondsLeft)}
-              </span>
-              <button
-                onClick={refreshSession}
-                title="Gia hạn phiên làm việc"
-                className="rounded p-0.5 text-slate-400 hover:text-slate-700"
-              >
-                <RefreshCw className="h-3 w-3" />
-              </button>
-            </div>
+
             {/* Theme Toggle (Light / Dark) */}
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -202,9 +180,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
                     <p className="truncate text-[11px] text-slate-500">
                       {user.email}
                     </p>
-                    <span className="mt-1 inline-block rounded bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-800">
-                      {user.roleTitle}
-                    </span>
+
                   </div>
 
                   <div className="py-1">
