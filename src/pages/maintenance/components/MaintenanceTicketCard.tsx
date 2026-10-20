@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button"
 import {
   AlertTriangle,
   UserCheck,
-  CheckCircle2,
   Star,
   Edit2,
   Trash2,
@@ -30,12 +29,12 @@ export const MaintenanceTicketCard: React.FC<MaintenanceTicketCardProps> = ({
   ticket,
   currentUser,
   isManagerOrAdmin,
-  isTechnician,
+  isTechnician: _isTechnician,
   onEdit,
   onDelete,
-  onAssign,
-  onComplete,
-  onReview,
+  onAssign: _onAssign,
+  onComplete: _onComplete,
+  onReview: _onReview,
 }) => {
   const isEmergency = ticket.urgency === "EMERGENCY"
   const isPending = ticket.status === "PENDING"
@@ -251,44 +250,6 @@ export const MaintenanceTicketCard: React.FC<MaintenanceTicketCardProps> = ({
           )}
         </div>
 
-        {/* Right: Contextual Workflow Action Buttons (Đánh giá sao, Phân công, Báo hoàn thành) */}
-        <div className="flex items-center gap-1.5">
-          {isManagerOrAdmin && isPending && (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => onAssign(ticket)}
-              className="gap-1 text-xs font-bold h-7 px-2.5"
-            >
-              <UserCheck className="h-3.5 w-3.5" />
-              <span>Phân công thợ</span>
-            </Button>
-          )}
-
-          {isTechnician && isInProgress && (
-            <Button
-              variant="default"
-              size="sm"
-              onClick={() => onComplete(ticket)}
-              className="gap-1 text-xs font-bold h-7 px-2.5"
-            >
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              <span>Báo hoàn thành</span>
-            </Button>
-          )}
-
-          {isResolved && (
-            <Button
-              variant="default"
-              size="sm"
-              onClick={() => onReview(ticket)}
-              className="gap-1 bg-cyan-600 text-xs font-bold text-white hover:bg-cyan-700 h-7 px-2.5 shadow-2xs"
-            >
-              <Star className="h-3.5 w-3.5 fill-current" />
-              <span>Đánh giá sao</span>
-            </Button>
-          )}
-        </div>
       </div>
     </Card>
   )

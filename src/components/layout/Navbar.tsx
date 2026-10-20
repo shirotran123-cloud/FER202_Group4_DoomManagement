@@ -146,7 +146,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
                     {user.fullName}
                   </span>
                   <span className="text-[10px] text-slate-500 dark:text-slate-400">
-                    SE182049 · Unit A205
+                    {user.role === "manager"
+                      ? `${user.staffId || "MGR-004"} · Quản lý Tòa A`
+                      : user.role === "technician"
+                      ? `${user.staffId || "TECH-012"} · Kỹ thuật viên`
+                      : user.role === "admin"
+                      ? `${user.staffId || "ADM-001"} · Quản trị viên`
+                      : `${user.studentId || "SE182049"} · Unit ${user.dormitoryStatus?.room || "A205"}`}
                   </span>
                 </div>
                 <ChevronDown className="hidden h-3 w-3 text-slate-400 sm:inline dark:text-slate-500" />

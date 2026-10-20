@@ -269,14 +269,16 @@ export const MaintenancePage: React.FC = () => {
             </div>
           </div>
 
-          <Button
-            onClick={() => setIsCreateModalOpen(true)}
-            size="lg"
-            className="gap-2 font-bold shadow-xs shrink-0"
-          >
-            <Plus className="h-4 w-4" />
-            <span>Tạo phiếu báo hỏng mới</span>
-          </Button>
+          {!isManagerOrAdmin && (
+            <Button
+              onClick={() => setIsCreateModalOpen(true)}
+              size="lg"
+              className="gap-2 font-bold shadow-xs shrink-0"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Tạo phiếu báo hỏng mới</span>
+            </Button>
+          )}
         </div>
       </Card>
 
