@@ -25,6 +25,9 @@ import {
   Search,
   FileDown,
   CheckCircle2,
+  Filter,
+  Users,
+  DollarSign,
 } from "lucide-react"
 
 // Decomposed components
@@ -40,6 +43,7 @@ export const ManagerDashboardPage: React.FC = () => {
   const [reportSubTab, setReportSubTab] = useState<
     "TEMPORARY_RESIDENCE" | "OVERDUE_DEBTS"
   >("TEMPORARY_RESIDENCE")
+  const [selectedSemester, setSelectedSemester] = useState<string>("ALL")
   const [searchReportQuery, setSearchReportQuery] = useState("")
   const [toastMessage, setToastMessage] = useState<string | null>(null)
 
@@ -48,10 +52,39 @@ export const ManagerDashboardPage: React.FC = () => {
     setTimeout(() => setToastMessage(null), 4500)
   }
 
+  // Filtered resident registry theo tìm kiếm và học kỳ
+  const filteredResidents = MOCK_RESIDENTS_REGISTRY.filter((res) => {
+    const matchQuery =
+      res.fullName.toLowerCase().includes(searchReportQuery.toLowerCase()) ||
+      res.studentId.toLowerCase().includes(searchReportQuery.toLowerCase()) ||
+      res.room.toLowerCase().includes(searchReportQuery.toLowerCase()) ||
+      res.citizenId.includes(searchReportQuery)
+
+    const matchSemester =
+      selectedSemester === "ALL" || res.semester === selectedSemester
+
+    return matchQuery && matchSemester
+  })
+
+  // Filtered debts theo tìm kiếm và học kỳ
+  const filteredDebts = MOCK_OVERDUE_DEBTS.filter((d) => {
+    const matchQuery =
+      d.fullName.toLowerCase().includes(searchReportQuery.toLowerCase()) ||
+      d.studentId.toLowerCase().includes(searchReportQuery.toLowerCase()) ||
+      d.room.toLowerCase().includes(searchReportQuery.toLowerCase()) ||
+      d.invoiceCode.toLowerCase().includes(searchReportQuery.toLowerCase())
+
+    const matchSemester =
+      selectedSemester === "ALL" || d.semester === selectedSemester
+
+    return matchQuery && matchSemester
+  })
+
   // Export 1: Resident Temporary Residence for Local Police (Excel XML)
   const handleExportResidenceExcel = () => {
     const columns: ExportColumn<ResidentTemporaryRecord>[] = [
       { header: "STT", key: "stt", width: 50 },
+      { header: "Học Kỳ", key: "semester", width: 90 },
       { header: "Mã Hợp Đồng", key: "contractCode", width: 110 },
       { header: "Họ và Tên Sinh Viên", key: "fullName", width: 160 },
       { header: "MSSV", key: "studentId", width: 90 },
@@ -73,51 +106,48 @@ export const ManagerDashboardPage: React.FC = () => {
       filename: `Danh_Sach_Tam_Tru_KTX_FPT_${new Date().toISOString().substring(0, 10)}.xlsx`,
       sheetName: "DS Sinh Viên Tạm Trú",
       title: "DANH SÁCH SINH VIÊN LƯU TRÚ KÝ TÚC XÁ - KHAI BÁO TẠM TRÚ CÔNG AN",
-      subtitle: `Trường Đại học FPT • Ban Quản lý KTX • Cán bộ phụ trách: ${user?.fullName || " Vũ Thành Nam"} • Ngày xuất: ${new Date().toLocaleDateString("vi-VN")}`,
+      subtitle: `Trường Đại học FPT • Ban Quản lý KTX • Cán bộ: ${user?.fullName || "Vũ Thành Nam"} • Học kỳ: ${selectedSemester === "ALL" ? "Tất cả" : selectedSemester}`,
       columns,
-      data: MOCK_RESIDENTS_REGISTRY,
+      data: filteredResidents,
     })
 
-    showToast(
-      "📊 Đã xuất file Excel: Danh_Sach_Tam_Tru_KTX_FPT.xlsx thành công!"
-    )
+    showToast("📊 Đã xuất file Excel Tạm Trú thành công!")
   }
 
-  // Export CSV alternative
+  // Export 2: CSV
   const handleExportResidenceCsv = () => {
     const columns: ExportColumn<ResidentTemporaryRecord>[] = [
       { header: "STT", key: "stt" },
+      { header: "Học Kỳ", key: "semester" },
       { header: "Mã Hợp Đồng", key: "contractCode" },
       { header: "Họ và Tên", key: "fullName" },
       { header: "MSSV", key: "studentId" },
       { header: "Giới Tính", key: "gender" },
-      { header: "Số CCCD", key: "citizenId" },
-      { header: "Quê Quán", key: "hometown" },
-      { header: "Tòa", key: "building" },
+      { header: "CCCD", key: "citizenId" },
+      { header: "Số Điện Thoại", key: "phone" },
       { header: "Phòng", key: "room" },
       { header: "Giường", key: "bedCode" },
-      { header: "Ngày Bắt Đầu", key: "startDate" },
-      { header: "Hạn Hợp Đồng", key: "endDate" },
+      { header: "Từ Ngày", key: "startDate" },
+      { header: "Đến Ngày", key: "endDate" },
     ]
 
     exportToCsv({
-      filename: `Danh_Sach_Tam_Tru_${new Date().toISOString().substring(0, 10)}.csv`,
+      filename: `Danh_Sach_Tam_Tru_KTX_${new Date().toISOString().substring(0, 10)}.csv`,
       columns,
-      data: MOCK_RESIDENTS_REGISTRY,
+      data: filteredResidents,
     })
 
-    showToast("📄 Đã tải về file CSV Danh Sách Tạm Trú (UTF-8)!")
+    showToast("📄 Đã xuất file CSV Tạm Trú thành công!")
   }
 
-  // Export 2: Overdue Debts List
+  // Export 3: Overdue Debts (Excel XML)
   const handleExportOverdueDebtsExcel = () => {
     const columns: ExportColumn<OverdueDebtRecord>[] = [
       { header: "STT", key: "stt", width: 50 },
-      { header: "Mã Hóa Đơn", key: "invoiceCode", width: 110 },
-      { header: "Mã Sinh Viên", key: "studentId", width: 90 },
+      { header: "Học Kỳ", key: "semester", width: 90 },
+      { header: "Mã Hóa Đơn", key: "invoiceCode", width: 120 },
+      { header: "Mã Sinh Viên", key: "studentId", width: 100 },
       { header: "Họ và Tên", key: "fullName", width: 160 },
-      { header: "Số Điện Thoại", key: "phone", width: 100 },
-      { header: "Tòa Nhà", key: "building", width: 90 },
       { header: "Phòng", key: "room", width: 70 },
       { header: "Mã Giường", key: "bedCode", width: 90 },
       { header: "Kỳ Thu Phí", key: "billingPeriod", width: 100 },
@@ -125,7 +155,7 @@ export const ManagerDashboardPage: React.FC = () => {
       { header: "Nợ Điện Nước (VNĐ)", key: "utilityDebt", width: 130 },
       { header: "Tổng Công Nợ (VNĐ)", key: "totalDebt", width: 140 },
       { header: "Hạn Chót Thanh Toán", key: "dueDate", width: 110 },
-      { header: "Số Ngày Quá Hạn", key: "daysOverdue", width: 100 },
+      { header: "Số Ngày Quá Hạn", key: "overdueDays", width: 100 },
       { header: "Mức Độ Cảnh Báo", key: "status", width: 140 },
     ]
 
@@ -133,33 +163,13 @@ export const ManagerDashboardPage: React.FC = () => {
       filename: `Danh_Sach_Cong_No_Qua_Han_KTX_${new Date().toISOString().substring(0, 10)}.xlsx`,
       sheetName: "DS Nợ Quá Hạn",
       title: "DANH SÁCH SINH VIÊN CÔNG NỢ QUÁ HẠN CHƯA THANH TOÁN TIỀN KTX",
-      subtitle: `Bộ phận Tài chính KTX FPT • Kỳ Thu Tháng 09/2026 • Cập nhật lúc: ${new Date().toLocaleTimeString("vi-VN")}`,
+      subtitle: `Bộ phận Tài chính KTX FPT • Học kỳ: ${selectedSemester === "ALL" ? "Tất cả" : selectedSemester} • Cập nhật lúc: ${new Date().toLocaleTimeString("vi-VN")}`,
       columns,
-      data: MOCK_OVERDUE_DEBTS,
+      data: filteredDebts,
     })
 
-    showToast(
-      "📊 Đã xuất file Excel: Danh_Sach_Cong_No_Qua_Han_KTX.xlsx thành công!"
-    )
+    showToast("📊 Đã xuất file Excel Công Nợ Quá Hạn thành công!")
   }
-
-  // Filtered resident registry
-  const filteredResidents = MOCK_RESIDENTS_REGISTRY.filter(
-    (res) =>
-      res.fullName.toLowerCase().includes(searchReportQuery.toLowerCase()) ||
-      res.studentId.toLowerCase().includes(searchReportQuery.toLowerCase()) ||
-      res.room.toLowerCase().includes(searchReportQuery.toLowerCase()) ||
-      res.citizenId.includes(searchReportQuery)
-  )
-
-  // Filtered debts
-  const filteredDebts = MOCK_OVERDUE_DEBTS.filter(
-    (d) =>
-      d.fullName.toLowerCase().includes(searchReportQuery.toLowerCase()) ||
-      d.studentId.toLowerCase().includes(searchReportQuery.toLowerCase()) ||
-      d.room.toLowerCase().includes(searchReportQuery.toLowerCase()) ||
-      d.invoiceCode.toLowerCase().includes(searchReportQuery.toLowerCase())
-  )
 
   const stats = MOCK_OCCUPANCY_STATS
 
@@ -173,7 +183,7 @@ export const ManagerDashboardPage: React.FC = () => {
         </div>
       )}
 
-      {/* Hero  Header */}
+      {/* Hero Header */}
       <Card className="p-6">
         <div className="flex flex-col gap-6">
           <div>
@@ -212,7 +222,7 @@ export const ManagerDashboardPage: React.FC = () => {
         >
           <FileSpreadsheet className="h-4 w-4" />
           <span className="min-w-0 text-center">
-            Xuất Báo Cáo Nghiệp Vụ Excel (.xlsx)
+            Báo Cáo Nghiệp Vụ & Dữ Liệu Tạm Trú / Công Nợ (.xlsx)
           </span>
         </Button>
       </div>
@@ -222,81 +232,33 @@ export const ManagerDashboardPage: React.FC = () => {
       {/* ========================================================= */}
       {activeTab === "OVERVIEW" && (
         <div className="space-y-6">
-          {/* Row 1: Bed Occupancy Donut Chart + Revenue Bar Chart */}
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <OccupancyDonutChart stats={stats} />
             <RevenueTrendChart monthlyRevenue={MOCK_MONTHLY_REVENUE} />
           </div>
-
-          
         </div>
       )}
 
       {/* ========================================================= */}
-      {/* TAB 2: EXCEL REPORTS EXPORT & DATA PREVIEW                */}
+      {/* TAB 2: EXCEL REPORTS EXPORT & DATA TABLE (TÍCH HỢP 1 BẢNG)*/}
       {/* ========================================================= */}
       {activeTab === "REPORTS" && (
-        <div className="space-y-6">
-          {/* Action Box to Trigger Excel Exports */}
-          <Card className="space-y-6 p-6 sm:p-8">
-            <div className="flex flex-col items-start justify-between gap-4 border-b border-border pb-6 sm:flex-row sm:items-center">
-              <div>
-                <span className="flex items-center gap-1.5 text-[10px] font-bold tracking-wider text-primary uppercase">
-                  <FileSpreadsheet className="h-4 w-4" /> Kết Xuất Dữ Liệu
-                  Nghiệp Vụ Chuẩn
-                </span>
-                <h2 className="mt-0.5 text-xl font-bold text-foreground">
-                  Xuất Báo Cáo Định Dạng Microsoft Excel (.xlsx) & CSV
-                </h2>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Hỗ trợ đầy đủ tiếng Việt có dấu, định dạng bảng có tiêu đề cơ
-                  quan, màu nhận diện FPT và số liệu tài chính
-                </p>
-              </div>
-
-              {/* Big Export Buttons */}
-              <div className="flex flex-wrap items-center gap-2">
-                <Button
-                  variant="default"
-                  onClick={handleExportResidenceExcel}
-                  className="gap-2 font-bold shadow-xs"
-                >
-                  <Download className="h-4 w-4" />
-                  <span>Xuất Excel Tạm Trú (.xlsx)</span>
-                </Button>
-
-                <Button
-                  variant="outline"
-                  onClick={handleExportResidenceCsv}
-                  className="gap-1.5 font-bold"
-                >
-                  <FileDown className="h-4 w-4" />
-                  <span>Xuất CSV</span>
-                </Button>
-
-                <Button
-                  variant="destructive"
-                  onClick={handleExportOverdueDebtsExcel}
-                  className="gap-2 font-bold shadow-xs"
-                >
-                  <Download className="h-4 w-4" />
-                  <span>Xuất Excel Công Nợ (.xlsx)</span>
-                </Button>
-              </div>
-            </div>
-
-            {/* Sub-Tabs for Preview Table */}
-            <div className="flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-center">
-              <div className="flex rounded-xl border border-border bg-muted/60 p-1">
+        <Card className="space-y-4 p-5 sm:p-6 shadow-xs">
+          {/* Header Toolbar: Tabs, Bộ lọc theo kỳ, Tra cứu, Nút xuất Excel/CSV */}
+          <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between border-b border-border pb-4">
+            {/* Sub-Tabs: Tạm trú vs Công nợ & Bộ lọc theo kỳ */}
+            <div className="flex flex-wrap items-center gap-2.5">
+              <div className="flex rounded-xl border border-border bg-muted/60 p-1 text-xs">
                 <Button
                   variant={
                     reportSubTab === "TEMPORARY_RESIDENCE" ? "default" : "ghost"
                   }
                   size="sm"
                   onClick={() => setReportSubTab("TEMPORARY_RESIDENCE")}
-                  className="text-xs font-bold"
+                  className="text-xs font-bold gap-1.5"
                 >
-                  1. Danh Sách Tạm Trú ({MOCK_RESIDENTS_REGISTRY.length} SV)
+                  <Users className="h-3.5 w-3.5" />
+                  <span>1. Danh Sách Tạm Trú ({filteredResidents.length})</span>
                 </Button>
                 <Button
                   variant={
@@ -304,14 +266,34 @@ export const ManagerDashboardPage: React.FC = () => {
                   }
                   size="sm"
                   onClick={() => setReportSubTab("OVERDUE_DEBTS")}
-                  className="text-xs font-bold"
+                  className="text-xs font-bold gap-1.5"
                 >
-                  2. Danh Sách Công Nợ Quá Hạn ({MOCK_OVERDUE_DEBTS.length} SV)
+                  <DollarSign className="h-3.5 w-3.5" />
+                  <span>2. Danh Sách Công Nợ Quá Hạn ({filteredDebts.length})</span>
                 </Button>
               </div>
 
-              {/* Search Bar for Preview */}
-              <div className="relative w-full sm:w-64">
+              {/* Bộ lọc theo kỳ */}
+              <div className="flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-1.5 text-xs shadow-2xs">
+                <Filter className="h-3.5 w-3.5 text-primary shrink-0" />
+                <span className="text-muted-foreground font-semibold">Học kỳ:</span>
+                <select
+                  value={selectedSemester}
+                  onChange={(e) => setSelectedSemester(e.target.value)}
+                  className="bg-transparent font-bold text-foreground focus:outline-none cursor-pointer text-xs"
+                >
+                  <option value="ALL">Tất cả học kỳ</option>
+                  <option value="Fall 2026">Học kỳ Fall 2026</option>
+                  <option value="Summer 2026">Học kỳ Summer 2026</option>
+                  <option value="Spring 2026">Học kỳ Spring 2026</option>
+                  <option value="Fall 2025">Học kỳ Fall 2025</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Tra cứu & Nút xuất file Excel/CSV */}
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="relative w-full sm:w-56">
                 <Input
                   icon={<Search className="h-3.5 w-3.5" />}
                   value={searchReportQuery}
@@ -319,25 +301,60 @@ export const ManagerDashboardPage: React.FC = () => {
                   placeholder="Tra cứu MSSV, họ tên, phòng..."
                 />
               </div>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={
+                    reportSubTab === "TEMPORARY_RESIDENCE"
+                      ? handleExportResidenceExcel
+                      : handleExportOverdueDebtsExcel
+                  }
+                  className="gap-1.5 font-bold shadow-xs text-xs"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  <span>Xuất Excel (.xlsx)</span>
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleExportResidenceCsv}
+                  className="gap-1.5 font-bold text-xs"
+                >
+                  <FileDown className="h-3.5 w-3.5" />
+                  <span>Xuất CSV</span>
+                </Button>
+              </div>
             </div>
-          </Card>
+          </div>
 
-          {/* TABLE 1: RESIDENCE PREVIEW */}
-          {reportSubTab === "TEMPORARY_RESIDENCE" && (
-            <ResidentRegistryTable
-              residents={filteredResidents}
-              onExportExcel={handleExportResidenceExcel}
-            />
-          )}
+          {/* Table Container với Chế Độ Cuộn Dọc */}
+          <div className="relative overflow-x-auto overflow-y-auto max-h-[460px] rounded-xl border border-border">
+            {reportSubTab === "TEMPORARY_RESIDENCE" ? (
+              <ResidentRegistryTable residents={filteredResidents} />
+            ) : (
+              <OverdueDebtsTable debts={filteredDebts} />
+            )}
+          </div>
 
-          {/* TABLE 2: OVERDUE DEBTS PREVIEW */}
-          {reportSubTab === "OVERDUE_DEBTS" && (
-            <OverdueDebtsTable
-              debts={filteredDebts}
-              onExportExcel={handleExportOverdueDebtsExcel}
-            />
-          )}
-        </div>
+          {/* Footer thông tin và chế độ cuộn */}
+          <div className="flex flex-wrap items-center justify-between text-xs text-muted-foreground pt-1 gap-2">
+            <span>
+              Hiển thị{" "}
+              <strong className="text-foreground">
+                {reportSubTab === "TEMPORARY_RESIDENCE"
+                  ? filteredResidents.length
+                  : filteredDebts.length}
+              </strong>{" "}
+              sinh viên phù hợp
+            </span>
+            <span className="text-[11px] text-muted-foreground/80 italic">
+              * Bảng có chế độ cuộn dọc để duyệt danh sách mà không chiếm diện tích trang
+            </span>
+          </div>
+        </Card>
       )}
     </div>
   )

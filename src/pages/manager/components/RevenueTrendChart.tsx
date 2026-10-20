@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { Card } from "@/components/ui/card"
-import { TrendingUp, Zap, BedDouble, Calendar } from "lucide-react"
+import { TrendingUp, Zap, BedDouble, Calendar, ChevronDown, Check } from "lucide-react"
 
 interface RevenueTrendChartProps {
   monthlyRevenue?: Array<{
@@ -252,7 +252,7 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
 
   return (
     <Card className="flex flex-col justify-between space-y-5 p-6 shadow-xs lg:col-span-2">
-      {/* Header, Bộ Lọc Theo Năm & View Switcher */}
+      {/* Header, Dropdown Năm Thả Xuống & View Switcher */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
         <div className="flex flex-wrap items-center gap-3">
           <h3 className="flex items-center gap-2 text-sm font-bold text-foreground">
@@ -260,31 +260,42 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
             Biểu Đồ Doanh Thu Tòa A
           </h3>
 
-          {/* Bộ lọc theo năm */}
-          <div className="flex items-center gap-1 rounded-xl border border-border bg-muted/60 p-1 text-xs">
-            <Calendar className="h-3.5 w-3.5 text-muted-foreground ml-1 mr-0.5" />
+          {/* Bộ lọc theo năm dạng dropdown thả xuống từ trên xuống dưới khi rê chuột vào */}
+          <div className="relative group">
             <button
               type="button"
-              onClick={() => setSelectedYear("2026")}
-              className={`rounded-lg px-2.5 py-1 font-semibold transition-all ${
-                selectedYear === "2026"
-                  ? "bg-card text-foreground shadow-2xs font-bold"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
+              className="flex items-center gap-1.5 rounded-xl border border-border bg-muted/60 px-3 py-1.5 text-xs font-bold text-foreground transition-all hover:bg-muted focus:outline-none"
             >
-              2026
+              <Calendar className="h-3.5 w-3.5 text-primary" />
+              <span>Năm {selectedYear}</span>
+              <ChevronDown className="h-3.5 w-3.5 text-muted-foreground transition-transform duration-200 group-hover:rotate-180" />
             </button>
-            <button
-              type="button"
-              onClick={() => setSelectedYear("2025")}
-              className={`rounded-lg px-2.5 py-1 font-semibold transition-all ${
-                selectedYear === "2025"
-                  ? "bg-card text-foreground shadow-2xs font-bold"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              2025
-            </button>
+            <div className="absolute left-0 top-full mt-1.5 hidden w-32 rounded-xl border border-border bg-card p-1 text-xs shadow-xl backdrop-blur-md group-hover:block z-40 animate-in fade-in slide-in-from-top-1 duration-150">
+              <button
+                type="button"
+                onClick={() => setSelectedYear("2026")}
+                className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 font-semibold transition-all ${
+                  selectedYear === "2026"
+                    ? "bg-primary text-primary-foreground font-bold"
+                    : "text-foreground hover:bg-muted"
+                }`}
+              >
+                <span>Năm 2026</span>
+                {selectedYear === "2026" && <Check className="h-3.5 w-3.5" />}
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedYear("2025")}
+                className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 font-semibold transition-all ${
+                  selectedYear === "2025"
+                    ? "bg-primary text-primary-foreground font-bold"
+                    : "text-foreground hover:bg-muted"
+                }`}
+              >
+                <span>Năm 2025</span>
+                {selectedYear === "2025" && <Check className="h-3.5 w-3.5" />}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -359,8 +370,12 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
                       key={idx}
                       className="group relative flex h-full flex-col items-center justify-end"
                     >
-                      {/* Floating Detail Tooltip on Hover */}
-                      <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 z-30 hidden min-w-[230px] rounded-xl bg-slate-900/95 p-2.5 text-left text-xs text-white shadow-xl backdrop-blur-xs group-hover:block animate-in fade-in">
+                      {/* Floating Detail Tooltip on Hover - HIỂN THỊ BÊN PHẢI (hoặc bên trái đối với cột cuối) */}
+                      <div
+                        className={`pointer-events-none absolute z-30 hidden min-w-[220px] rounded-xl bg-slate-900/95 p-2.5 text-left text-xs text-white shadow-xl backdrop-blur-xs group-hover:block animate-in fade-in ${
+                          idx >= 4 ? "right-full mr-2 top-0" : "left-full ml-2 top-0"
+                        }`}
+                      >
                         <p className="font-bold border-b border-slate-700 pb-1 text-slate-200">
                           {item.fullMonth}
                         </p>
@@ -443,8 +458,12 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
                       key={idx}
                       className="group relative flex h-full flex-col items-center justify-end"
                     >
-                      {/* Tooltip on Hover: Ghi rõ số lượng sinh viên buồng 6 và buồng 4 */}
-                      <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 z-30 hidden min-w-[210px] rounded-xl bg-slate-900/95 p-2.5 text-left text-xs text-white shadow-xl backdrop-blur-xs group-hover:block animate-in fade-in whitespace-nowrap">
+                      {/* Tooltip on Hover - HIỂN THỊ BÊN PHẢI (hoặc bên trái đối với cột cuối) */}
+                      <div
+                        className={`pointer-events-none absolute z-30 hidden min-w-[210px] rounded-xl bg-slate-900/95 p-2.5 text-left text-xs text-white shadow-xl backdrop-blur-xs group-hover:block animate-in fade-in whitespace-nowrap ${
+                          idx >= 2 ? "right-full mr-3 top-0" : "left-full ml-3 top-0"
+                        }`}
+                      >
                         <p className="font-bold border-b border-slate-700 pb-1 text-slate-200">
                           {item.fullName}
                         </p>
@@ -490,20 +509,6 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
             </div>
           </div>
         )}
-      </div>
-
-      {/* Summary Footer */}
-      <div className="flex flex-wrap items-center justify-between border-t border-border pt-3 text-xs gap-2">
-        <span className="text-muted-foreground">
-          Doanh thu tiền phòng Kỳ Fall {selectedYear}:{" "}
-          <strong className="text-foreground">
-            ₫{selectedYear === "2026" ? "768,000,000" : "680,000,000"}
-          </strong>{" "}
-          ({selectedYear === "2026" ? "192 SV" : "190 SV"})
-        </span>
-        <span className="font-mono font-bold text-foreground">
-          Điện nước bình quân T09: ₫{selectedYear === "2026" ? "57,000,000" : "51,000,000"} / tháng
-        </span>
       </div>
     </Card>
   )

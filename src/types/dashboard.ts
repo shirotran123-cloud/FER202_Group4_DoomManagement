@@ -24,6 +24,7 @@ export interface BuildingConsumption {
 }
 
 export interface ResidentTemporaryRecord {
+  semester?: string
   stt: number
   contractCode: string
   fullName: string
@@ -44,6 +45,7 @@ export interface ResidentTemporaryRecord {
 }
 
 export interface OverdueDebtRecord {
+  semester?: string
   stt: number
   invoiceCode: string
   studentId: string
