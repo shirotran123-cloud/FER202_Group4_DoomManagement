@@ -210,9 +210,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
           {/* Hall & Zone Badge */}
           <div className="px-4 pt-3.5 pb-2">
-            <div className="flex items-center gap-2 rounded-lg border border-border bg-muted px-3 py-1.5 text-foreground">
-              <span className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-primary"></span>
-              <span className="truncate text-[11px] font-semibold tracking-wide text-foreground">
+            <div className="flex items-center gap-2 text-foreground">
+              <span className="h-2 w-2 shrink-0 rounded-full bg-primary"></span>
+              <span className="truncate text-xs font-semibold tracking-wide text-foreground">
                 {getRoleBadge()}
               </span>
             </div>

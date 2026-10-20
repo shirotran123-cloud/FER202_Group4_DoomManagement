@@ -52,7 +52,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
           </span>
         </div>
 
-        <div className="hidden shrink-0 items-center gap-2 rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-xs font-semibold whitespace-nowrap text-slate-700 xl:flex">
+        <div className="hidden shrink-0 items-center gap-1.5 text-xs font-semibold whitespace-nowrap text-slate-600 dark:text-slate-400 xl:flex">
           <span className="h-1.5 w-1.5 rounded-full bg-blue-600"></span>
           <span>Năm học 2026-2027 · Học kỳ 1</span>
         </div>

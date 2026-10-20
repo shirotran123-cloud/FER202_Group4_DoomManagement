@@ -395,7 +395,7 @@ export const MyRoomPage: React.FC = () => {
               </h3>
             </div>
           </div>
-          <Badge variant="available">4 Thành Viên</Badge>
+          <span className="text-xs font-semibold text-muted-foreground">4 Thành Viên</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
