@@ -3,7 +3,6 @@ import { useAuth } from "@/contexts/useAuth"
 import {
   MOCK_OCCUPANCY_STATS,
   MOCK_MONTHLY_REVENUE,
-  MOCK_BUILDING_CONSUMPTION,
   MOCK_RESIDENTS_REGISTRY,
   MOCK_OVERDUE_DEBTS,
 } from "@/data/mockDashboard"
@@ -32,7 +31,6 @@ import {
 import { ManagerHeaderStats } from "./components/ManagerHeaderStats"
 import { OccupancyDonutChart } from "./components/OccupancyDonutChart"
 import { RevenueTrendChart } from "./components/RevenueTrendChart"
-import { BuildingConsumptionGrid } from "./components/BuildingConsumptionGrid"
 import { ResidentRegistryTable } from "./components/ResidentRegistryTable"
 import { OverdueDebtsTable } from "./components/OverdueDebtsTable"
 
@@ -230,8 +228,7 @@ export const ManagerDashboardPage: React.FC = () => {
             <RevenueTrendChart monthlyRevenue={MOCK_MONTHLY_REVENUE} />
           </div>
 
-          {/* Row 2: Building Utility Consumption Alert Grid */}
-          <BuildingConsumptionGrid consumptions={MOCK_BUILDING_CONSUMPTION} />
+          
         </div>
       )}
 

@@ -21,7 +21,6 @@ export const OccupancyDonutChart: React.FC<OccupancyDonutChartProps> = ({
   const circumference = 2 * Math.PI * radius // ~408.407
 
   const total = stats.totalBeds || 1
-  const segmentGap = 4.5 // Khoảng cách giữa các cung để tách biệt rõ ràng (flat butt, không bo tròn dính nhau)
 
   const items = [
     {
@@ -53,8 +52,8 @@ export const OccupancyDonutChart: React.FC<OccupancyDonutChartProps> = ({
   let accumulated = 0
   const calculatedSegments = items.map((item) => {
     const rawStroke = (item.count / total) * circumference
-    const stroke = Math.max(0, rawStroke - (item.count > 0 ? segmentGap : 0))
-    const offset = accumulated + (item.count > 0 ? segmentGap / 2 : 0)
+    const stroke = rawStroke
+    const offset = accumulated
     accumulated += rawStroke
     const percent = Math.round((item.count / total) * 1000) / 10
 
@@ -75,7 +74,7 @@ export const OccupancyDonutChart: React.FC<OccupancyDonutChartProps> = ({
         </h3>
       </div>
 
-      {/* SVG Donut tách rời rõ ràng, viền phẳng chuẩn */}
+      {/* SVG Donut liền mạch, không cắt hở, viền phẳng chuẩn */}
       <div className="relative flex items-center justify-center py-2">
         <svg
           width="180"
@@ -94,7 +93,7 @@ export const OccupancyDonutChart: React.FC<OccupancyDonutChartProps> = ({
             className="text-muted/15"
           />
 
-          {/* Donut Segments with clear separation and flat butt ends */}
+          {/* Donut Segments liền mạch, không hở gap */}
           {calculatedSegments.map(
             (seg) =>
               seg.count > 0 && (

@@ -546,10 +546,7 @@ export const CurfewPage: React.FC = () => {
             <h1 className="text-xl font-black text-foreground sm:text-2xl">
               Kiểm Soát Giờ Giới Nghiêm 23:00 & Kỷ Luật Nội Trú
             </h1>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              Cổng bảo vệ quét thẻ đối chiếu • Đơn vắng mặt nộp trước 21:00 •
-              Trừ điểm rèn luyện (100đ chuẩn)
-            </p>
+            
           </div>
         </div>
       </div>
