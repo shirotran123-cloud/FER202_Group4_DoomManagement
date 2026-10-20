@@ -17,14 +17,54 @@ export const OccupancyDonutChart: React.FC<OccupancyDonutChartProps> = ({
   stats,
 }) => {
   const radius = 65
-  const circumference = 2 * Math.PI * radius // ~408.4
+  const strokeWidth = 20
+  const circumference = 2 * Math.PI * radius // ~408.407
 
-  const occupiedStroke = (stats.occupiedBeds / stats.totalBeds) * circumference
-  const availableStroke =
-    (stats.availableBeds / stats.totalBeds) * circumference
-  const holdingStroke = (stats.holdingBeds / stats.totalBeds) * circumference
-  const maintenanceStroke =
-    (stats.maintenanceBeds / stats.totalBeds) * circumference
+  const total = stats.totalBeds || 1
+  const segmentGap = 4.5 // Khoảng cách giữa các cung để tách biệt rõ ràng (flat butt, không bo tròn dính nhau)
+
+  const items = [
+    {
+      id: "occupied",
+      label: "Đang ở",
+      count: stats.occupiedBeds,
+      color: "#679436",
+    },
+    {
+      id: "available",
+      label: "Còn trống",
+      count: stats.availableBeds,
+      color: "#427aa1",
+    },
+    {
+      id: "holding",
+      label: "Giữ chỗ 15p",
+      count: stats.holdingBeds,
+      color: "#0891b2",
+    },
+    {
+      id: "maintenance",
+      label: "Bảo trì",
+      count: stats.maintenanceBeds,
+      color: "#4f46e5",
+    },
+  ]
+
+  let accumulated = 0
+  const calculatedSegments = items.map((item) => {
+    const rawStroke = (item.count / total) * circumference
+    const stroke = Math.max(0, rawStroke - (item.count > 0 ? segmentGap : 0))
+    const offset = accumulated + (item.count > 0 ? segmentGap / 2 : 0)
+    accumulated += rawStroke
+    const percent = Math.round((item.count / total) * 1000) / 10
+
+    return {
+      ...item,
+      stroke,
+      offset,
+      percent,
+    }
+  })
 
   return (
     <Card className="flex flex-col justify-between space-y-4 p-6 shadow-xs">
@@ -35,7 +75,7 @@ export const OccupancyDonutChart: React.FC<OccupancyDonutChartProps> = ({
         </h3>
       </div>
 
-      {/* Interactive SVG Donut */}
+      {/* SVG Donut tách rời rõ ràng, viền phẳng chuẩn */}
       <div className="relative flex items-center justify-center py-2">
         <svg
           width="180"
@@ -49,64 +89,34 @@ export const OccupancyDonutChart: React.FC<OccupancyDonutChartProps> = ({
             cy="90"
             r={radius}
             stroke="currentColor"
-            strokeWidth="20"
+            strokeWidth={strokeWidth}
             fill="transparent"
-            className="text-muted/40"
+            className="text-muted/15"
           />
-          {/* Occupied: 80% (Secondary/Steel Blue) */}
-          <circle
-            cx="90"
-            cy="90"
-            r={radius}
-            stroke="#679436"
-            strokeWidth="20"
-            fill="transparent"
-            strokeDasharray={`${occupiedStroke} ${circumference}`}
-            strokeDashoffset="0"
-            strokeLinecap="round"
-          />
-          {/* Available: 12.5% (Primary Green) */}
-          <circle
-            cx="90"
-            cy="90"
-            r={radius}
-            stroke="#427aa1"
-            strokeWidth="20"
-            fill="transparent"
-            strokeDasharray={`${availableStroke} ${circumference}`}
-            strokeDashoffset={-occupiedStroke}
-            strokeLinecap="round"
-          />
-          {/* Holding: 5% (Cyan) */}
-          <circle
-            cx="90"
-            cy="90"
-            r={radius}
-            stroke="#0891b2"
-            strokeWidth="20"
-            fill="transparent"
-            strokeDasharray={`${holdingStroke} ${circumference}`}
-            strokeDashoffset={-(occupiedStroke + availableStroke)}
-            strokeLinecap="round"
-          />
-          {/* Maintenance: 2.5% (Indigo) */}
-          <circle
-            cx="90"
-            cy="90"
-            r={radius}
-            stroke="#4f46e5"
-            strokeWidth="20"
-            fill="transparent"
-            strokeDasharray={`${maintenanceStroke} ${circumference}`}
-            strokeDashoffset={
-              -(occupiedStroke + availableStroke + holdingStroke)
-            }
-            strokeLinecap="round"
-          />
+
+          {/* Donut Segments with clear separation and flat butt ends */}
+          {calculatedSegments.map(
+            (seg) =>
+              seg.count > 0 && (
+                <circle
+                  key={seg.id}
+                  cx="90"
+                  cy="90"
+                  r={radius}
+                  stroke={seg.color}
+                  strokeWidth={strokeWidth}
+                  fill="transparent"
+                  strokeDasharray={`${seg.stroke} ${circumference}`}
+                  strokeDashoffset={-seg.offset}
+                  strokeLinecap="butt"
+                  className="transition-all duration-300"
+                />
+              )
+          )}
         </svg>
 
         {/* Center Percentage Display */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
           <span className="text-2xl font-black text-foreground">
             {stats.occupancyRate}%
           </span>
@@ -118,34 +128,18 @@ export const OccupancyDonutChart: React.FC<OccupancyDonutChartProps> = ({
 
       {/* Legend & Breakdown */}
       <div className="grid grid-cols-2 gap-2 border-t border-border pt-3 text-xs">
-        <div className="flex items-center gap-2">
-          <span className="h-3 w-3 shrink-0 rounded-md bg-[#679436]" />
-          <span className="text-muted-foreground">Đang ở (80%):</span>
-          <strong className="ml-auto text-foreground">
-            {stats.occupiedBeds}
-          </strong>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="h-3 w-3 shrink-0 rounded-md bg-[#427aa1]" />
-          <span className="text-muted-foreground">Còn trống (12.5%):</span>
-          <strong className="ml-auto text-foreground">
-            {stats.availableBeds}
-          </strong>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="h-3 w-3 shrink-0 rounded-md bg-[#0891b2]" />
-          <span className="text-muted-foreground">Giữ chỗ 15p (5%):</span>
-          <strong className="ml-auto text-foreground">
-            {stats.holdingBeds}
-          </strong>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="h-3 w-3 shrink-0 rounded-md bg-[#4f46e5]" />
-          <span className="text-muted-foreground">Bảo trì (2.5%):</span>
-          <strong className="ml-auto text-foreground">
-            {stats.maintenanceBeds}
-          </strong>
-        </div>
+        {calculatedSegments.map((seg) => (
+          <div key={seg.id} className="flex items-center gap-2">
+            <span
+              className="h-3 w-3 shrink-0 rounded-sm"
+              style={{ backgroundColor: seg.color }}
+            />
+            <span className="text-muted-foreground">
+              {seg.label} ({seg.percent}%):
+            </span>
+            <strong className="ml-auto text-foreground">{seg.count}</strong>
+          </div>
+        ))}
       </div>
     </Card>
   )
