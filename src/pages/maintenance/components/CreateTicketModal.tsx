@@ -107,7 +107,7 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
               onChange={(e) => setUrgency(e.target.value as MaintenanceUrgency)}
             >
               <option value="NORMAL">Bình thường (Trong 24h)</option>
-              <option value="EMERGENCY">Khẩn cấp (Cháy, nổ, vỡ ống - Trong 2h)</option>
+              <option value="EMERGENCY">Khẩn cấp (Cháy chập, vỡ ống nước, sự cố nghiêm trọng)</option>
             </Select>
           </div>
         </div>

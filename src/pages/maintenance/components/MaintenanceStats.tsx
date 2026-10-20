@@ -70,7 +70,7 @@ export const MaintenanceStats: React.FC<MaintenanceStatsProps> = ({
           {stats.emergency}
         </div>
         <div className="mt-1 text-xs text-destructive/80">
-          Cam kết có mặt 2h
+          Ưu tiên xử lý ngay
         </div>
       </Card>
     </div>

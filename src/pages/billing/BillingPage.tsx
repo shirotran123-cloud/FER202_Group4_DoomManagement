@@ -11,20 +11,21 @@ import {
   Calendar,
   Bell,
   CheckCircle2,
-  AlertTriangle,
-  FileText,
+    FileText,
   Clock,
   ExternalLink,
   ShieldCheck,
   Maximize2,
   X,
   Send,
+  Building2,
 } from "lucide-react"
 
 export const BillingPage: React.FC = () => {
   const { user } = useAuth()
-  const isTechnicianOrManager =
-    user?.role === "technician" || user?.role === "manager" || user?.role === "admin"
+  const isTechnician = user?.role === "technician"
+  const isManager = user?.role === "manager" || user?.role === "admin"
+  const isTechnicianOrManager = isTechnician || isManager
 
   const [hasPaid, setHasPaid] = useState(false)
   const [showDisputeModal, setShowDisputeModal] = useState(false)
@@ -40,6 +41,31 @@ export const BillingPage: React.FC = () => {
   const [publishedBatch, setPublishedBatch] = useState(false)
   const [remindedBatch, setRemindedBatch] = useState(false)
   const [autoRemindNextWeek, setAutoRemindNextWeek] = useState(true)
+
+  // =========================================================================
+  // GIAO DIỆN KỸ THUẬT VIÊN TÒA A: CHỈ GHI SỐ ĐIỆN NƯỚC & CHỤP ẢNH CÔNG TƠ
+  // =========================================================================
+  const [techElecPhoto, setTechElecPhoto] = useState(
+    "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=600&q=80"
+  )
+  const [techWaterPhoto, setTechWaterPhoto] = useState(
+    "https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=600&q=80"
+  )
+  const [techSavedMessage, setTechSavedMessage] = useState(false)
+
+  // Rooms meter list for Tòa A
+  const MOCK_ROOMS_REGISTRY = [
+    { room: "A205", elec: 12620, water: 854, hasPhotos: true, status: "Đã chốt số" },
+    { room: "A201", elec: 11450, water: 790, hasPhotos: true, status: "Đã chốt số" },
+    { room: "A202", elec: 10980, water: 812, hasPhotos: true, status: "Đã chốt số" },
+    { room: "A203", elec: 12100, water: 830, hasPhotos: true, status: "Đã chốt số" },
+    { room: "A204", elec: 11840, water: 795, hasPhotos: true, status: "Đã chốt số" },
+    { room: "A206", elec: 10620, water: 760, hasPhotos: false, status: "Chờ chốt số" },
+    { room: "A207", elec: 12350, water: 840, hasPhotos: false, status: "Chờ chốt số" },
+    { room: "A301", elec: 9800, water: 710, hasPhotos: true, status: "Đã chốt số" },
+    { room: "A302", elec: 10120, water: 745, hasPhotos: true, status: "Đã chốt số" },
+  ]
+
   const [selectedHistoryYear, setSelectedHistoryYear] = useState<string>("2026")
 
   const MOCK_HISTORY_BY_YEAR: Record<string, Array<{ month: string; amount: string; status: string }>> = {
@@ -80,8 +106,7 @@ export const BillingPage: React.FC = () => {
   const [elecNew, setElecNew] = useState(12620)
   const waterOld = 840
   const [waterNew, setWaterNew] = useState(854)
-  const [recordedSuccess, setRecordedSuccess] = useState(false)
-
+  
   const deltaElec = Math.round(Math.max(0, elecNew - elecOld) * 100) / 100
   const deltaWater = Math.round(Math.max(0, waterNew - waterOld) * 100) / 100
   const elecCost = Math.round(deltaElec * 2500)
@@ -123,12 +148,7 @@ export const BillingPage: React.FC = () => {
       })
   }
 
-  const handleRecordMeter = (e: React.FormEvent) => {
-    e.preventDefault()
-    setRecordedSuccess(true)
-    setTimeout(() => setRecordedSuccess(false), 4000)
-  }
-
+  
   const handlePublishBatch = () => {
     setPublishedBatch(true)
     setTimeout(() => setPublishedBatch(false), 5000)
@@ -137,6 +157,336 @@ export const BillingPage: React.FC = () => {
   const handleRemindBatch = () => {
     setRemindedBatch(true)
     setTimeout(() => setRemindedBatch(false), 4000)
+  }
+
+    // =========================================================================
+  // GIAO DIỆN RIÊNG DÀNH CHO KỸ THUẬT VIÊN TÒA A:
+  // CHỈ NHẬP SỐ ĐIỆN, SỐ NƯỚC CỦA PHÒNG VÀ CHỤP ẢNH ĐỐI SOÁT CÔNG TƠ LÊN
+  // =========================================================================
+  if (isTechnician) {
+    return (
+      <div className="max-w-[1600px] mx-auto space-y-6 pb-12">
+        {/* Header Technician Tòa A */}
+        <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/25">
+                  <Building2 className="h-3.5 w-3.5" />
+                  <span>Kỹ Thuật Viên Phụ Trách: TÒA A</span>
+                </span>
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  <span>Kỳ chốt số tháng 09/2026</span>
+                </span>
+              </div>
+              <h1 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
+                Ghi Chỉ Số & Chụp Ảnh Đối Soát Công Tơ
+              </h1>
+              <p className="text-xs text-muted-foreground">
+                Kỹ thuật viên: <strong className="text-foreground">{user?.fullName || "Đỗ Mạnh Hùng"}</strong> • Tòa nhà: <strong className="text-foreground">Tòa A</strong> (Nhập số điện, số nước và tải ảnh đối soát)
+              </p>
+            </div>
+
+            {techSavedMessage && (
+              <div className="p-3 bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 rounded-xl text-xs font-bold flex items-center gap-2 animate-in fade-in">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                <span>Đã lưu thành công dữ liệu chốt số phòng {selectedRoom}!</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Form Chốt Số & Chụp Ảnh Điện Nước */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* Cột Trái: Form Nhập Số */}
+          <div className="lg:col-span-5 bg-card rounded-2xl border border-border p-6 shadow-xs space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-border">
+              <div className="flex items-center gap-2 font-bold text-sm text-foreground">
+                <Zap className="h-4 w-4 text-primary" />
+                <span>Nhập Chỉ Số Công Tơ</span>
+              </div>
+
+              {/* Room select */}
+              <select
+                value={selectedRoom}
+                onChange={(e) => setSelectedRoom(e.target.value)}
+                className="px-3 py-1.5 rounded-lg border border-border bg-background text-xs font-bold text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+              >
+                {["A205", "A201", "A202", "A203", "A204", "A206", "A207", "A301", "A302"].map((r) => (
+                  <option key={r} value={r}>Phòng {r} {r === selectedRoom ? "(Đang chọn)" : ""}</option>
+                ))}
+              </select>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault()
+                setTechSavedMessage(true)
+                setTimeout(() => setTechSavedMessage(false), 4000)
+              }}
+              className="space-y-4 text-xs"
+            >
+              {/* Electricity Input */}
+              <div className="p-4 rounded-xl bg-muted/40 border border-border space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="font-bold text-foreground flex items-center gap-1.5">
+                    <Zap className="h-3.5 w-3.5 text-amber-500" />
+                    <span>Số Điện Mới (kWh)</span>
+                  </label>
+                  <span className="text-[11px] text-muted-foreground font-mono">
+                    Chỉ số cũ: {elecOld.toLocaleString()} kWh
+                  </span>
+                </div>
+                <input
+                  type="number"
+                  value={elecNew}
+                  onChange={(e) => setElecNew(Number(e.target.value))}
+                  required
+                  min={elecOld}
+                  className="w-full p-2.5 rounded-lg border border-border bg-card font-mono text-base font-bold text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+                <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-1 border-t border-border/50">
+                  <span>Tiêu thụ tháng này:</span>
+                  <span className="font-bold text-primary font-mono">+{Number(deltaElec.toFixed(2))} kWh</span>
+                </div>
+              </div>
+
+              {/* Water Input */}
+              <div className="p-4 rounded-xl bg-muted/40 border border-border space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="font-bold text-foreground flex items-center gap-1.5">
+                    <Droplets className="h-3.5 w-3.5 text-blue-500" />
+                    <span>Số Nước Mới (m³)</span>
+                  </label>
+                  <span className="text-[11px] text-muted-foreground font-mono">
+                    Chỉ số cũ: {waterOld} m³
+                  </span>
+                </div>
+                <input
+                  type="number"
+                  value={waterNew}
+                  onChange={(e) => setWaterNew(Number(e.target.value))}
+                  required
+                  min={waterOld}
+                  className="w-full p-2.5 rounded-lg border border-border bg-card font-mono text-base font-bold text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+                <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-1 border-t border-border/50">
+                  <span>Tiêu thụ tháng này:</span>
+                  <span className="font-bold text-blue-600 font-mono">+{Number(deltaWater.toFixed(2))} m³</span>
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs gap-2 rounded-xl shadow-xs cursor-pointer"
+              >
+                <CheckCircle2 className="h-4 w-4" />
+                <span>Lưu & Bàn Giao Dữ Liệu Phòng {selectedRoom}</span>
+              </Button>
+            </form>
+          </div>
+
+          {/* Cột Phải: Chụp Ảnh Điện Nước Lên */}
+          <div className="lg:col-span-7 bg-card rounded-2xl border border-border p-6 shadow-xs space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-border">
+              <div>
+                <h3 className="font-bold text-sm text-foreground">
+                  Chụp Ảnh Đối Soát Công Tơ Phòng {selectedRoom}
+                </h3>
+                <p className="text-[11px] text-muted-foreground">
+                  Kỹ thuật viên Tòa A chụp ảnh tủ kỹ thuật tầng 2 để làm minh chứng đối soát
+                </p>
+              </div>
+              <span className="text-xs font-bold text-emerald-600 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
+                Đã có đủ 2 ảnh
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Photo 1: Electricity Meter */}
+              <div className="space-y-2.5">
+                <span className="text-xs font-bold text-foreground block">1. Ảnh Công Tơ Điện</span>
+                <div className="relative h-44 w-full rounded-xl overflow-hidden border border-border bg-slate-900 group">
+                  <img src={techElecPhoto} alt="Công tơ điện" className="w-full h-full object-cover" />
+                  <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/80 backdrop-blur-xs text-white font-mono text-[10px] font-bold">
+                    ĐIỆN: #{elecNew} kWh
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setPreviewImage({
+                      url: techElecPhoto,
+                      title: `Ảnh Chỉ Số Điện Phòng ${selectedRoom}`,
+                      subtext: `Chỉ số chốt: ${elecNew} kWh • Submeter E-${selectedRoom}`,
+                    })}
+                    className="absolute top-2 right-2 flex items-center gap-1 rounded bg-black/70 hover:bg-black/90 text-white px-2 py-1 text-[10px] font-semibold"
+                  >
+                    <Maximize2 className="h-3 w-3" />
+                    <span>Xem lớn</span>
+                  </button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={techElecPhoto}
+                    onChange={(e) => setTechElecPhoto(e.target.value)}
+                    placeholder="URL ảnh công tơ điện..."
+                    className="flex-1 p-2 rounded-lg border border-border bg-background text-[11px] font-mono text-foreground"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setTechElecPhoto("https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=600&q=80")}
+                    className="text-[11px] font-bold shrink-0"
+                  >
+                    Ảnh chuẩn
+                  </Button>
+                </div>
+              </div>
+
+              {/* Photo 2: Water Meter */}
+              <div className="space-y-2.5">
+                <span className="text-xs font-bold text-foreground block">2. Ảnh Đồng Hồ Nước</span>
+                <div className="relative h-44 w-full rounded-xl overflow-hidden border border-border bg-slate-900 group">
+                  <img src={techWaterPhoto} alt="Đồng hồ nước" className="w-full h-full object-cover" />
+                  <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/80 backdrop-blur-xs text-white font-mono text-[10px] font-bold">
+                    NƯỚC: #{waterNew} m³
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setPreviewImage({
+                      url: techWaterPhoto,
+                      title: `Ảnh Chỉ Số Nước Phòng ${selectedRoom}`,
+                      subtext: `Chỉ số chốt: ${waterNew} m³ • Submeter W-${selectedRoom}`,
+                    })}
+                    className="absolute top-2 right-2 flex items-center gap-1 rounded bg-black/70 hover:bg-black/90 text-white px-2 py-1 text-[10px] font-semibold"
+                  >
+                    <Maximize2 className="h-3 w-3" />
+                    <span>Xem lớn</span>
+                  </button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={techWaterPhoto}
+                    onChange={(e) => setTechWaterPhoto(e.target.value)}
+                    placeholder="URL ảnh đồng hồ nước..."
+                    className="flex-1 p-2 rounded-lg border border-border bg-background text-[11px] font-mono text-foreground"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setTechWaterPhoto("https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=600&q=80")}
+                    className="text-[11px] font-bold shrink-0"
+                  >
+                    Ảnh chuẩn
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bảng Tiến Độ Chốt Số Các Phòng Tòa A */}
+        <div className="bg-card rounded-2xl border border-border p-6 shadow-xs space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-border">
+            <h3 className="font-bold text-sm text-foreground">
+              Danh Sách Chốt Số Các Phòng Tòa A (Học kỳ Fall 2026)
+            </h3>
+            <span className="text-xs text-muted-foreground font-mono">
+              Đã chốt: 7/9 phòng demo
+            </span>
+          </div>
+
+          <div className="max-h-[260px] overflow-y-auto overflow-x-auto rounded-xl border border-border/60">
+            <table className="w-full text-left text-xs">
+              <thead className="sticky top-0 bg-muted/90 backdrop-blur-xs border-b border-border">
+                <tr className="text-muted-foreground text-[10px] uppercase font-bold tracking-wider">
+                  <th className="py-2.5 px-3">Phòng</th>
+                  <th className="py-2.5 px-3">Số Điện Mới</th>
+                  <th className="py-2.5 px-3">Số Nước Mới</th>
+                  <th className="py-2.5 px-3">Ảnh Đối Soát</th>
+                  <th className="py-2.5 px-3">Trạng Thái</th>
+                  <th className="py-2.5 px-3 text-right">Thao Tác</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {MOCK_ROOMS_REGISTRY.map((r, i) => (
+                  <tr
+                    key={i}
+                    className={`hover:bg-muted/40 transition-colors ${
+                      r.room === selectedRoom ? "bg-primary/5 font-semibold" : ""
+                    }`}
+                  >
+                    <td className="py-2.5 px-3 font-bold text-foreground">Phòng {r.room}</td>
+                    <td className="py-2.5 px-3 font-mono">{r.elec.toLocaleString()} kWh</td>
+                    <td className="py-2.5 px-3 font-mono">{r.water} m³</td>
+                    <td className="py-2.5 px-3">
+                      {r.hasPhotos ? (
+                        <span className="inline-flex items-center gap-1 text-emerald-600 font-medium">
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          <span>Đủ 2 ảnh</span>
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground">Chưa có ảnh</span>
+                      )}
+                    </td>
+                    <td className="py-2.5 px-3">
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                        r.status === "Đã chốt số"
+                          ? "bg-emerald-500/10 text-emerald-600"
+                          : "bg-amber-500/10 text-amber-600"
+                      }`}>
+                        {r.status}
+                      </span>
+                    </td>
+                    <td className="py-2.5 px-3 text-right">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedRoom(r.room)}
+                        className="text-primary hover:underline font-bold text-xs cursor-pointer"
+                      >
+                        Chọn ghi số
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Modal xem ảnh lớn */}
+        {previewImage && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+            onClick={() => setPreviewImage(null)}
+          >
+            <div
+              className="bg-card rounded-2xl max-w-2xl w-full p-4 space-y-3"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between border-b pb-2">
+                <span className="font-bold text-sm text-foreground">{previewImage.title}</span>
+                <button
+                  type="button"
+                  onClick={() => setPreviewImage(null)}
+                  className="p-1 rounded hover:bg-muted"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="max-h-[460px] overflow-hidden rounded-xl">
+                <img src={previewImage.url} alt="Large" className="w-full h-full object-contain bg-black" />
+              </div>
+              <p className="text-xs text-muted-foreground">{previewImage.subtext}</p>
+            </div>
+          </div>
+        )}
+      </div>
+    )
   }
 
   return (
@@ -313,7 +663,7 @@ export const BillingPage: React.FC = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-lg bg-[#eff6ff] dark:bg-[#1c262c] gap-3">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">
-                  {isTechnicianOrManager
+                  {isManager
                     ? `Kỳ Sử Dụng Tiện Ích Phòng ${currentRoom} (Tòa A)`
                     : `Kỳ Sử Dụng Tiện Ích Phòng ${currentRoom}`}
                 </span>
@@ -321,6 +671,21 @@ export const BillingPage: React.FC = () => {
                   01 Tháng 09 – 30 Tháng 09, 2026
                 </span>
               </div>
+
+              {isManager && (
+                <div className="flex items-center gap-1.5 self-start sm:self-auto">
+                  <span className="text-[11px] font-bold text-muted-foreground">Phòng:</span>
+                  <select
+                    value={selectedRoom}
+                    onChange={(e) => setSelectedRoom(e.target.value)}
+                    className="p-1 px-2 rounded-lg border border-border bg-card text-xs font-bold text-foreground cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
+                  >
+                    {["A205", "A201", "A202", "A203", "A204", "A206", "A207"].map((r) => (
+                      <option key={r} value={r}>Phòng {r}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
               <div className="flex flex-wrap items-center gap-2">
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-[#161e23] shadow-2xs border border-border text-xs font-semibold text-foreground">
                   <Users className="h-4 w-4 text-primary" />
@@ -570,97 +935,7 @@ export const BillingPage: React.FC = () => {
             /* CÁN BỘ / QUẢN LÝ / KỸ THUẬT: BẢNG ĐIỀU HÀNH CHỐT SỔ & PHÁT HÀNH HÓA ĐƠN */
             /* ========================================================================= */
             <div className="space-y-6">
-              {/* Box 1: Chọn phòng & Chốt số nhanh */}
-              <div className="bg-white dark:bg-[#161e23] border border-border rounded-xl shadow-md p-5 space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-border">
-                  <div className="flex items-center gap-2">
-                    <span className="p-2 rounded-lg bg-primary text-white">
-                      <Zap className="h-5 w-5" />
-                    </span>
-                    <div>
-                      <h2 className="font-bold text-sm text-foreground leading-tight">
-                        Chốt Số & Đối Soát Công Tơ
-                      </h2>
-                      
-                    </div>
-                  </div>
-
-                  {/* Room Selector */}
-                  <select
-                    value={selectedRoom}
-                    onChange={(e) => setSelectedRoom(e.target.value)}
-                    className="p-1.5 rounded-lg border border-border bg-[#eff6ff] dark:bg-[#1c262c] text-xs font-bold text-foreground"
-                  >
-                    <option value="A205">Phòng A205 (Đang chọn)</option>
-                    <option value="A201">Phòng A201</option>
-                    <option value="A202">Phòng A202</option>
-                    <option value="A203">Phòng A203</option>
-                    <option value="A204">Phòng A204</option>
-                    <option value="A206">Phòng A206</option>
-                    <option value="A207">Phòng A207</option>
-                  </select>
-                </div>
-
-                {recordedSuccess && (
-                  <div className="p-3 bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 rounded-lg text-xs font-semibold flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                    <span>Đã cập nhật chỉ số mới và tính toán lại hóa đơn cho phòng {currentRoom}!</span>
-                  </div>
-                )}
-
-                <form onSubmit={handleRecordMeter} className="space-y-3 text-xs">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1">
-                      <label className="text-[11px] text-muted-foreground font-semibold block">
-                        Điện Mới (kWh)
-                      </label>
-                      <input
-                        type="number"
-                        value={elecNew}
-                        onChange={(e) => setElecNew(Number(e.target.value))}
-                        className="w-full p-2 rounded-lg border border-border bg-[#eff6ff] dark:bg-[#1c262c] font-mono text-sm font-bold text-foreground"
-                      />
-                      <span className="text-[10px] text-muted-foreground block">
-                        Chỉ số cũ: {elecOld} ({Number(deltaElec.toFixed(2))} kWh)
-                      </span>
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[11px] text-muted-foreground font-semibold block">
-                        Nước Mới (m³)
-                      </label>
-                      <input
-                        type="number"
-                        value={waterNew}
-                        onChange={(e) => setWaterNew(Number(e.target.value))}
-                        className="w-full p-2 rounded-lg border border-border bg-[#eff6ff] dark:bg-[#1c262c] font-mono text-sm font-bold text-foreground"
-                      />
-                      <span className="text-[10px] text-muted-foreground block">
-                        Chỉ số cũ: {waterOld} ({Number(deltaWater.toFixed(2))} m³)
-                      </span>
-                    </div>
-                  </div>
-
-                  {elecNew < elecOld && (
-                    <div className="p-2 bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 rounded text-[11px] flex items-center gap-1.5">
-                      <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
-                      <span>Lỗi: Chỉ số mới ({elecNew}) không được nhỏ hơn chỉ số cũ ({elecOld})!</span>
-                    </div>
-                  )}
-
-                  <div className="p-3 rounded-lg bg-[#eff6ff] dark:bg-[#1c262c] border border-border flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">Tổng tiền phòng {currentRoom}:</span>
-                    <strong className="font-mono text-primary text-sm">₫{totalBill.toLocaleString()}</strong>
-                  </div>
-
-                  <Button
-                    type="submit"
-                    disabled={elecNew < elecOld}
-                    className="w-full bg-primary text-white text-xs font-bold h-9"
-                  >
-                    Lưu & Cập Nhật Số Liệu Phòng {currentRoom}
-                  </Button>
-                </form>
-              </div>
+              
 
               {/* Box 2: Tiến độ thu nợ & Hành động cán bộ */}
               <div className="bg-white dark:bg-[#161e23] border border-border rounded-xl shadow-md p-5 space-y-4">

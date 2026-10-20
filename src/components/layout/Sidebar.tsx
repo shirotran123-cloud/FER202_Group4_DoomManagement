@@ -105,7 +105,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     if (currentRole === "technician") {
       return [
         {
-          groupTitle: "Tác Vụ Kỹ Thuật & An Ninh",
+          groupTitle: "Tác Vụ Kỹ Thuật Tòa A",
           items: [
             {
               title: "Hàng đợi Sửa chữa",
@@ -154,7 +154,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     if (!isAuthenticated || !user) return "Ký túc xá FPT University"
     if (currentRole === "student") return "Phòng A205 · Tòa A (High-Rise)"
     if (currentRole === "manager") return "BQL Ký túc xá · Tòa A"
-    if (currentRole === "technician") return "Đội Kỹ thuật & An ninh"
+    if (currentRole === "technician") return "Kỹ thuật viên · Tòa A"
     return "Quản trị viên Hệ thống DMS"
   }
 

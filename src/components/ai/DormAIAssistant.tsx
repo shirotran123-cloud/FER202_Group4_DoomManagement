@@ -55,7 +55,7 @@ NGHIỆP VỤ & QUY TẮC KÝ TÚC XÁ FPT (SRS & THỰC TẾ):
 
 3. BÁO HỎNG & BẢO TRÌ:
 - Báo sự cố qua mục 'Báo hỏng thiết bị', có đính kèm ảnh chụp hiện trạng.
-- Mức độ Khẩn cấp (chập điện, cháy nổ, vỡ đường ống nước): Kỹ thuật viên xử lý trong vòng 2 giờ. Cần dặn sinh viên ngắt cầu dao (Aptomat) ngay lập tức.
+- Mức độ Khẩn cấp (chập điện, cháy nổ, vỡ đường ống nước): Kỹ thuật viên Tòa A xử lý ngay lập tức. Cần dặn sinh viên ngắt cầu dao (Aptomat) ngay lập tức.
 - Mức độ Tiêu chuẩn (hỏng điều hòa, bóng đèn, quạt trần): Xử lý trong 24 giờ.
 - Mức độ Thấp (bản lề kêu, khóa tủ lỏng): Xử lý trong 48 giờ.
 
@@ -196,7 +196,7 @@ export const DormAIAssistant: React.FC = () => {
         "⚠️ **CẢNH BÁO AN TOÀN KHẨN CẤP:**\n" +
         "1. Hãy lập tức gạt cầu dao (Aptomat) của buồng hoặc phòng bạn xuống!\n" +
         "2. Không chạm tay trần vào khu vực ổ cắm.\n" +
-        "3. Hãy vào mục **Báo hỏng thiết bị** -> Chọn mức độ **Khẩn cấp (2h)** để kỹ thuật viên trực trạm có mặt ngay trong 45-60 phút.\n" +
+        "3. Hãy vào mục **Báo hỏng thiết bị** -> Chọn mức độ **Khẩn cấp** để kỹ thuật viên trực trạm có mặt ngay trong 45-60 phút.\n" +
         "4. Hotline cứu hộ khẩn cấp: **1900 6868** (Trực ban KTX 24/7)."
       )
     }

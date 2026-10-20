@@ -186,7 +186,7 @@ export const MaintenanceTicketCard: React.FC<MaintenanceTicketCardProps> = ({
           {isEmergency ? (
             <span className="inline-flex items-center gap-1 font-semibold text-destructive">
               <AlertTriangle className="h-3 w-3" />
-              <span>Khẩn cấp (2h)</span>
+              <span>Khẩn cấp</span>
             </span>
           ) : (
             <span className="text-muted-foreground">Bình thường</span>

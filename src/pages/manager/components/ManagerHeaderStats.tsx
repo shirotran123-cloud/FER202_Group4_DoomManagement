@@ -45,7 +45,7 @@ export const ManagerHeaderStats: React.FC<ManagerHeaderStatsProps> = ({ stats })
         </div>
         <p className="text-2xl font-black text-cyan-600 dark:text-cyan-400 mt-1">2 phiếu</p>
         <span className="text-[10px] text-cyan-600/80 dark:text-cyan-400/80">
-          1 ca khẩn cấp &lt;2h
+          1 ca khẩn cấp
         </span>
       </Card>
 

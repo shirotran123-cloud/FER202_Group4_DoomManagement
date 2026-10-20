@@ -16,6 +16,7 @@ import { Wrench, Plus, Search, Info, CheckCircle2, X } from "lucide-react"
 
 // Decomposed components
 import { MaintenanceTicketCard } from "./components/MaintenanceTicketCard"
+import { TechnicianBountyBoard } from "./components/TechnicianBountyBoard"
 import { CreateTicketModal } from "./components/CreateTicketModal"
 import { EditTicketModal } from "./components/EditTicketModal"
 import { ViewTicketModal } from "./components/ViewTicketModal"
@@ -163,6 +164,35 @@ export const MaintenancePage: React.FC = () => {
     showToast(`Đã phân công ${data.techName} xử lý phiếu ${activeTicket.id}!`)
   }
 
+  
+  const handleTechAccept = (ticket: MaintenanceTicket) => {
+    const now = new Date()
+    const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(
+      now.getMinutes()
+    ).padStart(2, "0")} ${String(now.getDate()).padStart(2, "0")}/${String(
+      now.getMonth() + 1
+    ).padStart(2, "0")}`
+
+    const updatedTickets = tickets.map((t) => {
+      if (t.id === ticket.id) {
+        return {
+          ...t,
+          status: "IN_PROGRESS" as const,
+          assignedTechnician: {
+            id: user?.id || "usr_tech_01",
+            name: user?.fullName || "Đỗ Mạnh Hùng",
+            phone: user?.phone || "0977 112 233",
+            assignedAt: timeStr,
+            etaMinutes: 30,
+          },
+        }
+      }
+      return t
+    })
+    setTickets(updatedTickets)
+    showToast(`⚔️ Đã tiếp nhận nhiệm vụ ${ticket.id}! Đang di chuyển tới Phòng ${ticket.room}.`)
+  }
+
   const handleCompleteSubmit = (data: {
     notes: string
     materials: ReplacedMaterial[]
@@ -247,6 +277,54 @@ export const MaintenancePage: React.FC = () => {
   })
 
 
+    // Giao diện riêng cho Kỹ thuật viên Tòa A: Bounty Hunter Quest Board
+  if (user?.role === "technician") {
+    return (
+      <div className="space-y-6">
+        {toastMessage && (
+          <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 rounded-xl bg-foreground text-background px-4 py-3 text-sm font-medium shadow-xl border border-border animate-in fade-in slide-in-from-bottom-5">
+            <CheckCircle2 className="h-5 w-5 text-primary shrink-0" />
+            <span>{toastMessage}</span>
+          </div>
+        )}
+
+        <TechnicianBountyBoard
+          tickets={tickets}
+          technicianName={user?.fullName || "Đỗ Mạnh Hùng"}
+          building="Tòa A"
+          onAccept={handleTechAccept}
+          onComplete={(t) => {
+            setActiveTicket(t)
+            setIsCompleteModalOpen(true)
+          }}
+          onView={(t) => {
+            setActiveTicket(t)
+            setIsViewModalOpen(true)
+          }}
+        />
+
+        <CompleteTicketModal
+          isOpen={isCompleteModalOpen}
+          onClose={() => {
+            setIsCompleteModalOpen(false)
+            setActiveTicket(null)
+          }}
+          ticket={activeTicket}
+          onSubmit={handleCompleteSubmit}
+        />
+
+        <ViewTicketModal
+          isOpen={isViewModalOpen}
+          onClose={() => {
+            setIsViewModalOpen(false)
+            setActiveTicket(null)
+          }}
+          ticket={activeTicket}
+        />
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       {/* Toast Notification */}
@@ -265,11 +343,22 @@ export const MaintenancePage: React.FC = () => {
               <div className="h-9 w-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
                 <Wrench className="h-5 w-5" />
               </div>
-              <h1 className="text-xl sm:text-2xl font-bold text-foreground">Quản lý Báo hỏng & Sửa chữa</h1>
+              <div className="flex flex-col">
+                <h1 className="text-xl sm:text-2xl font-bold text-foreground">
+                  {user?.role === "manager" || user?.role === "admin"
+                    ? "Điều phối Báo hỏng & Bảo trì Tòa A"
+                    : "Báo hỏng & Yêu cầu sửa chữa thiết bị"}
+                </h1>
+                <span className="text-xs text-muted-foreground mt-0.5">
+                  {user?.role === "manager" || user?.role === "admin"
+                    ? "Theo dõi tiến độ, phân công kỹ thuật viên Tòa A xử lý sự cố cơ sở vật chất"
+                    : "Gửi yêu cầu sửa chữa thiết bị buồng & theo dõi tiến độ nghiệm thu"}
+                </span>
+              </div>
             </div>
           </div>
 
-          {!isManagerOrAdmin && (
+          {user?.role === "student" && (
             <Button
               onClick={() => setIsCreateModalOpen(true)}
               size="lg"
@@ -314,7 +403,7 @@ export const MaintenancePage: React.FC = () => {
             >
               <option value="ALL">Mức độ: Tất cả</option>
               <option value="NORMAL">Bình thường</option>
-              <option value="EMERGENCY">Khẩn cấp (2h)</option>
+              <option value="EMERGENCY">Khẩn cấp</option>
             </Select>
 
             <Select

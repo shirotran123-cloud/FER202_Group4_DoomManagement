@@ -37,7 +37,7 @@ export const MaintenanceStubPage: React.FC = () => {
             <Clock className="h-5 w-5 text-blue-600" />
             <h3 className="font-bold text-foreground">2. Äiá»u Phá»‘i Ká»¹ Thuáº­t</h3>
             <p className="text-muted-foreground leading-relaxed">
-              CÃ¡n bá»™ ká»¹ thuáº­t tiáº¿p nháº­n trong 2h, cáº­p nháº­t tráº¡ng thÃ¡i sá»­a chá»¯a vÃ  chá»¥p áº£nh nghiá»‡m thu hoÃ n táº¥t.
+              CÃ¡n bá»™ ká»¹ thuáº­t tiáº¿p nháº­n nhanh chóng, cáº­p nháº­t tráº¡ng thÃ¡i sá»­a chá»¯a vÃ  chá»¥p áº£nh nghiá»‡m thu hoÃ n táº¥t.
             </p>
           </div>
           <div className="rounded-2xl border border-border bg-card p-5 space-y-2">

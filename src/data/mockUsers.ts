@@ -73,14 +73,14 @@ export const MOCK_USERS: Record<UserRole, UserProfile> = {
     avatar:
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
     role: "technician",
-    roleTitle: "Cán bộ An ninh & Kỹ thuật viên Vận hành",
+    roleTitle: "Kỹ thuật viên Tòa A (Cơ Điện & Vận Hành)",
     staffId: "SEC-012",
     phone: "0977 112 233",
     citizenId: "034076008123",
     dob: "1976-08-10",
     gender: "male",
     hometown: "Đà Nẵng",
-    department: "Tổ An ninh Bảo vệ & Bảo trì Cơ sở vật chất",
+    department: "Đội Kỹ thuật & Cơ điện Tòa A",
     status: "active",
     joinedDate: "2021-08-01",
     emergencyContact: {
