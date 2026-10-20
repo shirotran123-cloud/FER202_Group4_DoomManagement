@@ -9,6 +9,7 @@ import {
   QrCode,
   Download,
   Calendar,
+  Bell,
   CheckCircle2,
   AlertTriangle,
   FileText,
@@ -38,6 +39,7 @@ export const BillingPage: React.FC = () => {
   const [selectedRoom, setSelectedRoom] = useState("A205")
   const [publishedBatch, setPublishedBatch] = useState(false)
   const [remindedBatch, setRemindedBatch] = useState(false)
+  const [autoRemindNextWeek, setAutoRemindNextWeek] = useState(true)
 
   // Technician / Manager record meter state
   const elecOld = 12450
@@ -46,10 +48,10 @@ export const BillingPage: React.FC = () => {
   const [waterNew, setWaterNew] = useState(854)
   const [recordedSuccess, setRecordedSuccess] = useState(false)
 
-  const deltaElec = Math.max(0, elecNew - elecOld)
-  const deltaWater = Math.max(0, waterNew - waterOld)
-  const elecCost = deltaElec * 2500
-  const waterCost = deltaWater * 18000
+  const deltaElec = Math.round(Math.max(0, elecNew - elecOld) * 100) / 100
+  const deltaWater = Math.round(Math.max(0, waterNew - waterOld) * 100) / 100
+  const elecCost = Math.round(deltaElec * 2500)
+  const waterCost = Math.round(deltaWater * 18000)
   const subtotal = elecCost + waterCost
   const vatCost = Math.round(subtotal * 0.1)
   const totalBill = subtotal + vatCost
@@ -285,11 +287,30 @@ export const BillingPage: React.FC = () => {
                   01 Tháng 09 – 30 Tháng 09, 2026
                 </span>
               </div>
-              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white dark:bg-[#161e23] shadow-2xs border border-border text-xs font-semibold text-foreground">
-                <Users className="h-4 w-4 text-primary" />
-                <span>{numStudents} Sinh Viên Phòng {currentRoom} Cùng Chia</span>
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-[#161e23] shadow-2xs border border-border text-xs font-semibold text-foreground">
+                  <Users className="h-4 w-4 text-primary" />
+                  <span>{numStudents} SV Cùng Chia</span>
+                </div>
+
+                {isTechnicianOrManager && (
+                  <Button
+                    onClick={handlePublishBatch}
+                    className="h-8 gap-1.5 bg-primary text-white text-xs font-bold shadow-xs whitespace-nowrap"
+                  >
+                    <Send className="h-3.5 w-3.5" />
+                    <span>Phát Hành Hóa Đơn</span>
+                  </Button>
+                )}
               </div>
             </div>
+
+            {publishedBatch && (
+              <div className="p-3 bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 rounded-lg text-xs font-semibold flex items-center gap-2 animate-in fade-in">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                <span>Đã phát hành hóa đơn T09 kèm mã VietQR đến toàn bộ 192 sinh viên Tòa A!</span>
+              </div>
+            )}
 
             {/* Utility Breakdown Table */}
             <div className="overflow-x-auto">
@@ -317,7 +338,7 @@ export const BillingPage: React.FC = () => {
                       {elecOld.toLocaleString()} → {elecNew.toLocaleString()} kWh
                     </td>
                     <td className="py-3 px-3 text-right font-mono font-bold text-foreground">
-                      {deltaElec} kWh
+                      {Number(deltaElec.toFixed(2))} kWh
                     </td>
                     <td className="py-3 px-3 text-right font-mono text-muted-foreground">₫2,500</td>
                     <td className="py-3 px-3 text-right font-mono font-bold text-foreground">
@@ -338,7 +359,7 @@ export const BillingPage: React.FC = () => {
                       {waterOld} → {waterNew} m³
                     </td>
                     <td className="py-3 px-3 text-right font-mono font-bold text-foreground">
-                      {deltaWater} m³
+                      {Number(deltaWater.toFixed(2))} m³
                     </td>
                     <td className="py-3 px-3 text-right font-mono text-muted-foreground">₫18,000</td>
                     <td className="py-3 px-3 text-right font-mono font-bold text-foreground">
@@ -526,9 +547,7 @@ export const BillingPage: React.FC = () => {
                       <h2 className="font-bold text-sm text-foreground leading-tight">
                         Chốt Số & Đối Soát Công Tơ
                       </h2>
-                      <span className="text-[11px] text-muted-foreground">
-                        Nhập số thực tế để tự động chia tiền cho phòng
-                      </span>
+                      
                     </div>
                   </div>
 
@@ -568,7 +587,7 @@ export const BillingPage: React.FC = () => {
                         className="w-full p-2 rounded-lg border border-border bg-[#eff6ff] dark:bg-[#1c262c] font-mono text-sm font-bold text-foreground"
                       />
                       <span className="text-[10px] text-muted-foreground block">
-                        Chỉ số cũ: {elecOld} ({deltaElec} kWh)
+                        Chỉ số cũ: {elecOld} ({Number(deltaElec.toFixed(2))} kWh)
                       </span>
                     </div>
                     <div className="space-y-1">
@@ -582,7 +601,7 @@ export const BillingPage: React.FC = () => {
                         className="w-full p-2 rounded-lg border border-border bg-[#eff6ff] dark:bg-[#1c262c] font-mono text-sm font-bold text-foreground"
                       />
                       <span className="text-[10px] text-muted-foreground block">
-                        Chỉ số cũ: {waterOld} ({deltaWater} m³)
+                        Chỉ số cũ: {waterOld} ({Number(deltaWater.toFixed(2))} m³)
                       </span>
                     </div>
                   </div>
@@ -645,21 +664,37 @@ export const BillingPage: React.FC = () => {
                   </div>
                 )}
 
-                <div className="space-y-2 pt-2">
-                  <Button
-                    onClick={handlePublishBatch}
-                    className="w-full h-10 bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm rounded-lg"
-                  >
-                    <Send className="h-4 w-4" />
-                    <span>Phát Hành Hóa Đơn & Mã VietQR Cho 192 SV</span>
-                  </Button>
+                {/* Chế độ tự động nhắc trong 1 tuần tới nếu chưa nộp */}
+                <div className="p-3 rounded-xl border border-border bg-[#eff6ff] dark:bg-[#1c262c] space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label
+                      htmlFor="auto-remind-toggle"
+                      className="text-xs font-bold text-foreground cursor-pointer select-none flex items-center gap-1.5"
+                    >
+                      <Bell className="h-3.5 w-3.5 text-primary" />
+                      <span>Tự Động Nhắc Trong 1 Tuần Tới</span>
+                    </label>
+                    <input
+                      id="auto-remind-toggle"
+                      type="checkbox"
+                      checked={autoRemindNextWeek}
+                      onChange={(e) => setAutoRemindNextWeek(e.target.checked)}
+                      className="h-4 w-4 rounded border-border text-primary focus:ring-primary cursor-pointer"
+                    />
+                  </div>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">
+                    {autoRemindNextWeek
+                      ? "✓ Đang kích hoạt: Hệ thống tự động gửi nhắc nhở mỗi 24 giờ trong 7 ngày tới đến các sinh viên chưa thanh toán."
+                      : "Chế độ tự động nhắc đang tắt. Bạn có thể gửi nhắc nhở thủ công bằng nút bên dưới."}
+                  </p>
+                </div>
 
+                <div className="pt-1">
                   <Button
-                    variant="outline"
                     onClick={handleRemindBatch}
-                    className="w-full h-9 border-border text-xs font-semibold flex items-center justify-center gap-2 text-foreground"
+                    className="w-full h-10 bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs rounded-xl"
                   >
-                    <Clock className="h-3.5 w-3.5 text-amber-500" />
+                    <Clock className="h-4 w-4" />
                     <span>Gửi Nhắc Nhở Đến 14 SV Chưa Nộp</span>
                   </Button>
                 </div>

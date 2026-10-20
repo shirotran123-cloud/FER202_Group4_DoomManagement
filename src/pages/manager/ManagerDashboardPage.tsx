@@ -8,7 +8,6 @@ import {
 } from "@/data/mockDashboard"
 import {
   exportToExcelXml,
-  exportToCsv,
   type ExportColumn,
 } from "@/lib/excelExport"
 import type {
@@ -23,7 +22,6 @@ import {
   PieChart,
   Download,
   Search,
-  FileDown,
   CheckCircle2,
   Filter,
   Users,
@@ -115,30 +113,7 @@ export const ManagerDashboardPage: React.FC = () => {
   }
 
   // Export 2: CSV
-  const handleExportResidenceCsv = () => {
-    const columns: ExportColumn<ResidentTemporaryRecord>[] = [
-      { header: "STT", key: "stt" },
-      { header: "Học Kỳ", key: "semester" },
-      { header: "Mã Hợp Đồng", key: "contractCode" },
-      { header: "Họ và Tên", key: "fullName" },
-      { header: "MSSV", key: "studentId" },
-      { header: "Giới Tính", key: "gender" },
-      { header: "CCCD", key: "citizenId" },
-      { header: "Số Điện Thoại", key: "phone" },
-      { header: "Phòng", key: "room" },
-      { header: "Giường", key: "bedCode" },
-      { header: "Từ Ngày", key: "startDate" },
-      { header: "Đến Ngày", key: "endDate" },
-    ]
-
-    exportToCsv({
-      filename: `Danh_Sach_Tam_Tru_KTX_${new Date().toISOString().substring(0, 10)}.csv`,
-      columns,
-      data: filteredResidents,
-    })
-
-    showToast("📄 Đã xuất file CSV Tạm Trú thành công!")
-  }
+  
 
   // Export 3: Overdue Debts (Excel XML)
   const handleExportOverdueDebtsExcel = () => {
@@ -317,15 +292,7 @@ export const ManagerDashboardPage: React.FC = () => {
                   <span>Xuất Excel (.xlsx)</span>
                 </Button>
 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleExportResidenceCsv}
-                  className="gap-1.5 font-bold text-xs"
-                >
-                  <FileDown className="h-3.5 w-3.5" />
-                  <span>Xuất CSV</span>
-                </Button>
+                
               </div>
             </div>
           </div>
