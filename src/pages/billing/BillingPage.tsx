@@ -317,7 +317,7 @@ export const BillingPage: React.FC = () => {
                     onClick={() => setPreviewImage({
                       url: techElecPhoto,
                       title: `Ảnh Chỉ Số Điện Phòng ${selectedRoom}`,
-                      subtext: `Chỉ số chốt: ${elecNew} kWh • Submeter E-${selectedRoom}`,
+                      subtext: `Chỉ số chốt: ${elecNew} kWh • Công tơ điện phòng ${selectedRoom}`,
                     })}
                     className="absolute top-2 right-2 flex items-center gap-1 rounded bg-black/70 hover:bg-black/90 text-white px-2 py-1 text-[10px] font-semibold"
                   >
@@ -358,7 +358,7 @@ export const BillingPage: React.FC = () => {
                     onClick={() => setPreviewImage({
                       url: techWaterPhoto,
                       title: `Ảnh Chỉ Số Nước Phòng ${selectedRoom}`,
-                      subtext: `Chỉ số chốt: ${waterNew} m³ • Submeter W-${selectedRoom}`,
+                      subtext: `Chỉ số chốt: ${waterNew} m³ • Đồng hồ nước phòng ${selectedRoom}`,
                     })}
                     className="absolute top-2 right-2 flex items-center gap-1 rounded bg-black/70 hover:bg-black/90 text-white px-2 py-1 text-[10px] font-semibold"
                   >
@@ -826,7 +826,7 @@ export const BillingPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-sm text-foreground">
-                  Ảnh Chụp Đối Soát Công Tơ (Photo Verification)
+                  Ảnh Chụp Đối Soát Công Tơ
                 </h3>
                 <p className="text-[11px] text-muted-foreground">
                   {isTechnicianOrManager
@@ -854,7 +854,7 @@ export const BillingPage: React.FC = () => {
                       setPreviewImage({
                         url: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1600&q=90",
                         title: `Ảnh Chụp Chỉ Số Công Tơ Điện Phòng ${currentRoom}`,
-                        subtext: `Chỉ số chốt: ${elecNew.toLocaleString()} kWh • Thời gian chụp: 30/09, 09:14 AM • Submeter E-${currentRoom}`,
+                        subtext: `Chỉ số chốt: ${elecNew.toLocaleString()} kWh • Thời gian chụp: 30/09, 09:14 AM • Công tơ điện phòng ${currentRoom}`,
                       })
                     }
                   />
@@ -868,7 +868,7 @@ export const BillingPage: React.FC = () => {
                       setPreviewImage({
                         url: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1600&q=90",
                         title: `Ảnh Chụp Chỉ Số Công Tơ Điện Phòng ${currentRoom}`,
-                        subtext: `Chỉ số chốt: ${elecNew.toLocaleString()} kWh • Thời gian chụp: 30/09, 09:14 AM • Submeter E-${currentRoom}`,
+                        subtext: `Chỉ số chốt: ${elecNew.toLocaleString()} kWh • Thời gian chụp: 30/09, 09:14 AM • Công tơ điện phòng ${currentRoom}`,
                       })
                     }
                     className="absolute top-2 right-2 flex items-center gap-1 rounded-lg bg-black/70 hover:bg-black/90 text-white px-2 py-1 text-[10px] font-semibold backdrop-blur-xs transition-all shadow-md"
@@ -880,7 +880,7 @@ export const BillingPage: React.FC = () => {
                 </div>
                 <div className="p-2.5 flex items-center justify-between text-xs text-muted-foreground">
                   <span className="font-mono text-[11px]">30/09, 09:14 AM</span>
-                  <span className="font-bold text-primary dark:text-[#cee6ef]">Submeter E-{currentRoom}</span>
+                  <span className="font-bold text-primary dark:text-[#cee6ef]">Công tơ điện {currentRoom}</span>
                 </div>
               </div>
 
@@ -895,7 +895,7 @@ export const BillingPage: React.FC = () => {
                       setPreviewImage({
                         url: "https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=1600&q=90",
                         title: `Ảnh Chụp Chỉ Số Đồng Hồ Nước Phòng ${currentRoom}`,
-                        subtext: `Chỉ số chốt: ${waterNew} m³ • Thời gian chụp: 30/09, 09:18 AM • Submeter W-${currentRoom}`,
+                        subtext: `Chỉ số chốt: ${waterNew} m³ • Thời gian chụp: 30/09, 09:18 AM • Đồng hồ nước phòng ${currentRoom}`,
                       })
                     }
                   />
@@ -909,7 +909,7 @@ export const BillingPage: React.FC = () => {
                       setPreviewImage({
                         url: "https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=1600&q=90",
                         title: `Ảnh Chụp Chỉ Số Đồng Hồ Nước Phòng ${currentRoom}`,
-                        subtext: `Chỉ số chốt: ${waterNew} m³ • Thời gian chụp: 30/09, 09:18 AM • Submeter W-${currentRoom}`,
+                        subtext: `Chỉ số chốt: ${waterNew} m³ • Thời gian chụp: 30/09, 09:18 AM • Đồng hồ nước phòng ${currentRoom}`,
                       })
                     }
                     className="absolute top-2 right-2 flex items-center gap-1 rounded-lg bg-black/70 hover:bg-black/90 text-white px-2 py-1 text-[10px] font-semibold backdrop-blur-xs transition-all shadow-md"
@@ -921,7 +921,7 @@ export const BillingPage: React.FC = () => {
                 </div>
                 <div className="p-2.5 flex items-center justify-between text-xs text-muted-foreground">
                   <span className="font-mono text-[11px]">30/09, 09:18 AM</span>
-                  <span className="font-bold text-primary dark:text-[#cee6ef]">Submeter W-{currentRoom}</span>
+                  <span className="font-bold text-primary dark:text-[#cee6ef]">Đồng hồ nước {currentRoom}</span>
                 </div>
               </div>
             </div>

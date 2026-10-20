@@ -13,9 +13,7 @@ import {
   Phone,
   ImageIcon,
   FileCheck2,
-  Building2,
-  ShieldCheck,
-  Check,
+      Check,
   Sparkles,
   MessageSquare,
 } from "lucide-react"
@@ -39,7 +37,7 @@ const CATEGORY_MAP: Record<
 > = {
   ELECTRIC: { label: "Sự cố Điện", icon: Zap, color: "text-amber-500 bg-amber-500/10 border-amber-500/20" },
   PLUMBING: { label: "Cấp Thoát Nước", icon: Droplets, color: "text-blue-500 bg-blue-500/10 border-blue-500/20" },
-  HVAC: { label: "Điều Hòa / HVAC", icon: Wind, color: "text-cyan-500 bg-cyan-500/10 border-cyan-500/20" },
+  HVAC: { label: "Điều Hòa & Máy Lạnh", icon: Wind, color: "text-cyan-500 bg-cyan-500/10 border-cyan-500/20" },
   FURNITURE: { label: "Cơ Khí / Giường Tủ", icon: Wrench, color: "text-orange-500 bg-orange-500/10 border-orange-500/20" },
   NETWORK: { label: "Mạng & Đường Dây", icon: Sparkles, color: "text-indigo-500 bg-indigo-500/10 border-indigo-500/20" },
   OTHER: { label: "Thiết Bị Khác", icon: Wrench, color: "text-slate-500 bg-slate-500/10 border-slate-500/20" },
@@ -85,30 +83,14 @@ export const TechnicianBountyBoard: React.FC<TechnicianBountyBoardProps> = ({
       <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-xs">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           {/* Left: Identity */}
-          <div className="space-y-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/25">
-                <Building2 className="h-3.5 w-3.5" />
-                <span>Kỹ Thuật Viên Phụ Trách: {building}</span>
-              </span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                <ShieldCheck className="h-3.5 w-3.5" />
-                <span>Đang trực ca · Sẵn sàng xử lý</span>
-              </span>
-            </div>
-
-            <div>
-              <h1 className="text-xl sm:text-2xl font-black text-foreground tracking-tight flex items-center gap-2">
-                <span>Bảng Nhiệm Vụ Tiếp Nhận Sửa Chữa</span>
-                <span className="text-sm px-2 py-0.5 rounded-md bg-muted text-muted-foreground font-mono font-bold">
-                  Bounty Board
-                </span>
-              </h1>
-              <p className="text-xs text-muted-foreground mt-1">
-                Kỹ thuật viên: <strong className="text-foreground">{technicianName}</strong> • Khu vực chuyên trách:{" "}
-                <strong className="text-foreground">{building} (Ký túc xá Đại học FPT)</strong>
-              </p>
-            </div>
+          <div className="space-y-1.5">
+            <h1 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
+              Bảng Tiếp Nhận Sửa Chữa Thiết Bị
+            </h1>
+            <p className="text-xs text-muted-foreground">
+              Kỹ thuật viên: <strong className="text-foreground">{technicianName}</strong> • Khu vực phụ trách:{" "}
+              <strong className="text-foreground">{building} (Ký túc xá Đại học FPT)</strong>
+            </p>
           </div>
 
           {/* Right: Star Rating & Performance Box */}
@@ -153,7 +135,7 @@ export const TechnicianBountyBoard: React.FC<TechnicianBountyBoardProps> = ({
               : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground border border-border"
           }`}
         >
-          <span>🎯 Yêu Cầu Chờ Tiếp Nhận (Open Bounties)</span>
+          <span>🎯 Chờ tiếp nhận</span>
           <span
             className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${
               activeTab === "PENDING"
@@ -174,7 +156,7 @@ export const TechnicianBountyBoard: React.FC<TechnicianBountyBoardProps> = ({
               : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground border border-border"
           }`}
         >
-          <span>🛠️ Nhiệm Vụ Đang Sửa Chữa (Active Quests)</span>
+          <span>🛠️ Đang sửa chữa</span>
           <span
             className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${
               activeTab === "IN_PROGRESS"
@@ -195,7 +177,7 @@ export const TechnicianBountyBoard: React.FC<TechnicianBountyBoardProps> = ({
               : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground border border-border"
           }`}
         >
-          <span>📜 Đã Hoàn Thành & Nghiệm Thu (Completed)</span>
+          <span>📜 Đã hoàn thành</span>
           <span
             className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${
               activeTab === "RESOLVED"
@@ -250,12 +232,12 @@ export const TechnicianBountyBoard: React.FC<TechnicianBountyBoardProps> = ({
                     </span>
 
                     {isEmergency ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-rose-500 text-white shadow-2xs animate-pulse">
+                      <span className="inline-flex items-center gap-1 text-xs font-bold text-destructive">
                         <AlertTriangle className="h-3.5 w-3.5" />
                         <span>Khẩn cấp</span>
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-muted text-muted-foreground border border-border">
+                      <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                         <Clock className="h-3 w-3" />
                         <span>Tiêu chuẩn</span>
                       </span>
@@ -449,7 +431,7 @@ export const TechnicianBountyBoard: React.FC<TechnicianBountyBoardProps> = ({
                         className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs gap-1.5 shadow-xs cursor-pointer"
                       >
                         <Wrench className="h-3.5 w-3.5" />
-                        <span>Tiếp Nhận Nhiệm Vụ (Claim Bounty)</span>
+                        <span>Tiếp Nhận Nhiệm Vụ</span>
                       </Button>
                     )}
 

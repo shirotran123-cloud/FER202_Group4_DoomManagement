@@ -88,7 +88,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               title: "Bàn làm việc Quản lý",
               to: "/manager",
               icon: ShieldCheck,
-              badge: "Desk",
+              
             },
             { title: "Chốt số & Chia điện nước", to: "/billing", icon: Zap },
             
@@ -111,7 +111,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               title: "Hàng đợi Sửa chữa",
               to: "/maintenance",
               icon: Wrench,
-              badge: "2 Phiếu",
+              badge: "2 phiếu",
             },
             { title: "Nhập số Điện Nước", to: "/billing", icon: Zap },
             
@@ -152,7 +152,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   // Hall label by role
   const getRoleBadge = () => {
     if (!isAuthenticated || !user) return "Ký túc xá FPT University"
-    if (currentRole === "student") return "Phòng A205 · Tòa A (High-Rise)"
+    if (currentRole === "student") return "Phòng A205 · Tòa A"
     if (currentRole === "manager") return "BQL Ký túc xá · Tòa A"
     if (currentRole === "technician") return "Kỹ thuật viên · Tòa A"
     return "Quản trị viên Hệ thống DMS"
