@@ -13,7 +13,6 @@ import {
   LogIn,
   Sun,
   Moon,
-  Search,
 } from "lucide-react"
 import { useTheme } from "@/components/theme-provider"
 
