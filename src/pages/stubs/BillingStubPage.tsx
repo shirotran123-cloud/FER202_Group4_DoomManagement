@@ -75,7 +75,7 @@ export const BillingStubPage: React.FC = () => {
           <div className="p-4 rounded-2xl bg-sky-500/10 border border-sky-500/30 space-y-1">
             <p className="text-sky-600 dark:text-sky-400 text-[11px] font-bold">Mỗi người đóng (Total / N)</p>
             <p className="text-lg font-bold text-sky-600 dark:text-sky-400">142.500 VNĐ</p>
-            <p className="text-[10px] text-muted-foreground">Bao gồm 30k phí vệ sinh</p>
+            <p className="text-[10px] text-muted-foreground">Chỉ tính tiền điện và nước thực tế</p>
           </div>
         </div>
       </div>

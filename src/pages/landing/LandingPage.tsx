@@ -179,12 +179,6 @@ export const LandingPage: React.FC = () => {
       note: "Thu theo kỳ 4 tháng (4.000.000 VNĐ / kỳ)",
     },
     {
-      item: "Tiền ký quỹ đặt cọc tài sản",
-      price: "1.000.000 VNĐ",
-      unit: "lần đầu / hoàn lại khi trả phòng",
-      note: "Quyết toán hoàn cọc sau khi kết thúc hợp đồng",
-    },
-    {
       item: "Đơn giá điện phòng",
       price: "2.500 VNĐ",
       unit: "kWh (VAT 10%)",
@@ -196,13 +190,7 @@ export const LandingPage: React.FC = () => {
       unit: "m³ (VAT 10%)",
       note: "Chốt đồng hồ thực tế hàng tháng, chia đều số người",
     },
-    {
-      item: "Phí thu gom rác & dịch vụ KTX",
-      price: "120.000 VNĐ",
-      unit: "phòng / tháng (VAT 10%)",
-      note: "Chi phí cố định chia đều các thành viên (Wi-Fi miễn phí KTX)",
-    },
-  ]
+    ]
 
   const rules = [
     {

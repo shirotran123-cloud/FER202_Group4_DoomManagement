@@ -3,8 +3,7 @@ import { useAuth } from "@/contexts/useAuth"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
-  Trash2,
-  Receipt,
+    Receipt,
   Zap,
   Droplets,
   Users,
@@ -64,8 +63,7 @@ export const BillingPage: React.FC = () => {
   const deltaWater = Math.max(0, waterNew - waterOld)
   const elecCost = deltaElec * 2500
   const waterCost = deltaWater * 18000
-  const internetCost = 120000
-  const subtotal = elecCost + waterCost + internetCost
+  const subtotal = elecCost + waterCost
   const vatCost = Math.round(subtotal * 0.1)
   const totalBill = subtotal + vatCost
   const currentRoom = user?.dormitoryStatus?.room || "A205"
@@ -252,25 +250,7 @@ export const BillingPage: React.FC = () => {
                     </td>
                   </tr>
 
-                  <tr className="hover:bg-[#eff6ff] dark:hover:bg-[#1c262c] transition-colors">
-                    <td className="py-3 px-3">
-                      <div className="flex items-center gap-2">
-                        <span className="p-1 rounded bg-purple-100 text-purple-700">
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </span>
-                        <div>
-                          <span className="font-bold text-foreground block">Phí Rác & Dịch Vụ Vệ Sinh</span>
-                          <span className="text-[10px] text-muted-foreground font-medium">Wi-Fi miễn phí KTX</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-3 px-3 text-muted-foreground">Cố định / phòng</td>
-                    <td className="py-3 px-3 text-right font-mono font-bold text-foreground">1 Gói</td>
-                    <td className="py-3 px-3 text-right font-mono text-muted-foreground">₫120,000</td>
-                    <td className="py-3 px-3 text-right font-mono font-bold text-foreground">
-                      ₫{internetCost.toLocaleString()}
-                    </td>
-                  </tr>
+                  
 
                   <tr className="hover:bg-[#eff6ff] dark:hover:bg-[#1c262c] transition-colors">
                     <td className="py-3 px-3">
