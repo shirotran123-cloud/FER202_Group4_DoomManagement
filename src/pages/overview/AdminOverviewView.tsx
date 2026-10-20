@@ -1,49 +1,128 @@
 import React, { useState } from "react"
-import { Link } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
-import {
-  MOCK_RESIDENTS_REGISTRY,
-  MOCK_OCCUPANCY_STATS,
-} from "@/data/mockDashboard"
-import { INITIAL_MAINTENANCE_TICKETS } from "@/data/mockMaintenance"
-import type { MaintenanceTicket } from "@/types/maintenance"
+import { MOCK_RESIDENTS_REGISTRY } from "@/data/mockDashboard"
 import type { ResidentTemporaryRecord } from "@/types/dashboard"
 import {
   Users,
-  FileText,
-    Wrench,
   Search,
   Building2,
-  ArrowRight,
   ShieldCheck,
   Filter,
   Bed,
   Sparkles,
-  ExternalLink,
+  Server,
+  Globe,
+  Database,
+  Cpu,
+  RefreshCw,
+  HardDriveDownload,
+    CheckCircle2,
+  Clock,
+  KeyRound,
+  Activity,
+  Layers,
 } from "lucide-react"
 
-const STORAGE_KEY_TICKETS = "dms_maintenance_tickets_v1"
+// Data full 4 Tòa Ký Túc Xá trường Đại học FPT
+interface CampusBuildingData {
+  id: string
+  code: string
+  name: string
+  type: string
+  totalRooms: number
+  totalBeds: number
+  occupiedBeds: number
+  emptyBeds: number
+  occupancyRate: number
+  managerName: string
+  managerPhone: string
+  technicianName: string
+  technicianPhone: string
+  iotGateStatus: "ONLINE" | "MAINTENANCE"
+  powerStatus: "NORMAL" | "WARNING"
+  waterStatus: "NORMAL" | "WARNING"
+}
+
+const CAMPUS_BUILDINGS: CampusBuildingData[] = [
+  {
+    id: "BUILDING_A",
+    code: "Tòa A",
+    name: "Tòa A (Ký túc xá Nam)",
+    type: "Nam sinh viên",
+    totalRooms: 44,
+    totalBeds: 192,
+    occupiedBeds: 154,
+    emptyBeds: 38,
+    occupancyRate: 80.2,
+    managerName: "Vũ Thành Nam",
+    managerPhone: "0988 765 432",
+    technicianName: "Đỗ Mạnh Hùng",
+    technicianPhone: "0977 112 233",
+    iotGateStatus: "ONLINE",
+    powerStatus: "NORMAL",
+    waterStatus: "NORMAL",
+  },
+  {
+    id: "BUILDING_B",
+    code: "Tòa B",
+    name: "Tòa B (Ký túc xá Nữ)",
+    type: "Nữ sinh viên",
+    totalRooms: 44,
+    totalBeds: 192,
+    occupiedBeds: 176,
+    emptyBeds: 16,
+    occupancyRate: 91.7,
+    managerName: "Trần Thị Kim Yến",
+    managerPhone: "0914 223 344",
+    technicianName: "Lê Văn Phước",
+    technicianPhone: "0905 667 889",
+    iotGateStatus: "ONLINE",
+    powerStatus: "NORMAL",
+    waterStatus: "NORMAL",
+  },
+  {
+    id: "BUILDING_C",
+    code: "Tòa C",
+    name: "Tòa C (Quốc Tế & Sau ĐH)",
+    type: "Du học sinh & Sau ĐH",
+    totalRooms: 44,
+    totalBeds: 192,
+    occupiedBeds: 144,
+    emptyBeds: 48,
+    occupancyRate: 75.0,
+    managerName: "Hoàng Minh Trí",
+    managerPhone: "0935 445 566",
+    technicianName: "Nguyễn Bá Đạt",
+    technicianPhone: "0983 112 244",
+    iotGateStatus: "ONLINE",
+    powerStatus: "NORMAL",
+    waterStatus: "NORMAL",
+  },
+  {
+    id: "BUILDING_D",
+    code: "Tòa D",
+    name: "Tòa D (Tân Sinh Viên K20)",
+    type: "Tân sinh viên khóa mới",
+    totalRooms: 44,
+    totalBeds: 192,
+    occupiedBeds: 168,
+    emptyBeds: 24,
+    occupancyRate: 87.5,
+    managerName: "Phạm Ngọc Toàn",
+    managerPhone: "0979 889 900",
+    technicianName: "Võ Quốc Cường",
+    technicianPhone: "0918 334 455",
+    iotGateStatus: "ONLINE",
+    powerStatus: "NORMAL",
+    waterStatus: "NORMAL",
+  },
+]
 
 export const AdminOverviewView: React.FC = () => {
-  const { user } = useAuth()
+  const { user: _user } = useAuth()
 
   // Active view tab
-  const [activeTab, setActiveTab] = useState<"STUDENTS" | "REQUESTS">(
-    "STUDENTS"
-  )
-
-  // Requests state
-
-  const [maintenanceTickets, setMaintenanceTickets] = useState<
-    MaintenanceTicket[]
-  >(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY_TICKETS)
-      return saved ? JSON.parse(saved) : INITIAL_MAINTENANCE_TICKETS
-    } catch {
-      return INITIAL_MAINTENANCE_TICKETS
-    }
-  })
+  const [activeTab, setActiveTab] = useState<"BUILDINGS" | "STUDENTS" | "SYSTEM">("BUILDINGS")
 
   const [toastMessage, setToastMessage] = useState<string | null>(null)
   const showToast = (msg: string) => {
@@ -54,31 +133,8 @@ export const AdminOverviewView: React.FC = () => {
   // Student list search & filter
   const [studentSearch, setStudentSearch] = useState("")
   const [buildingFilter, setBuildingFilter] = useState("ALL")
-  const [selectedStudent, setSelectedStudent] =
-    useState<ResidentTemporaryRecord | null>(null)
-
-  // Request list filter
-  const [requestTypeFilter, setRequestTypeFilter] = useState<
-    "ALL" | "CURFEW" | "MAINTENANCE"
-  >("ALL")
-  const [requestStatusFilter, setRequestStatusFilter] = useState<
-    "ALL" | "PENDING" | "RESOLVED"
-  >("ALL")
-
-  // Handle Maintenance Status Update
-  const handleUpdateMaintenanceStatus = (
-    id: string,
-    status: "IN_PROGRESS" | "CLOSED"
-  ) => {
-    const updated = maintenanceTickets.map((t) =>
-      t.id === id ? { ...t, status } : t
-    )
-    setMaintenanceTickets(updated)
-    localStorage.setItem(STORAGE_KEY_TICKETS, JSON.stringify(updated))
-    showToast(
-      `Đã cập nhật phiếu ${id} sang trạng thái ${status === "IN_PROGRESS" ? "Đang xử lý" : "Đã hoàn thành"}!`
-    )
-  }
+  const [selectedStudent, setSelectedStudent] = useState<ResidentTemporaryRecord | null>(null)
+  const [selectedBuilding, setSelectedBuilding] = useState<CampusBuildingData | null>(null)
 
   // Filtered Students
   const filteredStudents = MOCK_RESIDENTS_REGISTRY.filter((s) => {
@@ -92,11 +148,14 @@ export const AdminOverviewView: React.FC = () => {
     return matchesSearch && matchesBuilding
   })
 
-  // Pending counts
-  const pendingMaintenanceCount = maintenanceTickets.filter(
-    (t) => t.status === "PENDING"
-  ).length
-  const totalPendingRequests = pendingMaintenanceCount
+  // System stats summary
+  const totalCampusRooms = CAMPUS_BUILDINGS.reduce((sum, b) => sum + b.totalRooms, 0)
+  const totalCampusBeds = CAMPUS_BUILDINGS.reduce((sum, b) => sum + b.totalBeds, 0)
+  const totalOccupiedBeds = CAMPUS_BUILDINGS.reduce((sum, b) => sum + b.occupiedBeds, 0)
+  const totalEmptyBeds = CAMPUS_BUILDINGS.reduce((sum, b) => sum + b.emptyBeds, 0)
+  const avgOccupancyRate = Number(
+    ((totalOccupiedBeds / totalCampusBeds) * 100).toFixed(1)
+  )
 
   return (
     <div className="space-y-6 pb-12">
@@ -108,219 +167,302 @@ export const AdminOverviewView: React.FC = () => {
         </div>
       )}
 
-      {/* Admin Welcome & Header Banner */}
+      {/* Admin Welcome & Header Banner: Chỉ để tiêu đề duy nhất theo yêu cầu người dùng */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#233944] via-[#2c4755] to-[#1c2e37] p-6 text-white shadow-md sm:p-8">
         <div className="pointer-events-none absolute -top-20 -right-20 h-80 w-80 rounded-full bg-[#cee6ef]/10 blur-3xl" />
         <div className="pointer-events-none absolute right-40 -bottom-20 h-60 w-60 rounded-full bg-sky-500/10 blur-2xl" />
 
-        <div className="relative z-10 flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
-          <div className="space-y-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-[#cee6ef]/20 px-3 py-1 text-xs font-semibold text-[#cee6ef] backdrop-blur-md">
-                <ShieldCheck className="h-3.5 w-3.5" />
-                {user?.roleTitle || "Ban Quản Lý Ký Túc Xá"}
-              </span>
-            </div>
-
-            <div>
-              <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
-                Tổng Quan Điều Hành Quản Trị Ký Túc Xá 👋
-              </h1>
-              <p className="mt-1 max-w-2xl text-sm leading-relaxed text-white/80">
-                Tra cứu danh bạ sinh viên nội trú, giám sát tình trạng lưu trú
-                và trực tiếp phê duyệt đơn từ, yêu cầu học viên toàn trường.
-              </p>
-            </div>
-          </div>
-
-          {/* Quick Shortcuts for Admin */}
-          <div className="flex shrink-0 flex-wrap items-center gap-2.5 self-start lg:self-center">
-            <Link
-              to="/manager"
-              className="flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-xs font-semibold text-white shadow-xs backdrop-blur-md transition-all hover:bg-white/20"
-            >
-              <Building2 className="h-4 w-4" />
-              <span>Bàn Làm Việc </span>
-            </Link>
-
-            
-          </div>
+        <div className="relative z-10">
+          <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl text-white">
+            Tổng Quan Điều Hành Quản Trị Ký Túc Xá 👋
+          </h1>
         </div>
       </div>
 
-      {/* KPI 4-Card Grid for Admin */}
+      {/* KPI 4-Card Grid: Quản Lý Web & Full Các Tòa Ký Túc Toàn Trường */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4">
-        {/* Card 1: Total Residents */}
+        {/* Card 1: Full Campus Dorms */}
         <div className="flex flex-col justify-between rounded-2xl border border-border bg-card p-5 shadow-xs transition-shadow hover:shadow-md sm:p-6">
           <div>
             <div className="mb-3 flex items-center justify-between">
               <span className="text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
-                Sinh Viên Đang Ở
+                Quy Mô KTX Toàn Trường
               </span>
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600">
+                <Building2 className="h-5 w-5" />
+              </div>
+            </div>
+            <div className="text-2xl font-black text-foreground">
+              4 Tòa Nhà{" "}
+              <span className="text-sm font-normal text-muted-foreground font-mono">
+                ({totalCampusRooms} phòng)
+              </span>
+            </div>
+            <div className="mt-1 text-xs text-muted-foreground">
+              {totalOccupiedBeds} / {totalCampusBeds} Giường • Lấp đầy {avgOccupancyRate}%
+            </div>
+          </div>
+
+          <div className="mt-4 flex items-center justify-between border-t border-border/80 pt-3 text-xs">
+            <span className="text-muted-foreground">Chỗ trống toàn trường:</span>
+            <span className="font-bold text-emerald-600 font-mono">
+              {totalEmptyBeds} Giường
+            </span>
+          </div>
+        </div>
+
+        {/* Card 2: Web Application & Server Infrastructure */}
+        <div className="flex flex-col justify-between rounded-2xl border border-border bg-card p-5 shadow-xs transition-shadow hover:shadow-md sm:p-6">
+          <div>
+            <div className="mb-3 flex items-center justify-between">
+              <span className="text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
+                Hạ Tầng Web & Dịch Vụ
+              </span>
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-600">
+                <Globe className="h-5 w-5" />
+              </div>
+            </div>
+            <div className="text-2xl font-black text-emerald-600 flex items-center gap-1.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>100% Online</span>
+            </div>
+            <div className="mt-1 text-xs text-muted-foreground">
+              Cụm Web DMS & CSDL hoạt động ổn định
+            </div>
+          </div>
+
+          <div className="mt-4 flex items-center justify-between border-t border-border/80 pt-3 text-xs">
+            <span className="text-muted-foreground">API FAP Đào tạo:</span>
+            <span className="font-bold text-primary flex items-center gap-1">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+              <span>Đã đồng bộ</span>
+            </span>
+          </div>
+        </div>
+
+        {/* Card 3: User Accounts & Roles */}
+        <div className="flex flex-col justify-between rounded-2xl border border-border bg-card p-5 shadow-xs transition-shadow hover:shadow-md sm:p-6">
+          <div>
+            <div className="mb-3 flex items-center justify-between">
+              <span className="text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
+                Tài Khoản & Phân Quyền Web
+              </span>
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-600">
                 <Users className="h-5 w-5" />
               </div>
             </div>
-            <div className="text-2xl font-black text-foreground">
-              {MOCK_OCCUPANCY_STATS.occupiedBeds}{" "}
-              <span className="text-sm font-normal text-muted-foreground">
-                sinh viên
+            <div className="text-2xl font-black text-foreground font-mono">
+              662{" "}
+              <span className="text-sm font-normal text-muted-foreground font-sans">
+                người dùng
               </span>
             </div>
             <div className="mt-1 text-xs text-muted-foreground">
-              Chiếm {MOCK_OCCUPANCY_STATS.occupancyRate}% công suất phòng
+              642 Sinh viên • 12 BQL • 8 Kỹ thuật viên
             </div>
           </div>
 
           <div className="mt-4 flex items-center justify-between border-t border-border/80 pt-3 text-xs">
-            <span className="text-muted-foreground">Còn trống:</span>
-            <span className="font-bold text-emerald-600">
-              {MOCK_OCCUPANCY_STATS.availableBeds} Giường
+            <span className="text-muted-foreground">Học kỳ hệ thống:</span>
+            <span className="font-bold text-foreground font-mono">
+              Fall 2026
             </span>
           </div>
         </div>
 
-        {/* Card 2: Pending Requests */}
+        {/* Card 4: 4 Buildings IoT Access Gates */}
         <div className="flex flex-col justify-between rounded-2xl border border-border bg-card p-5 shadow-xs transition-shadow hover:shadow-md sm:p-6">
           <div>
             <div className="mb-3 flex items-center justify-between">
               <span className="text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
-                Yêu Cầu & Đơn Chờ Duyệt
-              </span>
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-600">
-                <FileText className="h-5 w-5" />
-              </div>
-            </div>
-            <div className="text-2xl font-black text-cyan-600">
-              {totalPendingRequests}{" "}
-              <span className="text-sm font-normal text-muted-foreground">
-                hồ sơ
-              </span>
-            </div>
-            <div className="mt-1 text-xs text-muted-foreground">
-              {pendingMaintenanceCount} phiếu báo hỏng kỹ thuật
-              bảo trì
-            </div>
-          </div>
-
-          <div className="mt-4 flex items-center justify-between border-t border-border/80 pt-3 text-xs">
-            <span className="text-muted-foreground">Ưu tiên:</span>
-            <button
-              onClick={() => {
-                setActiveTab("REQUESTS")
-                setRequestStatusFilter("PENDING")
-              }}
-              className="flex items-center gap-1 font-bold text-cyan-600 hover:underline"
-            >
-              <span>Xem & Duyệt ngay</span>
-              <ArrowRight className="h-3 w-3" />
-            </button>
-          </div>
-        </div>
-
-        {/* Card 3: Maintenance in queue */}
-        <div className="flex flex-col justify-between rounded-2xl border border-border bg-card p-5 shadow-xs transition-shadow hover:shadow-md sm:p-6">
-          <div>
-            <div className="mb-3 flex items-center justify-between">
-              <span className="text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
-                Sự Cố Kỹ Thuật Đang Xử Lý
-              </span>
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-500/10 text-sky-600">
-                <Wrench className="h-5 w-5" />
-              </div>
-            </div>
-            <div className="text-2xl font-black text-foreground">
-              {
-                maintenanceTickets.filter((t) => t.status === "IN_PROGRESS")
-                  .length
-              }{" "}
-              <span className="text-sm font-normal text-muted-foreground">
-                phiếu đang sửa
-              </span>
-            </div>
-            <div className="mt-1 text-xs text-muted-foreground">
-              Đội kỹ thuật đang xử lý tại các buồng
-            </div>
-          </div>
-
-          <div className="mt-4 flex items-center justify-between border-t border-border/80 pt-3 text-xs">
-            <span className="text-muted-foreground">Đã hoàn thành:</span>
-            <span className="font-bold text-emerald-600">
-              {maintenanceTickets.filter((t) => t.status === "CLOSED").length}{" "}
-              phiếu
-            </span>
-          </div>
-        </div>
-
-        {/* Card 4: Gate Access Status */}
-        <div className="flex flex-col justify-between rounded-2xl border border-border bg-card p-5 shadow-xs transition-shadow hover:shadow-md sm:p-6">
-          <div>
-            <div className="mb-3 flex items-center justify-between">
-              <span className="text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
-                Lượt Ra Vào Cổng Hôm Nay
+                Cổng IoT 4 Tòa Ký Túc Xá
               </span>
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600">
                 <ShieldCheck className="h-5 w-5" />
               </div>
             </div>
             <div className="text-2xl font-black text-foreground font-mono">
-              248{" "}
-              <span className="text-sm font-normal text-muted-foreground">
-                lượt quẹt
+              1,420{" "}
+              <span className="text-sm font-normal text-muted-foreground font-sans">
+                lượt / ngày
               </span>
             </div>
             <div className="mt-1 text-xs text-muted-foreground">
-              100% thẻ sinh viên hợp lệ • Tòa A
+              4/4 Cổng tự động kết nối thời gian thực
             </div>
           </div>
 
           <div className="mt-4 flex items-center justify-between border-t border-border/80 pt-3 text-xs">
-            <span className="text-muted-foreground">Trạng thái cổng:</span>
+            <span className="text-muted-foreground">Tòa A, B, C, D:</span>
             <span className="flex items-center gap-1 font-bold text-emerald-600">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-              Cổng tự động 24/7 sẵn sàng
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              <span>Sẵn sàng 24/7</span>
             </span>
           </div>
         </div>
       </div>
 
-      {/* Main Switcher: Danh Sách Sinh Viên VS Yêu Cầu, Đơn Từ */}
-      <div className="flex max-w-md rounded-2xl border border-border bg-muted/70 p-1.5">
+      {/* Main Switcher: 3 Tabs (Quản trị 4 Tòa, Cư dân toàn trường, Cấu hình web hệ thống) */}
+      <div className="flex max-w-xl rounded-2xl border border-border bg-muted/70 p-1.5 overflow-x-auto">
+        <button
+          onClick={() => setActiveTab("BUILDINGS")}
+          className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 px-3 text-xs font-bold transition-all shrink-0 cursor-pointer ${
+            activeTab === "BUILDINGS"
+              ? "bg-card font-extrabold text-foreground shadow-xs"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Building2 className="h-4 w-4 text-blue-600" />
+          <span>Quản Trị 4 Tòa KTX ({CAMPUS_BUILDINGS.length})</span>
+        </button>
+
         <button
           onClick={() => setActiveTab("STUDENTS")}
-          className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold transition-all ${
+          className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 px-3 text-xs font-bold transition-all shrink-0 cursor-pointer ${
             activeTab === "STUDENTS"
               ? "bg-card font-extrabold text-foreground shadow-xs"
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          <Users className="h-4 w-4 text-blue-600" />
-          <span>Danh Sách Sinh Viên ({MOCK_RESIDENTS_REGISTRY.length})</span>
+          <Users className="h-4 w-4 text-indigo-600" />
+          <span>Cư Dân Toàn Trường ({MOCK_RESIDENTS_REGISTRY.length})</span>
         </button>
 
         <button
-          onClick={() => setActiveTab("REQUESTS")}
-          className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold transition-all ${
-            activeTab === "REQUESTS"
+          onClick={() => setActiveTab("SYSTEM")}
+          className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 px-3 text-xs font-bold transition-all shrink-0 cursor-pointer ${
+            activeTab === "SYSTEM"
               ? "bg-card font-extrabold text-foreground shadow-xs"
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          <FileText className="h-4 w-4 text-cyan-600" />
-          <span>
-            Yêu Cầu & Đơn Từ (
-            {maintenanceTickets.length})
-          </span>
-          {totalPendingRequests > 0 && (
-            <span className="py-0.2 ml-1 rounded-full bg-cyan-500 px-1.5 text-[10px] font-black text-white">
-              {totalPendingRequests}
-            </span>
-          )}
+          <Globe className="h-4 w-4 text-cyan-600" />
+          <span>Quản Trị Web & Hạ Tầng</span>
         </button>
       </div>
 
       {/* ========================================================= */}
-      {/* SECTION 1: DANH SÁCH SINH VIÊN NỘI TRÚ                    */}
+      {/* SECTION 1: QUẢN LÝ FULL 4 TÒA KÝ TÚC XÁ TOÀN TRƯỜNG        */}
+      {/* ========================================================= */}
+      {activeTab === "BUILDINGS" && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {CAMPUS_BUILDINGS.map((b) => (
+              <div
+                key={b.id}
+                className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4 hover:border-primary/50 transition-all"
+              >
+                {/* Header */}
+                <div className="flex items-start justify-between gap-3 pb-3 border-b border-border">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-black px-2.5 py-0.5 rounded-lg bg-primary/10 text-primary border border-primary/20">
+                        {b.code}
+                      </span>
+                      <h3 className="font-bold text-base text-foreground">{b.name}</h3>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">{b.type}</p>
+                  </div>
+
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 flex items-center gap-1 shrink-0">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                    <span>Cổng IoT Online</span>
+                  </span>
+                </div>
+
+                {/* Occupancy Stats */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground font-medium">Tỷ lệ lấp đầy phòng ở</span>
+                    <span className="font-bold text-foreground font-mono">
+                      {b.occupiedBeds} / {b.totalBeds} giường ({b.occupancyRate}%)
+                    </span>
+                  </div>
+                  <div className="w-full h-2 rounded-full bg-muted overflow-hidden">
+                    <div
+                      className="h-full bg-primary rounded-full transition-all"
+                      style={{ width: `${b.occupancyRate}%` }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                    <span>Quy mô: <strong>{b.totalRooms} Phòng</strong></span>
+                    <span className="text-emerald-600 font-semibold">Trống {b.emptyBeds} chỗ</span>
+                  </div>
+                </div>
+
+                {/* Personnel */}
+                <div className="grid grid-cols-2 gap-2.5 p-3 rounded-xl bg-muted/40 text-xs">
+                  <div>
+                    <span className="text-[10px] text-muted-foreground font-bold uppercase block">
+                      Trưởng Ban Quản Lý:
+                    </span>
+                    <p className="font-semibold text-foreground mt-0.5">{b.managerName}</p>
+                    <span className="font-mono text-[11px] text-muted-foreground block">{b.managerPhone}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-muted-foreground font-bold uppercase block">
+                      Kỹ Thuật Viên Phụ Trách:
+                    </span>
+                    <p className="font-semibold text-foreground mt-0.5">{b.technicianName}</p>
+                    <span className="font-mono text-[11px] text-muted-foreground block">{b.technicianPhone}</span>
+                  </div>
+                </div>
+
+                {/* Action button */}
+                <button
+                  type="button"
+                  onClick={() => setSelectedBuilding(b)}
+                  className="w-full py-2 px-3 rounded-xl border border-border hover:bg-muted text-xs font-bold text-foreground transition-all cursor-pointer text-center"
+                >
+                  Xem chi tiết cấu hình {b.code}
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* Bảng so sánh tổng hợp 4 tòa */}
+          <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4">
+            <h3 className="font-bold text-sm text-foreground">
+              Bảng Tổng Hợp Thông Số Kỹ Thuật & Vận Hành Toàn Trường
+            </h3>
+            <div className="overflow-x-auto rounded-xl border border-border/70">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-muted/70 text-[10px] font-bold text-muted-foreground uppercase border-b border-border">
+                  <tr>
+                    <th className="py-2.5 px-3">Tòa Nhà</th>
+                    <th className="py-2.5 px-3">Đối Tượng Phục Vụ</th>
+                    <th className="py-2.5 px-3">Số Phòng</th>
+                    <th className="py-2.5 px-3">Số Giường</th>
+                    <th className="py-2.5 px-3">Đang Ở</th>
+                    <th className="py-2.5 px-3">Chỗ Trống</th>
+                    <th className="py-2.5 px-3">Tỷ Lệ Lấp Đầy</th>
+                    <th className="py-2.5 px-3">Trưởng BQL</th>
+                    <th className="py-2.5 px-3">Kỹ Thuật Viên</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {CAMPUS_BUILDINGS.map((b) => (
+                    <tr key={b.id} className="hover:bg-muted/30">
+                      <td className="py-3 px-3 font-bold text-foreground font-mono">{b.code}</td>
+                      <td className="py-3 px-3 text-muted-foreground">{b.type}</td>
+                      <td className="py-3 px-3 font-mono">{b.totalRooms} phòng</td>
+                      <td className="py-3 px-3 font-mono">{b.totalBeds} giường</td>
+                      <td className="py-3 px-3 font-mono font-bold text-foreground">{b.occupiedBeds}</td>
+                      <td className="py-3 px-3 font-mono text-emerald-600 font-bold">{b.emptyBeds}</td>
+                      <td className="py-3 px-3 font-mono font-bold text-primary">{b.occupancyRate}%</td>
+                      <td className="py-3 px-3 text-foreground">{b.managerName}</td>
+                      <td className="py-3 px-3 text-foreground">{b.technicianName}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* SECTION 2: DANH SÁCH CƯ DÂN & SINH VIÊN TOÀN TRƯỜNG        */}
       {/* ========================================================= */}
       {activeTab === "STUDENTS" && (
         <div className="space-y-4">
@@ -333,22 +475,23 @@ export const AdminOverviewView: React.FC = () => {
                 placeholder="Tìm theo MSSV, Họ tên, Phòng hoặc Số điện thoại..."
                 value={studentSearch}
                 onChange={(e) => setStudentSearch(e.target.value)}
-                className="w-full rounded-xl border border-border bg-background py-2 pr-4 pl-10 text-xs focus:ring-2 focus:ring-blue-500/20 focus:outline-hidden"
+                className="w-full rounded-xl border border-border bg-background py-2 pr-4 pl-10 text-xs focus:ring-2 focus:ring-primary/20 focus:outline-hidden"
               />
             </div>
 
             <div className="flex items-center gap-2">
               <Filter className="h-3.5 w-3.5 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">Tòa nhà:</span>
+              <span className="text-xs text-muted-foreground">Lọc theo Tòa:</span>
               <select
                 value={buildingFilter}
                 onChange={(e) => setBuildingFilter(e.target.value)}
-                className="rounded-xl border border-border bg-background px-3 py-2 text-xs font-medium"
+                className="rounded-xl border border-border bg-background px-3 py-2 text-xs font-semibold cursor-pointer"
               >
-                <option value="ALL">Tất cả các tòa</option>
-                <option value="Tòa A">Tòa A (Nam - High-Rise)</option>
-                <option value="Tòa B">Tòa B (Nữ)</option>
-                <option value="Tòa C">Tòa C</option>
+                <option value="ALL">Toàn bộ 4 Tòa (Tất cả)</option>
+                <option value="Tòa A">Tòa A (Ký túc xá Nam)</option>
+                <option value="Tòa B">Tòa B (Ký túc xá Nữ)</option>
+                <option value="Tòa C">Tòa C (Quốc Tế & Sau ĐH)</option>
+                <option value="Tòa D">Tòa D (Tân Sinh Viên)</option>
               </select>
             </div>
           </div>
@@ -361,6 +504,7 @@ export const AdminOverviewView: React.FC = () => {
                   <tr>
                     <th className="px-4 py-3">MSSV</th>
                     <th className="px-4 py-3">Họ và Tên</th>
+                    <th className="px-4 py-3">Tòa Nhà</th>
                     <th className="px-4 py-3">Phòng & Giường</th>
                     <th className="px-4 py-3">Số Điện Thoại</th>
                     <th className="px-4 py-3">Quê Quán</th>
@@ -380,34 +524,27 @@ export const AdminOverviewView: React.FC = () => {
                         {st.studentId}
                       </td>
                       <td className="px-4 py-3.5">
-                        <div className="font-bold text-foreground">
-                          {st.fullName}
-                        </div>
+                        <div className="font-bold text-foreground">{st.fullName}</div>
                         <div className="text-[11px] text-muted-foreground">
-                          {st.gender === "Nam" ? "Nam" : "Nữ"} • CCCD:{" "}
-                          {st.citizenId}
+                          {st.gender === "Nam" ? "Nam" : "Nữ"} • CCCD: {st.citizenId}
                         </div>
+                      </td>
+                      <td className="px-4 py-3.5 font-medium text-foreground">
+                        {st.building}
                       </td>
                       <td className="px-4 py-3.5">
                         <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 font-bold text-foreground">
-                          <Bed className="h-3 w-3 text-blue-600" />
+                          <Bed className="h-3 w-3 text-primary" />
                           {st.room} • {st.bedCode}
                         </span>
-                        <div className="mt-0.5 text-[10px] text-muted-foreground">
-                          {st.building}
-                        </div>
                       </td>
                       <td className="px-4 py-3.5">
-                        <div className="font-medium text-foreground">
-                          {st.phone}
-                        </div>
+                        <div className="font-medium text-foreground">{st.phone}</div>
                         <div className="text-[10px] text-muted-foreground">
                           PH: {st.parentPhone}
                         </div>
                       </td>
-                      <td className="px-4 py-3.5 text-muted-foreground">
-                        {st.hometown}
-                      </td>
+                      <td className="px-4 py-3.5 text-muted-foreground">{st.hometown}</td>
                       <td className="px-4 py-3.5 font-mono text-[11px] text-muted-foreground">
                         {st.endDate}
                       </td>
@@ -423,7 +560,7 @@ export const AdminOverviewView: React.FC = () => {
                             e.stopPropagation()
                             setSelectedStudent(st)
                           }}
-                          className="rounded-lg border border-border bg-card px-2.5 py-1 text-[11px] font-semibold text-foreground transition-colors hover:bg-muted"
+                          className="rounded-lg border border-border bg-card px-2.5 py-1 text-[11px] font-semibold text-foreground transition-colors hover:bg-muted cursor-pointer"
                         >
                           Hồ sơ
                         </button>
@@ -444,281 +581,386 @@ export const AdminOverviewView: React.FC = () => {
       )}
 
       {/* ========================================================= */}
-      {/* SECTION 2: YÊU CẦU & ĐƠN TỪ CẦN XỬ LÝ                     */}
+      {/* SECTION 3: QUẢN TRỊ WEB, HẠ TẦNG & PHÂN QUYỀN HỆ THỐNG     */}
       {/* ========================================================= */}
-      {activeTab === "REQUESTS" && (
-        <div className="space-y-4">
-          {/* Controls: Filter by Type & Status */}
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card p-4 shadow-xs">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="mr-1 text-xs font-bold text-muted-foreground">
-                Phân loại:
-              </span>
-              <button
-                type="button"
-                onClick={() => setRequestTypeFilter("ALL")}
-                className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
-                  requestTypeFilter === "ALL"
-                    ? "bg-foreground text-background"
-                    : "bg-muted text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Tất cả phiếu ({maintenanceTickets.length})
-              </button>
-              <button
-                type="button"
-                onClick={() => setRequestTypeFilter("MAINTENANCE")}
-                className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
-                  requestTypeFilter === "MAINTENANCE"
-                    ? "bg-sky-600 text-white"
-                    : "bg-muted text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Phiếu Báo Hỏng Bảo Trì ({maintenanceTickets.length})
-              </button>
+      {activeTab === "SYSTEM" && (
+        <div className="space-y-6">
+          {/* Services Matrix */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="rounded-2xl border border-border bg-card p-5 shadow-xs space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                  Máy Chủ Web & API
+                </span>
+                <Server className="h-4 w-4 text-primary" />
+              </div>
+              <div className="text-xl font-bold text-foreground">Cloud Node Cluster</div>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Frontend Vite SPA + Backend API vận hành với độ trễ phản hồi trung bình 12ms.
+              </p>
+              <div className="pt-2 border-t border-border flex items-center justify-between text-xs">
+                <span className="text-muted-foreground">Thời gian hoạt động:</span>
+                <span className="font-bold text-emerald-600 font-mono">99.98% Uptime</span>
+              </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-muted-foreground">
-                Trạng thái:
-              </span>
-              <select
-                value={requestStatusFilter}
-                onChange={(e) => setRequestStatusFilter(e.target.value as any)}
-                className="rounded-xl border border-border bg-background px-3 py-1.5 text-xs font-medium"
-              >
-                <option value="ALL">Tất cả trạng thái</option>
-                <option value="PENDING">Chỉ đơn chờ duyệt / chưa xử lý</option>
-                <option value="RESOLVED">Đã duyệt / Đã hoàn thành</option>
-              </select>
+            <div className="rounded-2xl border border-border bg-card p-5 shadow-xs space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                  Cơ Sở Dữ Liệu DMS
+                </span>
+                <Database className="h-4 w-4 text-cyan-600" />
+              </div>
+              <div className="text-xl font-bold text-foreground">PostgreSQL Cư Dân</div>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Lưu trữ hồ sơ cư dân, hợp đồng và hóa đơn điện nước 4 tòa nhà toàn trường.
+              </p>
+              <div className="pt-2 border-t border-border flex items-center justify-between text-xs">
+                <span className="text-muted-foreground">Dung lượng sử dụng:</span>
+                <span className="font-bold text-foreground font-mono">2.4 GB / 50 GB</span>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-border bg-card p-5 shadow-xs space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                  Đồng Bộ FAP & Cổng IoT
+                </span>
+                <Cpu className="h-4 w-4 text-emerald-600" />
+              </div>
+              <div className="text-xl font-bold text-foreground">Kết Nối 4 Cổng Trực Tuyến</div>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Tự động nhận diện thẻ sinh viên tại 4 cổng Tòa A, B, C, D và đồng bộ dữ liệu học vụ.
+              </p>
+              <div className="pt-2 border-t border-border flex items-center justify-between text-xs">
+                <span className="text-muted-foreground">Lần kiểm tra cuối:</span>
+                <span className="font-bold text-emerald-600 font-mono">Vừa xong</span>
+              </div>
             </div>
           </div>
 
-          {/* List of Applications & Requests */}
-          <div className="space-y-3">
-            {/* 2. Maintenance Tickets */}
-            {(requestTypeFilter === "ALL" ||
-              requestTypeFilter === "MAINTENANCE") &&
-              maintenanceTickets
-                .filter((t) => {
-                  if (requestStatusFilter === "PENDING")
-                    return t.status === "PENDING"
-                  if (requestStatusFilter === "RESOLVED")
-                    return t.status === "CLOSED"
-                  return true
-                })
-                .map((ticket) => (
+          {/* Phân quyền người dùng trong hệ thống */}
+          <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-sm text-foreground">
+                  Ma Trận Phân Quyền Vai Trò Người Dùng (Role-Based Access Control)
+                </h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Quản trị viên hệ thống quản lý danh mục quyền hạn theo từng nhóm tài khoản
+                </p>
+              </div>
+              <span className="text-xs font-mono px-2.5 py-1 rounded-lg bg-primary/10 text-primary font-bold">
+                DMS Security v2.4
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-1">
+              <div className="p-4 rounded-xl border border-primary/20 bg-primary/5 space-y-2">
+                <div className="flex items-center gap-1.5 font-bold text-xs text-primary">
+                  <KeyRound className="h-3.5 w-3.5" />
+                  <span>Quản Trị Viên (Admin)</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                  Toàn quyền quản trị web, giám sát hạ tầng máy chủ, quản lý full các tòa KTX, phân quyền tài khoản toàn trường.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl border border-border bg-card space-y-2">
+                <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
+                  <Building2 className="h-3.5 w-3.5 text-blue-600" />
+                  <span>Ban Quản Lý Tòa (Manager)</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                  Quản lý danh sách cư dân, xếp buồng phòng, phát hành hóa đơn và duyệt đơn từ của tòa nhà được phân công.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl border border-border bg-card space-y-2">
+                <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
+                  <Activity className="h-3.5 w-3.5 text-amber-600" />
+                  <span>Kỹ Thuật Viên (Technician)</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                  Tiếp nhận nhiệm vụ sửa chữa thiết bị buồng phòng, ghi chỉ số điện nước, lập biên bản nghiệm thu kỹ thuật.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl border border-border bg-card space-y-2">
+                <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
+                  <Users className="h-3.5 w-3.5 text-emerald-600" />
+                  <span>Sinh Viên Lưu Trú (Student)</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                  Tra cứu thông tin phòng, gửi yêu cầu báo hỏng cơ sở vật chất, thanh toán tiền điện nước hàng tháng.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Nhật ký hệ thống & Thao tác quản trị web */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* System Audit Logs */}
+            <div className="lg:col-span-2 rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-border">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-primary" />
+                  <h3 className="font-bold text-sm text-foreground">
+                    Nhật Ký Hệ Thống Gần Đây (System Audit Logs)
+                  </h3>
+                </div>
+                <span className="text-[11px] text-muted-foreground">Kỳ Fall 2026</span>
+              </div>
+
+              <div className="space-y-3">
+                {[
+                  {
+                    time: "15:30:12",
+                    action: "Đồng bộ tự động danh sách 642 sinh viên nội trú từ hệ thống đào tạo FAP",
+                    type: "SYNC",
+                    status: "Thành công",
+                  },
+                  {
+                    time: "14:15:00",
+                    action: "Cập nhật phân quyền nhân sự kỹ thuật viên phụ trách cơ điện Tòa A",
+                    type: "AUTH",
+                    status: "Thành công",
+                  },
+                  {
+                    time: "11:00:25",
+                    action: "Kiểm tra định kỳ kết nối cổng an ninh IoT Tòa B và Tòa C",
+                    type: "IOT",
+                    status: "Trực tuyến",
+                  },
+                  {
+                    time: "03:00:00",
+                    action: "Sao lưu CSDL hệ thống tự động hoàn tất (backup_dms_20261020.sql - 2.4 GB)",
+                    type: "BACKUP",
+                    status: "Đã lưu trữ",
+                  },
+                ].map((log, idx) => (
                   <div
-                    key={ticket.id}
-                    className="space-y-3 rounded-2xl border border-border bg-card p-5 shadow-xs transition-colors hover:border-sky-500/40"
+                    key={idx}
+                    className="flex items-center justify-between p-3 rounded-xl bg-muted/40 text-xs border border-border/70"
                   >
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center gap-1 rounded-lg bg-sky-500/10 px-2.5 py-1 text-xs font-bold text-sky-700 dark:text-sky-400">
-                          <Wrench className="h-3.5 w-3.5" />
-                          Phiếu Báo Hỏng
-                        </span>
-                        <span className="rounded-md bg-muted px-2 py-0.5 font-mono text-xs font-bold">
-                          {ticket.id}
-                        </span>
-                        <span className="text-sm font-bold text-foreground">
-                          {ticket.title}
-                        </span>
-                      </div>
-
-                      <span
-                        className={`rounded-full px-2.5 py-1 text-xs font-bold ${
-                          ticket.status === "CLOSED"
-                            ? "bg-emerald-600 text-white"
-                            : ticket.status === "IN_PROGRESS"
-                              ? "bg-blue-600 text-white"
-                              : "border border-cyan-500/30 bg-cyan-500/20 text-cyan-700 dark:text-cyan-400"
-                        }`}
-                      >
-                        {ticket.status === "PENDING" && "Chờ tiếp nhận"}
-                        {ticket.status === "IN_PROGRESS" &&
-                          "Đang điều phối sửa"}
-                        {ticket.status === "CLOSED" && "Đã sửa xong"}
-                      </span>
+                    <div className="flex items-center gap-3">
+                      <span className="font-mono text-muted-foreground text-[11px]">{log.time}</span>
+                      <span className="font-semibold text-foreground">{log.action}</span>
                     </div>
-
-                    <p className="text-xs text-muted-foreground">
-                      {ticket.description}
-                    </p>
-
-                    <div className="flex flex-wrap gap-4 rounded-xl border border-border/60 bg-muted/40 p-2.5 text-[11px]">
-                      <span>
-                        Vị trí:{" "}
-                        <strong className="text-foreground">
-                          {ticket.building} - Phòng {ticket.room}
-                        </strong>
-                      </span>
-                      <span>
-                        Người báo:{" "}
-                        <strong className="text-foreground">
-                          {ticket.studentName} ({ticket.studentId})
-                        </strong>
-                      </span>
-                      <span>
-                        Thời gian:{" "}
-                        <span className="font-mono">{ticket.createdAt}</span>
-                      </span>
-                      <span>
-                        Mức độ:{" "}
-                        <strong className="text-blue-600">
-                          {ticket.urgency}
-                        </strong>
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-1">
-                      <Link
-                        to="/maintenance"
-                        className="flex items-center gap-1 text-xs font-bold text-sky-600 hover:text-sky-700"
-                      >
-                        <span>Mở phân hệ Điều phối Kỹ thuật</span>
-                        <ExternalLink className="h-3.5 w-3.5" />
-                      </Link>
-
-                      {ticket.status === "PENDING" && (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handleUpdateMaintenanceStatus(
-                              ticket.id,
-                              "IN_PROGRESS"
-                            )
-                          }
-                          className="rounded-xl bg-sky-600 px-3 py-1.5 text-xs font-bold text-white transition-colors hover:bg-sky-700"
-                        >
-                          Tiếp nhận xử lý
-                        </button>
-                      )}
-                    </div>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 font-mono shrink-0">
+                      {log.status}
+                    </span>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* Quick System Tools */}
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4">
+              <div className="flex items-center gap-2 pb-2 border-b border-border">
+                <Layers className="h-4 w-4 text-primary" />
+                <h3 className="font-bold text-sm text-foreground">Công Cụ Quản Trị Web</h3>
+              </div>
+
+              <div className="space-y-2.5">
+                <button
+                  type="button"
+                  onClick={() => showToast("Đã kích hoạt sao lưu toàn bộ CSDL DMS thành công!")}
+                  className="w-full flex items-center justify-between p-3 rounded-xl border border-border hover:bg-muted text-xs font-bold text-foreground transition-all cursor-pointer"
+                >
+                  <span className="flex items-center gap-2">
+                    <HardDriveDownload className="h-4 w-4 text-primary" />
+                    <span>Sao Lưu CSDL Ngay</span>
+                  </span>
+                  <span className="text-[10px] text-muted-foreground font-mono">SQL Dump</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => showToast("Đã đồng bộ lại toàn bộ dữ liệu sinh viên từ FAP!")}
+                  className="w-full flex items-center justify-between p-3 rounded-xl border border-border hover:bg-muted text-xs font-bold text-foreground transition-all cursor-pointer"
+                >
+                  <span className="flex items-center gap-2">
+                    <RefreshCw className="h-4 w-4 text-cyan-600" />
+                    <span>Đồng Bộ Lại API FAP</span>
+                  </span>
+                  <span className="text-[10px] text-muted-foreground font-mono">REST API</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => showToast("Đã làm mới bộ nhớ đệm Cache toàn hệ thống!")}
+                  className="w-full flex items-center justify-between p-3 rounded-xl border border-border hover:bg-muted text-xs font-bold text-foreground transition-all cursor-pointer"
+                >
+                  <span className="flex items-center gap-2">
+                    <Cpu className="h-4 w-4 text-emerald-600" />
+                    <span>Làm Mới Cache Hệ Thống</span>
+                  </span>
+                  <span className="text-[10px] text-muted-foreground font-mono">Redis Cache</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Student Details Modal */}
-      {selectedStudent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-lg animate-in space-y-5 rounded-3xl border border-border bg-card p-6 shadow-2xl zoom-in-95 fade-in">
-            <div className="flex items-center justify-between border-b border-border pb-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600">
-                  <Users className="h-5 w-5" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-foreground">
-                    Hồ Sơ Sinh Viên Lưu Trú
-                  </h3>
-                  <p className="text-xs text-muted-foreground">
-                    MSSV: {selectedStudent.studentId} • Hợp đồng:{" "}
-                    {selectedStudent.contractCode}
-                  </p>
-                </div>
+      {/* MODAL: Xem Chi Tiết Cấu Hình Tòa KTX */}
+      {selectedBuilding && (
+        <div
+          onClick={() => setSelectedBuilding(null)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-lg rounded-2xl border border-border bg-card p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95"
+          >
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <div className="flex items-center gap-2">
+                <Building2 className="h-5 w-5 text-primary" />
+                <h3 className="font-bold text-base text-foreground">
+                  Cấu Hình & Vận Hành {selectedBuilding.name}
+                </h3>
               </div>
               <button
                 type="button"
-                onClick={() => setSelectedStudent(null)}
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div className="grid grid-cols-2 gap-3 rounded-2xl border border-border bg-muted/40 p-3">
-                <div>
-                  <span className="text-muted-foreground">Họ và tên:</span>
-                  <p className="mt-0.5 text-sm font-bold text-foreground">
-                    {selectedStudent.fullName}
-                  </p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">
-                    Giới tính & Ngày sinh:
-                  </span>
-                  <p className="mt-0.5 font-semibold text-foreground">
-                    {selectedStudent.gender} • {selectedStudent.dob}
-                  </p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Số CCCD / CMND:</span>
-                  <p className="mt-0.5 font-mono font-semibold text-foreground">
-                    {selectedStudent.citizenId}
-                  </p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Quê quán:</span>
-                  <p className="mt-0.5 font-semibold text-foreground">
-                    {selectedStudent.hometown}
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-2 rounded-2xl border border-blue-500/15 bg-blue-500/5 p-3">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Vị trí lưu trú:</span>
-                  <strong className="text-foreground">
-                    {selectedStudent.building} • Phòng {selectedStudent.room}
-                  </strong>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">
-                    Mã giường cá nhân:
-                  </span>
-                  <span className="font-mono font-bold text-blue-600">
-                    {selectedStudent.bedCode}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">
-                    Thời hạn hợp đồng:
-                  </span>
-                  <span className="font-mono text-muted-foreground">
-                    {selectedStudent.startDate} ➔ {selectedStudent.endDate}
-                  </span>
-                </div>
-              </div>
-
-              <div className="space-y-1.5 rounded-2xl border border-border bg-muted/40 p-3">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">
-                    Số điện thoại sinh viên:
-                  </span>
-                  <strong className="text-foreground">
-                    {selectedStudent.phone}
-                  </strong>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">
-                    Họ tên phụ huynh:
-                  </span>
-                  <span className="font-semibold text-foreground">
-                    {selectedStudent.parentName}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">SĐT Phụ huynh:</span>
-                  <strong className="text-foreground">
-                    {selectedStudent.parentPhone}
-                  </strong>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end pt-2">
-              <button
-                type="button"
-                onClick={() => setSelectedStudent(null)}
-                className="rounded-xl bg-foreground px-4 py-2 text-xs font-bold text-background"
+                onClick={() => setSelectedBuilding(null)}
+                className="text-xs text-muted-foreground hover:text-foreground font-bold cursor-pointer"
               >
                 Đóng
               </button>
             </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="grid grid-cols-2 gap-3 p-3.5 rounded-xl bg-muted/40">
+                <div>
+                  <span className="text-[10px] text-muted-foreground block">Quy mô phòng ở:</span>
+                  <strong className="text-foreground text-sm">{selectedBuilding.totalRooms} Phòng</strong>
+                </div>
+                <div>
+                  <span className="text-[10px] text-muted-foreground block">Công suất giường:</span>
+                  <strong className="text-foreground text-sm">{selectedBuilding.totalBeds} Giường</strong>
+                </div>
+                <div>
+                  <span className="text-[10px] text-muted-foreground block">Sinh viên đang ở:</span>
+                  <strong className="text-primary text-sm">{selectedBuilding.occupiedBeds} Sinh viên</strong>
+                </div>
+                <div>
+                  <span className="text-[10px] text-muted-foreground block">Tỷ lệ lấp đầy:</span>
+                  <strong className="text-emerald-600 text-sm">{selectedBuilding.occupancyRate}%</strong>
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-xl border border-border space-y-2">
+                <span className="text-[11px] font-bold text-muted-foreground uppercase block">
+                  Cán bộ Quản lý & Kỹ thuật phụ trách:
+                </span>
+                <div className="flex items-center justify-between">
+                  <span className="text-foreground">Trưởng ban quản lý:</span>
+                  <strong className="text-foreground font-mono">{selectedBuilding.managerName} ({selectedBuilding.managerPhone})</strong>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-foreground">Kỹ thuật viên chuyên trách:</span>
+                  <strong className="text-foreground font-mono">{selectedBuilding.technicianName} ({selectedBuilding.technicianPhone})</strong>
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 space-y-1">
+                <span className="font-bold block">Tình trạng hạ tầng & an ninh:</span>
+                <p className="text-[11px]">
+                  Cổng quẹt thẻ IoT tự động đang hoạt động bình thường 24/7. Tủ điện tầng và hệ thống cấp thoát nước đạt tiêu chuẩn an toàn.
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setSelectedBuilding(null)}
+              className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs cursor-pointer"
+            >
+              Xác Nhận & Đóng
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: Xem Hồ Sơ Chi Tiết Sinh Viên */}
+      {selectedStudent && (
+        <div
+          onClick={() => setSelectedStudent(null)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-lg rounded-2xl border border-border bg-card p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95"
+          >
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <div className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-primary" />
+                <div>
+                  <h3 className="font-bold text-base text-foreground">
+                    Hồ Sơ Cư Dân: {selectedStudent.fullName}
+                  </h3>
+                  <span className="font-mono text-xs text-muted-foreground">
+                    MSSV: {selectedStudent.studentId}
+                  </span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedStudent(null)}
+                className="text-xs text-muted-foreground hover:text-foreground font-bold cursor-pointer"
+              >
+                Đóng
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="grid grid-cols-2 gap-3 p-3.5 rounded-xl bg-muted/40">
+                <div>
+                  <span className="text-[10px] text-muted-foreground block">Tòa nhà:</span>
+                  <strong className="text-foreground">{selectedStudent.building}</strong>
+                </div>
+                <div>
+                  <span className="text-[10px] text-muted-foreground block">Phòng & Buồng:</span>
+                  <strong className="text-foreground">{selectedStudent.room} ({selectedStudent.compartment})</strong>
+                </div>
+                <div>
+                  <span className="text-[10px] text-muted-foreground block">Mã giường:</span>
+                  <strong className="text-primary font-mono">{selectedStudent.bedCode}</strong>
+                </div>
+                <div>
+                  <span className="text-[10px] text-muted-foreground block">Học kỳ lưu trú:</span>
+                  <strong className="text-foreground font-mono">{selectedStudent.semester}</strong>
+                </div>
+              </div>
+
+              <div className="space-y-1.5 p-3.5 rounded-xl border border-border">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Số CCCD / Định danh:</span>
+                  <span className="font-mono font-semibold text-foreground">{selectedStudent.citizenId}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Số điện thoại cá nhân:</span>
+                  <span className="font-mono font-bold text-primary">{selectedStudent.phone}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Quê quán:</span>
+                  <span className="text-foreground font-medium">{selectedStudent.hometown}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Người liên hệ (Phụ huynh):</span>
+                  <span className="text-foreground font-medium">{selectedStudent.parentName} ({selectedStudent.parentPhone})</span>
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setSelectedStudent(null)}
+              className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs cursor-pointer"
+            >
+              Đóng Hồ Sơ
+            </button>
           </div>
         </div>
       )}

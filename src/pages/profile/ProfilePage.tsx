@@ -93,17 +93,12 @@ export const ProfilePage: React.FC = () => {
             </div>
 
             <div className="space-y-1.5">
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-xl sm:text-2xl font-black text-foreground">
-                  {user.fullName}
-                </h1>
-                <span
-                  className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
-                    isManagerOrStaff
-                      ? "bg-primary/15 text-primary border border-primary/20"
-                      : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200"
-                  }`}
-                >
+              <h1 className="text-xl sm:text-2xl font-black text-foreground">
+                {user.fullName}
+              </h1>
+
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground pt-1">
+                <span className="font-bold text-primary">
                   {isTechnician
                     ? "Kỹ thuật viên · Tòa A"
                     : isManager
@@ -112,9 +107,7 @@ export const ProfilePage: React.FC = () => {
                         : "Cán bộ Quản lý KTX · Tòa A"
                       : "Sinh viên lưu trú"}
                 </span>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground pt-1">
+                <span>•</span>
                 {isManagerOrStaff ? (
                   <span className="font-mono font-semibold text-foreground">
                     {isTechnician ? "Mã KTV: " : "Mã CB: "}
