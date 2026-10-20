@@ -12,7 +12,7 @@ import {
   Clock,
   BedDouble,
   Wifi,
-  Radio,
+  RefreshCw,
   Calendar,
 } from "lucide-react"
 
@@ -26,11 +26,38 @@ export const StudentOverviewPage: React.FC = () => {
 
   const [qrCountdown, setQrCountdown] = useState(15)
   const [showGateQrModal, setShowGateQrModal] = useState(false)
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
-  // QR countdown ticker
+  // Hàm sinh mã Token ngẫu nhiên cho cổng kiểm soát
+  const generateGateToken = () => {
+    const num = Math.floor(1000 + Math.random() * 9000)
+    const suffix = ["2026A", "2026B", "2026C", "2026D", "8492X", "9152F"][Math.floor(Math.random() * 6)]
+    return `#GATE-${num}-${suffix}`
+  }
+
+  const [gateToken, setGateToken] = useState(() => generateGateToken())
+  const [qrSeed, setQrSeed] = useState(() => Math.floor(Math.random() * 100))
+
+  // Đổi mã ngẫu nhiên khi hết 15s hoặc khi nhấn đổi mã thủ công
+  const handleRefreshCode = () => {
+    setIsRefreshing(true)
+    setGateToken(generateGateToken())
+    setQrSeed((prev) => (prev + 1) % 100)
+    setQrCountdown(15)
+    setTimeout(() => setIsRefreshing(false), 400)
+  }
+
+  // QR countdown ticker tự động đổi mã mỗi 15s
   useEffect(() => {
     const timer = setInterval(() => {
-      setQrCountdown((prev) => (prev <= 1 ? 15 : prev - 1))
+      setQrCountdown((prev) => {
+        if (prev <= 1) {
+          setGateToken(generateGateToken())
+          setQrSeed((s) => (s + 1) % 100)
+          return 15
+        }
+        return prev - 1
+      })
     }, 1000)
     return () => clearInterval(timer)
   }, [])
@@ -400,64 +427,6 @@ export const StudentOverviewPage: React.FC = () => {
 
         {/* RIGHT COLUMN (4 cols) */}
         <div className="lg:col-span-4 space-y-6 sm:space-y-8">
-          {/* Digital Key & Turnstile Gate QR Widget */}
-          <div className="rounded-2xl bg-secondary text-secondary-foreground p-6 shadow-md relative overflow-hidden">
-            <div className="absolute -right-8 -bottom-8 w-36 h-36 rounded-full bg-white/10 pointer-events-none" />
-
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <Radio className="h-4 w-4 text-accent" />
-                  <span className="text-[11px] uppercase tracking-wider text-secondary-foreground/80 font-bold">
-                    Cổng Kiểm Soát Tòa A
-                  </span>
-                </div>
-              </div>
-
-              <div className="bg-card rounded-xl p-5 text-card-foreground flex flex-col items-center shadow-xs border border-border/50">
-                {/* Simulated QR Code */}
-                <div className="w-44 h-44 bg-muted/50 rounded-lg p-3 flex flex-col items-center justify-center relative border border-border">
-                  <svg className="w-full h-full text-foreground" fill="none" viewBox="0 0 100 100">
-                    <rect fill="currentColor" height="28" rx="4" width="28" x="5" y="5"></rect>
-                    <rect fill="var(--card)" height="18" rx="2" width="18" x="10" y="10"></rect>
-                    <rect fill="currentColor" height="10" width="10" x="14" y="14"></rect>
-                    <rect fill="currentColor" height="28" rx="4" width="28" x="67" y="5"></rect>
-                    <rect fill="var(--card)" height="18" rx="2" width="18" x="72" y="10"></rect>
-                    <rect fill="currentColor" height="10" width="10" x="76" y="14"></rect>
-                    <rect fill="currentColor" height="28" rx="4" width="28" x="5" y="67"></rect>
-                    <rect fill="var(--card)" height="18" rx="2" width="18" x="10" y="72"></rect>
-                    <rect fill="currentColor" height="10" width="10" x="14" y="76"></rect>
-                    <circle cx="48" cy="20" fill="currentColor" r="3"></circle>
-                    <circle cx="48" cy="32" fill="currentColor" r="3"></circle>
-                    <circle cx="56" cy="20" fill="currentColor" r="3"></circle>
-                    <circle cx="42" cy="48" fill="currentColor" r="4"></circle>
-                    <circle cx="58" cy="48" fill="currentColor" r="3"></circle>
-                    <rect fill="currentColor" height="6" rx="2" width="12" x="44" y="64"></rect>
-                    <rect fill="currentColor" height="16" rx="2" width="8" x="70" y="50"></rect>
-                    <rect fill="currentColor" height="10" rx="2" width="10" x="82" y="70"></rect>
-                    <rect fill="currentColor" height="6" rx="2" width="14" x="64" y="82"></rect>
-                  </svg>
-                  {/* Scanning bar */}
-                  <div className="absolute inset-x-3 top-3 h-0.5 bg-primary shadow-[0_0_8px_#679436] animate-pulse" />
-                </div>
-
-                <div className="mt-4 text-center">
-                  <div className="text-xs font-bold text-foreground">
-                    {user?.fullName || "Nguyễn Hoàng Vinh"}
-                  </div>
-                  <div className="font-mono text-[10px] text-muted-foreground tracking-wider mt-0.5">
-                    TOKEN: #GATE-8492-2026A
-                  </div>
-                  <div className="text-[11px] text-primary font-medium mt-1 flex items-center justify-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
-                    Tự làm mới sau <span className="font-bold">{qrCountdown}s</span>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
           {/* Ban Quản Lý KTX Tòa A (Chỉ hiển thị Thầy Lê Quang, xóa 2 hàng an ninh và cấp cứu theo yêu cầu) */}
           <Card className="p-5 shadow-xs border border-border space-y-4">
             <div className="flex items-center justify-between pb-2 border-b border-border">
@@ -497,7 +466,10 @@ export const StudentOverviewPage: React.FC = () => {
         title={
           <div className="flex items-center gap-2">
             <QrCode className="h-5 w-5 text-primary" />
-            <span className="text-sm font-bold text-foreground">Mã Thẻ Cửa Ra Vào Tòa A</span>
+            <div>
+              <span className="text-sm font-bold text-foreground block">Mã Thẻ Cửa Ra Vào Tòa A</span>
+              <span className="text-[10px] text-muted-foreground font-normal">Cổng Kiểm Soát Trục Xoay & Cửa Từ</span>
+            </div>
           </div>
         }
         footer={
@@ -510,37 +482,86 @@ export const StudentOverviewPage: React.FC = () => {
           </Button>
         }
       >
-        <div className="bg-muted/40 p-4 rounded-xl flex flex-col items-center justify-center border border-border">
-          <div className="w-48 h-48 bg-card p-3 rounded-lg shadow-xs flex items-center justify-center border border-border">
-            <svg className="w-full h-full text-foreground" fill="none" viewBox="0 0 100 100">
-              <rect fill="currentColor" height="28" rx="4" width="28" x="5" y="5"></rect>
-              <rect fill="var(--card)" height="18" rx="2" width="18" x="10" y="10"></rect>
-              <rect fill="currentColor" height="10" width="10" x="14" y="14"></rect>
-              <rect fill="currentColor" height="28" rx="4" width="28" x="67" y="5"></rect>
-              <rect fill="var(--card)" height="18" rx="2" width="18" x="72" y="10"></rect>
-              <rect fill="currentColor" height="10" width="10" x="76" y="14"></rect>
-              <rect fill="currentColor" height="28" rx="4" width="28" x="5" y="67"></rect>
-              <rect fill="var(--card)" height="18" rx="2" width="18" x="10" y="72"></rect>
-              <rect fill="currentColor" height="10" width="10" x="14" y="76"></rect>
-              <circle cx="48" cy="20" fill="currentColor" r="3"></circle>
-              <circle cx="48" cy="32" fill="currentColor" r="3"></circle>
-              <circle cx="56" cy="20" fill="currentColor" r="3"></circle>
-              <circle cx="42" cy="48" fill="currentColor" r="4"></circle>
-              <circle cx="58" cy="48" fill="currentColor" r="3"></circle>
-              <rect fill="currentColor" height="6" rx="2" width="12" x="44" y="64"></rect>
-              <rect fill="currentColor" height="16" rx="2" width="8" x="70" y="50"></rect>
-              <rect fill="currentColor" height="10" rx="2" width="10" x="82" y="70"></rect>
-              <rect fill="currentColor" height="6" rx="2" width="14" x="64" y="82"></rect>
-            </svg>
+        <div className="space-y-4">
+          <div className="bg-muted/40 p-5 rounded-2xl flex flex-col items-center justify-center border border-border">
+            {/* Dynamic QR Box with Laser Scan Effect */}
+            <div className="relative w-48 h-48 bg-card p-3.5 rounded-2xl shadow-sm flex items-center justify-center border border-border overflow-hidden">
+              <svg className="w-full h-full text-foreground" fill="none" viewBox="0 0 100 100">
+                {/* 3 Fixed Corner Squares */}
+                <rect fill="currentColor" height="28" rx="4" width="28" x="5" y="5"></rect>
+                <rect fill="var(--card)" height="18" rx="2" width="18" x="10" y="10"></rect>
+                <rect fill="currentColor" height="10" width="10" x="14" y="14"></rect>
+
+                <rect fill="currentColor" height="28" rx="4" width="28" x="67" y="5"></rect>
+                <rect fill="var(--card)" height="18" rx="2" width="18" x="72" y="10"></rect>
+                <rect fill="currentColor" height="10" width="10" x="76" y="14"></rect>
+
+                <rect fill="currentColor" height="28" rx="4" width="28" x="5" y="67"></rect>
+                <rect fill="var(--card)" height="18" rx="2" width="18" x="10" y="72"></rect>
+                <rect fill="currentColor" height="10" width="10" x="14" y="76"></rect>
+
+                {/* Dynamic matrix dots based on qrSeed */}
+                <circle cx={48 + ((qrSeed * 7) % 10) - 5} cy={20 + ((qrSeed * 11) % 8) - 4} fill="currentColor" r="3"></circle>
+                <circle cx={48 + ((qrSeed * 13) % 8) - 4} cy={32 + ((qrSeed * 5) % 8) - 4} fill="currentColor" r="3.5"></circle>
+                <circle cx={56 + ((qrSeed * 17) % 8) - 4} cy={20 + ((qrSeed * 9) % 6) - 3} fill="currentColor" r="3"></circle>
+                <circle cx={42 + ((qrSeed * 19) % 6) - 3} cy={48 + ((qrSeed * 7) % 6) - 3} fill="currentColor" r="4"></circle>
+                <circle cx={58 + ((qrSeed * 23) % 8) - 4} cy={48 + ((qrSeed * 13) % 6) - 3} fill="currentColor" r="3"></circle>
+                <circle cx={38 + ((qrSeed * 29) % 8) - 4} cy={30 + ((qrSeed * 11) % 6) - 3} fill="currentColor" r="2.5"></circle>
+                <circle cx={62 + ((qrSeed * 31) % 8) - 4} cy={36 + ((qrSeed * 17) % 6) - 3} fill="currentColor" r="3"></circle>
+
+                <rect fill="currentColor" height="6" rx="2" width="12" x={44 + ((qrSeed * 5) % 6) - 3} y="64"></rect>
+                <rect fill="currentColor" height="16" rx="2" width="8" x="70" y={50 + ((qrSeed * 7) % 6) - 3}></rect>
+                <rect fill="currentColor" height="10" rx="2" width="10" x={82 + ((qrSeed * 3) % 6) - 3} y="70"></rect>
+                <rect fill="currentColor" height="6" rx="2" width="14" x="64" y={82 + ((qrSeed * 9) % 6) - 3}></rect>
+              </svg>
+
+              {/* Scanning Laser Beam */}
+              <div className="absolute inset-x-2 top-2 h-0.5 bg-emerald-500 shadow-[0_0_10px_#10b981] animate-pulse" />
+            </div>
+
+            {/* Student & Token Info */}
+            <div className="mt-4 text-center space-y-1">
+              <div className="text-sm font-bold text-foreground">
+                {user?.fullName || "Nguyễn Hoàng Vinh"}
+              </div>
+              <div className="text-xs text-muted-foreground">
+                Phòng {user?.dormitoryStatus?.room || "A205"} • {user?.dormitoryStatus?.compartment?.replace("Buồng B1", "Buồng B") || "Buồng B"} (G03)
+              </div>
+              <div className="inline-block mt-1 font-mono text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-500/10 border border-sky-500/25 px-3 py-1 rounded-full">
+                {gateToken}
+              </div>
+            </div>
+
+            {/* Countdown & Manual Refresh */}
+            <div className="mt-4 w-full space-y-2 pt-3 border-t border-border/70">
+              <div className="flex items-center justify-between text-xs">
+                <span className="flex items-center gap-1.5 text-muted-foreground font-medium">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping shrink-0" />
+                  <span>Tự làm mới sau <strong className="font-mono text-foreground">{qrCountdown}s</strong></span>
+                </span>
+                <button
+                  type="button"
+                  onClick={handleRefreshCode}
+                  className="flex items-center gap-1 text-[11px] font-semibold text-primary hover:underline"
+                >
+                  <RefreshCw className={`h-3 w-3 ${isRefreshing ? "animate-spin" : ""}`} />
+                  <span>Đổi mã ngay</span>
+                </button>
+              </div>
+
+              {/* Countdown Progress Bar */}
+              <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-primary transition-all duration-1000 ease-linear rounded-full"
+                  style={{ width: `${(qrCountdown / 15) * 100}%` }}
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="mt-3 text-center">
-            <span className="text-xs font-bold text-foreground">
-              {user?.fullName || "Nguyễn Hoàng Vinh"} · Phòng A205
-            </span>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
-              Đưa lại gần đầu đọc quang học tại cổng an ninh
-            </p>
+          {/* Security Note */}
+          <div className="rounded-xl border border-border bg-muted/20 p-3 text-[11px] text-muted-foreground text-center leading-relaxed">
+            * Mã QR động (Dynamic Pass) tự động làm mới ngẫu nhiên mỗi 15 giây để chống sao chép và chụp ảnh màn hình. Đưa màn hình lại gần đầu đọc quang học tại cổng an ninh.
           </div>
         </div>
       </Modal>
