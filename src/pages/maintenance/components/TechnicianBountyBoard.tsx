@@ -11,8 +11,7 @@ import {
   MapPin,
   User,
   Phone,
-  ImageIcon,
-  FileCheck2,
+    FileCheck2,
       Check,
   Sparkles,
   MessageSquare,
@@ -53,8 +52,7 @@ export const TechnicianBountyBoard: React.FC<TechnicianBountyBoardProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<"PENDING" | "IN_PROGRESS" | "RESOLVED">("PENDING")
   const [showReviewsModal, setShowReviewsModal] = useState(false)
-  const [previewImage, setPreviewImage] = useState<string | null>(null)
-
+  
   // Filter lists
   const pendingTickets = tickets.filter((t) => t.status === "PENDING")
   const inProgressTickets = tickets.filter((t) => t.status === "IN_PROGRESS")
@@ -260,13 +258,7 @@ export const TechnicianBountyBoard: React.FC<TechnicianBountyBoardProps> = ({
                     {ticket.title}
                   </h3>
 
-                  {/* Description Box */}
-                  <div className="p-3.5 rounded-xl bg-muted/50 border border-border text-xs text-foreground/90 space-y-1">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">
-                      Mô tả chi tiết từ sinh viên:
-                    </span>
-                    <p className="leading-relaxed whitespace-pre-line">{ticket.description}</p>
-                  </div>
+
 
                   {/* 3 Info Columns: Location, Sender, Target */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1 text-xs">
@@ -320,27 +312,7 @@ export const TechnicianBountyBoard: React.FC<TechnicianBountyBoardProps> = ({
                     </div>
                   </div>
 
-                  {/* Attached student evidence images */}
-                  {ticket.evidenceImages && ticket.evidenceImages.length > 0 && (
-                    <div className="flex items-center gap-2 pt-1">
-                      <span className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1">
-                        <ImageIcon className="h-3.5 w-3.5" />
-                        <span>Ảnh minh chứng sự cố:</span>
-                      </span>
-                      <div className="flex items-center gap-2">
-                        {ticket.evidenceImages.map((img, i) => (
-                          <button
-                            key={i}
-                            type="button"
-                            onClick={() => setPreviewImage(img)}
-                            className="relative h-12 w-16 rounded-lg overflow-hidden border border-border hover:ring-2 hover:ring-primary cursor-pointer transition-all"
-                          >
-                            <img src={img} alt="Evidence" className="h-full w-full object-cover" />
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+
 
                   {/* Resolution Report (Biên bản nghiệm thu sửa chữa) if resolved */}
                   {ticket.resolution && (
@@ -479,7 +451,7 @@ export const TechnicianBountyBoard: React.FC<TechnicianBountyBoardProps> = ({
           <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-between">
             <div>
               <span className="text-2xl font-black text-foreground font-mono">{averageRating} / 5.0</span>
-              <p className="text-xs text-muted-foreground">Điểm số trung bình từ 48 sinh viên</p>
+              
             </div>
             <div className="flex text-amber-400">
               {[...Array(5)].map((_, i) => (
@@ -547,24 +519,7 @@ export const TechnicianBountyBoard: React.FC<TechnicianBountyBoardProps> = ({
         </div>
       </Modal>
 
-      {/* 05. IMAGE PREVIEW MODAL */}
-      <Modal
-        isOpen={!!previewImage}
-        onClose={() => setPreviewImage(null)}
-        maxWidth="lg"
-        title="Ảnh Minh Chứng Sự Cố"
-      >
-        <div className="space-y-3">
-          {previewImage && (
-            <div className="rounded-xl overflow-hidden border border-border max-h-[480px]">
-              <img src={previewImage} alt="Preview" className="w-full h-full object-contain bg-black" />
-            </div>
-          )}
-          <Button variant="outline" onClick={() => setPreviewImage(null)} className="w-full">
-            Đóng
-          </Button>
-        </div>
-      </Modal>
+
     </div>
   )
 }

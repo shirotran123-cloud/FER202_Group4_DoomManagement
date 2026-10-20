@@ -29,7 +29,13 @@ export const ViewTicketModal: React.FC<ViewTicketModalProps> = ({
               {ticket.id}
             </span>
             <Badge variant="outline" className="font-semibold">
-              {ticket.status}
+              {ticket.status === "PENDING"
+                ? "Chờ tiếp nhận"
+                : ticket.status === "IN_PROGRESS"
+                  ? "Đang sửa chữa"
+                  : ticket.status === "RESOLVED"
+                    ? "Đã hoàn thành"
+                    : "Đã đóng"}
             </Badge>
           </div>
           <h3 className="font-bold text-foreground text-lg">{ticket.title}</h3>
@@ -101,8 +107,7 @@ export const ViewTicketModal: React.FC<ViewTicketModalProps> = ({
                 <ul className="list-disc pl-4 space-y-0.5 text-muted-foreground">
                   {ticket.resolution.materials.map((m) => (
                     <li key={m.id}>
-                      {m.name} x {m.quantity} = {m.unitCost.toLocaleString("vi-VN")} đ (
-                      {m.paidBy === "DORMITORY" ? "KTX chi trả" : "Sinh viên chi trả"})
+                      {m.name} x {m.quantity} = {(m.unitCost * m.quantity).toLocaleString("vi-VN")} đ
                     </li>
                   ))}
                 </ul>

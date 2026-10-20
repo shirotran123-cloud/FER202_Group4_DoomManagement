@@ -22,7 +22,7 @@ export interface ReplacedMaterial {
   name: string
   quantity: number
   unitCost: number
-  paidBy: "DORMITORY" | "STUDENT" // KTX chi trả hoặc Sinh viên bồi thường
+  paidBy?: "DORMITORY" | "STUDENT" // KTX chi trả hoặc Sinh viên bồi thường
 }
 
 export interface TechnicianAssignment {

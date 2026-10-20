@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useRef } from "react"
 import { useAuth } from "@/contexts/useAuth"
 import { Button } from "@/components/ui/button"
 import {
@@ -16,6 +16,7 @@ import {
   ExternalLink,
   ShieldCheck,
   Maximize2,
+  Camera,
   X,
   Send,
   Building2,
@@ -51,6 +52,29 @@ export const BillingPage: React.FC = () => {
   const [techWaterPhoto, setTechWaterPhoto] = useState(
     "https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=600&q=80"
   )
+
+  const elecFileRef = useRef<HTMLInputElement>(null)
+  const waterFileRef = useRef<HTMLInputElement>(null)
+
+  const handleElecFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      if (typeof ev.target?.result === "string") setTechElecPhoto(ev.target.result)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handleWaterFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      if (typeof ev.target?.result === "string") setTechWaterPhoto(ev.target.result)
+    }
+    reader.readAsDataURL(file)
+  }
   const [techSavedMessage, setTechSavedMessage] = useState(false)
 
   // Rooms meter list for Tòa A
@@ -327,20 +351,21 @@ export const BillingPage: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <input
-                    type="text"
-                    value={techElecPhoto}
-                    onChange={(e) => setTechElecPhoto(e.target.value)}
-                    placeholder="URL ảnh công tơ điện..."
-                    className="flex-1 p-2 rounded-lg border border-border bg-background text-[11px] font-mono text-foreground"
+                    ref={elecFileRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleElecFile}
+                    className="hidden"
                   />
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() => setTechElecPhoto("https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=600&q=80")}
-                    className="text-[11px] font-bold shrink-0"
+                    onClick={() => elecFileRef.current?.click()}
+                    className="w-full text-xs font-semibold gap-1.5 cursor-pointer"
                   >
-                    Ảnh chuẩn
+                    <Camera className="h-3.5 w-3.5 text-primary" />
+                    <span>Chụp ảnh mới / Tải ảnh từ máy</span>
                   </Button>
                 </div>
               </div>
@@ -368,20 +393,21 @@ export const BillingPage: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <input
-                    type="text"
-                    value={techWaterPhoto}
-                    onChange={(e) => setTechWaterPhoto(e.target.value)}
-                    placeholder="URL ảnh đồng hồ nước..."
-                    className="flex-1 p-2 rounded-lg border border-border bg-background text-[11px] font-mono text-foreground"
+                    ref={waterFileRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleWaterFile}
+                    className="hidden"
                   />
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() => setTechWaterPhoto("https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=600&q=80")}
-                    className="text-[11px] font-bold shrink-0"
+                    onClick={() => waterFileRef.current?.click()}
+                    className="w-full text-xs font-semibold gap-1.5 cursor-pointer"
                   >
-                    Ảnh chuẩn
+                    <Camera className="h-3.5 w-3.5 text-primary" />
+                    <span>Chụp ảnh mới / Tải ảnh từ máy</span>
                   </Button>
                 </div>
               </div>
