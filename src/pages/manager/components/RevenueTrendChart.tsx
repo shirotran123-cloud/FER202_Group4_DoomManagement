@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { Card } from "@/components/ui/card"
-import { TrendingUp, Zap, BedDouble } from "lucide-react"
+import { TrendingUp, Zap, BedDouble, Calendar } from "lucide-react"
 
 interface RevenueTrendChartProps {
   monthlyRevenue?: Array<{
@@ -12,47 +12,92 @@ interface RevenueTrendChartProps {
 }
 
 export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
+  const [selectedYear, setSelectedYear] = useState<"2026" | "2025">("2026")
   const [activeView, setActiveView] = useState<"BOTH" | "UTILITY" | "ROOM">("BOTH")
 
-  // 1. DOANH THU TIỀN PHÒNG THEO KỲ (4 tháng / kỳ)
-  const semesterData = [
+  // 1. DỮ LIỆU DOANH THU TIỀN PHÒNG THEO KỲ (THEO NĂM)
+  const allSemesterData = [
+    // --- NĂM 2026 ---
     {
-      semester: "Fall 2025",
-      fullName: "Học kỳ Fall 2025 (T09 - T12/2025)",
-      revenue: 680000000,
-      revenueText: "680 tr",
-      students: 190,
-      rooms: 42,
-    },
-    {
+      year: "2026",
       semester: "Spring 2026",
       fullName: "Học kỳ Spring 2026 (T01 - T04/2026)",
       revenue: 720000000,
       revenueText: "720 tr",
-      students: 196,
-      rooms: 44,
+      students6Bed: 120,
+      rooms6Bed: 20,
+      students4Bed: 76,
+      rooms4Bed: 19,
+      totalStudents: 196,
     },
     {
+      year: "2026",
       semester: "Summer 2026",
       fullName: "Học kỳ Summer 2026 (T05 - T08/2026)",
       revenue: 540000000,
       revenueText: "540 tr",
-      students: 148,
-      rooms: 36,
+      students6Bed: 90,
+      rooms6Bed: 15,
+      students4Bed: 58,
+      rooms4Bed: 15,
+      totalStudents: 148,
     },
     {
+      year: "2026",
       semester: "Fall 2026",
       fullName: "Học kỳ Fall 2026 (Hiện tại)",
       revenue: 768000000,
       revenueText: "768 tr",
-      students: 192,
-      rooms: 44,
+      students6Bed: 120,
+      rooms6Bed: 20,
+      students4Bed: 72,
+      rooms4Bed: 18,
+      totalStudents: 192,
+    },
+    // --- NĂM 2025 ---
+    {
+      year: "2025",
+      semester: "Spring 2025",
+      fullName: "Học kỳ Spring 2025 (T01 - T04/2025)",
+      revenue: 650000000,
+      revenueText: "650 tr",
+      students6Bed: 114,
+      rooms6Bed: 19,
+      students4Bed: 71,
+      rooms4Bed: 18,
+      totalStudents: 185,
+    },
+    {
+      year: "2025",
+      semester: "Summer 2025",
+      fullName: "Học kỳ Summer 2025 (T05 - T08/2025)",
+      revenue: 490000000,
+      revenueText: "490 tr",
+      students6Bed: 84,
+      rooms6Bed: 14,
+      students4Bed: 52,
+      rooms4Bed: 13,
+      totalStudents: 136,
+    },
+    {
+      year: "2025",
+      semester: "Fall 2025",
+      fullName: "Học kỳ Fall 2025 (T09 - T12/2025)",
+      revenue: 680000000,
+      revenueText: "680 tr",
+      students6Bed: 114,
+      rooms6Bed: 19,
+      students4Bed: 76,
+      rooms4Bed: 19,
+      totalStudents: 190,
     },
   ]
 
-  // 2. DOANH THU & TIÊU THỤ ĐIỆN NƯỚC THEO THÁNG (CỘT ĐÔI)
-  const monthlyUtilityData = [
+  // 2. DỮ LIỆU ĐIỆN NƯỚC THEO THÁNG (THEO NĂM)
+  const allMonthlyUtilityData = [
+    // --- NĂM 2026 ---
     {
+      year: "2026",
       month: "Tháng 05",
       fullMonth: "Tháng 05/2026",
       elecCost: 22500000,
@@ -64,6 +109,7 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
       totalCost: 38700000,
     },
     {
+      year: "2026",
       month: "Tháng 06",
       fullMonth: "Tháng 06/2026",
       elecCost: 26800000,
@@ -75,6 +121,7 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
       totalCost: 45300000,
     },
     {
+      year: "2026",
       month: "Tháng 07",
       fullMonth: "Tháng 07/2026",
       elecCost: 28200000,
@@ -86,6 +133,7 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
       totalCost: 47600000,
     },
     {
+      year: "2026",
       month: "Tháng 08",
       fullMonth: "Tháng 08/2026",
       elecCost: 31500000,
@@ -97,6 +145,7 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
       totalCost: 52700000,
     },
     {
+      year: "2026",
       month: "Tháng 09",
       fullMonth: "Tháng 09/2026",
       elecCost: 34200000,
@@ -108,6 +157,7 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
       totalCost: 57000000,
     },
     {
+      year: "2026",
       month: "Tháng 10",
       fullMonth: "Tháng 10/2026",
       elecCost: 36000000,
@@ -118,20 +168,124 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
       waterM3: 1306,
       totalCost: 59500000,
     },
+    // --- NĂM 2025 ---
+    {
+      year: "2025",
+      month: "Tháng 05",
+      fullMonth: "Tháng 05/2025",
+      elecCost: 20000000,
+      elecCostText: "20.0 tr",
+      elecKwh: 8000,
+      waterCost: 14500000,
+      waterCostText: "14.5 tr",
+      waterM3: 805,
+      totalCost: 34500000,
+    },
+    {
+      year: "2025",
+      month: "Tháng 06",
+      fullMonth: "Tháng 06/2025",
+      elecCost: 23500000,
+      elecCostText: "23.5 tr",
+      elecKwh: 9400,
+      waterCost: 16800000,
+      waterCostText: "16.8 tr",
+      waterM3: 933,
+      totalCost: 40300000,
+    },
+    {
+      year: "2025",
+      month: "Tháng 07",
+      fullMonth: "Tháng 07/2025",
+      elecCost: 25000000,
+      elecCostText: "25.0 tr",
+      elecKwh: 10000,
+      waterCost: 17500000,
+      waterCostText: "17.5 tr",
+      waterM3: 972,
+      totalCost: 42500000,
+    },
+    {
+      year: "2025",
+      month: "Tháng 08",
+      fullMonth: "Tháng 08/2025",
+      elecCost: 28000000,
+      elecCostText: "28.0 tr",
+      elecKwh: 11200,
+      waterCost: 19000000,
+      waterCostText: "19.0 tr",
+      waterM3: 1055,
+      totalCost: 47000000,
+    },
+    {
+      year: "2025",
+      month: "Tháng 09",
+      fullMonth: "Tháng 09/2025",
+      elecCost: 30500000,
+      elecCostText: "30.5 tr",
+      elecKwh: 12200,
+      waterCost: 20500000,
+      waterCostText: "20.5 tr",
+      waterM3: 1138,
+      totalCost: 51000000,
+    },
+    {
+      year: "2025",
+      month: "Tháng 10",
+      fullMonth: "Tháng 10/2025",
+      elecCost: 32000000,
+      elecCostText: "32.0 tr",
+      elecKwh: 12800,
+      waterCost: 21000000,
+      waterCostText: "21.0 tr",
+      waterM3: 1166,
+      totalCost: 53000000,
+    },
   ]
+
+  // Lọc dữ liệu theo năm được chọn
+  const semesterData = allSemesterData.filter((item) => item.year === selectedYear)
+  const monthlyUtilityData = allMonthlyUtilityData.filter((item) => item.year === selectedYear)
 
   const maxSemesterRevenue = 850000000
   const maxUtilityVal = 40000000
 
   return (
     <Card className="flex flex-col justify-between space-y-5 p-6 shadow-xs lg:col-span-2">
-      {/* Header & View Switcher */}
+      {/* Header, Bộ Lọc Theo Năm & View Switcher */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
-        <div>
+        <div className="flex flex-wrap items-center gap-3">
           <h3 className="flex items-center gap-2 text-sm font-bold text-foreground">
             <TrendingUp className="h-4 w-4 text-primary" />
             Biểu Đồ Doanh Thu Tòa A
           </h3>
+
+          {/* Bộ lọc theo năm */}
+          <div className="flex items-center gap-1 rounded-xl border border-border bg-muted/60 p-1 text-xs">
+            <Calendar className="h-3.5 w-3.5 text-muted-foreground ml-1 mr-0.5" />
+            <button
+              type="button"
+              onClick={() => setSelectedYear("2026")}
+              className={`rounded-lg px-2.5 py-1 font-semibold transition-all ${
+                selectedYear === "2026"
+                  ? "bg-card text-foreground shadow-2xs font-bold"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              2026
+            </button>
+            <button
+              type="button"
+              onClick={() => setSelectedYear("2025")}
+              className={`rounded-lg px-2.5 py-1 font-semibold transition-all ${
+                selectedYear === "2025"
+                  ? "bg-card text-foreground shadow-2xs font-bold"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              2025
+            </button>
+          </div>
         </div>
 
         {/* View Switcher Tabs */}
@@ -181,7 +335,7 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
                 <Zap className="h-4 w-4 text-amber-500" />
-                <span>Doanh Thu Điện Nước Theo Tháng</span>
+                <span>Doanh Thu Điện Nước Theo Tháng ({selectedYear})</span>
               </div>
               <div className="flex items-center gap-3 text-[11px] font-semibold">
                 <span className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400">
@@ -193,7 +347,7 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
               </div>
             </div>
 
-            {/* Double Bar Chart */}
+            {/* Bar Chart */}
             <div className="pt-6 pb-2">
               <div className="grid h-44 grid-cols-6 items-end gap-2 border-b border-border/80 pb-2 sm:gap-4">
                 {monthlyUtilityData.map((item, idx) => {
@@ -228,7 +382,7 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
 
                       {/* Grouped Double Bars Container */}
                       <div className="flex items-end justify-center gap-1 w-full max-w-[46px] h-full">
-                        {/* Cột trái: Điện */}
+                        {/* Cột Điện */}
                         <div className="relative flex flex-col items-center w-1/2 h-full justify-end">
                           <span className="text-[10px] font-mono font-bold text-amber-600 dark:text-amber-400 mb-1 leading-none select-none">
                             {item.elecCostText}
@@ -239,7 +393,7 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
                           />
                         </div>
 
-                        {/* Cột phải: Nước */}
+                        {/* Cột Nước */}
                         <div className="relative flex flex-col items-center w-1/2 h-full justify-end">
                           <span className="text-[10px] font-mono font-bold text-sky-600 dark:text-sky-400 mb-1 leading-none select-none">
                             {item.waterCostText}
@@ -271,7 +425,7 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
                 <BedDouble className="h-4 w-4 text-primary" />
-                <span>Doanh Thu Tiền Phòng Theo Kỳ</span>
+                <span>Doanh Thu Tiền Phòng Theo Kỳ ({selectedYear})</span>
               </div>
               <span className="text-[11px] font-semibold text-primary">
                 Đơn giá: Buồng 6 (3.2 tr/kỳ) • Buồng 4 (4.0 tr/kỳ)
@@ -280,7 +434,7 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
 
             {/* Semester Bar Chart */}
             <div className="pt-6 pb-2">
-              <div className="grid h-36 grid-cols-4 items-end gap-3 border-b border-border/80 pb-2 sm:gap-6">
+              <div className="grid h-36 grid-cols-3 items-end gap-3 border-b border-border/80 pb-2 sm:gap-8">
                 {semesterData.map((item, idx) => {
                   const roomHeight = (item.revenue / maxSemesterRevenue) * 100
 
@@ -289,17 +443,31 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
                       key={idx}
                       className="group relative flex h-full flex-col items-center justify-end"
                     >
-                      {/* Tooltip on Hover */}
-                      <div className="pointer-events-none absolute -top-16 left-1/2 -translate-x-1/2 z-30 hidden min-w-[200px] rounded-xl bg-slate-900/95 p-2.5 text-left text-xs text-white shadow-xl backdrop-blur-xs group-hover:block animate-in fade-in whitespace-nowrap">
-                        <p className="font-bold border-b border-slate-700 pb-0.5 text-slate-200">
+                      {/* Tooltip on Hover: Ghi rõ số lượng sinh viên buồng 6 và buồng 4 */}
+                      <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 z-30 hidden min-w-[210px] rounded-xl bg-slate-900/95 p-2.5 text-left text-xs text-white shadow-xl backdrop-blur-xs group-hover:block animate-in fade-in whitespace-nowrap">
+                        <p className="font-bold border-b border-slate-700 pb-1 text-slate-200">
                           {item.fullName}
                         </p>
-                        <p className="text-emerald-400 font-bold mt-1 font-mono">
-                          Tổng thu: ₫{item.revenue.toLocaleString()}
-                        </p>
-                        <p className="text-[11px] text-slate-300">
-                          Quy mô: {item.students} sinh viên • {item.rooms} phòng
-                        </p>
+                        <div className="mt-1.5 space-y-1">
+                          <div className="flex items-center justify-between gap-4 text-emerald-400 font-medium">
+                            <span>Buồng 6 chỗ:</span>
+                            <span className="font-mono font-bold text-white">
+                              {item.students6Bed} SV ({item.rooms6Bed} phòng)
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between gap-4 text-sky-400 font-medium">
+                            <span>Buồng 4 chỗ:</span>
+                            <span className="font-mono font-bold text-white">
+                              {item.students4Bed} SV ({item.rooms4Bed} phòng)
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between gap-4 border-t border-slate-700/80 pt-1 text-[11px] text-slate-300">
+                            <span>Tổng quy mô:</span>
+                            <span className="font-mono font-semibold text-white">
+                              {item.totalStudents} SV ({item.rooms6Bed + item.rooms4Bed} phòng)
+                            </span>
+                          </div>
+                        </div>
                       </div>
 
                       {/* Bar with Money Text on top */}
@@ -308,7 +476,7 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
                       </span>
                       <div
                         style={{ height: `${roomHeight}%` }}
-                        className="w-full max-w-[56px] rounded-t-lg bg-primary hover:bg-primary/90 transition-all cursor-pointer shadow-xs"
+                        className="w-full max-w-[64px] rounded-t-lg bg-primary hover:bg-primary/90 transition-all cursor-pointer shadow-xs"
                       />
 
                       {/* X-Axis Semester Label */}
@@ -327,10 +495,14 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
       {/* Summary Footer */}
       <div className="flex flex-wrap items-center justify-between border-t border-border pt-3 text-xs gap-2">
         <span className="text-muted-foreground">
-          Doanh thu tiền phòng Kỳ Fall 2026: <strong className="text-foreground">₫768,000,000</strong> (192 SV)
+          Doanh thu tiền phòng Kỳ Fall {selectedYear}:{" "}
+          <strong className="text-foreground">
+            ₫{selectedYear === "2026" ? "768,000,000" : "680,000,000"}
+          </strong>{" "}
+          ({selectedYear === "2026" ? "192 SV" : "190 SV"})
         </span>
         <span className="font-mono font-bold text-foreground">
-          Điện nước bình quân T09: ₫57,000,000 / tháng
+          Điện nước bình quân T09: ₫{selectedYear === "2026" ? "57,000,000" : "51,000,000"} / tháng
         </span>
       </div>
     </Card>
