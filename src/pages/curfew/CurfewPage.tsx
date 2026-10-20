@@ -1153,22 +1153,24 @@ export const CurfewPage: React.FC = () => {
                       Điểm khởi đầu học kỳ: 100đ • Bị trừ &gt; 20 điểm (Cảnh cáo) • Bị trừ &gt; 30 điểm (Đình chỉ lưu trú kỳ sau)
                     </p>
                   </div>
-                  <span
-                    className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1 text-xs font-bold ${
+                  <div
+                    className={`inline-flex items-center gap-2 text-xs font-bold ${
                       myDemerit.status === "SUSPENDED"
-                        ? "bg-blue-600 text-white"
+                        ? "text-blue-600 dark:text-blue-400"
                         : myDemerit.status === "WARNING"
-                          ? "border border-cyan-500/30 bg-cyan-500/15 text-cyan-700 dark:text-cyan-300"
-                          : "border border-emerald-500/30 bg-emerald-500/15 text-emerald-700 dark:text-emerald-400"
+                          ? "text-cyan-600 dark:text-cyan-400"
+                          : "text-emerald-600 dark:text-emerald-400"
                     }`}
                   >
-                    <span className="h-2 w-2 rounded-full bg-current animate-pulse" />
-                    {myDemerit.status === "SUSPENDED"
-                      ? "ĐÌNH CHỈ LƯU TRÚ KỲ SAU"
-                      : myDemerit.status === "WARNING"
-                        ? "CẢNH BÁO KỶ LUẬT CẤP 1"
-                        : "HỒ SƠ RÈN LUYỆN TỐT"}
-                  </span>
+                    <span className="h-2 w-2 rounded-full bg-current" />
+                    <span>
+                      {myDemerit.status === "SUSPENDED"
+                        ? "ĐÌNH CHỈ LƯU TRÚ KỲ SAU"
+                        : myDemerit.status === "WARNING"
+                          ? "CẢNH BÁO KỶ LUẬT CẤP 1"
+                          : "HỒ SƠ RÈN LUYỆN TỐT"}
+                    </span>
+                  </div>
                 </div>
 
                 {/* 4 Thẻ chỉ số rộng rãi, cân đối */}

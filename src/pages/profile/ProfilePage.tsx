@@ -319,7 +319,7 @@ const ProfileDetailsAndForm: React.FC<ProfileFormProps> = ({ user, onSave }) => 
                   <BedDouble className="h-4 w-4 text-sky-600" />
                   <span>Vị Trí Lưu Trú Hiện Tại</span>
                 </div>
-                <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-600">
+                <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
                   {user.dormitoryStatus.roomStatus}
                 </span>
               </div>
