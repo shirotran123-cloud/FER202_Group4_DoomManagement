@@ -2,7 +2,6 @@ import React from "react"
 import { NavLink, useLocation } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
 import {
-  Building2,
   LogOut,
   LogIn,
   LayoutDashboard,
@@ -195,9 +194,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         <div className="flex flex-1 flex-col overflow-y-auto">
           {/* Logo Header */}
           <div className="flex h-[68px] shrink-0 items-center gap-3 border-b border-border bg-card px-4">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-xs">
-              <Building2 className="h-5 w-5" />
-            </div>
+            <img
+              src="/images/logo.jpg"
+              alt="FPT University"
+              className="h-10 w-14 shrink-0 rounded-xl object-contain"
+            />
             <div className="flex flex-col">
               <span className="text-base leading-none font-bold tracking-tight text-foreground">
                 Domanage

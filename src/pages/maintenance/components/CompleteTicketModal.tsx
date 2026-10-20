@@ -31,7 +31,9 @@ export const CompleteTicketModal: React.FC<CompleteTicketModalProps> = ({
   const [newMatName, setNewMatName] = useState("")
   const [newMatQty, setNewMatQty] = useState(1)
   const [newMatCost, setNewMatCost] = useState(50000)
-  const [newMatPayer, setNewMatPayer] = useState<"DORMITORY" | "STUDENT">("DORMITORY")
+  const [newMatPayer, setNewMatPayer] = useState<"DORMITORY" | "STUDENT">(
+    "DORMITORY"
+  )
 
   if (!ticket) return null
 
@@ -72,18 +74,20 @@ export const CompleteTicketModal: React.FC<CompleteTicketModalProps> = ({
       maxWidth="lg"
       title={
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
             <CheckCircle2 className="h-4 w-4" />
           </div>
-          <span className="font-bold text-foreground text-base">Báo cáo hoàn thành sửa chữa</span>
+          <span className="text-base font-bold text-foreground">
+            Báo cáo hoàn thành sửa chữa
+          </span>
         </div>
       }
       description={`Nghiệm thu sự cố ${ticket.id}`}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-xs font-bold text-foreground mb-1">
-            Ghi chú xử lý kỹ thuật <span className="text-destructive">*</span>
+          <label className="mb-1 block text-xs font-bold text-foreground">
+            Ghi xử lý kỹ thuật <span className="text-destructive">*</span>
           </label>
           <textarea
             rows={2}
@@ -91,16 +95,16 @@ export const CompleteTicketModal: React.FC<CompleteTicketModalProps> = ({
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Đã thay thế linh kiện, đo nguồn điện ổn định..."
-            className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-card text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:border-ring focus:ring-2 focus:ring-ring/30 shadow-xs"
+            className="w-full rounded-xl border border-input bg-card px-3.5 py-2 text-xs text-foreground shadow-xs placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/30 focus:outline-hidden"
           />
         </div>
 
         {/* Material Logging */}
-        <div className="p-3.5 bg-muted/40 rounded-xl border border-border">
-          <span className="text-xs font-bold text-foreground block mb-2">
+        <div className="rounded-xl border border-border bg-muted/40 p-3.5">
+          <span className="mb-2 block text-xs font-bold text-foreground">
             Vật tư thay thế (nếu có)
           </span>
-          <div className="grid grid-cols-3 gap-2 mb-2">
+          <div className="mb-2 grid grid-cols-3 gap-2">
             <Input
               type="text"
               placeholder="Tên vật tư..."
@@ -116,7 +120,7 @@ export const CompleteTicketModal: React.FC<CompleteTicketModalProps> = ({
               onChange={(e) => setNewMatQty(Number(e.target.value))}
             />
           </div>
-          <div className="flex gap-2 mb-2">
+          <div className="mb-2 flex gap-2">
             <Input
               type="number"
               placeholder="Đơn giá (VNĐ)"
@@ -148,18 +152,19 @@ export const CompleteTicketModal: React.FC<CompleteTicketModalProps> = ({
               {materials.map((m) => (
                 <div
                   key={m.id}
-                  className="flex items-center justify-between text-xs bg-card p-2 rounded-lg border border-border shadow-2xs"
+                  className="flex items-center justify-between rounded-lg border border-border bg-card p-2 text-xs shadow-2xs"
                 >
                   <span className="text-foreground">
-                    {m.name} x {m.quantity} ({m.unitCost.toLocaleString("vi-VN")} đ) -{" "}
-                    <span className="text-muted-foreground text-[10px]">
+                    {m.name} x {m.quantity} (
+                    {m.unitCost.toLocaleString("vi-VN")} đ) -{" "}
+                    <span className="text-[10px] text-muted-foreground">
                       {m.paidBy === "DORMITORY" ? "KTX" : "Sinh viên"}
                     </span>
                   </span>
                   <button
                     type="button"
                     onClick={() => handleRemoveMaterial(m.id)}
-                    className="text-destructive hover:opacity-80 p-1"
+                    className="p-1 text-destructive hover:opacity-80"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -170,7 +175,7 @@ export const CompleteTicketModal: React.FC<CompleteTicketModalProps> = ({
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-foreground mb-1">
+          <label className="mb-1 block text-xs font-bold text-foreground">
             Ảnh sau khi hoàn thành
           </label>
           <Input
@@ -181,7 +186,7 @@ export const CompleteTicketModal: React.FC<CompleteTicketModalProps> = ({
           />
         </div>
 
-        <div className="flex items-center justify-end gap-2 pt-3 border-t border-border">
+        <div className="flex items-center justify-end gap-2 border-t border-border pt-3">
           <Button type="button" variant="outline" onClick={onClose}>
             Hủy
           </Button>

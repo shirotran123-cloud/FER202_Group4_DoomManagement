@@ -75,7 +75,7 @@ export const ManagerDashboardPage: React.FC = () => {
       filename: `Danh_Sach_Tam_Tru_KTX_FPT_${new Date().toISOString().substring(0, 10)}.xlsx`,
       sheetName: "DS Sinh Viên Tạm Trú",
       title: "DANH SÁCH SINH VIÊN LƯU TRÚ KÝ TÚC XÁ - KHAI BÁO TẠM TRÚ CÔNG AN",
-      subtitle: `Trường Đại học FPT • Ban Quản lý KTX • Cán bộ phụ trách: ${user?.fullName || "Thầy Vũ Thành Nam"} • Ngày xuất: ${new Date().toLocaleDateString("vi-VN")}`,
+      subtitle: `Trường Đại học FPT • Ban Quản lý KTX • Cán bộ phụ trách: ${user?.fullName || " Vũ Thành Nam"} • Ngày xuất: ${new Date().toLocaleDateString("vi-VN")}`,
       columns,
       data: MOCK_RESIDENTS_REGISTRY,
     })
@@ -184,7 +184,7 @@ export const ManagerDashboardPage: React.FC = () => {
             </h1>
             <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
               Hệ thống giám sát chỉ số lấp đầy buồng giường, kiểm soát tiêu thụ
-              điện nước và xuất báo cáo lưu trú định dạng chuẩn Excel (.xlsx).
+              điện nước.
             </p>
           </div>
 

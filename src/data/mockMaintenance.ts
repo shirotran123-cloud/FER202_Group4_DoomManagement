@@ -23,7 +23,7 @@ export const INITIAL_MAINTENANCE_TICKETS: MaintenanceTicket[] = [
     createdAt: "2026-10-10 08:30",
     assignedTechnician: {
       id: "usr_tech_01",
-      name: "Chú Đỗ Mạnh Hùng",
+      name: " Đỗ Mạnh Hùng",
       phone: "0977 112 233",
       assignedAt: "2026-10-10 09:15",
       etaMinutes: 45,
@@ -75,7 +75,7 @@ export const INITIAL_MAINTENANCE_TICKETS: MaintenanceTicket[] = [
     createdAt: "2026-10-10 14:10",
     assignedTechnician: {
       id: "usr_tech_01",
-      name: "Chú Đỗ Mạnh Hùng",
+      name: " Đỗ Mạnh Hùng",
       phone: "0977 112 233",
       assignedAt: "2026-10-10 14:30",
       etaMinutes: 30,
@@ -122,7 +122,7 @@ export const INITIAL_MAINTENANCE_TICKETS: MaintenanceTicket[] = [
     createdAt: "2026-10-08 09:00",
     assignedTechnician: {
       id: "usr_tech_01",
-      name: "Chú Đỗ Mạnh Hùng",
+      name: " Đỗ Mạnh Hùng",
       phone: "0977 112 233",
       assignedAt: "2026-10-08 10:00",
       etaMinutes: 60,
@@ -148,7 +148,8 @@ export const INITIAL_MAINTENANCE_TICKETS: MaintenanceTicket[] = [
     review: {
       rating: 5,
       reviewedAt: "2026-10-08 14:20",
-      comment: "Chú Hùng làm rất nhanh và nhiệt tình, dọn dẹp sạch sẽ sau khi xịt máy. Cảm ơn chú!",
+      comment:
+        " Hùng làm rất nhanh và nhiệt tình, dọn dẹp sạch sẽ sau khi xịt máy. Cảm ơn !",
       isSatisfied: true,
     },
   },
