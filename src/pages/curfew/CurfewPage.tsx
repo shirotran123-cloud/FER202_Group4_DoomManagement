@@ -80,16 +80,17 @@ export const CurfewPage: React.FC = () => {
     }
   })
 
-  const myDemerit =
-    demerits.find((d) => d.studentId === (user?.studentId || "SE182049")) || {
-      studentId: user?.studentId || "SE182049",
-      studentName: user?.fullName || "Nguyễn Hoàng Vinh",
-      room: "A205",
-      remainingPoints: 100,
-      totalDeducted: 0,
-      violationCount: 0,
-      status: "GOOD" as const,
-    }
+  const myDemerit = demerits.find(
+    (d) => d.studentId === (user?.studentId || "SE182049")
+  ) || {
+    studentId: user?.studentId || "SE182049",
+    studentName: user?.fullName || "Nguyễn Hoàng Vinh",
+    room: "A205",
+    remainingPoints: 100,
+    totalDeducted: 0,
+    violationCount: 0,
+    status: "GOOD" as const,
+  }
   const myViolations = violations.filter(
     (v) => v.studentId === (user?.studentId || "SE182049")
   )
@@ -351,7 +352,6 @@ export const CurfewPage: React.FC = () => {
   const [reqCategory, setReqCategory] = useState<CurfewReasonCategory>("STUDY")
   const [reqDetail, setReqDetail] = useState("")
 
-
   // Handle Request Submission
   const handleSubmitCurfewRequest = (e: React.FormEvent) => {
     e.preventDefault()
@@ -547,7 +547,8 @@ export const CurfewPage: React.FC = () => {
               Kiểm Soát Giờ Giới Nghiêm 23:00 & Kỷ Luật Nội Trú
             </h1>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              Cổng bảo vệ quét thẻ đối chiếu • Đơn vắng mặt nộp trước 21:00 • Trừ điểm rèn luyện (100đ chuẩn)
+              Cổng bảo vệ quét thẻ đối chiếu • Đơn vắng mặt nộp trước 21:00 •
+              Trừ điểm rèn luyện (100đ chuẩn)
             </p>
           </div>
         </div>
@@ -839,8 +840,7 @@ export const CurfewPage: React.FC = () => {
                                 : "border border-blue-500/30 bg-blue-500/15 text-blue-600 dark:text-blue-400"
                           }`}
                         >
-                          {log.curfewStatus === "ON_TIME" &&
-                            "Đúng giờ (Trước 23h)"}
+                          {log.curfewStatus === "ON_TIME" && "Đúng giờ"}
                           {log.curfewStatus === "APPROVED_LATE" &&
                             "Có đơn duyệt"}
                           {log.curfewStatus === "UNAUTHORIZED_LATE" &&
@@ -984,8 +984,6 @@ export const CurfewPage: React.FC = () => {
                   className="mt-1 w-full rounded-xl border border-border bg-card p-2.5 text-xs"
                 />
               </div>
-
-              
 
               <button
                 type="submit"
@@ -1150,7 +1148,8 @@ export const CurfewPage: React.FC = () => {
                       Bảng Theo Dõi Điểm Rèn Luyện Lưu Trú KTX
                     </h3>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      Điểm khởi đầu học kỳ: 100đ • Bị trừ &gt; 20 điểm (Cảnh cáo) • Bị trừ &gt; 30 điểm (Đình chỉ lưu trú kỳ sau)
+                      Điểm khởi đầu học kỳ: 100đ • Bị trừ &gt; 20 điểm (Cảnh
+                      cáo) • Bị trừ &gt; 30 điểm (Đình chỉ lưu trú kỳ sau)
                     </p>
                   </div>
                   <span
@@ -1162,7 +1161,7 @@ export const CurfewPage: React.FC = () => {
                           : "border border-emerald-500/30 bg-emerald-500/15 text-emerald-700 dark:text-emerald-400"
                     }`}
                   >
-                    <span className="h-2 w-2 rounded-full bg-current animate-pulse" />
+                    <span className="h-2 w-2 animate-pulse rounded-full bg-current" />
                     {myDemerit.status === "SUSPENDED"
                       ? "ĐÌNH CHỈ LƯU TRÚ KỲ SAU"
                       : myDemerit.status === "WARNING"
@@ -1175,14 +1174,16 @@ export const CurfewPage: React.FC = () => {
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   {/* Điểm hiện tại */}
                   <div className="rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent p-5">
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    <span className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
                       Điểm hiện tại
                     </span>
                     <div className="mt-2 flex items-baseline gap-1.5">
                       <span className="text-3xl font-black text-emerald-600 sm:text-4xl">
                         {myDemerit.remainingPoints}
                       </span>
-                      <span className="text-sm font-semibold text-muted-foreground">/ 100đ</span>
+                      <span className="text-sm font-semibold text-muted-foreground">
+                        / 100đ
+                      </span>
                     </div>
                     <p className="mt-1 text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
                       Khởi tạo: 100 điểm
@@ -1191,14 +1192,16 @@ export const CurfewPage: React.FC = () => {
 
                   {/* Số lần vi phạm */}
                   <div className="rounded-2xl border border-border bg-muted/20 p-5">
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    <span className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
                       Số lần bị lập biên bản
                     </span>
                     <div className="mt-2 flex items-baseline gap-1.5">
                       <span className="text-3xl font-black text-foreground sm:text-4xl">
                         {myDemerit.violationCount}
                       </span>
-                      <span className="text-sm font-semibold text-muted-foreground">lần</span>
+                      <span className="text-sm font-semibold text-muted-foreground">
+                        lần
+                      </span>
                     </div>
                     <p className="mt-1 text-[11px] text-muted-foreground">
                       Tuần tra & giám sát cổng
@@ -1207,18 +1210,24 @@ export const CurfewPage: React.FC = () => {
 
                   {/* Tổng điểm đã trừ */}
                   <div className="rounded-2xl border border-border bg-muted/20 p-5">
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    <span className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
                       Tổng số điểm đã trừ
                     </span>
                     <div className="mt-2 flex items-baseline gap-1.5">
                       <span
                         className={`text-3xl font-black sm:text-4xl ${
-                          myDemerit.totalDeducted > 0 ? "text-blue-600" : "text-emerald-600"
+                          myDemerit.totalDeducted > 0
+                            ? "text-blue-600"
+                            : "text-emerald-600"
                         }`}
                       >
-                        {myDemerit.totalDeducted > 0 ? `-${myDemerit.totalDeducted}` : "0"}
+                        {myDemerit.totalDeducted > 0
+                          ? `-${myDemerit.totalDeducted}`
+                          : "0"}
                       </span>
-                      <span className="text-sm font-semibold text-muted-foreground">điểm</span>
+                      <span className="text-sm font-semibold text-muted-foreground">
+                        điểm
+                      </span>
                     </div>
                     <p className="mt-1 text-[11px] text-muted-foreground">
                       Giới hạn an toàn: &lt; 20 điểm
@@ -1227,12 +1236,14 @@ export const CurfewPage: React.FC = () => {
 
                   {/* Quyền lợi lưu trú */}
                   <div className="rounded-2xl border border-border bg-muted/20 p-5">
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    <span className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
                       Xét duyệt lưu trú kỳ tới
                     </span>
                     <div className="mt-2">
                       <span className="text-base font-bold text-emerald-600">
-                        {myDemerit.status === "GOOD" ? "Đủ điều kiện ở KTX" : "Cần lưu ý rèn luyện"}
+                        {myDemerit.status === "GOOD"
+                          ? "Đủ điều kiện ở KTX"
+                          : "Cần lưu ý rèn luyện"}
                       </span>
                     </div>
                     <p className="mt-1 text-[11px] text-muted-foreground">
@@ -1244,9 +1255,12 @@ export const CurfewPage: React.FC = () => {
                 {/* Thang đo tiến độ rèn luyện toàn chiều ngang */}
                 <div className="space-y-2 rounded-2xl border border-border bg-muted/15 p-4 sm:p-5">
                   <div className="flex items-center justify-between text-xs font-semibold">
-                    <span className="text-foreground">Thang đo mức độ rèn luyện & an toàn nội trú</span>
+                    <span className="text-foreground">
+                      Thang đo mức độ rèn luyện & an toàn nội trú
+                    </span>
                     <span className="font-mono text-muted-foreground">
-                      {myDemerit.remainingPoints} / 100 điểm ({myDemerit.remainingPoints}%)
+                      {myDemerit.remainingPoints} / 100 điểm (
+                      {myDemerit.remainingPoints}%)
                     </span>
                   </div>
                   <div className="h-3 w-full overflow-hidden rounded-full bg-muted">
@@ -1263,9 +1277,15 @@ export const CurfewPage: React.FC = () => {
                   </div>
                   <div className="flex items-center justify-between pt-1 text-[11px] text-muted-foreground">
                     <span>0đ (Đình chỉ)</span>
-                    <span className="font-semibold text-blue-600">70đ (Ngưỡng đình chỉ)</span>
-                    <span className="font-semibold text-cyan-600">80đ (Ngưỡng cảnh báo)</span>
-                    <span className="font-semibold text-emerald-600">100đ (Tối đa)</span>
+                    <span className="font-semibold text-blue-600">
+                      70đ (Ngưỡng đình chỉ)
+                    </span>
+                    <span className="font-semibold text-cyan-600">
+                      80đ (Ngưỡng cảnh báo)
+                    </span>
+                    <span className="font-semibold text-emerald-600">
+                      100đ (Tối đa)
+                    </span>
                   </div>
                 </div>
               </div>
@@ -1288,7 +1308,9 @@ export const CurfewPage: React.FC = () => {
                       Không có biên bản vi phạm nào
                     </h4>
                     <p className="mx-auto max-w-md text-xs text-muted-foreground">
-                      Hồ sơ rèn luyện của bạn hoàn toàn trong sạch. Hãy tiếp tục tuân thủ quy định giờ giới nghiêm 23:00 và nội quy phòng ở ký túc xá!
+                      Hồ sơ rèn luyện của bạn hoàn toàn trong sạch. Hãy tiếp tục
+                      tuân thủ quy định giờ giới nghiêm 23:00 và nội quy phòng ở
+                      ký túc xá!
                     </p>
                   </div>
                 ) : (
@@ -1311,7 +1333,9 @@ export const CurfewPage: React.FC = () => {
                             -{vio.pointsDeducted} điểm
                           </span>
                         </div>
-                        <p className="text-xs text-muted-foreground">{vio.description}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {vio.description}
+                        </p>
                         <div className="flex items-center justify-between border-t border-border/60 pt-1 text-[10px] text-muted-foreground">
                           <span>Cán bộ lập: {vio.officerName}</span>
                           <span className="font-mono">{vio.date}</span>
@@ -1329,7 +1353,10 @@ export const CurfewPage: React.FC = () => {
                   Quy Chế Khen Thưởng & Kỷ Luật Sinh Viên Nội Trú
                 </h4>
                 <p className="leading-relaxed text-muted-foreground">
-                  Mỗi sinh viên bắt đầu học kỳ với 100 điểm rèn luyện. Việc chấp hành đúng giờ giới nghiêm 23:00 và bảo quản tốt trang thiết bị phòng ở sẽ giúp duy trì điểm số tối đa, làm căn cứ ưu tiên xét chọn phòng và giường ở các học kỳ tiếp theo.
+                  Mỗi sinh viên bắt đầu học kỳ với 100 điểm rèn luyện. Việc chấp
+                  hành đúng giờ giới nghiêm 23:00 và bảo quản tốt trang thiết bị
+                  phòng ở sẽ giúp duy trì điểm số tối đa, làm căn cứ ưu tiên xét
+                  chọn phòng và giường ở các học kỳ tiếp theo.
                 </p>
               </div>
             </div>
@@ -1341,10 +1368,12 @@ export const CurfewPage: React.FC = () => {
                   <div>
                     <h3 className="flex items-center gap-2 text-sm font-bold text-foreground">
                       <ShieldCheck className="h-4 w-4 text-emerald-600" />
-                      Bảng Theo Dõi Điểm Rèn Luyện Lưu Trú KTX ({demerits.length} Sinh Viên)
+                      Bảng Theo Dõi Điểm Rèn Luyện Lưu Trú KTX (
+                      {demerits.length} Sinh Viên)
                     </h3>
                     <p className="text-xs text-muted-foreground">
-                      Quy chế: Bị trừ &gt; 20 điểm (Cảnh cáo) • Bị trừ &gt; 30 điểm (Đình chỉ lưu trú kỳ sau)
+                      Quy chế: Bị trừ &gt; 20 điểm (Cảnh cáo) • Bị trừ &gt; 30
+                      điểm (Đình chỉ lưu trú kỳ sau)
                     </p>
                   </div>
                 </div>
@@ -1413,7 +1442,8 @@ export const CurfewPage: React.FC = () => {
 
                         <div className="mt-2.5 flex items-center justify-between text-[10px]">
                           <span className="text-muted-foreground">
-                            Đã trừ: <strong>{student.totalDeducted}đ</strong> ({student.violationCount} lần)
+                            Đã trừ: <strong>{student.totalDeducted}đ</strong> (
+                            {student.violationCount} lần)
                           </span>
                           <span
                             className={`rounded-full px-2 py-0.5 font-bold ${
@@ -1584,7 +1614,7 @@ export const CurfewPage: React.FC = () => {
             </div>
           )}
         </div>
-            )}
+      )}
     </div>
   )
 }

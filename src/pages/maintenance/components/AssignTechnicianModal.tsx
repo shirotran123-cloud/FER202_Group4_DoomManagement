@@ -32,8 +32,8 @@ export const AssignTechnicianModal: React.FC<AssignTechnicianModalProps> = ({
   const handleTechChange = (name: string) => {
     setTechName(name)
     if (name === " Đỗ Mạnh Hùng") setTechPhone("0977 112 233")
-    if (name === "Anh Lê Quốc Tuấn") setTechPhone("0918 889 900")
-    if (name === "Anh Vũ Trọng Nghĩa") setTechPhone("0934 567 890")
+    if (name === " Lê Quốc Tuấn") setTechPhone("0918 889 900")
+    if (name === " Vũ Trọng Nghĩa") setTechPhone("0934 567 890")
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -76,11 +76,11 @@ export const AssignTechnicianModal: React.FC<AssignTechnicianModalProps> = ({
               {" "}
               Đỗ Mạnh Hùng (Trưởng ban Điện lạnh)
             </option>
-            <option value="Anh Lê Quốc Tuấn">
-              Anh Lê Quốc Tuấn (Kỹ thuật Điện dân dụng)
+            <option value=" Lê Quốc Tuấn">
+              Lê Quốc Tuấn (Kỹ thuật Điện dân dụng)
             </option>
-            <option value="Anh Vũ Trọng Nghĩa">
-              Anh Vũ Trọng Nghĩa (Thợ nước & Vệ sinh)
+            <option value=" Vũ Trọng Nghĩa">
+              Vũ Trọng Nghĩa (Thợ nước & Vệ sinh)
             </option>
           </Select>
         </div>
