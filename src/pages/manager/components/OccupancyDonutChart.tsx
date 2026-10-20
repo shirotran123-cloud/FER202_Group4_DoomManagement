@@ -16,9 +16,9 @@ interface OccupancyDonutChartProps {
 export const OccupancyDonutChart: React.FC<OccupancyDonutChartProps> = ({
   stats,
 }) => {
-  const radius = 65
-  const strokeWidth = 20
-  const circumference = 2 * Math.PI * radius // ~408.407
+  const radius = 95
+  const strokeWidth = 26
+  const circumference = 2 * Math.PI * radius // ~596.9026
 
   const total = stats.totalBeds || 1
 
@@ -72,20 +72,21 @@ export const OccupancyDonutChart: React.FC<OccupancyDonutChartProps> = ({
           <PieChart className="h-4 w-4 text-primary" />
           Cơ Cấu Trạng Thái Giường
         </h3>
+        <span className="text-xs font-semibold text-muted-foreground">
+          Tổng: <strong className="text-foreground font-mono">{stats.totalBeds}</strong> giường
+        </span>
       </div>
 
-      {/* SVG Donut liền mạch, không cắt hở, viền phẳng chuẩn */}
-      <div className="relative flex items-center justify-center py-2">
+      {/* SVG Donut phóng to, cân đối và lấp đầy khung hình */}
+      <div className="relative flex items-center justify-center py-4 my-auto">
         <svg
-          width="180"
-          height="180"
-          viewBox="0 0 180 180"
-          className="-rotate-90 transform"
+          viewBox="0 0 250 250"
+          className="h-56 w-56 sm:h-64 sm:w-64 -rotate-90 transform"
         >
           {/* Background Track */}
           <circle
-            cx="90"
-            cy="90"
+            cx="125"
+            cy="125"
             r={radius}
             stroke="currentColor"
             strokeWidth={strokeWidth}
@@ -93,14 +94,14 @@ export const OccupancyDonutChart: React.FC<OccupancyDonutChartProps> = ({
             className="text-muted/15"
           />
 
-          {/* Donut Segments liền mạch, không hở gap */}
+          {/* Donut Segments liền mạch */}
           {calculatedSegments.map(
             (seg) =>
               seg.count > 0 && (
                 <circle
                   key={seg.id}
-                  cx="90"
-                  cy="90"
+                  cx="125"
+                  cy="125"
                   r={radius}
                   stroke={seg.color}
                   strokeWidth={strokeWidth}
@@ -116,10 +117,10 @@ export const OccupancyDonutChart: React.FC<OccupancyDonutChartProps> = ({
 
         {/* Center Percentage Display */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
-          <span className="text-2xl font-black text-foreground">
+          <span className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
             {stats.occupancyRate}%
           </span>
-          <span className="text-[10px] font-semibold text-muted-foreground uppercase">
+          <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mt-0.5">
             Lấp đầy
           </span>
         </div>
@@ -128,15 +129,23 @@ export const OccupancyDonutChart: React.FC<OccupancyDonutChartProps> = ({
       {/* Legend & Breakdown */}
       <div className="grid grid-cols-2 gap-2 border-t border-border pt-3 text-xs">
         {calculatedSegments.map((seg) => (
-          <div key={seg.id} className="flex items-center gap-2">
-            <span
-              className="h-3 w-3 shrink-0 rounded-sm"
-              style={{ backgroundColor: seg.color }}
-            />
-            <span className="text-muted-foreground">
-              {seg.label} ({seg.percent}%):
-            </span>
-            <strong className="ml-auto text-foreground">{seg.count}</strong>
+          <div
+            key={seg.id}
+            className="flex items-center justify-between gap-1.5 rounded-lg bg-muted/40 px-2.5 py-1.5"
+          >
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span
+                className="h-2.5 w-2.5 shrink-0 rounded-full"
+                style={{ backgroundColor: seg.color }}
+              />
+              <span className="truncate text-muted-foreground font-medium">
+                {seg.label}
+              </span>
+            </div>
+            <div className="flex items-center gap-1 shrink-0 font-mono">
+              <strong className="text-foreground">{seg.count}</strong>
+              <span className="text-[10px] text-muted-foreground">({seg.percent}%)</span>
+            </div>
           </div>
         ))}
       </div>

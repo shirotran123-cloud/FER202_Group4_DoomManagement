@@ -132,9 +132,6 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
             <TrendingUp className="h-4 w-4 text-primary" />
             Biểu Đồ Doanh Thu Tòa A
           </h3>
-          <p className="text-[11px] text-muted-foreground mt-0.5">
-            Tách biệt: Tiền phòng theo kỳ (4 tháng) & Điện nước theo tháng (cột đôi)
-          </p>
         </div>
 
         {/* View Switcher Tabs */}
@@ -159,7 +156,7 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            Điện & Nước (Cột đôi)
+            Điện nước theo tháng
           </button>
           <button
             type="button"
@@ -170,28 +167,28 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            Tiền phòng (Theo kỳ)
+            Tiền phòng theo kỳ
           </button>
         </div>
       </div>
 
       <div className="space-y-6">
         {/* ========================================================================= */}
-        {/* BIỂU ĐỒ 2: DOANH THU ĐIỆN & NƯỚC THEO THÁNG (CỘT ĐÔI: TRÁI ĐIỆN, PHẢI NƯỚC) */}
+        {/* BIỂU ĐỒ: DOANH THU ĐIỆN & NƯỚC THEO THÁNG                                 */}
         {/* ========================================================================= */}
         {(activeView === "BOTH" || activeView === "UTILITY") && (
           <div className="space-y-3 rounded-2xl border border-border/80 bg-muted/20 p-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
                 <Zap className="h-4 w-4 text-amber-500" />
-                <span>Doanh Thu & Tiêu Thụ Điện - Nước Theo Tháng (Biểu Đồ Cột Đôi)</span>
+                <span>Doanh Thu Điện Nước Theo Tháng</span>
               </div>
               <div className="flex items-center gap-3 text-[11px] font-semibold">
                 <span className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400">
-                  <span className="h-2.5 w-2.5 rounded bg-amber-500" /> Điện (Cột trái)
+                  <span className="h-2.5 w-2.5 rounded bg-amber-500" /> Điện
                 </span>
                 <span className="flex items-center gap-1.5 text-sky-600 dark:text-sky-400">
-                  <span className="h-2.5 w-2.5 rounded bg-sky-500" /> Nước (Cột phải)
+                  <span className="h-2.5 w-2.5 rounded bg-sky-500" /> Nước
                 </span>
               </div>
             </div>
@@ -209,23 +206,23 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
                       className="group relative flex h-full flex-col items-center justify-end"
                     >
                       {/* Floating Detail Tooltip on Hover */}
-                      <div className="pointer-events-none absolute -top-20 z-20 hidden w-48 rounded-xl bg-slate-900/95 p-2.5 text-left text-[11px] text-white shadow-xl backdrop-blur-xs group-hover:block animate-in fade-in">
+                      <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 z-30 hidden min-w-[230px] rounded-xl bg-slate-900/95 p-2.5 text-left text-xs text-white shadow-xl backdrop-blur-xs group-hover:block animate-in fade-in">
                         <p className="font-bold border-b border-slate-700 pb-1 text-slate-200">
                           {item.fullMonth}
                         </p>
-                        <div className="mt-1 space-y-1">
-                          <p className="flex justify-between text-amber-400 font-medium">
-                            <span>⚡ Điện ({item.elecKwh.toLocaleString()} kWh):</span>
-                            <span>₫{item.elecCost.toLocaleString()}</span>
-                          </p>
-                          <p className="flex justify-between text-sky-400 font-medium">
-                            <span>💧 Nước ({item.waterM3.toLocaleString()} m³):</span>
-                            <span>₫{item.waterCost.toLocaleString()}</span>
-                          </p>
-                          <p className="flex justify-between border-t border-slate-700/80 pt-1 font-bold text-white">
+                        <div className="mt-1.5 space-y-1">
+                          <div className="flex items-center justify-between gap-3 text-amber-400 font-medium whitespace-nowrap">
+                            <span className="whitespace-nowrap">⚡ Điện ({item.elecKwh.toLocaleString()} kWh):</span>
+                            <span className="font-mono font-semibold whitespace-nowrap">₫{item.elecCost.toLocaleString()}</span>
+                          </div>
+                          <div className="flex items-center justify-between gap-3 text-sky-400 font-medium whitespace-nowrap">
+                            <span className="whitespace-nowrap">💧 Nước ({item.waterM3.toLocaleString()} m³):</span>
+                            <span className="font-mono font-semibold whitespace-nowrap">₫{item.waterCost.toLocaleString()}</span>
+                          </div>
+                          <div className="flex items-center justify-between gap-3 border-t border-slate-700/80 pt-1 font-bold text-white whitespace-nowrap">
                             <span>Tổng thu:</span>
-                            <span>₫{item.totalCost.toLocaleString()}</span>
-                          </p>
+                            <span className="font-mono text-emerald-400 whitespace-nowrap">₫{item.totalCost.toLocaleString()}</span>
+                          </div>
                         </div>
                       </div>
 
@@ -263,21 +260,18 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
                 })}
               </div>
             </div>
-            <p className="text-[10px] text-muted-foreground italic text-center">
-              * Rê chuột vào từng cột để xem chi tiết số kWh điện và m³ nước tiêu thụ thực tế
-            </p>
           </div>
         )}
 
         {/* ========================================================================= */}
-        {/* BIỂU ĐỒ 1: DOANH THU TIỀN PHÒNG THEO KỲ (4 THÁNG / KỲ)                     */}
+        {/* BIỂU ĐỒ: DOANH THU TIỀN PHÒNG THEO KỲ                                     */}
         {/* ========================================================================= */}
         {(activeView === "BOTH" || activeView === "ROOM") && (
           <div className="space-y-3 rounded-2xl border border-border/80 bg-muted/20 p-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
                 <BedDouble className="h-4 w-4 text-primary" />
-                <span>Doanh Thu Tiền Phòng Theo Kỳ (Thu 1 Lần / 4 Tháng)</span>
+                <span>Doanh Thu Tiền Phòng Theo Kỳ</span>
               </div>
               <span className="text-[11px] font-semibold text-primary">
                 Đơn giá: Buồng 6 (3.2 tr/kỳ) • Buồng 4 (4.0 tr/kỳ)
@@ -296,14 +290,14 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
                       className="group relative flex h-full flex-col items-center justify-end"
                     >
                       {/* Tooltip on Hover */}
-                      <div className="pointer-events-none absolute -top-16 z-20 hidden w-44 rounded-xl bg-slate-900/95 p-2 text-left text-[11px] text-white shadow-xl backdrop-blur-xs group-hover:block animate-in fade-in">
+                      <div className="pointer-events-none absolute -top-16 left-1/2 -translate-x-1/2 z-30 hidden min-w-[200px] rounded-xl bg-slate-900/95 p-2.5 text-left text-xs text-white shadow-xl backdrop-blur-xs group-hover:block animate-in fade-in whitespace-nowrap">
                         <p className="font-bold border-b border-slate-700 pb-0.5 text-slate-200">
                           {item.fullName}
                         </p>
-                        <p className="text-emerald-400 font-bold mt-1">
+                        <p className="text-emerald-400 font-bold mt-1 font-mono">
                           Tổng thu: ₫{item.revenue.toLocaleString()}
                         </p>
-                        <p className="text-[10px] text-slate-300">
+                        <p className="text-[11px] text-slate-300">
                           Quy mô: {item.students} sinh viên • {item.rooms} phòng
                         </p>
                       </div>
