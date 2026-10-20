@@ -65,7 +65,7 @@ NGHIỆP VỤ & QUY TẮC KÝ TÚC XÁ FPT (SRS & THỰC TẾ):
 - Thanh toán: Hỗ trợ mã VietQR NAPAS 24/7 động tự động điền sẵn số tiền và nội dung 'DIENNUOC [Mã phòng] [MSSV]'.
 
 5. HỢP ĐỒNG & NHẬN/TRẢ PHÒNG:
-- Tiền cọc an ninh: 1.000.000đ, được hoàn trả 100% khi thanh lý hợp đồng và nghiệm thu phòng không hư hại.
+- Tiền đặt cọc: 0đ (Ký túc xá hoàn toàn không thu tiền đặt cọc, chỉ nộp tiền thuê phòng theo kỳ và tiền điện nước thực tế).
 - Biên bản bàn giao thiết bị được ký số hóa điện tử.
 
 PHONG CÁCH TRẢ LỜI:

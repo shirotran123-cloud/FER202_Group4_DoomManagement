@@ -37,7 +37,7 @@ export const generateContractPDF = (data: ContractData) => {
 
   doc.setFont("helvetica", "normal");
   doc.text("By signing this contract, the student agrees to the dormitory's rules", 20, 170);
-  doc.text("and regulations. The deposit has been paid in full.", 20, 180);
+  doc.text("and regulations. Accommodation fee for the term has been paid in full.", 20, 180);
 
   doc.text("Management Signature", 40, 220);
   doc.text("Student Signature", 140, 220);

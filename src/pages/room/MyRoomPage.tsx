@@ -459,7 +459,7 @@ export const MyRoomPage: React.FC = () => {
           <div className="bg-white dark:bg-[#161e23] border border-border w-full max-w-md rounded-2xl shadow-xl p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h3 className="font-bold text-sm text-foreground">
-                Quy Trình Trả Phòng & Quyết Toán Hoàn Cọc
+                Quy Trình Trả Phòng & Bàn Giao Thiết Bị
               </h3>
               <button
                 onClick={() => setShowCheckoutModal(false)}
@@ -475,7 +475,7 @@ export const MyRoomPage: React.FC = () => {
               </p>
               <ul className="list-disc pl-4 space-y-1 text-muted-foreground text-[11px]">
                 <li>Cán bộ KTX sẽ kiểm tra hiện trạng thiết bị và chỉ số công tơ cuối cùng.</li>
-                <li>Nếu không có hư hại, <strong>100% tiền cọc (1,000,000 VNĐ)</strong> sẽ được hoàn trả tự động vào tài khoản ngân hàng của sinh viên trong 48 giờ.</li>
+                <li>Ký túc xá không thu tiền đặt cọc. Thủ tục trả phòng hoàn tất ngay sau khi bạn bàn giao chìa khóa và buồng phòng nguyên trạng cho BQL KTX.</li>
               </ul>
 
               <div className="flex gap-2 pt-2">

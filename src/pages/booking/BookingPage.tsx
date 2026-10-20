@@ -502,7 +502,7 @@ export const BookingPage: React.FC = () => {
                       <span className="text-primary dark:text-[#cee6ef] font-mono">{selectedBed.code}</span>
                     </div>
                     <div className="flex justify-between text-muted-foreground text-xs"><span>Tiền phòng tháng 1:</span><span className="font-mono font-semibold text-foreground">₫950,000</span></div>
-                    <div className="flex justify-between text-muted-foreground text-xs"><span>Tiền cọc an ninh:</span><span className="font-mono font-semibold text-foreground">₫1,000,000</span></div>
+                    <div className="flex justify-between text-muted-foreground text-xs"><span>Tiền đặt cọc:</span><span className="font-mono font-semibold text-emerald-600">₫0 (Miễn cọc)</span></div>
                     <div className="flex justify-between text-muted-foreground text-xs"><span>Tạm ứng điện nước:</span><span className="font-mono font-semibold text-foreground">₫200,000</span></div>
                     <div className="flex justify-between font-black text-base pt-2 border-t border-border">
                       <span>Tổng thanh toán:</span>

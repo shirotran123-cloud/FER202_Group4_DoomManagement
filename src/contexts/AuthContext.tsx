@@ -130,6 +130,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { success: true }
   }
 
+  const loginWithCustomUser = (customUser: UserProfile) => {
+    setIsLoading(true)
+    const newTokens: AuthTokens = {
+      accessToken: "custom_jwt_" + customUser.id + "_" + Date.now(),
+      refreshToken: "custom_refresh_" + customUser.id + "_" + Date.now(),
+      expiresAt: Date.now() + SESSION_DURATION_SECONDS * 1000,
+    }
+    saveAuthSession(customUser, newTokens)
+    setIsLoading(false)
+  }
+
   const loginAsDemoUser = (role: UserRole) => {
     setIsLoading(true)
     const demoProfile = MOCK_USERS[role]
@@ -182,6 +193,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading,
         loginWithGoogle,
         loginAsDemoUser,
+        loginWithCustomUser,
         switchRole,
         updateProfile,
         logout,

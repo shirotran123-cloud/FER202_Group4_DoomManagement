@@ -56,6 +56,7 @@ export interface AuthContextType {
   isLoading: boolean
   loginWithGoogle: (email: string, targetRole: UserRole) => Promise<{ success: boolean; message?: string }>
   loginAsDemoUser: (role: UserRole) => void
+  loginWithCustomUser: (customUser: UserProfile) => void
   switchRole: (role: UserRole) => void
   updateProfile: (updatedData: Partial<UserProfile>) => void
   logout: () => void

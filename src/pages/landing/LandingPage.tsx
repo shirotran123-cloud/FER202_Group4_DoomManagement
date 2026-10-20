@@ -37,9 +37,9 @@ const FAQ_ITEMS = [
       "Sinh viên chỉ cần gửi Đơn xin về muộn trực tuyến trên hệ thống trước 21:00 cùng ngày. BQL duyệt tự động và cấp mã QR mở cổng trục xoay an ninh ban đêm mà không bị trừ điểm rèn luyện.",
   },
   {
-    question: "Quy trình thanh toán và nhận cọc diễn ra như thế nào?",
+    question: "Quy trình đăng ký và thanh toán phí lưu trú KTX như thế nào?",
     answer:
-      "Sau khi giữ chỗ 15 phút, bạn quét mã VietQR để thanh toán. Tiền đặt cọc an ninh 1.000.000 VNĐ sẽ được hoàn trả 100% về tài khoản ngân hàng của sinh viên ngay sau khi hoàn tất Biên bản bàn giao số hóa.",
+      "Sau khi đăng ký giữ chỗ 15 phút, bạn quét mã VietQR để thanh toán tiền lưu trú học kỳ (3.200.000đ cho buồng 6 giường hoặc 4.000.000đ cho buồng 4 giường). Ký túc xá hoàn toàn KHÔNG thu tiền đặt cọc. Chuyển khoản xong bạn sẽ lập tức nhận phòng và mã QR ra vào cổng an ninh.",
   },
   {
     question: "Sinh viên mới nhập học đăng nhập bằng tài khoản gì?",
@@ -54,7 +54,7 @@ const FAQ_ITEMS = [
   {
     question: "Cơ chế khóa giữ chỗ 15 phút hoạt động như thế nào?",
     answer:
-      'Khi bạn chọn giường và nhấn "Giữ chỗ", hệ thống sẽ khóa giường đó trong 15 phút để bạn hoàn tất thanh toán cọc qua VietQR. Nếu quá thời gian, giường sẽ tự động mở lại để sinh viên khác có thể đặt.',
+      'Khi bạn chọn buồng và nhấn "Đăng ký", hệ thống sẽ khóa chỗ trong 15 phút để bạn hoàn tất chuyển khoản tiền ở học kỳ qua VietQR. Sau khi chuyển khoản thành công, bạn nhận ngay phòng và mã số ra vào cổng KTX.',
   },
 ]
 
@@ -161,7 +161,7 @@ export const LandingPage: React.FC = () => {
     {
       icon: FileCheck,
       title: "Biên bản Bàn giao Số hóa",
-      desc: "Checklist điện tử khi Check-in và Check-out với ảnh hiện trạng, tự động quyết toán hoàn cọc.",
+      desc: "Checklist điện tử khi Check-in và Check-out với ảnh hiện trạng, hoàn tất bàn giao phòng nhanh chóng.",
           },
   ]
 

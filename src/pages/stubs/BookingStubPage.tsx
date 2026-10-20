@@ -42,7 +42,7 @@ export const BookingStubPage: React.FC = () => {
               <span>2. Khóa giữ chỗ 15 Phút</span>
             </h3>
             <p className="text-muted-foreground leading-relaxed">
-              Đồng hồ đếm ngược 900 giây, hiển thị mã VietQR động để thanh toán tiền cọc 1.000.000 VNĐ.
+              Đồng hồ đếm ngược 900 giây, hiển thị mã VietQR động để thanh toán tiền ở học kỳ.
             </p>
           </div>
 

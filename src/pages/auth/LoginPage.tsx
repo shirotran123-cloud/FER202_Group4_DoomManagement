@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
-import type { UserRole } from "@/types/auth"
+import type { UserRole, UserProfile } from "@/types/auth"
 import {
   Building2,
   ShieldCheck,
@@ -16,10 +16,15 @@ import {
   Send,
   Phone,
   User,
+  Clock,
+  Copy,
+  Check,
+  ArrowRight,
+  RefreshCw,
 } from "lucide-react"
 
 export const LoginPage: React.FC = () => {
-  const { loginWithGoogle, loginAsDemoUser, isLoading } = useAuth()
+  const { loginWithGoogle, loginAsDemoUser, loginWithCustomUser, isLoading } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -45,19 +50,125 @@ export const LoginPage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isCustomMode, setIsCustomMode] = useState(false)
 
-  // Registration state
+  // Registration & 15-min Payment flow state: "FORM" -> "PAYMENT" -> "SUCCESS"
+  const [regStep, setRegStep] = useState<"FORM" | "PAYMENT" | "SUCCESS">("FORM")
+  const [payCountdown, setPayCountdown] = useState(900) // 15:00 minutes = 900s
+  const [isCopiedAcc, setIsCopiedAcc] = useState(false)
+  const [isCopiedContent, setIsCopiedContent] = useState(false)
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false)
+  const [assignedRoom, setAssignedRoom] = useState<{
+    room: string
+    compartment: string
+    bedCode: string
+    gateCode: string
+  } | null>(null)
+
   const [regData, setRegData] = useState({
-    fullName: "Nguyễn Hoàng Vinh",
-    studentCode: "SE182049",
-    email: "hoangvinh.student@gmail.com",
-    phone: "0912345678",
+    fullName: "Trần Bảo Nam",
+    studentCode: "SE185240",
+    email: "baonam.se185240@fpt.edu.vn",
+    phone: "0987 654 321",
     gender: "male",
-    term: "Spring 2026",
+    term: "Fall 2026",
     roomType: "standard_6",
     agreedRules: true,
   })
-  const [regSuccess, setRegSuccess] = useState(false)
-  const [regId, setRegId] = useState("")
+  const [regId, setRegId] = useState("REG-2026-8492")
+
+  // Đếm ngược 15 phút thanh toán giữ chỗ
+  useEffect(() => {
+    if (regStep !== "PAYMENT") return
+
+    const timer = setInterval(() => {
+      setPayCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer)
+          alert("Hết hạn 15 phút giữ chỗ! Vui lòng thực hiện lại đơn đăng ký.")
+          setRegStep("FORM")
+          return 900
+        }
+        return prev - 1
+      })
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [regStep])
+
+  const formatPayTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`
+  }
+
+  const roomPrice = regData.roomType === "private_4" ? 4000000 : 3200000
+  const roomPriceFormatted = roomPrice.toLocaleString("vi-VN") + " VNĐ"
+
+  const handleConfirmPayment = () => {
+    setIsProcessingPayment(true)
+    setTimeout(() => {
+      setIsProcessingPayment(false)
+
+      const isPrivate = regData.roomType === "private_4"
+      const compName = isPrivate ? "Buồng C" : "Buồng B"
+      const compBed = isPrivate ? "A205-C-G01" : "A205-B-G01"
+      const gatePass = `#GATE-${Math.floor(1000 + Math.random() * 9000)}-2026A`
+
+      setAssignedRoom({
+        room: "A205",
+        compartment: compName,
+        bedCode: compBed,
+        gateCode: gatePass,
+      })
+
+      setRegStep("SUCCESS")
+    }, 600)
+  }
+
+  const handleEnterStudentPortal = () => {
+    if (!assignedRoom) return
+
+    const newStudentUser: UserProfile = {
+      id: `user-${regData.studentCode.toLowerCase()}`,
+      fullName: regData.fullName,
+      email: regData.email,
+      role: "student",
+      roleTitle: "Sinh viên lưu trú",
+      studentId: regData.studentCode,
+      gender: (regData.gender as "male" | "female") || "male",
+      avatar:
+        regData.gender === "female"
+          ? "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=256&q=80"
+          : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=256&q=80",
+      phone: regData.phone,
+      dob: "2004-06-15",
+      citizenId: "079204018293",
+      hometown: "TP. Hồ Chí Minh",
+      major: "Kỹ thuật phần mềm (Software Engineering)",
+      cohort: "K18",
+      dormitoryStatus: {
+        roomStatus: "OCCUPIED",
+        bedCode: assignedRoom.bedCode,
+        building: "Tòa A (Nam)",
+        room: assignedRoom.room,
+        compartment: assignedRoom.compartment,
+        contractStart: "2026-09-01",
+        contractEnd: "2027-01-15",
+        debtStatus: 0,
+        checkInDate: "2026-09-01",
+      },
+      emergencyContact: {
+        parentName: "Phụ huynh " + regData.fullName,
+        phone: "0903123456",
+        relationship: "Phụ huynh",
+        address: "TP. Hồ Chí Minh",
+      },
+      status: "active",
+      joinedDate: "2026-09-01",
+    }
+
+    loginWithCustomUser(newStudentUser)
+    navigate("/overview", { replace: true })
+  }
 
   interface LocationState {
     from?: {
@@ -166,95 +277,241 @@ export const LoginPage: React.FC = () => {
               )}
 
               {mainMode === "register" ? (
-                regSuccess ? (
-                  <div className="space-y-5 py-2 text-center">
-                    <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-600">
-                      <CheckCircle2 className="h-8 w-8" />
-                    </div>
-                    <div className="space-y-1.5">
-                      <h3 className="text-lg font-extrabold text-foreground">
-                        Hồ Sơ Đăng Ký Tiếp Nhận Thành Công!
-                      </h3>
-                      <p className="mx-auto max-w-sm text-xs text-muted-foreground">
-                        Mã hồ sơ:{" "}
-                        <span className="font-mono font-bold text-emerald-600">
-                          {regId}
-                        </span>
-                        . Hệ thống đã đồng bộ với cơ sở dữ liệu nhập học FPT.
-                      </p>
-                    </div>
-
-                    <div className="space-y-2 rounded-xl border border-border bg-muted/40 p-4 text-left text-xs">
-                      <p>
-                        <strong className="text-foreground">Sinh viên:</strong>{" "}
-                        {regData.fullName} ({regData.studentCode})
-                      </p>
-                      <p>
-                        <strong className="text-foreground">Email:</strong>{" "}
-                        {regData.email}
-                      </p>
-                      <p>
-                        <strong className="text-foreground">
-                          Học kỳ đăng ký:
-                        </strong>{" "}
-                        {regData.term}
-                      </p>
-                      <p>
-                        <strong className="text-foreground">
-                          Nguyện vọng:
-                        </strong>{" "}
-                        {regData.roomType === "private_4"
-                          ? "Buồng riêng tư (4 giường)"
-                          : "Buồng tiêu chuẩn (6 giường)"}
-                      </p>
-                      <p>
-                        <strong className="text-foreground">Trạng thái:</strong>{" "}
-                        <span className="font-bold text-emerald-600">
-                          Đã sơ duyệt • Sẵn sàng đăng nhập giữ chỗ giường
-                        </span>
-                      </p>
+                regStep === "PAYMENT" ? (
+                  /* STEP 2: VIETQR 15-MINUTE PAYMENT DEMO */
+                  <div className="space-y-4 py-1 animate-in fade-in">
+                    {/* 15-min countdown banner */}
+                    <div className="flex items-center justify-between rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3.5">
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-5 w-5 text-amber-600 dark:text-amber-400 animate-pulse" />
+                        <div>
+                          <p className="text-xs font-bold text-foreground">Giữ Chỗ Trong 15 Phút</p>
+                          <p className="text-[10px] text-muted-foreground">Vui lòng quét mã VietQR để hoàn tất</p>
+                        </div>
+                      </div>
+                      <span className="font-mono text-base font-black text-amber-600 dark:text-amber-400 bg-amber-500/20 px-3 py-1 rounded-xl">
+                        {formatPayTime(payCountdown)}
+                      </span>
                     </div>
 
-                    <div className="flex flex-col gap-2.5 pt-2">
+                    {/* VietQR Graphic & Banking details */}
+                    <div className="rounded-2xl border border-border bg-card p-4 space-y-3.5 text-xs shadow-xs">
+                      <div className="flex items-center justify-between border-b border-border pb-2.5">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-sky-600 text-xs">TPBank</span>
+                          <span className="text-[10px] text-muted-foreground">• NAPAS 24/7</span>
+                        </div>
+                        <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-600">
+                          VietQR Tự Động
+                        </span>
+                      </div>
+
+                      {/* QR Box */}
+                      <div className="flex flex-col sm:flex-row items-center gap-4">
+                        <div className="relative w-36 h-36 bg-muted/30 p-2.5 rounded-2xl border border-border flex items-center justify-center shrink-0">
+                          <svg className="w-full h-full text-foreground" fill="none" viewBox="0 0 100 100">
+                            <rect fill="currentColor" height="28" rx="4" width="28" x="5" y="5"></rect>
+                            <rect fill="var(--card)" height="18" rx="2" width="18" x="10" y="10"></rect>
+                            <rect fill="currentColor" height="10" width="10" x="14" y="14"></rect>
+                            <rect fill="currentColor" height="28" rx="4" width="28" x="67" y="5"></rect>
+                            <rect fill="var(--card)" height="18" rx="2" width="18" x="72" y="10"></rect>
+                            <rect fill="currentColor" height="10" width="10" x="76" y="14"></rect>
+                            <rect fill="currentColor" height="28" rx="4" width="28" x="5" y="67"></rect>
+                            <rect fill="var(--card)" height="18" rx="2" width="18" x="10" y="72"></rect>
+                            <rect fill="currentColor" height="10" width="10" x="14" y="76"></rect>
+                            <circle cx="48" cy="20" fill="currentColor" r="3"></circle>
+                            <circle cx="48" cy="32" fill="currentColor" r="3"></circle>
+                            <circle cx="56" cy="20" fill="currentColor" r="3"></circle>
+                            <circle cx="42" cy="48" fill="currentColor" r="4"></circle>
+                            <circle cx="58" cy="48" fill="currentColor" r="3"></circle>
+                            <rect fill="currentColor" height="6" rx="2" width="12" x="44" y="64"></rect>
+                            <rect fill="currentColor" height="16" rx="2" width="8" x="70" y="50"></rect>
+                            <rect fill="currentColor" height="10" rx="2" width="10" x="82" y="70"></rect>
+                            <rect fill="currentColor" height="6" rx="2" width="14" x="64" y="82"></rect>
+                          </svg>
+                          <div className="absolute inset-x-2 top-2 h-0.5 bg-emerald-500 shadow-[0_0_8px_#10b981] animate-pulse" />
+                        </div>
+
+                        {/* Account Details */}
+                        <div className="space-y-2 flex-1 text-xs">
+                          <div>
+                            <p className="text-[10px] text-muted-foreground">Chủ tài khoản:</p>
+                            <p className="font-bold text-foreground">BAN QUAN LY KTX FPT</p>
+                          </div>
+                          <div>
+                            <p className="text-[10px] text-muted-foreground">Số tài khoản:</p>
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-mono font-bold text-sky-600">0000 8888 9999</span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  navigator.clipboard.writeText("000088889999")
+                                  setIsCopiedAcc(true)
+                                  setTimeout(() => setIsCopiedAcc(false), 2000)
+                                }}
+                                className="p-1 text-muted-foreground hover:text-foreground"
+                                title="Sao chép số tài khoản"
+                              >
+                                {isCopiedAcc ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+                              </button>
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-[10px] text-muted-foreground">Nội dung chuyển khoản:</p>
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-mono font-bold text-foreground">
+                                KTX {regData.studentCode} {regData.fullName.toUpperCase()}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  navigator.clipboard.writeText(`KTX ${regData.studentCode} ${regData.fullName.toUpperCase()}`)
+                                  setIsCopiedContent(true)
+                                  setTimeout(() => setIsCopiedContent(false), 2000)
+                                }}
+                                className="p-1 text-muted-foreground hover:text-foreground"
+                                title="Sao chép nội dung"
+                              >
+                                {isCopiedContent ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Fee Breakdown: NO DEPOSIT */}
+                      <div className="rounded-xl border border-border/60 bg-muted/20 p-3 space-y-1.5 text-[11px]">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Phí lưu trú kỳ Fall 2026 (4 tháng):</span>
+                          <span className="font-semibold text-foreground">{roomPriceFormatted}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Tiền đặt cọc an ninh:</span>
+                          <span className="font-bold text-emerald-600">0 VNĐ (Không thu cọc)</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Mạng Wi-Fi 6 toàn tòa:</span>
+                          <span className="font-bold text-emerald-600">0 VNĐ (Miễn phí)</span>
+                        </div>
+                        <div className="flex justify-between border-t border-border pt-1.5 text-xs font-bold">
+                          <span>Tổng tiền thanh toán:</span>
+                          <span className="text-emerald-600 text-sm">{roomPriceFormatted}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Action buttons */}
+                    <div className="space-y-2 pt-1">
                       <button
                         type="button"
-                        onClick={() => handleQuickDemo("student")}
-                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 py-3 text-xs font-bold text-white shadow-sm transition-colors hover:bg-emerald-700"
+                        onClick={handleConfirmPayment}
+                        disabled={isProcessingPayment}
+                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 py-3 text-xs font-bold text-white shadow-sm transition-all hover:opacity-95 disabled:opacity-70"
                       >
-                        <Sparkles className="h-4 w-4" />
-                        <span>Đăng nhập ngay để xem trạng thái giường</span>
+                        {isProcessingPayment ? (
+                          <>
+                            <RefreshCw className="h-4 w-4 animate-spin" />
+                            <span>Đang kiểm tra giao dịch ngân hàng...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="h-4 w-4" />
+                            <span>Xác Nhận Đã Chuyển Khoản (Demo 1-Click)</span>
+                          </>
+                        )}
                       </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setRegStep("FORM")}
+                        className="w-full text-center text-xs text-muted-foreground hover:text-foreground py-1"
+                      >
+                        Quay lại chỉnh sửa hồ sơ đăng ký
+                      </button>
+                    </div>
+                  </div>
+                ) : regStep === "SUCCESS" ? (
+                  /* STEP 3: PAYMENT COMPLETE & ROOM ASSIGNED WITH GATE PASS */
+                  <div className="space-y-4 py-2 text-center animate-in fade-in">
+                    <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-600 shadow-xs">
+                      <CheckCircle2 className="h-9 w-9" />
+                    </div>
+
+                    <div className="space-y-1">
+                      <h3 className="text-lg font-black text-foreground">
+                        Thanh Toán Thành Công & Đã Nhận Phòng!
+                      </h3>
+                      <p className="mx-auto max-w-sm text-xs text-muted-foreground">
+                        Mã hồ sơ: <span className="font-mono font-bold text-emerald-600">{regId}</span> • Đã hoàn tất đóng phí lưu trú học kỳ Fall 2026.
+                      </p>
+                    </div>
+
+                    {/* Assigned Room & Gate Pass details */}
+                    <div className="space-y-2.5 rounded-2xl border border-emerald-500/30 bg-card p-4 text-left text-xs shadow-xs">
+                      <div className="flex items-center justify-between border-b border-border pb-2">
+                        <span className="text-muted-foreground">Sinh viên:</span>
+                        <span className="font-bold text-foreground">{regData.fullName} ({regData.studentCode})</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Tòa & Phòng ở:</span>
+                        <span className="font-bold text-foreground">Tòa A • Phòng {assignedRoom?.room} • {assignedRoom?.compartment}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Mã giường (SSOT):</span>
+                        <span className="font-mono font-black text-sky-600 text-sm">{assignedRoom?.bedCode}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Mã thẻ ra vào cổng:</span>
+                        <span className="font-mono font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-md">
+                          {assignedRoom?.gateCode}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between pt-1 border-t border-border">
+                        <span className="text-muted-foreground">Tình trạng công nợ:</span>
+                        <span className="font-bold text-emerald-600">0 VNĐ (Không nợ)</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Tiền đặt cọc:</span>
+                        <span className="font-bold text-emerald-600">0 VNĐ (Miễn cọc)</span>
+                      </div>
+                    </div>
+
+                    {/* Button into Student portal */}
+                    <div className="pt-2 space-y-2">
+                      <button
+                        type="button"
+                        onClick={handleEnterStudentPortal}
+                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 py-3.5 text-xs font-bold text-white shadow-md transition-all hover:opacity-95"
+                      >
+                        <span>Vào Ngay Giao Diện Sinh Viên (Nhận Phòng & Mã Cổng)</span>
+                        <ArrowRight className="h-4 w-4" />
+                      </button>
+
                       <button
                         type="button"
                         onClick={() => {
-                          setRegSuccess(false)
+                          setRegStep("FORM")
                           setMainMode("login")
                           setSearchParams({ mode: "login" })
                         }}
-                        className="text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"
+                        className="text-xs text-muted-foreground hover:text-foreground"
                       >
                         Quay lại trang Đăng nhập
                       </button>
                     </div>
                   </div>
                 ) : (
+                  /* STEP 1: REGISTRATION FORM */
                   <form
                     onSubmit={(e) => {
                       e.preventDefault()
-                      if (
-                        !regData.fullName ||
-                        !regData.studentCode ||
-                        !regData.email
-                      ) {
-                        setErrorMessage(
-                          "Vui lòng điền đầy đủ Họ tên, MSSV và Email."
-                        )
+                      if (!regData.fullName || !regData.studentCode || !regData.email) {
+                        setErrorMessage("Vui lòng điền đầy đủ Họ tên, MSSV và Email.")
                         return
                       }
-                      setRegId(
-                        `REG-2026-${Math.floor(1000 + Math.random() * 9000)}`
-                      )
-                      setRegSuccess(true)
+                      setRegId(`REG-2026-${Math.floor(1000 + Math.random() * 9000)}`)
+                      setRegStep("PAYMENT")
+                      setPayCountdown(900)
                       setErrorMessage(null)
                     }}
                     className="space-y-4"
@@ -262,12 +519,10 @@ export const LoginPage: React.FC = () => {
                     <div className="space-y-1 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3.5 text-xs text-muted-foreground">
                       <div className="flex items-center gap-2 font-bold text-emerald-700 dark:text-emerald-400">
                         <Sparkles className="h-4 w-4" />
-                        <span>Đăng ký lưu trú KTX Kỳ Spring 2026</span>
+                        <span>Đăng ký lưu trú KTX Học kỳ Fall 2026</span>
                       </div>
                       <p>
-                        Dành cho sinh viên FPT University có nhu cầu lưu trú nội
-                        trú. Hệ thống xét duyệt hồ sơ trực tuyến và cấp quyền
-                        chọn giường.
+                        Không thu tiền đặt cọc. Sinh viên đăng ký và chuyển khoản tiền ở học kỳ trong 15 phút để nhận ngay phòng và mã số vào cổng an ninh.
                       </p>
                     </div>
 
@@ -288,7 +543,7 @@ export const LoginPage: React.FC = () => {
                                 fullName: e.target.value,
                               })
                             }
-                            placeholder="Nguyễn Hoàng Vinh"
+                            placeholder="Trần Bảo Nam"
                             className="w-full rounded-xl border border-border bg-background py-2 pr-3 pl-9 text-xs text-foreground placeholder:text-muted-foreground focus:border-emerald-500 focus:outline-none"
                           />
                         </div>
@@ -305,17 +560,17 @@ export const LoginPage: React.FC = () => {
                           onChange={(e) =>
                             setRegData({
                               ...regData,
-                              studentCode: e.target.value.toUpperCase(),
+                              studentCode: e.target.value,
                             })
                           }
-                          placeholder="SE182049"
-                          className="w-full rounded-xl border border-border bg-background px-3 py-2 font-mono text-xs text-foreground placeholder:text-muted-foreground focus:border-emerald-500 focus:outline-none"
+                          placeholder="SE185240"
+                          className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:border-emerald-500 focus:outline-none"
                         />
                       </div>
 
                       <div>
                         <label className="mb-1 block font-semibold text-foreground">
-                          Email cá nhân (Gmail) *
+                          Email FPT *
                         </label>
                         <div className="relative">
                           <Mail className="absolute top-2.5 left-3 h-4 w-4 text-muted-foreground" />
@@ -326,7 +581,7 @@ export const LoginPage: React.FC = () => {
                             onChange={(e) =>
                               setRegData({ ...regData, email: e.target.value })
                             }
-                            placeholder="hoangvinh.student@gmail.com"
+                            placeholder="baonam.se185240@fpt.edu.vn"
                             className="w-full rounded-xl border border-border bg-background py-2 pr-3 pl-9 text-xs text-foreground placeholder:text-muted-foreground focus:border-emerald-500 focus:outline-none"
                           />
                         </div>
@@ -334,7 +589,7 @@ export const LoginPage: React.FC = () => {
 
                       <div>
                         <label className="mb-1 block font-semibold text-foreground">
-                          Số điện thoại liên hệ *
+                          Số điện thoại liên lạc *
                         </label>
                         <div className="relative">
                           <Phone className="absolute top-2.5 left-3 h-4 w-4 text-muted-foreground" />
@@ -345,7 +600,7 @@ export const LoginPage: React.FC = () => {
                             onChange={(e) =>
                               setRegData({ ...regData, phone: e.target.value })
                             }
-                            placeholder="0912345678"
+                            placeholder="0987 654 321"
                             className="w-full rounded-xl border border-border bg-background py-2 pr-3 pl-9 text-xs text-foreground placeholder:text-muted-foreground focus:border-emerald-500 focus:outline-none"
                           />
                         </div>
@@ -383,10 +638,10 @@ export const LoginPage: React.FC = () => {
                             className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground focus:border-emerald-500 focus:outline-none"
                           >
                             <option value="standard_6">
-                              Buồng tiêu chuẩn (6 giường / buồng)
+                              Buồng tiêu chuẩn (6 giường - 3.200.000đ/kỳ)
                             </option>
                             <option value="private_4">
-                              Buồng riêng tư (4 giường / buồng)
+                              Buồng riêng tư (4 giường - 4.000.000đ/kỳ)
                             </option>
                           </select>
                         </div>
@@ -407,9 +662,7 @@ export const LoginPage: React.FC = () => {
                         required
                       />
                       <span>
-                        Tôi cam kết tuân thủ nghiêm túc Nội quy Ký túc xá FPT
-                        University (Giới nghiêm 23:00, không mang chất cấm, giữ
-                        gìn tài sản chung).
+                        Tôi cam kết tuân thủ nghiêm túc Nội quy Ký túc xá FPT University (Giới nghiêm 23:00, không mang chất cấm, giữ gìn tài sản chung).
                       </span>
                     </label>
 
@@ -418,23 +671,24 @@ export const LoginPage: React.FC = () => {
                       className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 py-3 text-xs font-bold text-white shadow-sm transition-all hover:opacity-95"
                     >
                       <Send className="h-4 w-4" />
-                      <span>Nộp Hồ Sơ Đăng Ký Lưu Trú</span>
+                      <span>Tiếp Tục Chuyển Khoản & Nhận Phòng (15 Phút)</span>
                     </button>
 
+                    {/* Sửa lại hiệu ứng hover: Chỉ highlight Đăng nhập ngay, không highlight Đã có tài khoản? */}
                     <div className="pt-1 text-center">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setMainMode("login")
-                          setSearchParams({ mode: "login" })
-                        }}
-                        className="text-xs text-muted-foreground hover:text-foreground"
-                      >
+                      <span className="text-xs text-muted-foreground">
                         Đã có tài khoản?{" "}
-                        <strong className="text-sky-600 underline">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMainMode("login")
+                            setSearchParams({ mode: "login" })
+                          }}
+                          className="font-bold text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 hover:underline transition-colors ml-1"
+                        >
                           Đăng nhập ngay
-                        </strong>
-                      </button>
+                        </button>
+                      </span>
                     </div>
                   </form>
                 )
