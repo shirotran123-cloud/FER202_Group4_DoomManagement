@@ -422,7 +422,7 @@ export const BillingPage: React.FC = () => {
               Danh Sách Chốt Số Các Phòng Tòa A (Học kỳ Fall 2026)
             </h3>
             <span className="text-xs text-muted-foreground font-mono">
-              Đã chốt: 7/9 phòng demo
+              Đã chốt: 7/9 phòng
             </span>
           </div>
 

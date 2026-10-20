@@ -16,6 +16,8 @@ import {
   CalendarCheck2,
   Building2,
   Briefcase,
+  Wrench,
+  Star,
 } from "lucide-react"
 
 export const ProfilePage: React.FC = () => {
@@ -40,8 +42,9 @@ export const ProfilePage: React.FC = () => {
     )
   }
 
-  const isManagerOrStaff =
-    user.role === "manager" || user.role === "admin" || user.role === "technician"
+  const isTechnician = user.role === "technician"
+  const isManager = user.role === "manager" || user.role === "admin"
+  const isManagerOrStaff = isManager || isTechnician
 
   const handleSaveContact = (e: React.FormEvent) => {
     e.preventDefault()
@@ -101,20 +104,21 @@ export const ProfilePage: React.FC = () => {
                       : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200"
                   }`}
                 >
-                  {isManagerOrStaff
-                    ? user.role === "manager"
-                      ? "Cán bộ Quản lý KTX • Tòa A"
-                      : user.role === "admin"
-                      ? "Quản trị viên Hệ thống KTX"
-                      : "Kỹ thuật viên Ký túc xá"
-                    : "Sinh viên lưu trú"}
+                  {isTechnician
+                    ? "Kỹ thuật viên · Tòa A"
+                    : isManager
+                      ? user.role === "admin"
+                        ? "Quản trị viên Hệ thống KTX"
+                        : "Cán bộ Quản lý KTX · Tòa A"
+                      : "Sinh viên lưu trú"}
                 </span>
               </div>
 
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground pt-1">
                 {isManagerOrStaff ? (
                   <span className="font-mono font-semibold text-foreground">
-                    Mã CB: {user.staffId || "MGR-004"}
+                    {isTechnician ? "Mã KTV: " : "Mã CB: "}
+                    {user.staffId || (isTechnician ? "TECH-012" : "MGR-004")}
                   </span>
                 ) : (
                   <span className="font-mono font-semibold text-foreground">
@@ -186,8 +190,16 @@ export const ProfilePage: React.FC = () => {
             {/* Card 1: Thông tin nhân sự cán bộ */}
             <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4">
               <div className="flex items-center gap-2 font-bold text-sm text-foreground border-b border-border pb-3">
-                <Briefcase className="h-4 w-4 text-primary" />
-                <span>Hồ Sơ Cán Bộ Quản Lý Ký Túc Xá</span>
+                {isTechnician ? (
+                  <Wrench className="h-4 w-4 text-primary" />
+                ) : (
+                  <Briefcase className="h-4 w-4 text-primary" />
+                )}
+                <span>
+                  {isTechnician
+                    ? "Hồ Sơ Kỹ Thuật Viên Cơ Điện & Vận Hành"
+                    : "Hồ Sơ Cán Bộ Quản Lý Ký Túc Xá"}
+                </span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
@@ -197,9 +209,11 @@ export const ProfilePage: React.FC = () => {
                 </div>
 
                 <div>
-                  <p className="text-muted-foreground text-[11px]">Mã cán bộ</p>
+                  <p className="text-muted-foreground text-[11px]">
+                    {isTechnician ? "Mã nhân viên kỹ thuật" : "Mã cán bộ"}
+                  </p>
                   <p className="font-mono font-semibold text-foreground">
-                    {user.staffId || "MGR-004"}
+                    {user.staffId || (isTechnician ? "TECH-012" : "MGR-004")}
                   </p>
                 </div>
 
@@ -228,14 +242,14 @@ export const ProfilePage: React.FC = () => {
                 <div className="sm:col-span-2">
                   <p className="text-muted-foreground text-[11px]">Đơn vị công tác</p>
                   <p className="font-semibold text-foreground">
-                    {user.department || "Phòng Quản lý KTX & Công tác Sinh viên (CTSV)"}
+                    {user.department || (isTechnician ? "Đội Kỹ thuật & Cơ điện Tòa A" : "Phòng Quản lý KTX & Công tác Sinh viên (CTSV)")}
                   </p>
                 </div>
 
                 <div>
                   <p className="text-muted-foreground text-[11px]">Vị trí đảm nhiệm</p>
                   <p className="font-semibold text-foreground">
-                    {user.roleTitle || "Trưởng Ban Quản lý Tòa A"}
+                    {user.roleTitle || (isTechnician ? "Kỹ thuật viên Tòa A" : "Quản lý Ký túc xá Tòa A")}
                   </p>
                 </div>
 
@@ -243,7 +257,9 @@ export const ProfilePage: React.FC = () => {
                   <p className="text-muted-foreground text-[11px]">Trạng thái công tác</p>
                   <p className="font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                    <span>Đang công tác chính thức</span>
+                    <span>
+                      {isTechnician ? "Đang trực ca kỹ thuật · Sẵn sàng xử lý" : "Đang công tác chính thức"}
+                    </span>
                   </p>
                 </div>
               </div>
@@ -257,7 +273,7 @@ export const ProfilePage: React.FC = () => {
                   <span>Thông Tin Liên Hệ Khẩn Cấp & Báo Cáo Nội Bộ</span>
                 </div>
                 <span className="text-[10px] font-mono rounded bg-primary/10 text-primary px-2 py-0.5 font-bold">
-                  BQL Tòa A
+                  {isTechnician ? "Kỹ thuật viên · Tòa A" : "BQL Tòa A"}
                 </span>
               </div>
 
@@ -372,79 +388,156 @@ export const ProfilePage: React.FC = () => {
             </div>
           </div>
 
-          {/* CỘT PHẢI (5 COLS): PHẠM VI QUẢN LÝ KTX (THAY THẾ HOÀN TOÀN THẺ "CHƯA ĐĂNG KÝ PHÒNG") */}
+          {/* CỘT PHẢI (5 COLS): PHẠM VI PHỤ TRÁCH KTX */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-5">
-              <div className="flex items-center justify-between border-b border-border pb-3">
-                <div className="flex items-center gap-2 font-bold text-sm text-foreground">
-                  <Building2 className="h-4 w-4 text-primary" />
-                  <span>Phạm Vi Phụ Trách Ký Túc Xá</span>
-                </div>
-
-              </div>
-
-              {/* Tòa nhà phụ trách */}
-              <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 space-y-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">
-                  Đơn Vị Ký Túc Xá Phụ Trách
-                </span>
-                <p className="text-lg font-black text-foreground">
-                  Tòa A (Ký túc xá Nam)
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Khu Ký túc xá FPT University • Cơ sở Hòa Hải
-                </p>
-              </div>
-
-              {/* Quy mô quản lý */}
-              <div className="grid grid-cols-2 gap-3 text-xs">
-                <div className="p-3.5 rounded-xl bg-muted/50 border border-border">
-                  <span className="text-[10px] text-muted-foreground block">Quy mô quản lý</span>
-                  <p className="text-base font-black text-foreground mt-1">44 Phòng</p>
-                  <p className="text-[10px] text-muted-foreground">192 sinh viên lưu trú</p>
-                </div>
-                <div className="p-3.5 rounded-xl bg-muted/50 border border-border">
-                  <span className="text-[10px] text-muted-foreground block">Tỷ lệ lấp đầy</span>
-                  <p className="text-base font-black text-emerald-600 mt-1">80%</p>
-                  <p className="text-[10px] text-muted-foreground">154 / 192 giường ở</p>
-                </div>
-              </div>
-
-              {/* Trách nhiệm quản lý chính */}
-              <div className="space-y-2.5 pt-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">
-                  Quyền Hạn & Nhiệm Vụ Quản Lý
-                </span>
-                <div className="space-y-2 text-xs">
-                  <div className="flex items-start gap-2 text-foreground">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <span>Quản lý danh sách cư dân & phân bổ buồng phòng Tòa A</span>
-                  </div>
-                  <div className="flex items-start gap-2 text-foreground">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <span>Chốt số công tơ điện nước & phát hành hóa đơn hàng tháng</span>
-                  </div>
-                  <div className="flex items-start gap-2 text-foreground">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <span>Giám sát hệ thống cổng an ninh ra vào 24/7 thời gian thực</span>
-                  </div>
-                  <div className="flex items-start gap-2 text-foreground">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <span>Tiếp nhận & điều phối kỹ thuật viên xử lý báo hỏng sửa chữa</span>
+            {isTechnician ? (
+              /* GIAO DIỆN KHU VỰC PHỤ TRÁCH KỸ THUẬT (TECHNICIAN) */
+              <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-5">
+                <div className="flex items-center justify-between border-b border-border pb-3">
+                  <div className="flex items-center gap-2 font-bold text-sm text-foreground">
+                    <Wrench className="h-4 w-4 text-primary" />
+                    <span>Khu Vực Phụ Trách Kỹ Thuật</span>
                   </div>
                 </div>
-              </div>
 
-              {/* Văn phòng trực ban */}
-              <div className="p-3.5 rounded-xl bg-muted/40 border border-border text-xs space-y-1">
-                <p className="font-semibold text-foreground">
-                  Văn phòng BQL: Phòng 101, Tầng 1, Tòa A
-                </p>
-                <p className="text-[11px] text-muted-foreground">
-                  Ca trực: Hành chính & Trực ban an ninh Tòa A
-                </p>
+                {/* Tòa nhà phụ trách */}
+                <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 space-y-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">
+                    ĐƠN VỊ KỸ THUẬT PHỤ TRÁCH
+                  </span>
+                  <p className="text-lg font-black text-foreground">
+                    Tòa A (Ký túc xá Nam)
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Phụ trách cơ điện, cấp thoát nước & thiết bị phòng ở
+                  </p>
+                </div>
+
+                {/* Quy mô kỹ thuật */}
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="p-3.5 rounded-xl bg-muted/50 border border-border">
+                    <span className="text-[10px] text-muted-foreground block">Phạm vi thiết bị</span>
+                    <p className="text-base font-black text-foreground mt-1">44 Phòng</p>
+                    <p className="text-[10px] text-muted-foreground">Hệ thống điện nước Tòa A</p>
+                  </div>
+                  <div className="p-3.5 rounded-xl bg-muted/50 border border-border">
+                    <span className="text-[10px] text-muted-foreground block">Đánh giá trung bình</span>
+                    <p className="text-base font-black text-amber-500 mt-1 flex items-center gap-1">
+                      <span>4.9 / 5.0</span>
+                      <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">Từ nhận xét sinh viên</p>
+                  </div>
+                </div>
+
+                {/* Nghiệp vụ & Nhiệm vụ kỹ thuật viên */}
+                <div className="space-y-2.5 pt-1">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">
+                    Nhiệm Vụ Kỹ Thuật Chuyên Trách
+                  </span>
+                  <div className="space-y-2 text-xs">
+                    <div className="flex items-start gap-2 text-foreground">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                      <span>Tiếp nhận & sửa chữa sự cố điện nước, điều hòa, đồ gỗ Tòa A</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-foreground">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                      <span>Ghi chỉ số công tơ điện nước & chụp ảnh đối soát định kỳ</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-foreground">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                      <span>Lập biên bản nghiệm thu kỹ thuật và thống kê vật tư thay thế</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-foreground">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                      <span>Bảo trì định kỳ hệ thống máy bơm, tủ điện tầng & thiết bị vệ sinh</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Trạm kỹ thuật trực ca */}
+                <div className="p-3.5 rounded-xl bg-muted/40 border border-border text-xs space-y-1">
+                  <p className="font-semibold text-foreground">
+                    Trạm kỹ thuật: Phòng Kỹ thuật & Kho Vật tư, Tầng G, Tòa A
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">
+                    Ca trực: Trực kỹ thuật & ứng trực sự cố khẩn cấp 24/7
+                  </p>
+                </div>
               </div>
-            </div>
+            ) : (
+              /* GIAO DIỆN PHẠM VI QUẢN LÝ KTX (MANAGER / ADMIN) */
+              <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-5">
+                <div className="flex items-center justify-between border-b border-border pb-3">
+                  <div className="flex items-center gap-2 font-bold text-sm text-foreground">
+                    <Building2 className="h-4 w-4 text-primary" />
+                    <span>Phạm Vi Phụ Trách Ký Túc Xá</span>
+                  </div>
+                </div>
+
+                {/* Tòa nhà phụ trách */}
+                <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 space-y-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">
+                    ĐƠN VỊ KÝ TÚC XÁ PHỤ TRÁCH
+                  </span>
+                  <p className="text-lg font-black text-foreground">
+                    Tòa A (Ký túc xá Nam)
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Khu Ký túc xá FPT University • Cơ sở Hòa Hải
+                  </p>
+                </div>
+
+                {/* Quy mô quản lý */}
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="p-3.5 rounded-xl bg-muted/50 border border-border">
+                    <span className="text-[10px] text-muted-foreground block">Quy mô quản lý</span>
+                    <p className="text-base font-black text-foreground mt-1">44 Phòng</p>
+                    <p className="text-[10px] text-muted-foreground">192 sinh viên lưu trú</p>
+                  </div>
+                  <div className="p-3.5 rounded-xl bg-muted/50 border border-border">
+                    <span className="text-[10px] text-muted-foreground block">Tỷ lệ lấp đầy</span>
+                    <p className="text-base font-black text-emerald-600 mt-1">80%</p>
+                    <p className="text-[10px] text-muted-foreground">154 / 192 giường ở</p>
+                  </div>
+                </div>
+
+                {/* Trách nhiệm quản lý chính */}
+                <div className="space-y-2.5 pt-1">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">
+                    Quyền Hạn & Nhiệm Vụ Quản Lý
+                  </span>
+                  <div className="space-y-2 text-xs">
+                    <div className="flex items-start gap-2 text-foreground">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                      <span>Quản lý danh sách cư dân & phân bổ buồng phòng Tòa A</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-foreground">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                      <span>Chốt số công tơ điện nước & phát hành hóa đơn hàng tháng</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-foreground">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                      <span>Giám sát hệ thống an ninh trật tự & duyệt đơn sinh viên</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-foreground">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                      <span>Tiếp nhận & điều phối kỹ thuật viên xử lý báo hỏng sửa chữa</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Văn phòng trực ban */}
+                <div className="p-3.5 rounded-xl bg-muted/40 border border-border text-xs space-y-1">
+                  <p className="font-semibold text-foreground">
+                    Văn phòng BQL: Phòng 101, Tầng 1, Tòa A
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">
+                    Ca trực: Hành chính & Trực ban an ninh Tòa A
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       ) : (
