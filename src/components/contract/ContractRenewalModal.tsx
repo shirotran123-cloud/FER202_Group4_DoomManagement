@@ -161,8 +161,8 @@ export const ContractRenewalModal: React.FC<ContractRenewalModalProps> = ({
               <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3 flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-emerald-600 shrink-0" />
                 <div>
-                  <p className="text-[10px] text-muted-foreground font-medium">Điểm rèn luyện</p>
-                  <p className="text-xs font-bold text-emerald-600">100/100 (Tốt)</p>
+                  <p className="text-[10px] text-muted-foreground font-medium">Ý thức nội quy</p>
+                  <p className="text-xs font-bold text-emerald-600">Tốt (Đủ ĐK)</p>
                 </div>
               </div>
             </div>

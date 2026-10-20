@@ -32,14 +32,14 @@ const FAQ_ITEMS = [
       "Công tơ điện và đồng hồ nước được chụp ảnh nghiệm thu từ ngày 25-28 hàng tháng. Hệ thống tự động áp công thức chia đều (Total ÷ N) cho số lượng sinh viên đang thực tế lưu trú trong phòng kèm mã VietQR tự động.",
   },
   {
-    question: "Nếu tôi đi làm thêm hoặc học nhóm về muộn sau 23:00 thì sao?",
+    question: "Ký túc xá có quy định thời gian ra vào cổng như thế nào?",
     answer:
-      "Sinh viên chỉ cần gửi Đơn xin về muộn trực tuyến trên hệ thống trước 21:00 cùng ngày. BQL duyệt tự động và cấp mã QR mở cổng trục xoay an ninh ban đêm mà không bị trừ điểm rèn luyện.",
+      "Ký túc xá hoạt động thuận tiện, sinh viên sử dụng thẻ sinh viên hoặc ứng dụng để ra vào cổng thuận tiện bất cứ lúc nào.",
   },
   {
     question: "Quy trình đăng ký và thanh toán phí lưu trú KTX như thế nào?",
     answer:
-      "Sau khi đăng ký giữ chỗ 15 phút, bạn quét mã VietQR để thanh toán tiền lưu trú học kỳ (3.200.000đ cho buồng 6 giường hoặc 4.000.000đ cho buồng 4 giường). Ký túc xá hoàn toàn KHÔNG thu tiền đặt cọc. Chuyển khoản xong bạn sẽ lập tức nhận phòng và mã QR ra vào cổng an ninh.",
+      "Sau khi đăng ký giữ chỗ 15 phút, bạn quét mã VietQR để thanh toán tiền lưu trú học kỳ (3.200.000đ cho buồng 6 giường hoặc 4.000.000đ cho buồng 4 giường). Ký túc xá hoàn toàn KHÔNG thu tiền đặt cọc. Chuyển khoản xong bạn sẽ lập tức nhận phòng và bắt đầu lưu trú thuận tiện.",
   },
   {
     question: "Sinh viên mới nhập học đăng nhập bằng tài khoản gì?",

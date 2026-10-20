@@ -13,7 +13,6 @@ import { BookingPage } from "@/pages/booking/BookingPage"
 import { BillingPage } from "@/pages/billing/BillingPage"
 import { MyRoomPage } from "@/pages/room/MyRoomPage"
 import { MaintenancePage } from "@/pages/maintenance/MaintenancePage"
-import { CurfewPage } from "@/pages/curfew/CurfewPage"
 import { ManagerDashboardPage } from "@/pages/manager/ManagerDashboardPage"
 import { UnauthorizedPage } from "@/pages/errors/UnauthorizedPage"
 import { NotFoundPage } from "@/pages/errors/NotFoundPage"
@@ -118,14 +117,7 @@ export function App() {
               }
             />
 
-            <Route
-              path="/curfew"
-              element={
-                <ProtectedRoute>
-                  <CurfewPage />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/curfew" element={<Navigate to="/manager" replace />} />
 
             <Route
               path="/manager"

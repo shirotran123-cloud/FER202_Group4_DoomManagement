@@ -1,19 +1,15 @@
-import React, { useState, useEffect } from "react"
+import React from "react"
 import { Link } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
 import { AdminOverviewView } from "./AdminOverviewView"
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Modal } from "@/components/ui/modal"
 import {
-    QrCode,
   Building2,
   Receipt,
   BedDouble,
   Wifi,
-  RefreshCw,
-  ShieldCheck,
-  DoorClosed,
+  Wrench,
 } from "lucide-react"
 
 export const StudentOverviewPage: React.FC = () => {
@@ -24,43 +20,7 @@ export const StudentOverviewPage: React.FC = () => {
     return <AdminOverviewView />
   }
 
-  const [qrCountdown, setQrCountdown] = useState(15)
-  const [showGateQrModal, setShowGateQrModal] = useState(false)
-  const [isRefreshing, setIsRefreshing] = useState(false)
-
-  // Hàm sinh mã Token ngẫu nhiên cho cổng kiểm soát
-  const generateGateToken = () => {
-    const num = Math.floor(1000 + Math.random() * 9000)
-    const suffix = ["2026A", "2026B", "2026C", "2026D", "8492X", "9152F"][Math.floor(Math.random() * 6)]
-    return `#GATE-${num}-${suffix}`
-  }
-
-  const [gateToken, setGateToken] = useState(() => generateGateToken())
-  const [qrSeed, setQrSeed] = useState(() => Math.floor(Math.random() * 100))
-
-  // Đổi mã ngẫu nhiên khi hết 15s hoặc khi nhấn đổi mã thủ công
-  const handleRefreshCode = () => {
-    setIsRefreshing(true)
-    setGateToken(generateGateToken())
-    setQrSeed((prev) => (prev + 1) % 100)
-    setQrCountdown(15)
-    setTimeout(() => setIsRefreshing(false), 400)
-  }
-
-  // QR countdown ticker tự động đổi mã mỗi 15s
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setQrCountdown((prev) => {
-        if (prev <= 1) {
-          setGateToken(generateGateToken())
-          setQrSeed((s) => (s + 1) % 100)
-          return 15
-        }
-        return prev - 1
-      })
-    }, 1000)
-    return () => clearInterval(timer)
-  }, [])
+  
 
   return (
     <div className="space-y-6 pb-12">
@@ -87,11 +47,13 @@ export const StudentOverviewPage: React.FC = () => {
             <Button
               variant="outline"
               size="lg"
-              onClick={() => setShowGateQrModal(true)}
+              asChild
               className="gap-2 font-semibold shadow-xs"
             >
-              <QrCode className="h-4 w-4 text-primary" />
-              <span>Mã Cửa Ra Vào</span>
+              <Link to="/maintenance">
+                <Wrench className="h-4 w-4 text-primary" />
+                <span>Báo Hỏng Thiết Bị</span>
+              </Link>
             </Button>
 
 
@@ -161,29 +123,29 @@ export const StudentOverviewPage: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Card 4: Gate Access Status */}
+        {/* Card 3: Support & Maintenance */}
         <Card className="flex flex-col justify-between hover:shadow-md transition-shadow">
           <CardHeader className="p-5 pb-2">
             <div className="flex items-center justify-between mb-2">
               <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold">
-                Cổng Ra Vào Tòa A
+                Bảo Trì & Dịch Vụ Buồng
               </span>
-              <div className="w-8 h-8 rounded-lg bg-secondary/15 flex items-center justify-center text-secondary">
-                <ShieldCheck className="h-4 w-4" />
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                <Wrench className="h-4 w-4" />
               </div>
             </div>
-            <CardTitle className="text-lg font-bold">Quẹt Thẻ An Ninh 24/7</CardTitle>
+            <CardTitle className="text-lg font-bold">Hỗ Trợ Kỹ Thuật Buồng</CardTitle>
             <div className="flex items-center gap-1.5 text-primary text-xs mt-2 font-medium">
               <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-              <span>Thẻ sinh viên: Hợp lệ • Đang ở phòng</span>
+              <span>Trang thiết bị điện nước hoạt động bình thường</span>
             </div>
           </CardHeader>
 
           <CardContent className="p-5 pt-0">
             <Button variant="outline" size="default" asChild className="w-full mt-4 gap-2">
-              <Link to="/curfew">
-                <DoorClosed className="h-4 w-4" />
-                <span>Xem Lịch Sử Quẹt Thẻ</span>
+              <Link to="/maintenance">
+                <Wrench className="h-4 w-4" />
+                <span>Gửi Báo Hỏng Thiết Bị</span>
               </Link>
             </Button>
           </CardContent>
@@ -458,107 +420,7 @@ export const StudentOverviewPage: React.FC = () => {
         </div>
       </div>
 
-      {/* NFC Gate Key QR Modal with reusable Modal component */}
-      <Modal
-        isOpen={showGateQrModal}
-        onClose={() => setShowGateQrModal(false)}
-        maxWidth="sm"
-        title={
-          <div className="flex items-center gap-2">
-            <QrCode className="h-5 w-5 text-primary" />
-            <div>
-              <span className="text-sm font-bold text-foreground block">Mã Thẻ Cửa Ra Vào Tòa A</span>
-              <span className="text-[10px] text-muted-foreground font-normal">Cổng Kiểm Soát Trục Xoay & Cửa Từ</span>
-            </div>
-          </div>
-        }
-        footer={
-          <Button
-            variant="default"
-            onClick={() => setShowGateQrModal(false)}
-            className="w-full font-bold"
-          >
-            Đóng
-          </Button>
-        }
-      >
-        <div className="space-y-4">
-          <div className="bg-muted/40 p-5 rounded-2xl flex flex-col items-center justify-center border border-border">
-            {/* Dynamic QR Box with Laser Scan Effect */}
-            <div className="relative w-48 h-48 bg-card p-3.5 rounded-2xl shadow-sm flex items-center justify-center border border-border overflow-hidden">
-              <svg className="w-full h-full text-foreground" fill="none" viewBox="0 0 100 100">
-                {/* 3 Fixed Corner Squares */}
-                <rect fill="currentColor" height="28" rx="4" width="28" x="5" y="5"></rect>
-                <rect fill="var(--card)" height="18" rx="2" width="18" x="10" y="10"></rect>
-                <rect fill="currentColor" height="10" width="10" x="14" y="14"></rect>
-
-                <rect fill="currentColor" height="28" rx="4" width="28" x="67" y="5"></rect>
-                <rect fill="var(--card)" height="18" rx="2" width="18" x="72" y="10"></rect>
-                <rect fill="currentColor" height="10" width="10" x="76" y="14"></rect>
-
-                <rect fill="currentColor" height="28" rx="4" width="28" x="5" y="67"></rect>
-                <rect fill="var(--card)" height="18" rx="2" width="18" x="10" y="72"></rect>
-                <rect fill="currentColor" height="10" width="10" x="14" y="76"></rect>
-
-                {/* Dynamic matrix dots based on qrSeed */}
-                <circle cx={48 + ((qrSeed * 7) % 10) - 5} cy={20 + ((qrSeed * 11) % 8) - 4} fill="currentColor" r="3"></circle>
-                <circle cx={48 + ((qrSeed * 13) % 8) - 4} cy={32 + ((qrSeed * 5) % 8) - 4} fill="currentColor" r="3.5"></circle>
-                <circle cx={56 + ((qrSeed * 17) % 8) - 4} cy={20 + ((qrSeed * 9) % 6) - 3} fill="currentColor" r="3"></circle>
-                <circle cx={42 + ((qrSeed * 19) % 6) - 3} cy={48 + ((qrSeed * 7) % 6) - 3} fill="currentColor" r="4"></circle>
-                <circle cx={58 + ((qrSeed * 23) % 8) - 4} cy={48 + ((qrSeed * 13) % 6) - 3} fill="currentColor" r="3"></circle>
-                <circle cx={38 + ((qrSeed * 29) % 8) - 4} cy={30 + ((qrSeed * 11) % 6) - 3} fill="currentColor" r="2.5"></circle>
-                <circle cx={62 + ((qrSeed * 31) % 8) - 4} cy={36 + ((qrSeed * 17) % 6) - 3} fill="currentColor" r="3"></circle>
-
-                <rect fill="currentColor" height="6" rx="2" width="12" x={44 + ((qrSeed * 5) % 6) - 3} y="64"></rect>
-                <rect fill="currentColor" height="16" rx="2" width="8" x="70" y={50 + ((qrSeed * 7) % 6) - 3}></rect>
-                <rect fill="currentColor" height="10" rx="2" width="10" x={82 + ((qrSeed * 3) % 6) - 3} y="70"></rect>
-                <rect fill="currentColor" height="6" rx="2" width="14" x="64" y={82 + ((qrSeed * 9) % 6) - 3}></rect>
-              </svg>
-            </div>
-
-            {/* Student & Token Info */}
-            <div className="mt-4 text-center space-y-1">
-              <div className="text-sm font-bold text-foreground">
-                {user?.fullName || "Nguyễn Hoàng Vinh"}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                Phòng {user?.dormitoryStatus?.room || "A205"} • {user?.dormitoryStatus?.compartment?.replace("Buồng B1", "Buồng B") || "Buồng B"} (G03)
-              </div>
-              <div className="inline-block mt-1 font-mono text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-500/10 border border-sky-500/25 px-3 py-1 rounded-full">
-                {gateToken}
-              </div>
-            </div>
-
-            {/* Countdown & Manual Refresh */}
-            <div className="mt-4 w-full space-y-2 pt-3 border-t border-border/70">
-              <div className="flex items-center justify-between text-xs">
-                <span className="flex items-center gap-1.5 text-muted-foreground font-medium">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping shrink-0" />
-                  <span>Tự làm mới sau <strong className="font-mono text-foreground">{qrCountdown}s</strong></span>
-                </span>
-                <button
-                  type="button"
-                  onClick={handleRefreshCode}
-                  className="flex items-center gap-1 text-[11px] font-semibold text-primary hover:underline"
-                >
-                  <RefreshCw className={`h-3 w-3 ${isRefreshing ? "animate-spin" : ""}`} />
-                  <span>Đổi mã ngay</span>
-                </button>
-              </div>
-
-              {/* Countdown Progress Bar */}
-              <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-primary transition-all duration-1000 ease-linear rounded-full"
-                  style={{ width: `${(qrCountdown / 15) * 100}%` }}
-                />
-              </div>
-            </div>
-          </div>
-
-
-        </div>
-      </Modal>
+      
     </div>
   )
 }

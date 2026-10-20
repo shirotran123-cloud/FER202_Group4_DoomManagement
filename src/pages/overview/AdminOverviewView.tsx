@@ -11,8 +11,7 @@ import type { ResidentTemporaryRecord } from "@/types/dashboard"
 import {
   Users,
   FileText,
-  Clock,
-  Wrench,
+    Wrench,
   Search,
   Building2,
   ArrowRight,
@@ -144,13 +143,7 @@ export const AdminOverviewView: React.FC = () => {
               <span>Bàn Làm Việc </span>
             </Link>
 
-            <Link
-              to="/curfew"
-              className="flex items-center gap-2 rounded-xl bg-sky-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition-all hover:bg-sky-700"
-            >
-              <Clock className="h-4 w-4" />
-              <span>Giám Sát Ra Vào Cổng</span>
-            </Link>
+            
           </div>
         </div>
       </div>

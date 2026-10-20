@@ -44,7 +44,7 @@ NGHIỆP VỤ & QUY TẮC KÝ TÚC XÁ FPT (SRS & THỰC TẾ):
 1. GIỚI NGHIÊM & AN NINH:
 - Giờ giới nghiêm: Cổng KTX đóng lúc 23:00 hàng ngày.
 - Xin giấy về muộn: Sinh viên nộp đơn trực tuyến trước 21:00 qua mục 'Giới nghiêm & Ra vào'. Được miễn trừ tối đa 3 lần/học kỳ cho lý do học nhóm, làm thêm ca đêm.
-- Vi phạm về muộn không xin phép: Trừ 5 điểm rèn luyện (demerit points). Vi phạm 2 lần sẽ gửi cảnh cáo về phụ huynh; 3 lần sẽ bị xem xét đình chỉ lưu trú KTX.
+- Giờ mở cổng linh hoạt phục vụ nhu cầu học tập và sinh hoạt của sinh viên.
 - Hotline bảo vệ trực ban 24/7: 1900 6868.
 
 2. CẤU TRÚC PHÒNG & GIƯỜNG:
@@ -211,7 +211,7 @@ export const DormAIAssistant: React.FC = () => {
         "🌙 **QUY ĐỊNH GIỚI NGHIÊM KTX FPT:**\n" +
         "• Cổng KTX đóng lúc **23:00** hàng ngày.\n" +
         "• Sinh viên đi làm ca đêm hoặc học nhóm cần nộp **Đơn xin về muộn** trên hệ thống trước **21:00**.\n" +
-        "• Mỗi sinh viên có tối đa 3 lần miễn trừ/kỳ. Về muộn không xin phép sẽ bị trừ 5 điểm rèn luyện (Demerit points) và gửi thông báo về phụ huynh sau 2 lần vi phạm."
+        "• Sinh viên ra vào cổng an ninh tự do và văn minh, tuân thủ hướng dẫn của BQL."
       )
     }
 

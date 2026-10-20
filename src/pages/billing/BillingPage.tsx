@@ -40,6 +40,40 @@ export const BillingPage: React.FC = () => {
   const [publishedBatch, setPublishedBatch] = useState(false)
   const [remindedBatch, setRemindedBatch] = useState(false)
   const [autoRemindNextWeek, setAutoRemindNextWeek] = useState(true)
+  const [selectedHistoryYear, setSelectedHistoryYear] = useState<string>("2026")
+
+  const MOCK_HISTORY_BY_YEAR: Record<string, Array<{ month: string; amount: string; status: string }>> = {
+    "2026": [
+      { month: "Tháng 08/2026", amount: "₫52,700,000", status: "Đạt 100%" },
+      { month: "Tháng 07/2026", amount: "₫47,600,000", status: "Đạt 100%" },
+      { month: "Tháng 06/2026", amount: "₫45,300,000", status: "Đạt 100%" },
+      { month: "Tháng 05/2026", amount: "₫44,800,000", status: "Đạt 100%" },
+      { month: "Tháng 04/2026", amount: "₫46,120,000", status: "Đạt 100%" },
+      { month: "Tháng 03/2026", amount: "₫43,900,000", status: "Đạt 100%" },
+      { month: "Tháng 02/2026", amount: "₫39,400,000", status: "Đạt 100%" },
+      { month: "Tháng 01/2026", amount: "₫41,200,000", status: "Đạt 100%" },
+    ],
+    "2025": [
+      { month: "Tháng 12/2025", amount: "₫48,300,000", status: "Đạt 100%" },
+      { month: "Tháng 11/2025", amount: "₫46,900,000", status: "Đạt 100%" },
+      { month: "Tháng 10/2025", amount: "₫47,200,000", status: "Đạt 100%" },
+      { month: "Tháng 09/2025", amount: "₫45,800,000", status: "Đạt 100%" },
+      { month: "Tháng 08/2025", amount: "₫44,200,000", status: "Đạt 100%" },
+      { month: "Tháng 07/2025", amount: "₫43,100,000", status: "Đạt 100%" },
+      { month: "Tháng 06/2025", amount: "₫42,500,000", status: "Đạt 100%" },
+      { month: "Tháng 05/2025", amount: "₫41,700,000", status: "Đạt 100%" },
+      { month: "Tháng 04/2025", amount: "₫40,800,000", status: "Đạt 100%" },
+      { month: "Tháng 03/2025", amount: "₫39,600,000", status: "Đạt 100%" },
+      { month: "Tháng 02/2025", amount: "₫36,500,000", status: "Đạt 100%" },
+      { month: "Tháng 01/2025", amount: "₫38,200,000", status: "Đạt 100%" },
+    ],
+    "2024": [
+      { month: "Tháng 12/2024", amount: "₫42,100,000", status: "Đạt 100%" },
+      { month: "Tháng 11/2024", amount: "₫41,400,000", status: "Đạt 100%" },
+      { month: "Tháng 10/2024", amount: "₫43,000,000", status: "Đạt 100%" },
+      { month: "Tháng 09/2024", amount: "₫40,900,000", status: "Đạt 100%" },
+    ],
+  }
 
   // Technician / Manager record meter state
   const elecOld = 12450
@@ -446,7 +480,7 @@ export const BillingPage: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Photo 1: Electricity */}
               <div className="rounded-xl overflow-hidden border border-border bg-[#eff6ff] dark:bg-[#1c262c] shadow-xs group">
-                <div className="relative h-44 w-full bg-slate-800">
+                <div className="relative h-36 sm:h-40 w-full bg-slate-800">
                   <img
                     src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=600&q=80"
                     alt="Công tơ điện A205"
@@ -487,7 +521,7 @@ export const BillingPage: React.FC = () => {
 
               {/* Photo 2: Water */}
               <div className="rounded-xl overflow-hidden border border-border bg-[#eff6ff] dark:bg-[#1c262c] shadow-xs group">
-                <div className="relative h-44 w-full bg-slate-800">
+                <div className="relative h-36 sm:h-40 w-full bg-slate-800">
                   <img
                     src="https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=600&q=80"
                     alt="Đồng hồ nước A205"
@@ -701,44 +735,51 @@ export const BillingPage: React.FC = () => {
               </div>
 
               {/* Box 3: Lịch sử quyết toán các tháng trước của Tòa A */}
-              <div className="bg-white dark:bg-[#161e23] rounded-xl border border-border p-5 shadow-xs space-y-3">
+              <div className="bg-white dark:bg-[#161e23] rounded-xl border border-border p-4 shadow-xs space-y-3">
                 <div className="flex items-center justify-between pb-2 border-b border-border">
                   <h3 className="font-bold text-sm text-foreground">
                     Lịch Sử Doanh Thu Điện Nước Tòa A
                   </h3>
-                  <span className="text-[11px] text-muted-foreground font-mono">Năm 2026</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] font-semibold text-muted-foreground">Năm:</span>
+                    <select
+                      value={selectedHistoryYear}
+                      onChange={(e) => setSelectedHistoryYear(e.target.value)}
+                      className="text-xs font-bold rounded-lg border border-border bg-background px-2.5 py-1 text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer shadow-2xs"
+                    >
+                      <option value="2026">2026</option>
+                      <option value="2025">2025</option>
+                      <option value="2024">2024</option>
+                    </select>
+                  </div>
                 </div>
 
-                <div className="overflow-x-auto">
+                <div className="max-h-[190px] overflow-y-auto overflow-x-auto rounded-lg border border-border/50">
                   <table className="w-full text-left text-xs">
-                    <thead>
+                    <thead className="sticky top-0 z-10 bg-white dark:bg-[#161e23] border-b border-border shadow-2xs">
                       <tr className="text-muted-foreground text-[10px] uppercase font-bold tracking-wider">
-                        <th className="py-2 px-2">Kỳ</th>
-                        <th className="py-2 px-2">Tổng Thu</th>
-                        <th className="py-2 px-2">Trạng Thái</th>
-                        <th className="py-2 px-2 text-right">Bảng Kê</th>
+                        <th className="py-2 px-2.5 bg-inherit">Kỳ</th>
+                        <th className="py-2 px-2.5 bg-inherit">Tổng Thu</th>
+                        <th className="py-2 px-2.5 bg-inherit">Trạng Thái</th>
+                        <th className="py-2 px-2.5 text-right bg-inherit">Bảng Kê</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
-                      {[
-                        { month: "Tháng 08/2026", amount: "₫52,700,000", status: "Đạt 100%" },
-                        { month: "Tháng 07/2026", amount: "₫47,600,000", status: "Đạt 100%" },
-                        { month: "Tháng 06/2026", amount: "₫45,300,000", status: "Đạt 100%" },
-                      ].map((inv, idx) => (
+                      {(MOCK_HISTORY_BY_YEAR[selectedHistoryYear] || []).map((inv, idx) => (
                         <tr key={idx} className="hover:bg-[#eff6ff] dark:hover:bg-[#1c262c] transition-colors">
-                          <td className="py-2.5 px-2 font-semibold text-foreground">{inv.month}</td>
-                          <td className="py-2.5 px-2 font-mono text-foreground">{inv.amount}</td>
-                          <td className="py-2.5 px-2">
+                          <td className="py-2 px-2.5 font-semibold text-foreground whitespace-nowrap">{inv.month}</td>
+                          <td className="py-2 px-2.5 font-mono text-foreground whitespace-nowrap">{inv.amount}</td>
+                          <td className="py-2 px-2.5 whitespace-nowrap">
                             <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
                               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                               <span>{inv.status}</span>
                             </span>
                           </td>
-                          <td className="py-2.5 px-2 text-right">
+                          <td className="py-2 px-2.5 text-right whitespace-nowrap">
                             <button
                               onClick={() => alert(`Đang tải bảng kê ${inv.month}...`)}
                               className="p-1 rounded text-primary hover:bg-[#eff6ff] dark:hover:bg-[#1c262c]"
-                              title="Tải bảng kê"
+                              title="Tải bảng kê Excel"
                             >
                               <Download className="h-3.5 w-3.5 inline" />
                             </button>

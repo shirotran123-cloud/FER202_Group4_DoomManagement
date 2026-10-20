@@ -263,15 +263,7 @@ export const ProfilePage: React.FC = () => {
 
               {!isEditing ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                  <div>
-                    <p className="text-muted-foreground text-[11px]">Số điện thoại cơ quan / văn phòng</p>
-                    <p className="font-mono font-semibold text-foreground">(024) 7300 1866 (Ext: 104)</p>
-                  </div>
 
-                  <div>
-                    <p className="text-muted-foreground text-[11px]">Số di động cán bộ</p>
-                    <p className="font-mono font-semibold text-primary">{user.phone}</p>
-                  </div>
 
                   <div>
                     <p className="text-muted-foreground text-[11px]">Người liên hệ khẩn cấp</p>
@@ -304,18 +296,7 @@ export const ProfilePage: React.FC = () => {
               ) : (
                 <form onSubmit={handleSaveContact} className="space-y-4 text-xs">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-[11px] font-semibold text-muted-foreground">
-                        Số di động của cán bộ:
-                      </label>
-                      <input
-                        type="text"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        required
-                        className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-                      />
-                    </div>
+
 
                     <div>
                       <label className="text-[11px] font-semibold text-muted-foreground">
@@ -399,9 +380,7 @@ export const ProfilePage: React.FC = () => {
                   <Building2 className="h-4 w-4 text-primary" />
                   <span>Phạm Vi Phụ Trách Ký Túc Xá</span>
                 </div>
-                <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-                  Hoạt động ổn định
-                </span>
+
               </div>
 
               {/* Tòa nhà phụ trách */}

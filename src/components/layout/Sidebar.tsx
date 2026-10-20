@@ -69,11 +69,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             },
             { title: "Điện nước & VietQR", to: "/billing", icon: Receipt },
             { title: "Báo hỏng thiết bị", to: "/maintenance", icon: Wrench },
-            {
-              title: "Lịch sử Ra vào Cổng",
-              to: "/curfew",
-              icon: DoorClosed,
-            },
+            
           ],
         },
         {
@@ -95,12 +91,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               badge: "Desk",
             },
             { title: "Chốt số & Chia điện nước", to: "/billing", icon: Zap },
-            {
-              title: "Giám sát Ra Vào Cổng",
-              to: "/curfew",
-              icon: ShieldCheck,
-              badge: "Live",
-            },
+            
             { title: "Điều phối Bảo trì", to: "/maintenance", icon: Wrench },
           ],
         },
@@ -123,12 +114,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               badge: "2 Phiếu",
             },
             { title: "Nhập số Điện Nước", to: "/billing", icon: Zap },
-            {
-              title: "Giám sát Ra Vào Cổng",
-              to: "/curfew",
-              icon: ShieldCheck,
-              badge: "Live",
-            },
+            
           ],
         },
         {
@@ -151,7 +137,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           { title: "Bàn làm việc Quản trị", to: "/manager", icon: ShieldCheck },
           { title: "Quản lý Điện nước", to: "/billing", icon: Zap },
           { title: "Quản lý Bảo trì", to: "/maintenance", icon: Wrench },
-          { title: "Giám sát Ra Vào Cổng", to: "/curfew", icon: ShieldCheck },
+          
         ],
       },
       {
