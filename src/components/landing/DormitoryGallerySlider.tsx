@@ -236,7 +236,7 @@ export const DormitoryGallerySlider: React.FC = () => {
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-sky-600 dark:text-sky-400" />
             <span className="text-xs font-bold text-foreground">
-              Khám Phá Không Gian Ký Túc Xá FPT Chuẩn 1:4:6
+              Khám Phá Không Gian Ký Túc Xá FPT
             </span>
           </div>
 

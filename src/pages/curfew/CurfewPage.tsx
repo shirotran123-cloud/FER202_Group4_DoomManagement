@@ -563,7 +563,7 @@ export const CurfewPage: React.FC = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-3 pt-6 text-xs sm:grid-cols-4">
-          <div className="rounded-2xl border border-border bg-card p-4">
+          <div className="rounded-2xl border border-border bg-card/60 p-4">
             <p className="text-[11px] font-medium text-muted-foreground">
               Lượt quẹt thẻ cổng
             </p>
@@ -574,7 +574,7 @@ export const CurfewPage: React.FC = () => {
               Ca trực hôm nay
             </span>
           </div>
-          <div className="rounded-2xl border border-blue-500/20 bg-card p-4">
+          <div className="rounded-2xl border border-blue-500/20 bg-blue-500/5 p-4">
             <p className="flex items-center gap-1 text-[11px] font-medium text-blue-700 dark:text-blue-400">
               <FileText className="h-3.5 w-3.5" /> Đơn về muộn đã duyệt
             </p>
@@ -585,7 +585,7 @@ export const CurfewPage: React.FC = () => {
               Hợp lệ ra vào ngoài giờ
             </span>
           </div>
-          <div className="rounded-2xl border border-cyan-500/20 bg-card p-4">
+          <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-4">
             <p className="flex items-center gap-1 text-[11px] font-medium text-cyan-700 dark:text-cyan-400">
               <AlertTriangle className="h-3.5 w-3.5" /> SV bị cảnh cáo (&gt;20đ)
             </p>
@@ -596,7 +596,7 @@ export const CurfewPage: React.FC = () => {
               Cần nhắc nhở rèn luyện
             </span>
           </div>
-          <div className="rounded-2xl border border-blue-500/20 bg-card p-4">
+          <div className="rounded-2xl border border-blue-500/20 bg-blue-500/5 p-4">
             <p className="flex items-center gap-1 text-[11px] font-medium text-blue-700 dark:text-blue-400">
               <UserX className="h-3.5 w-3.5" /> Đình chỉ kỳ sau (&gt;30đ)
             </p>

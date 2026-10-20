@@ -121,37 +121,33 @@
   * {
     @apply border-border;
   }
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+  }
   body {
     @apply bg-background text-foreground antialiased;
     font-family: "Be Vietnam Pro", sans-serif;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    background-image:
+      linear-gradient(rgba(230, 243, 249, 0.74), rgba(230, 243, 249, 0.8)),
+      url("https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=2400&q=80");
+    background-position: center;
+    background-attachment: fixed;
+    background-size: cover;
   }
   html {
     @apply font-sans;
   }
 }
 
-.nature-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
+.dark body {
   background-image:
-    linear-gradient(rgba(230, 243, 249, 0.72), rgba(230, 243, 249, 0.78)),
+    linear-gradient(rgba(7, 20, 32, 0.82), rgba(7, 20, 32, 0.88)),
     url("https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=2400&q=80");
-  background-position: center;
-  background-size: cover;
-}
-
-.dark .nature-backdrop {
-  background-image:
-    linear-gradient(rgba(7, 20, 32, 0.8), rgba(7, 20, 32, 0.84)),
-    url("https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=2400&q=80");
-}
-
-.page-content :is(h1, h2, h3, h4) {
-  text-wrap: balance;
-  overflow-wrap: anywhere;
 }
 
 .material-symbols-outlined {

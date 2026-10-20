@@ -93,7 +93,6 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
 
   return (
     <div className="relative isolate flex min-h-screen flex-col bg-transparent font-sans text-slate-900 antialiased">
-      <div aria-hidden="true" className="nature-backdrop" />
       {/* Top Full-width Landing Navigation Bar */}
       <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/95 shadow-xs backdrop-blur-md">
         <div className="mx-auto flex h-[68px] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">

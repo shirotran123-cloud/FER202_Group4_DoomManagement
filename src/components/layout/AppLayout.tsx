@@ -13,7 +13,6 @@ export const AppLayout: React.FC = () => {
 
   return (
     <div className="relative isolate min-h-screen bg-transparent font-sans text-slate-900 antialiased dark:text-slate-100">
-      <div aria-hidden="true" className="nature-backdrop" />
       {/* Fixed Sidebar */}
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 

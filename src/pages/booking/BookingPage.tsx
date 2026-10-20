@@ -178,7 +178,7 @@ export const BookingPage: React.FC = () => {
     <button
       onClick={() => setActiveStep(step)}
       className={`w-full flex items-center justify-between px-6 py-4 text-left transition-all ${
-        isActive ? "bg-white dark:bg-[#161e23]" : "hover:bg-[#f9f9f7] dark:hover:bg-[#1c2830]"
+        isActive ? "bg-white dark:bg-[#161e23]" : "hover:bg-[#eff6ff] dark:hover:bg-[#1c2830]"
       }`}
     >
       <div className="flex items-center gap-4">
@@ -187,7 +187,7 @@ export const BookingPage: React.FC = () => {
             ? "bg-emerald-500 text-white"
             : isActive
             ? "bg-primary text-white"
-            : "bg-[#e8e8e2] dark:bg-[#1c262c] text-muted-foreground"
+            : "bg-[#dbeafe] dark:bg-[#1c262c] text-muted-foreground"
         }`}>
           {isDone ? <Check className="h-4 w-4" /> : step}
         </span>
