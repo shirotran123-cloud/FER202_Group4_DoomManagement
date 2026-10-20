@@ -1,7 +1,6 @@
 import React from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import {
   AlertTriangle,
   UserCheck,
@@ -61,49 +60,6 @@ export const MaintenanceTicketCard: React.FC<MaintenanceTicketCardProps> = ({
       }`}
     >
       <div>
-        {/* Card Header: Mã phiếu, Phạm vi, Mức độ, Trạng thái */}
-        <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="rounded-md border border-border bg-muted px-2 py-0.5 font-mono text-xs font-bold text-foreground">
-              {ticket.id}
-            </span>
-
-            {/* Scope Badge */}
-            <Badge variant="outline" className="font-semibold text-xs">
-              {ticket.scope === "ROOM_SHARED" ? "Phòng chung" : "Buồng cá nhân"}
-            </Badge>
-
-            {/* Urgency Badge */}
-            {isEmergency ? (
-              <Badge variant="maintenance" className="gap-1 text-xs">
-                <AlertTriangle className="h-3 w-3" />
-                <span>Khẩn cấp (2h)</span>
-              </Badge>
-            ) : (
-              <Badge
-                variant="outline"
-                className="font-normal text-muted-foreground text-xs"
-              >
-                Bình thường
-              </Badge>
-            )}
-
-            {isMyTicket && (
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-primary/10 text-primary">
-                Của bạn
-              </span>
-            )}
-          </div>
-
-          {/* Status Badge */}
-          <div>
-            {isPending && <Badge variant="holding">Chờ tiếp nhận</Badge>}
-            {isInProgress && <Badge variant="occupied">Đang xử lý</Badge>}
-            {isResolved && <Badge variant="available">Chờ nghiệm thu</Badge>}
-            {isClosed && <Badge variant="outline">Đã hoàn thành</Badge>}
-          </div>
-        </div>
-
         {/* Tiêu đề & Mô tả (Luôn hiển thị) */}
         <h3 className="text-base font-bold text-foreground leading-snug">
           {ticket.title}
@@ -218,16 +174,63 @@ export const MaintenanceTicketCard: React.FC<MaintenanceTicketCardProps> = ({
         </div>
       </div>
 
-      {/* Card Actions Footer */}
-      <div className="mt-3.5 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-2.5">
-        <div className="flex items-center gap-2">
-          {canEditOrDelete ? (
+      {/* Card Actions Footer: Nhãn thông tin nằm dưới cùng bên trái, nút hành động bên phải */}
+      <div className="mt-3.5 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-2.5">
+        {/* Left: Un-pilled Labels + Sửa/Xóa */}
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <span className="font-mono font-bold text-foreground">{ticket.id}</span>
+          <span className="text-muted-foreground/40">•</span>
+          <span className="text-muted-foreground font-medium">
+            {ticket.scope === "ROOM_SHARED" ? "Phòng chung" : "Buồng cá nhân"}
+          </span>
+          <span className="text-muted-foreground/40">•</span>
+          {isEmergency ? (
+            <span className="inline-flex items-center gap-1 font-semibold text-destructive">
+              <AlertTriangle className="h-3 w-3" />
+              <span>Khẩn cấp (2h)</span>
+            </span>
+          ) : (
+            <span className="text-muted-foreground">Bình thường</span>
+          )}
+          <span className="text-muted-foreground/40">•</span>
+          {isPending && (
+            <span className="inline-flex items-center gap-1 font-medium text-amber-600 dark:text-amber-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+              <span>Chờ tiếp nhận</span>
+            </span>
+          )}
+          {isInProgress && (
+            <span className="inline-flex items-center gap-1 font-medium text-blue-600 dark:text-blue-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+              <span>Đang xử lý</span>
+            </span>
+          )}
+          {isResolved && (
+            <span className="inline-flex items-center gap-1 font-medium text-emerald-600 dark:text-emerald-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              <span>Chờ nghiệm thu</span>
+            </span>
+          )}
+          {isClosed && (
+            <span className="inline-flex items-center gap-1 font-medium text-muted-foreground">
+              <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
+              <span>Đã hoàn thành</span>
+            </span>
+          )}
+          {isMyTicket && (
             <>
+              <span className="text-muted-foreground/40">•</span>
+              <span className="font-bold text-primary text-[11px]">Của bạn</span>
+            </>
+          )}
+
+          {canEditOrDelete && (
+            <div className="flex items-center gap-1.5 ml-1 border-l border-border pl-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => onEdit(ticket)}
-                className="gap-1 text-xs h-7 px-2.5 font-medium"
+                className="gap-1 text-xs h-6 px-2 font-medium"
                 title="Sửa thông tin phiếu"
               >
                 <Edit2 className="h-3 w-3 text-muted-foreground" />
@@ -238,23 +241,17 @@ export const MaintenanceTicketCard: React.FC<MaintenanceTicketCardProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={() => onDelete(ticket.id)}
-                className="gap-1 text-xs h-7 px-2.5 text-destructive hover:bg-destructive/10 font-medium"
+                className="gap-1 text-xs h-6 px-2 text-destructive hover:bg-destructive/10 font-medium"
                 title="Xóa phiếu"
               >
                 <Trash2 className="h-3 w-3" />
                 <span>Xóa</span>
               </Button>
-            </>
-          ) : (
-            <span className="text-[11px] text-muted-foreground italic">
-              {isMyTicket
-                ? "Đơn đang xử lý hoặc đã hoàn thành (không thể sửa/xóa)"
-                : ""}
-            </span>
+            </div>
           )}
         </div>
 
-        {/* Contextual Workflow Action Buttons */}
+        {/* Right: Contextual Workflow Action Buttons (Đánh giá sao, Phân công, Báo hoàn thành) */}
         <div className="flex items-center gap-1.5">
           {isManagerOrAdmin && isPending && (
             <Button
