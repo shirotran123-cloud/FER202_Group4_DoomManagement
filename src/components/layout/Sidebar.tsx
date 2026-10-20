@@ -89,7 +89,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     if (currentRole === "manager") {
       return [
         {
-          groupTitle: "Bàn Làm Việc Quản Lý (Ops)",
+          groupTitle: "Bàn Làm Việc Quản Lý ()",
           items: [
             {
               title: "Bàn làm việc Quản lý",
@@ -271,8 +271,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
         {/* Bottom Emergency Guard & Sign Out */}
         <div className="shrink-0 space-y-2 border-t border-border bg-muted p-3">
-
-
           {isAuthenticated ? (
             <button
               onClick={() => logout()}

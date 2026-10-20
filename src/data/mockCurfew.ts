@@ -129,7 +129,7 @@ export const INITIAL_GATE_LOGS: GateAccessLog[] = [
   {
     id: "LOG-104",
     studentId: "SE182055",
-    studentName: "Vũ Đức Anh",
+    studentName: "Vũ Đức ",
     room: "A202",
     timestamp: "2026-10-10T22:52:10",
     scanTimeFormatted: "22:52:10",

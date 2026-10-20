@@ -58,7 +58,7 @@ export const OccupancyDonutChart: React.FC<OccupancyDonutChartProps> = ({
             cx="90"
             cy="90"
             r={radius}
-            stroke="#427aa1"
+            stroke="#679436"
             strokeWidth="20"
             fill="transparent"
             strokeDasharray={`${occupiedStroke} ${circumference}`}
@@ -70,7 +70,7 @@ export const OccupancyDonutChart: React.FC<OccupancyDonutChartProps> = ({
             cx="90"
             cy="90"
             r={radius}
-            stroke="#679436"
+            stroke="#427aa1"
             strokeWidth="20"
             fill="transparent"
             strokeDasharray={`${availableStroke} ${circumference}`}
@@ -119,14 +119,14 @@ export const OccupancyDonutChart: React.FC<OccupancyDonutChartProps> = ({
       {/* Legend & Breakdown */}
       <div className="grid grid-cols-2 gap-2 border-t border-border pt-3 text-xs">
         <div className="flex items-center gap-2">
-          <span className="h-3 w-3 shrink-0 rounded-md bg-[#427aa1]" />
+          <span className="h-3 w-3 shrink-0 rounded-md bg-[#679436]" />
           <span className="text-muted-foreground">Đang ở (80%):</span>
           <strong className="ml-auto text-foreground">
             {stats.occupiedBeds}
           </strong>
         </div>
         <div className="flex items-center gap-2">
-          <span className="h-3 w-3 shrink-0 rounded-md bg-[#679436]" />
+          <span className="h-3 w-3 shrink-0 rounded-md bg-[#427aa1]" />
           <span className="text-muted-foreground">Còn trống (12.5%):</span>
           <strong className="ml-auto text-foreground">
             {stats.availableBeds}

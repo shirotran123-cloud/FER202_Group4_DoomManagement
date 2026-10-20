@@ -88,7 +88,7 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = ({
       <div className="flex items-center justify-between border-t border-border pt-3 text-xs">
         <span className="text-muted-foreground">Trung bình 6 tháng:</span>
         <span className="font-mono font-bold text-foreground">
-          ~310,000,000 VNĐ / Tháng
+          310,000,000 VNĐ / Tháng
         </span>
       </div>
     </Card>

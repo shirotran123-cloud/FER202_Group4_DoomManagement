@@ -25,7 +25,7 @@ import {
   Download,
   Search,
   FileDown,
-    CheckCircle2,
+  CheckCircle2,
 } from "lucide-react"
 
 // Decomposed components
@@ -175,7 +175,7 @@ export const ManagerDashboardPage: React.FC = () => {
         </div>
       )}
 
-      {/* Hero Ops Header */}
+      {/* Hero  Header */}
       <Card className="p-6">
         <div className="flex flex-col gap-6">
           <div>

@@ -22,16 +22,11 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
-  const {
-    user,
-    isAuthenticated,
-    logout,
-    } = useAuth()
+  const { user, isAuthenticated, logout } = useAuth()
   const { theme, setTheme } = useTheme()
   const navigate = useNavigate()
   const [showUserDropdown, setShowUserDropdown] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
-
 
   return (
     <header className="fixed top-0 right-0 left-0 z-40 flex h-[68px] items-center justify-between border-b border-slate-200 bg-white/95 px-4 shadow-xs backdrop-blur-md sm:px-8 lg:left-[260px] dark:border-slate-800 dark:bg-[#111827]/95">
@@ -48,7 +43,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
 
         <div className="flex items-center gap-2 text-sm text-slate-700">
           <span className="hidden shrink-0 font-medium whitespace-nowrap text-slate-500 sm:inline">
-            Ký túc xá FPT University
+            FPT University Dormitory
           </span>
         </div>
 
@@ -59,21 +54,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
       </div>
 
       <div className="flex items-center gap-2 sm:gap-4">
-        {/* Search bar - Hidden for students, only visible for management/admin */}
-        {user?.role !== "student" && (
-          <div className="relative hidden w-56 shrink-0 md:block lg:w-64">
-            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Tìm phòng, sinh viên, đơn..."
-              className="w-full rounded-lg border border-border bg-muted py-1.5 pr-3 pl-9 text-xs text-foreground transition-all placeholder:text-muted-foreground focus:border-primary focus:bg-card focus:outline-hidden"
-            />
-          </div>
-        )}
-
         {isAuthenticated && user ? (
           <>
-
             {/* Theme Toggle (Light / Dark) */}
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -153,7 +135,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
                   setShowUserDropdown(!showUserDropdown)
                   setShowNotifications(false)
                 }}
-                className="flex items-center gap-2 rounded-lg p-1 text-left transition-all hover:bg-slate-100"
+                className="flex items-center gap-2 rounded-lg p-1 text-left transition-all hover:bg-slate-100 dark:hover:bg-slate-800"
               >
                 <img
                   src={user.avatar}
@@ -161,14 +143,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
                   className="h-8 w-8 shrink-0 rounded-full object-cover ring-1 ring-slate-200"
                 />
                 <div className="hidden flex-col text-left leading-tight sm:flex">
-                  <span className="text-xs font-semibold text-slate-900">
+                  <span className="text-xs font-semibold text-slate-900 dark:text-slate-100">
                     {user.fullName}
                   </span>
-                  <span className="text-[10px] text-slate-500">
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400">
                     SE182049 · Unit A205
                   </span>
                 </div>
-                <ChevronDown className="hidden h-3 w-3 text-slate-400 sm:inline" />
+                <ChevronDown className="hidden h-3 w-3 text-slate-400 sm:inline dark:text-slate-500" />
               </button>
 
               {showUserDropdown && (
@@ -180,7 +162,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
                     <p className="truncate text-[11px] text-slate-500">
                       {user.email}
                     </p>
-
                   </div>
 
                   <div className="py-1">
