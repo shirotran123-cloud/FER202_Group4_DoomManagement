@@ -6,8 +6,7 @@ import {
   Users,
   Search,
   Building2,
-  ShieldCheck,
-  Filter,
+    Filter,
   Bed,
   Sparkles,
   Server,
@@ -38,8 +37,7 @@ interface CampusBuildingData {
   managerPhone: string
   technicianName: string
   technicianPhone: string
-  iotGateStatus: "ONLINE" | "MAINTENANCE"
-  powerStatus: "NORMAL" | "WARNING"
+    powerStatus: "NORMAL" | "WARNING"
   waterStatus: "NORMAL" | "WARNING"
 }
 
@@ -58,8 +56,7 @@ const CAMPUS_BUILDINGS: CampusBuildingData[] = [
     managerPhone: "0988 765 432",
     technicianName: "Đỗ Mạnh Hùng",
     technicianPhone: "0977 112 233",
-    iotGateStatus: "ONLINE",
-    powerStatus: "NORMAL",
+        powerStatus: "NORMAL",
     waterStatus: "NORMAL",
   },
   {
@@ -76,8 +73,7 @@ const CAMPUS_BUILDINGS: CampusBuildingData[] = [
     managerPhone: "0914 223 344",
     technicianName: "Lê Văn Phước",
     technicianPhone: "0905 667 889",
-    iotGateStatus: "ONLINE",
-    powerStatus: "NORMAL",
+        powerStatus: "NORMAL",
     waterStatus: "NORMAL",
   },
   {
@@ -94,8 +90,7 @@ const CAMPUS_BUILDINGS: CampusBuildingData[] = [
     managerPhone: "0935 445 566",
     technicianName: "Nguyễn Bá Đạt",
     technicianPhone: "0983 112 244",
-    iotGateStatus: "ONLINE",
-    powerStatus: "NORMAL",
+        powerStatus: "NORMAL",
     waterStatus: "NORMAL",
   },
   {
@@ -112,8 +107,7 @@ const CAMPUS_BUILDINGS: CampusBuildingData[] = [
     managerPhone: "0979 889 900",
     technicianName: "Võ Quốc Cường",
     technicianPhone: "0918 334 455",
-    iotGateStatus: "ONLINE",
-    powerStatus: "NORMAL",
+        powerStatus: "NORMAL",
     waterStatus: "NORMAL",
   },
 ]
@@ -270,25 +264,22 @@ export const AdminOverviewView: React.FC = () => {
           </div>
         </div>
 
-        {/* Card 4: 4 Buildings IoT Access Gates */}
+        {/* Card 4: 4 Buildings Infrastructure & Operation */}
         <div className="flex flex-col justify-between rounded-2xl border border-border bg-card p-5 shadow-xs transition-shadow hover:shadow-md sm:p-6">
           <div>
             <div className="mb-3 flex items-center justify-between">
               <span className="text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
-                Cổng IoT 4 Tòa Ký Túc Xá
+                Vận Hành Cơ Sở Vật Chất
               </span>
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600">
-                <ShieldCheck className="h-5 w-5" />
+                <CheckCircle2 className="h-5 w-5" />
               </div>
             </div>
             <div className="text-2xl font-black text-foreground font-mono">
-              1,420{" "}
-              <span className="text-sm font-normal text-muted-foreground font-sans">
-                lượt / ngày
-              </span>
+              4 / 4 Tòa Nhà
             </div>
             <div className="mt-1 text-xs text-muted-foreground">
-              4/4 Cổng tự động kết nối thời gian thực
+              Hệ thống điện nước 176 phòng đạt chuẩn
             </div>
           </div>
 
@@ -296,7 +287,7 @@ export const AdminOverviewView: React.FC = () => {
             <span className="text-muted-foreground">Tòa A, B, C, D:</span>
             <span className="flex items-center gap-1 font-bold text-emerald-600">
               <span className="h-2 w-2 rounded-full bg-emerald-500" />
-              <span>Sẵn sàng 24/7</span>
+              <span>Vận hành ổn định</span>
             </span>
           </div>
         </div>
@@ -366,7 +357,7 @@ export const AdminOverviewView: React.FC = () => {
 
                   <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 flex items-center gap-1 shrink-0">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                    <span>Cổng IoT Online</span>
+                    <span>Vận hành ổn định</span>
                   </span>
                 </div>
 
@@ -624,17 +615,17 @@ export const AdminOverviewView: React.FC = () => {
             <div className="rounded-2xl border border-border bg-card p-5 shadow-xs space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                  Đồng Bộ FAP & Cổng IoT
+                  Tích Hợp Dữ Liệu FAP
                 </span>
                 <Cpu className="h-4 w-4 text-emerald-600" />
               </div>
-              <div className="text-xl font-bold text-foreground">Kết Nối 4 Cổng Trực Tuyến</div>
+              <div className="text-xl font-bold text-foreground">API Cổng Thông Tin Đào Tạo</div>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Tự động nhận diện thẻ sinh viên tại 4 cổng Tòa A, B, C, D và đồng bộ dữ liệu học vụ.
+                Tự động đồng bộ thông tin sinh viên, trạng thái học vụ và khóa học từ hệ thống đào tạo FAP.
               </p>
               <div className="pt-2 border-t border-border flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">Lần kiểm tra cuối:</span>
-                <span className="font-bold text-emerald-600 font-mono">Vừa xong</span>
+                <span className="text-muted-foreground">Trạng thái kết nối:</span>
+                <span className="font-bold text-emerald-600 font-mono">Đồng bộ tự động</span>
               </div>
             </div>
           </div>
@@ -728,8 +719,8 @@ export const AdminOverviewView: React.FC = () => {
                   },
                   {
                     time: "11:00:25",
-                    action: "Kiểm tra định kỳ kết nối cổng an ninh IoT Tòa B và Tòa C",
-                    type: "IOT",
+                    action: "Kiểm tra định kỳ và đối soát chỉ số điện nước 4 tòa A, B, C, D",
+                    type: "AUDIT",
                     status: "Trực tuyến",
                   },
                   {
@@ -865,9 +856,9 @@ export const AdminOverviewView: React.FC = () => {
               </div>
 
               <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 space-y-1">
-                <span className="font-bold block">Tình trạng hạ tầng & an ninh:</span>
+                <span className="font-bold block">Tình trạng cơ sở vật chất:</span>
                 <p className="text-[11px]">
-                  Cổng quẹt thẻ IoT tự động đang hoạt động bình thường 24/7. Tủ điện tầng và hệ thống cấp thoát nước đạt tiêu chuẩn an toàn.
+                  Hệ thống điện nước, trang thiết bị buồng phòng và cơ sở vật chất của tòa nhà đang vận hành ổn định, sẵn sàng phục vụ sinh viên.
                 </p>
               </div>
             </div>
