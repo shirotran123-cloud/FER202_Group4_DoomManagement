@@ -17,9 +17,7 @@ import {
   ShieldCheck,
   Maximize2,
   X,
-  FileSpreadsheet,
   Send,
-  Check,
 } from "lucide-react"
 
 export const BillingPage: React.FC = () => {
@@ -120,33 +118,11 @@ export const BillingPage: React.FC = () => {
               Chu kỳ T09/2026
             </span>
           </div>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {isTechnicianOrManager
-              ? "Hệ thống nhập chỉ số, đối soát ảnh công tơ và chia tiền điện nước tự động cho 44 phòng Tòa A"
-              : "Hóa đơn điện nước sinh hoạt hàng tháng chia đều cho thành viên trong phòng"}
-          </p>
+          
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-          {isTechnicianOrManager ? (
-            <>
-              <Button
-                variant="outline"
-                onClick={() => alert("Đang xuất file Excel Bảng kê điện nước Tòa A T09/2026...")}
-                className="text-xs h-9 gap-1.5 border-border shadow-2xs"
-              >
-                <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
-                <span>Xuất Excel Bảng Kê</span>
-              </Button>
-              <Button
-                onClick={handlePublishBatch}
-                className="text-xs h-9 gap-1.5 bg-primary text-white whitespace-nowrap"
-              >
-                <Send className="h-4 w-4" />
-                <span>Phát Hành 44 Phòng (192 SV)</span>
-              </Button>
-            </>
-          ) : (
+        {!isTechnicianOrManager && (
+          <div className="flex items-center gap-2">
             <Button
               onClick={() => alert("Đang xuất tệp hóa đơn điện tử e-Invoice PDF...")}
               className="text-xs h-9 gap-1.5 bg-primary text-white whitespace-nowrap shrink-0"
@@ -154,8 +130,8 @@ export const BillingPage: React.FC = () => {
               <Download className="h-4 w-4 shrink-0" />
               <span>Tải Hóa Đơn (PDF)</span>
             </Button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* 02. TOP KPI CARDS */}
@@ -216,11 +192,11 @@ export const BillingPage: React.FC = () => {
               </div>
               <div className="mt-3">
                 <div className="text-2xl font-black font-mono tracking-tight text-foreground">
-                  25/10/2026
+                  31/10/2026
                 </div>
                 <div className="flex items-center gap-1.5 mt-1 text-xs text-muted-foreground">
                   <Clock className="h-3.5 w-3.5" />
-                  <span>Bắt đầu sau 5 ngày (Định kỳ 25 - 28)</span>
+                  <span>Định kỳ chốt ngày cuối tháng (30 - 31)</span>
                 </div>
               </div>
             </div>
@@ -281,11 +257,11 @@ export const BillingPage: React.FC = () => {
               </div>
               <div className="mt-3">
                 <div className="text-2xl font-black font-mono tracking-tight text-foreground">
-                  25/10/2026
+                  31/10/2026
                 </div>
                 <div className="flex items-center gap-1.5 mt-1 text-xs text-muted-foreground">
                   <Clock className="h-3.5 w-3.5" />
-                  <span>Định kỳ ngày 25 - 28 hàng tháng</span>
+                  <span>Định kỳ chốt ngày cuối tháng (30 - 31)</span>
                 </div>
               </div>
             </div>
@@ -412,14 +388,7 @@ export const BillingPage: React.FC = () => {
 
             {/* Dispute or Manager Verification Badge */}
             <div className="flex justify-between items-center pt-1">
-              {isTechnicianOrManager ? (
-                <div className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-                  <Check className="h-4 w-4" />
-                  <span>Định mức tiêu thụ hợp lệ • Tỷ lệ chia đều {numStudents} SV</span>
-                </div>
-              ) : (
-                <div />
-              )}
+              <div />
               {!isTechnicianOrManager && (
                 <button
                   onClick={() => setShowDisputeModal(true)}
