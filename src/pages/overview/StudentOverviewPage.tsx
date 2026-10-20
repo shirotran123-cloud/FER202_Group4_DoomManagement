@@ -514,9 +514,6 @@ export const StudentOverviewPage: React.FC = () => {
                 <rect fill="currentColor" height="10" rx="2" width="10" x={82 + ((qrSeed * 3) % 6) - 3} y="70"></rect>
                 <rect fill="currentColor" height="6" rx="2" width="14" x="64" y={82 + ((qrSeed * 9) % 6) - 3}></rect>
               </svg>
-
-              {/* Scanning Laser Beam */}
-              <div className="absolute inset-x-2 top-2 h-0.5 bg-emerald-500 shadow-[0_0_10px_#10b981] animate-pulse" />
             </div>
 
             {/* Student & Token Info */}

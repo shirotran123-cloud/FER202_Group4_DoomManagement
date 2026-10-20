@@ -336,7 +336,6 @@ export const LoginPage: React.FC = () => {
                             alt="Mã QR Chuyển Khoản"
                             className="w-full h-full object-contain rounded-xl"
                           />
-                          <div className="absolute inset-x-3 top-3 h-0.5 bg-emerald-500 shadow-[0_0_8px_#10b981] animate-pulse pointer-events-none" />
 
                           {/* Nút tải mã QR trên góc */}
                           <button
