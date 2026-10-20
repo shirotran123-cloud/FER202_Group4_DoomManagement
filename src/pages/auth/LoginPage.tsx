@@ -21,6 +21,7 @@ import {
   Check,
   ArrowRight,
   RefreshCw,
+  Download,
 } from "lucide-react"
 
 export const LoginPage: React.FC = () => {
@@ -102,6 +103,27 @@ export const LoginPage: React.FC = () => {
 
   const roomPrice = regData.roomType === "private_4" ? 4000000 : 3200000
   const roomPriceFormatted = roomPrice.toLocaleString("vi-VN") + " VNĐ"
+  const qrTransferContent = `KTX ${regData.studentCode} ${regData.fullName.toUpperCase()}`
+  const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=350x350&data=2|99|000088889999|BAN_QUAN_LY_KTX_FPT|${roomPrice}|${encodeURIComponent(qrTransferContent)}`
+
+  const handleDownloadQR = () => {
+    fetch(qrImageUrl)
+      .then((res) => res.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.href = url
+        a.download = `VietQR_KTX_${regData.studentCode || "SE185240"}_Fall2026.png`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        window.URL.revokeObjectURL(url)
+      })
+      .catch(() => {
+        window.open(qrImageUrl, "_blank")
+      })
+  }
+
 
   const handleConfirmPayment = () => {
     setIsProcessingPayment(true)
@@ -306,40 +328,36 @@ export const LoginPage: React.FC = () => {
                         </span>
                       </div>
 
-                      {/* QR Box */}
-                      <div className="flex flex-col sm:flex-row items-center gap-4">
-                        <div className="relative w-36 h-36 bg-muted/30 p-2.5 rounded-2xl border border-border flex items-center justify-center shrink-0">
-                          <svg className="w-full h-full text-foreground" fill="none" viewBox="0 0 100 100">
-                            <rect fill="currentColor" height="28" rx="4" width="28" x="5" y="5"></rect>
-                            <rect fill="var(--card)" height="18" rx="2" width="18" x="10" y="10"></rect>
-                            <rect fill="currentColor" height="10" width="10" x="14" y="14"></rect>
-                            <rect fill="currentColor" height="28" rx="4" width="28" x="67" y="5"></rect>
-                            <rect fill="var(--card)" height="18" rx="2" width="18" x="72" y="10"></rect>
-                            <rect fill="currentColor" height="10" width="10" x="76" y="14"></rect>
-                            <rect fill="currentColor" height="28" rx="4" width="28" x="5" y="67"></rect>
-                            <rect fill="var(--card)" height="18" rx="2" width="18" x="10" y="72"></rect>
-                            <rect fill="currentColor" height="10" width="10" x="14" y="76"></rect>
-                            <circle cx="48" cy="20" fill="currentColor" r="3"></circle>
-                            <circle cx="48" cy="32" fill="currentColor" r="3"></circle>
-                            <circle cx="56" cy="20" fill="currentColor" r="3"></circle>
-                            <circle cx="42" cy="48" fill="currentColor" r="4"></circle>
-                            <circle cx="58" cy="48" fill="currentColor" r="3"></circle>
-                            <rect fill="currentColor" height="6" rx="2" width="12" x="44" y="64"></rect>
-                            <rect fill="currentColor" height="16" rx="2" width="8" x="70" y="50"></rect>
-                            <rect fill="currentColor" height="10" rx="2" width="10" x="82" y="70"></rect>
-                            <rect fill="currentColor" height="6" rx="2" width="14" x="64" y="82"></rect>
-                          </svg>
-                          <div className="absolute inset-x-2 top-2 h-0.5 bg-emerald-500 shadow-[0_0_8px_#10b981] animate-pulse" />
+                      {/* QR Box Centered & Large with Download Button */}
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="relative mx-auto w-48 h-48 sm:w-56 sm:h-56 bg-white p-3 rounded-2xl border border-border/80 shadow-md flex items-center justify-center group">
+                          <img
+                            src={qrImageUrl}
+                            alt="Mã QR Chuyển Khoản"
+                            className="w-full h-full object-contain rounded-xl"
+                          />
+                          <div className="absolute inset-x-3 top-3 h-0.5 bg-emerald-500 shadow-[0_0_8px_#10b981] animate-pulse pointer-events-none" />
+
+                          {/* Nút tải mã QR trên góc */}
+                          <button
+                            type="button"
+                            onClick={handleDownloadQR}
+                            className="absolute top-2 right-2 flex items-center gap-1 rounded-lg bg-black/75 hover:bg-black/90 text-white px-2 py-1 text-[11px] font-semibold backdrop-blur-xs transition-all shadow-md active:scale-95"
+                            title="Tải mã QR về máy để chuyển khoản ngân hàng"
+                          >
+                            <Download className="h-3.5 w-3.5" />
+                            <span>Tải QR</span>
+                          </button>
                         </div>
 
-                        {/* Account Details */}
-                        <div className="space-y-2 flex-1 text-xs">
-                          <div>
-                            <p className="text-[10px] text-muted-foreground">Chủ tài khoản:</p>
-                            <p className="font-bold text-foreground">BAN QUAN LY KTX FPT</p>
+                        {/* Account Details Below QR */}
+                        <div className="w-full space-y-2 rounded-xl border border-border/70 bg-card p-3 text-xs shadow-2xs">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[11px] text-muted-foreground">Chủ tài khoản:</span>
+                            <span className="font-bold text-foreground">BAN QUAN LY KTX FPT</span>
                           </div>
-                          <div>
-                            <p className="text-[10px] text-muted-foreground">Số tài khoản:</p>
+                          <div className="flex items-center justify-between border-t border-border/50 pt-2">
+                            <span className="text-[11px] text-muted-foreground">Số tài khoản:</span>
                             <div className="flex items-center gap-1.5">
                               <span className="font-mono font-bold text-sky-600">0000 8888 9999</span>
                               <button
@@ -356,8 +374,8 @@ export const LoginPage: React.FC = () => {
                               </button>
                             </div>
                           </div>
-                          <div>
-                            <p className="text-[10px] text-muted-foreground">Nội dung chuyển khoản:</p>
+                          <div className="flex items-center justify-between border-t border-border/50 pt-2">
+                            <span className="text-[11px] text-muted-foreground">Nội dung chuyển khoản:</span>
                             <div className="flex items-center gap-1.5">
                               <span className="font-mono font-bold text-foreground">
                                 KTX {regData.studentCode} {regData.fullName.toUpperCase()}
@@ -379,23 +397,11 @@ export const LoginPage: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Fee Breakdown: NO DEPOSIT */}
-                      <div className="rounded-xl border border-border/60 bg-muted/20 p-3 space-y-1.5 text-[11px]">
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Phí lưu trú kỳ Fall 2026 (4 tháng):</span>
-                          <span className="font-semibold text-foreground">{roomPriceFormatted}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Tiền đặt cọc an ninh:</span>
-                          <span className="font-bold text-emerald-600">0 VNĐ (Không thu cọc)</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Mạng Wi-Fi 6 toàn tòa:</span>
-                          <span className="font-bold text-emerald-600">0 VNĐ (Miễn phí)</span>
-                        </div>
-                        <div className="flex justify-between border-t border-border pt-1.5 text-xs font-bold">
-                          <span>Tổng tiền thanh toán:</span>
-                          <span className="text-emerald-600 text-sm">{roomPriceFormatted}</span>
+                      {/* Fee Summary: ONLY SEMESTER FEE */}
+                      <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3 text-xs">
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-foreground">Phí lưu trú kỳ Fall 2026 (4 tháng):</span>
+                          <span className="font-mono font-black text-emerald-600 text-sm">{roomPriceFormatted}</span>
                         </div>
                       </div>
                     </div>
@@ -466,14 +472,7 @@ export const LoginPage: React.FC = () => {
                           {assignedRoom?.gateCode}
                         </span>
                       </div>
-                      <div className="flex items-center justify-between pt-1 border-t border-border">
-                        <span className="text-muted-foreground">Tình trạng công nợ:</span>
-                        <span className="font-bold text-emerald-600">0 VNĐ (Không nợ)</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Tiền đặt cọc:</span>
-                        <span className="font-bold text-emerald-600">0 VNĐ (Miễn cọc)</span>
-                      </div>
+                      
                     </div>
 
                     {/* Button into Student portal */}
@@ -483,7 +482,7 @@ export const LoginPage: React.FC = () => {
                         onClick={handleEnterStudentPortal}
                         className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 py-3.5 text-xs font-bold text-white shadow-md transition-all hover:opacity-95"
                       >
-                        <span>Vào Ngay Giao Diện Sinh Viên (Nhận Phòng & Mã Cổng)</span>
+                        <span>Nhận phòng & mã cổng</span>
                         <ArrowRight className="h-4 w-4" />
                       </button>
 
