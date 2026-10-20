@@ -23,7 +23,7 @@ export const AssignTechnicianModal: React.FC<AssignTechnicianModalProps> = ({
   ticket,
   onSubmit,
 }) => {
-  const [techName, setTechName] = useState("Chú Đỗ Mạnh Hùng")
+  const [techName, setTechName] = useState(" Đỗ Mạnh Hùng")
   const [techPhone, setTechPhone] = useState("0977 112 233")
   const [etaMinutes, setEtaMinutes] = useState(30)
 
@@ -31,7 +31,7 @@ export const AssignTechnicianModal: React.FC<AssignTechnicianModalProps> = ({
 
   const handleTechChange = (name: string) => {
     setTechName(name)
-    if (name === "Chú Đỗ Mạnh Hùng") setTechPhone("0977 112 233")
+    if (name === " Đỗ Mạnh Hùng") setTechPhone("0977 112 233")
     if (name === "Anh Lê Quốc Tuấn") setTechPhone("0918 889 900")
     if (name === "Anh Vũ Trọng Nghĩa") setTechPhone("0934 567 890")
   }
@@ -53,31 +53,40 @@ export const AssignTechnicianModal: React.FC<AssignTechnicianModalProps> = ({
       maxWidth="md"
       title={
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
             <UserCheck className="h-4 w-4" />
           </div>
-          <span className="font-bold text-foreground text-base">Phân công Kỹ thuật viên</span>
+          <span className="text-base font-bold text-foreground">
+            Phân công Kỹ thuật viên
+          </span>
         </div>
       }
       description={`Gán thợ sửa chữa cho phiếu ${ticket.id}`}
     >
       <form onSubmit={handleSubmit} className="space-y-3.5">
         <div>
-          <label className="block text-xs font-bold text-foreground mb-1">
+          <label className="mb-1 block text-xs font-bold text-foreground">
             Kỹ thuật viên phụ trách
           </label>
           <Select
             value={techName}
             onChange={(e) => handleTechChange(e.target.value)}
           >
-            <option value="Chú Đỗ Mạnh Hùng">Chú Đỗ Mạnh Hùng (Trưởng ban Điện lạnh)</option>
-            <option value="Anh Lê Quốc Tuấn">Anh Lê Quốc Tuấn (Kỹ thuật Điện dân dụng)</option>
-            <option value="Anh Vũ Trọng Nghĩa">Anh Vũ Trọng Nghĩa (Thợ nước & Vệ sinh)</option>
+            <option value=" Đỗ Mạnh Hùng">
+              {" "}
+              Đỗ Mạnh Hùng (Trưởng ban Điện lạnh)
+            </option>
+            <option value="Anh Lê Quốc Tuấn">
+              Anh Lê Quốc Tuấn (Kỹ thuật Điện dân dụng)
+            </option>
+            <option value="Anh Vũ Trọng Nghĩa">
+              Anh Vũ Trọng Nghĩa (Thợ nước & Vệ sinh)
+            </option>
           </Select>
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-foreground mb-1">
+          <label className="mb-1 block text-xs font-bold text-foreground">
             Số điện thoại liên hệ
           </label>
           <Input
@@ -89,7 +98,7 @@ export const AssignTechnicianModal: React.FC<AssignTechnicianModalProps> = ({
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-foreground mb-1">
+          <label className="mb-1 block text-xs font-bold text-foreground">
             Thời gian dự kiến có mặt (phút)
           </label>
           <Input
@@ -101,7 +110,7 @@ export const AssignTechnicianModal: React.FC<AssignTechnicianModalProps> = ({
           />
         </div>
 
-        <div className="flex items-center justify-end gap-2 pt-3 border-t border-border">
+        <div className="flex items-center justify-end gap-2 border-t border-border pt-3">
           <Button type="button" variant="outline" onClick={onClose}>
             Hủy
           </Button>

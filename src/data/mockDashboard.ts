@@ -58,19 +58,20 @@ export const MOCK_MONTHLY_REVENUE: MonthlyRevenue[] = [
 
 export const MOCK_BUILDING_CONSUMPTION: BuildingConsumption[] = [
   {
-    building: "Tòa A (Nam - 240 Giường)",
+    building: "Tòa A (Nam)",
     electricityAvgKwh: 342,
     waterAvgM3: 18.5,
-    anomalyNote: "Tiêu thụ điện tăng +18% so với tháng trước do sử dụng điều hòa tăng cao.",
+    anomalyNote:
+      "Tiêu thụ điện tăng +18% so với tháng trước do sử dụng điều hòa tăng cao.",
   },
   {
-    building: "Tòa B (Nữ - 240 Giường)",
+    building: "Tòa B (Nữ)",
     electricityAvgKwh: 289,
     waterAvgM3: 21.2,
     anomalyNote: "Tiêu thụ nước bình thường, điện năng ổn định.",
   },
   {
-    building: "Tòa C (Nam - 192 Giường)",
+    building: "Tòa C (Nam)",
     electricityAvgKwh: 315,
     waterAvgM3: 17.8,
     anomalyNote: "Mức tiêu thụ đạt chuẩn tiết kiệm năng lượng xanh.",

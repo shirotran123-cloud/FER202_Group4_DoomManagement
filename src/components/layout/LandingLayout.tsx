@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
 import type { UserRole } from "@/types/auth"
 import {
-  Building2,
   Sparkles,
   ArrowRight,
   LogOut,
@@ -112,9 +111,11 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
             to="/"
             className="flex shrink-0 items-center gap-3 transition-opacity hover:opacity-90"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-xs">
-              <Building2 className="h-5 w-5" />
-            </div>
+            <img
+              src="/images/logo.jpg"
+              alt="FPT University"
+              className="h-10 w-14 rounded-xl object-contain"
+            />
             <div className="flex flex-col">
               <span className="text-base font-extrabold tracking-tight text-slate-900">
                 DOMANAGE

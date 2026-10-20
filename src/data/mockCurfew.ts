@@ -16,13 +16,14 @@ export const INITIAL_CURFEW_REQUESTS: CurfewRequest[] = [
     date: "2026-10-10",
     expectedReturnTime: "23:45",
     reasonCategory: "STUDY",
-    reasonDetail: "Họp nhóm hoàn thiện đồ án tốt nghiệp Capstone Project tại Thư viện Alpha cơ sở Hòa Hải.",
+    reasonDetail:
+      "Họp nhóm hoàn thiện đồ án tốt nghiệp Capstone Project tại Thư viện Alpha cơ sở Hòa Hải.",
     parentPhone: "0903 123 456",
     parentConfirmed: true,
     submittedAt: "2026-10-10 18:20",
     isSubmittedBefore2100: true,
     status: "APPROVED",
-    reviewedBy: "Thầy Vũ Thành Nam (Dorm Manager)",
+    reviewedBy: " Vũ Thành Nam (Dorm Manager)",
     reviewedAt: "2026-10-10 19:10",
     reviewNotes: "Đã xác nhận lý do học tập và gọi điện phụ huynh xác thực.",
   },
@@ -36,13 +37,14 @@ export const INITIAL_CURFEW_REQUESTS: CurfewRequest[] = [
     date: "2026-10-10",
     expectedReturnTime: "06:30 (Sáng hôm sau)",
     reasonCategory: "HOME_VISIT",
-    reasonDetail: "Về nhà tại Tam Kỳ (Quảng Nam) ăn giỗ ông bà cuối tuần cùng gia đình.",
+    reasonDetail:
+      "Về nhà tại Tam Kỳ (Quảng Nam) ăn giỗ ông bà cuối tuần cùng gia đình.",
     parentPhone: "0905 888 999",
     parentConfirmed: true,
     submittedAt: "2026-10-10 20:15",
     isSubmittedBefore2100: true,
     status: "APPROVED",
-    reviewedBy: "Thầy Vũ Thành Nam (Dorm Manager)",
+    reviewedBy: " Vũ Thành Nam (Dorm Manager)",
     reviewedAt: "2026-10-10 20:45",
     reviewNotes: "Đồng ý nghỉ qua đêm cuối tuần.",
   },
@@ -56,7 +58,8 @@ export const INITIAL_CURFEW_REQUESTS: CurfewRequest[] = [
     date: "2026-10-10",
     expectedReturnTime: "00:30",
     reasonCategory: "PART_TIME_JOB",
-    reasonDetail: "Tăng ca kiểm kê hàng tồn kho tại cửa hàng tiện lợi F-Mart đến 23:30.",
+    reasonDetail:
+      "Tăng ca kiểm kê hàng tồn kho tại cửa hàng tiện lợi F-Mart đến 23:30.",
     parentPhone: "0983 456 789",
     parentConfirmed: false,
     submittedAt: "2026-10-10 21:40",
@@ -79,7 +82,7 @@ export const INITIAL_CURFEW_REQUESTS: CurfewRequest[] = [
     submittedAt: "2026-10-09 22:15",
     isSubmittedBefore2100: false,
     status: "REJECTED",
-    reviewedBy: "Thầy Vũ Thành Nam (Dorm Manager)",
+    reviewedBy: " Vũ Thành Nam (Dorm Manager)",
     reviewedAt: "2026-10-09 22:30",
     reviewNotes: "Từ chối vì lý do không chính đáng và nộp đơn quá hạn 21:00.",
   },
@@ -95,8 +98,9 @@ export const INITIAL_GATE_LOGS: GateAccessLog[] = [
     scanTimeFormatted: "23:38:15",
     curfewStatus: "APPROVED_LATE",
     matchedRequestId: "REQ-2026-089",
-    guardNotes: "Đối chiếu đơn REQ-2026-089: Học đồ án, có phép hợp lệ. Cho vào cổng.",
-    guardName: "Chú Đỗ Mạnh Hùng",
+    guardNotes:
+      "Đối chiếu đơn REQ-2026-089: Học đồ án, có phép hợp lệ. Cho vào cổng.",
+    guardName: " Đỗ Mạnh Hùng",
   },
   {
     id: "LOG-102",
@@ -107,8 +111,9 @@ export const INITIAL_GATE_LOGS: GateAccessLog[] = [
     scanTimeFormatted: "23:45:20",
     curfewStatus: "UNAUTHORIZED_LATE",
     penaltyPointsDeducted: 10,
-    guardNotes: "Về muộn sau 23:00 không có đơn xin phép trên hệ thống. Đã ghi nhận vi phạm.",
-    guardName: "Chú Đỗ Mạnh Hùng",
+    guardNotes:
+      "Về muộn sau 23:00 không có đơn xin phép trên hệ thống. Đã ghi nhận vi phạm.",
+    guardName: " Đỗ Mạnh Hùng",
   },
   {
     id: "LOG-103",
@@ -119,7 +124,7 @@ export const INITIAL_GATE_LOGS: GateAccessLog[] = [
     scanTimeFormatted: "22:45:00",
     curfewStatus: "ON_TIME",
     guardNotes: "Về trước 23:00, thẻ sinh viên hợp lệ.",
-    guardName: "Chú Đỗ Mạnh Hùng",
+    guardName: " Đỗ Mạnh Hùng",
   },
   {
     id: "LOG-104",
@@ -130,7 +135,7 @@ export const INITIAL_GATE_LOGS: GateAccessLog[] = [
     scanTimeFormatted: "22:52:10",
     curfewStatus: "ON_TIME",
     guardNotes: "Check-in bình thường trước giờ giới nghiêm.",
-    guardName: "Chú Đỗ Mạnh Hùng",
+    guardName: " Đỗ Mạnh Hùng",
   },
 ]
 
@@ -144,8 +149,9 @@ export const INITIAL_DISCIPLINE_RECORDS: DisciplineRecord[] = [
     infractionType: "CURFEW_VIOLATION",
     infractionTitle: "Vi phạm giờ giới nghiêm 23:00 không có đơn xin phép",
     pointsDeducted: 10,
-    description: "Về KTX lúc 23:45, bảo vệ kiểm tra hệ thống không có đơn duyệt hợp lệ.",
-    officerName: "Chú Đỗ Mạnh Hùng (Tổ An ninh)",
+    description:
+      "Về KTX lúc 23:45, bảo vệ kiểm tra hệ thống không có đơn duyệt hợp lệ.",
+    officerName: " Đỗ Mạnh Hùng (Tổ An ninh)",
     status: "RECORDED",
   },
   {
@@ -157,8 +163,9 @@ export const INITIAL_DISCIPLINE_RECORDS: DisciplineRecord[] = [
     infractionType: "UNAUTHORIZED_COOKING",
     infractionTitle: "Sử dụng bếp hồng ngoại nấu lẩu trong buồng phòng",
     pointsDeducted: 15,
-    description: "Cán bộ tuần tra phát hiện mùi khét và thu giữ bếp điện mini công suất 1500W nguy cơ chập cháy điện phòng.",
-    officerName: "Thầy Vũ Thành Nam (Dorm Manager)",
+    description:
+      "Cán bộ tuần tra phát hiện mùi khét và thu giữ bếp điện mini công suất 1500W nguy cơ chập cháy điện phòng.",
+    officerName: " Vũ Thành Nam (Dorm Manager)",
     evidenceNote: "Tạm giữ bếp tại phòng quản lý đến hết học kỳ.",
     status: "RECORDED",
   },
@@ -171,8 +178,9 @@ export const INITIAL_DISCIPLINE_RECORDS: DisciplineRecord[] = [
     infractionType: "NOISE_AFTER_HOURS",
     infractionTitle: "Gây ồn ào bằng loa kéo sau 22:30",
     pointsDeducted: 10,
-    description: "Bật nhạc âm lượng lớn hát karaoke ảnh hưởng các buồng lân cận nghỉ ngơi.",
-    officerName: "Chú Đỗ Mạnh Hùng (Tổ An ninh)",
+    description:
+      "Bật nhạc âm lượng lớn hát karaoke ảnh hưởng các buồng lân cận nghỉ ngơi.",
+    officerName: " Đỗ Mạnh Hùng (Tổ An ninh)",
     status: "RECORDED",
   },
   {
@@ -184,8 +192,9 @@ export const INITIAL_DISCIPLINE_RECORDS: DisciplineRecord[] = [
     infractionType: "UNAUTHORIZED_GUEST",
     infractionTitle: "Đưa bạn bên ngoài vào ngủ qua đêm trong buồng B2",
     pointsDeducted: 25,
-    description: "Kiểm tra phòng đột xuất lúc 01:30 phát hiện 1 người lạ không có thẻ nội trú ở qua đêm.",
-    officerName: "Thầy Vũ Thành Nam (Dorm Manager)",
+    description:
+      "Kiểm tra phòng đột xuất lúc 01:30 phát hiện 1 người lạ không có thẻ nội trú ở qua đêm.",
+    officerName: " Vũ Thành Nam (Dorm Manager)",
     evidenceNote: "Lập biên bản vi phạm nghiêm trọng an ninh trật tự KTX.",
     status: "RECORDED",
   },
@@ -199,7 +208,7 @@ export const INITIAL_DISCIPLINE_RECORDS: DisciplineRecord[] = [
     infractionTitle: "Hút thuốc lá điện tử trong nhà vệ sinh phòng chung",
     pointsDeducted: 20,
     description: "Làm kích hoạt đầu báo khói tại phòng A302 lúc 21:00.",
-    officerName: "Chú Đỗ Mạnh Hùng (Tổ An ninh)",
+    officerName: " Đỗ Mạnh Hùng (Tổ An ninh)",
     status: "RECORDED",
   },
 ]

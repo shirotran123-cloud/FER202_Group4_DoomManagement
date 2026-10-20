@@ -1,11 +1,12 @@
- import type { UserProfile, UserRole } from "@/types/auth"
+import type { UserProfile, UserRole } from "@/types/auth"
 
 export const MOCK_USERS: Record<UserRole, UserProfile> = {
   student: {
     id: "usr_student_01",
     fullName: "Nguyễn Hoàng Vinh",
     email: "hoangvinh.student@gmail.com",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+    avatar:
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
     role: "student",
     roleTitle: "Sinh viên lưu trú",
     studentId: "SE182049",
@@ -33,16 +34,18 @@ export const MOCK_USERS: Record<UserRole, UserProfile> = {
       parentName: "Nguyễn Văn Hùng",
       relationship: "Bố (Phụ huynh)",
       phone: "0903 123 456",
-      address: "123 Nguyễn Thị Minh Khai, Phường Bến Thành, Quận 1, TP. Hồ Chí Minh",
+      address:
+        "123 Nguyễn Thị Minh Khai, Phường Bến Thành, Quận 1, TP. Hồ Chí Minh",
       email: "hung.nguyen.parent@gmail.com",
     },
   },
 
   manager: {
     id: "usr_manager_01",
-    fullName: "Thầy Vũ Thành Nam",
+    fullName: " Vũ Thành Nam",
     email: "namvt@fpt.edu.vn",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80",
+    avatar:
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80",
     role: "manager",
     roleTitle: "Quản lý Ký túc xá (Dorm Manager)",
     staffId: "MGR-004",
@@ -58,15 +61,17 @@ export const MOCK_USERS: Record<UserRole, UserProfile> = {
       parentName: "Vũ Đình Khiêm",
       relationship: "Thân nhân",
       phone: "0912 999 888",
-      address: "Khu Đô thị FPT City, Phường Hòa Hải, Quận Ngũ Hành Sơn, Đà Nẵng",
+      address:
+        "Khu Đô thị FPT City, Phường Hòa Hải, Quận Ngũ Hành Sơn, Đà Nẵng",
     },
   },
 
   technician: {
     id: "usr_tech_01",
-    fullName: "Chú Đỗ Mạnh Hùng",
+    fullName: " Đỗ Mạnh Hùng",
     email: "hungbv.guard@fe.edu.vn",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
+    avatar:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
     role: "technician",
     roleTitle: "Cán bộ An ninh & Kỹ thuật viên Vận hành",
     staffId: "SEC-012",
@@ -90,7 +95,8 @@ export const MOCK_USERS: Record<UserRole, UserProfile> = {
     id: "usr_admin_01",
     fullName: "Ban Quản trị Hệ thống DMS",
     email: "admin.dms@fpt.edu.vn",
-    avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80",
+    avatar:
+      "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80",
     role: "admin",
     roleTitle: "Quản trị viên Hệ thống (System Admin)",
     staffId: "ADM-001",

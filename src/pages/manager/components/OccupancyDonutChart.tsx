@@ -31,11 +31,8 @@ export const OccupancyDonutChart: React.FC<OccupancyDonutChartProps> = ({
       <div className="flex items-center justify-between border-b border-border pb-3">
         <h3 className="flex items-center gap-2 text-sm font-bold text-foreground">
           <PieChart className="h-4 w-4 text-primary" />
-          Cơ Cấu Trạng Thái Giường (Tòa A)
+          Cơ Cấu Trạng Thái Giường
         </h3>
-        <span className="font-mono text-xs font-bold text-muted-foreground">
-          {stats.totalBeds} Giường
-        </span>
       </div>
 
       {/* Interactive SVG Donut */}
