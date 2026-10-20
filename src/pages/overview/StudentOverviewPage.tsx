@@ -9,11 +9,11 @@ import {
     QrCode,
   Building2,
   Receipt,
-  Clock,
   BedDouble,
   Wifi,
   RefreshCw,
-  Calendar,
+  ShieldCheck,
+  DoorClosed,
 } from "lucide-react"
 
 export const StudentOverviewPage: React.FC = () => {
@@ -161,29 +161,29 @@ export const StudentOverviewPage: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Card 4: Night Curfew Policy */}
+        {/* Card 4: Gate Access Status */}
         <Card className="flex flex-col justify-between hover:shadow-md transition-shadow">
           <CardHeader className="p-5 pb-2">
             <div className="flex items-center justify-between mb-2">
               <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold">
-                Giờ Giới Nghiêm
+                Cổng Ra Vào Tòa A
               </span>
               <div className="w-8 h-8 rounded-lg bg-secondary/15 flex items-center justify-center text-secondary">
-                <Clock className="h-4 w-4" />
+                <ShieldCheck className="h-4 w-4" />
               </div>
             </div>
-            <CardTitle className="text-lg font-bold">23:00 Khóa Cổng Trục Xoay</CardTitle>
+            <CardTitle className="text-lg font-bold">Quẹt Thẻ An Ninh 24/7</CardTitle>
             <div className="flex items-center gap-1.5 text-primary text-xs mt-2 font-medium">
               <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-              <span>Đã điểm danh / Trong phòng</span>
+              <span>Thẻ sinh viên: Hợp lệ • Đang ở phòng</span>
             </div>
           </CardHeader>
 
           <CardContent className="p-5 pt-0">
             <Button variant="outline" size="default" asChild className="w-full mt-4 gap-2">
               <Link to="/curfew">
-                <Calendar className="h-4 w-4" />
-                <span>Nộp Đơn Về Muộn</span>
+                <DoorClosed className="h-4 w-4" />
+                <span>Xem Lịch Sử Quẹt Thẻ</span>
               </Link>
             </Button>
           </CardContent>

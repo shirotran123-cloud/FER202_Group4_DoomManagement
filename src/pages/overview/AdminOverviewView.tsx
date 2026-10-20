@@ -5,9 +5,7 @@ import {
   MOCK_RESIDENTS_REGISTRY,
   MOCK_OCCUPANCY_STATS,
 } from "@/data/mockDashboard"
-import { INITIAL_CURFEW_REQUESTS } from "@/data/mockCurfew"
 import { INITIAL_MAINTENANCE_TICKETS } from "@/data/mockMaintenance"
-import type { CurfewRequest } from "@/types/curfew"
 import type { MaintenanceTicket } from "@/types/maintenance"
 import type { ResidentTemporaryRecord } from "@/types/dashboard"
 import {
@@ -21,13 +19,10 @@ import {
   ShieldCheck,
   Filter,
   Bed,
-  Check,
-  X,
   Sparkles,
   ExternalLink,
 } from "lucide-react"
 
-const STORAGE_KEY_CURFEW_REQS = "dms_curfew_requests_v1"
 const STORAGE_KEY_TICKETS = "dms_maintenance_tickets_v1"
 
 export const AdminOverviewView: React.FC = () => {
@@ -39,14 +34,6 @@ export const AdminOverviewView: React.FC = () => {
   )
 
   // Requests state
-  const [curfewRequests, setCurfewRequests] = useState<CurfewRequest[]>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY_CURFEW_REQS)
-      return saved ? JSON.parse(saved) : INITIAL_CURFEW_REQUESTS
-    } catch {
-      return INITIAL_CURFEW_REQUESTS
-    }
-  })
 
   const [maintenanceTickets, setMaintenanceTickets] = useState<
     MaintenanceTicket[]
@@ -79,20 +66,6 @@ export const AdminOverviewView: React.FC = () => {
     "ALL" | "PENDING" | "RESOLVED"
   >("ALL")
 
-  // Handle Curfew Review
-  const handleReviewCurfew = (id: string, status: "APPROVED" | "REJECTED") => {
-    const updated = curfewRequests.map((r) =>
-      r.id === id
-        ? { ...r, status, reviewedBy: user?.fullName || "Quản trị viên DMS" }
-        : r
-    )
-    setCurfewRequests(updated)
-    localStorage.setItem(STORAGE_KEY_CURFEW_REQS, JSON.stringify(updated))
-    showToast(
-      `Đã ${status === "APPROVED" ? "phê duyệt" : "từ chối"} đơn ${id}!`
-    )
-  }
-
   // Handle Maintenance Status Update
   const handleUpdateMaintenanceStatus = (
     id: string,
@@ -121,13 +94,10 @@ export const AdminOverviewView: React.FC = () => {
   })
 
   // Pending counts
-  const pendingCurfewCount = curfewRequests.filter(
-    (r) => r.status === "PENDING"
-  ).length
   const pendingMaintenanceCount = maintenanceTickets.filter(
     (t) => t.status === "PENDING"
   ).length
-  const totalPendingRequests = pendingCurfewCount + pendingMaintenanceCount
+  const totalPendingRequests = pendingMaintenanceCount
 
   return (
     <div className="space-y-6 pb-12">
@@ -179,7 +149,7 @@ export const AdminOverviewView: React.FC = () => {
               className="flex items-center gap-2 rounded-xl bg-sky-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition-all hover:bg-sky-700"
             >
               <Clock className="h-4 w-4" />
-              <span>Cổng Giới Nghiêm</span>
+              <span>Giám Sát Ra Vào Cổng</span>
             </Link>
           </div>
         </div>
@@ -235,7 +205,7 @@ export const AdminOverviewView: React.FC = () => {
               </span>
             </div>
             <div className="mt-1 text-xs text-muted-foreground">
-              {pendingCurfewCount} đơn về muộn • {pendingMaintenanceCount} phiếu
+              {pendingMaintenanceCount} phiếu báo hỏng kỹ thuật
               bảo trì
             </div>
           </div>
@@ -289,25 +259,25 @@ export const AdminOverviewView: React.FC = () => {
           </div>
         </div>
 
-        {/* Card 4: Curfew & Discipline Status */}
+        {/* Card 4: Gate Access Status */}
         <div className="flex flex-col justify-between rounded-2xl border border-border bg-card p-5 shadow-xs transition-shadow hover:shadow-md sm:p-6">
           <div>
             <div className="mb-3 flex items-center justify-between">
               <span className="text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
-                Kiểm Soát Giới Nghiêm 23:00
+                Lượt Ra Vào Cổng Hôm Nay
               </span>
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600">
-                <Clock className="h-5 w-5" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600">
+                <ShieldCheck className="h-5 w-5" />
               </div>
             </div>
-            <div className="text-2xl font-black text-foreground">
-              {curfewRequests.filter((r) => r.status === "APPROVED").length}{" "}
+            <div className="text-2xl font-black text-foreground font-mono">
+              248{" "}
               <span className="text-sm font-normal text-muted-foreground">
-                đơn hợp lệ
+                lượt quẹt
               </span>
             </div>
             <div className="mt-1 text-xs text-muted-foreground">
-              Cho phép ra vào ngoài giờ sau 23:00
+              100% thẻ sinh viên hợp lệ • Tòa A
             </div>
           </div>
 
@@ -315,7 +285,7 @@ export const AdminOverviewView: React.FC = () => {
             <span className="text-muted-foreground">Trạng thái cổng:</span>
             <span className="flex items-center gap-1 font-bold text-emerald-600">
               <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-              Cổng bảo vệ sẵn sàng
+              Cổng tự động 24/7 sẵn sàng
             </span>
           </div>
         </div>
@@ -346,7 +316,7 @@ export const AdminOverviewView: React.FC = () => {
           <FileText className="h-4 w-4 text-cyan-600" />
           <span>
             Yêu Cầu & Đơn Từ (
-            {curfewRequests.length + maintenanceTickets.length})
+            {maintenanceTickets.length})
           </span>
           {totalPendingRequests > 0 && (
             <span className="py-0.2 ml-1 rounded-full bg-cyan-500 px-1.5 text-[10px] font-black text-white">
@@ -500,18 +470,7 @@ export const AdminOverviewView: React.FC = () => {
                     : "bg-muted text-muted-foreground hover:text-foreground"
                 }`}
               >
-                Tất cả đơn ({curfewRequests.length + maintenanceTickets.length})
-              </button>
-              <button
-                type="button"
-                onClick={() => setRequestTypeFilter("CURFEW")}
-                className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
-                  requestTypeFilter === "CURFEW"
-                    ? "bg-blue-600 text-white"
-                    : "bg-muted text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Đơn Về Muộn / Vắng Mặt ({curfewRequests.length})
+                Tất cả phiếu ({maintenanceTickets.length})
               </button>
               <button
                 type="button"
@@ -544,140 +503,6 @@ export const AdminOverviewView: React.FC = () => {
 
           {/* List of Applications & Requests */}
           <div className="space-y-3">
-            {/* 1. Curfew Requests */}
-            {(requestTypeFilter === "ALL" || requestTypeFilter === "CURFEW") &&
-              curfewRequests
-                .filter((r) => {
-                  if (requestStatusFilter === "PENDING")
-                    return r.status === "PENDING"
-                  if (requestStatusFilter === "RESOLVED")
-                    return r.status !== "PENDING"
-                  return true
-                })
-                .map((req) => (
-                  <div
-                    key={req.id}
-                    className="space-y-3 rounded-2xl border border-border bg-card p-5 shadow-xs transition-colors hover:border-blue-500/40"
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center gap-1 rounded-lg bg-blue-500/10 px-2.5 py-1 text-xs font-bold text-blue-700 dark:text-blue-400">
-                          <Clock className="h-3.5 w-3.5" />
-                          Đơn Về Muộn
-                        </span>
-                        <span className="rounded-md bg-muted px-2 py-0.5 font-mono text-xs font-bold">
-                          {req.id}
-                        </span>
-                        <span className="text-sm font-bold text-foreground">
-                          {req.studentName} ({req.studentId})
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          • Phòng {req.room}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                            req.isSubmittedBefore2100
-                              ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
-                              : "bg-blue-500/10 text-blue-600"
-                          }`}
-                        >
-                          {req.isSubmittedBefore2100
-                            ? "Nộp trước 21:00"
-                            : "Nộp muộn sau 21:00"}
-                        </span>
-
-                        <span
-                          className={`rounded-full px-2.5 py-1 text-xs font-bold ${
-                            req.status === "APPROVED"
-                              ? "bg-emerald-600 text-white"
-                              : req.status === "REJECTED"
-                                ? "bg-blue-600 text-white"
-                                : "border border-cyan-500/30 bg-cyan-500/20 text-cyan-700 dark:text-cyan-400"
-                          }`}
-                        >
-                          {req.status === "APPROVED" && "Đã phê duyệt"}
-                          {req.status === "REJECTED" && "Đã từ chối"}
-                          {req.status === "PENDING" && "Chờ BQL duyệt"}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="rounded-xl border border-border/60 bg-muted/30 p-3 text-xs text-foreground">
-                      <p className="font-medium">
-                        Lý do giải trình:{" "}
-                        <span className="font-normal">{req.reasonDetail}</span>
-                      </p>
-                      <div className="mt-2 flex flex-wrap gap-4 text-[11px] text-muted-foreground">
-                        <span>
-                          Ngày vắng:{" "}
-                          <strong className="text-foreground">
-                            {req.date}
-                          </strong>
-                        </span>
-                        <span>
-                          Giờ về dự kiến:{" "}
-                          <strong className="text-foreground">
-                            {req.expectedReturnTime}
-                          </strong>
-                        </span>
-                        <span>
-                          SĐT liên hệ:{" "}
-                          <strong className="text-foreground">
-                            {req.phone}
-                          </strong>
-                        </span>
-                        <span>
-                          SĐT Phụ huynh xác nhận:{" "}
-                          <strong className="text-foreground">
-                            {req.parentPhone}
-                          </strong>
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Action buttons for admin */}
-                    <div className="flex items-center justify-between pt-1">
-                      <span className="text-[11px] text-muted-foreground">
-                        {req.reviewedBy
-                          ? `Người duyệt: ${req.reviewedBy}`
-                          : "Chờ ban quản lý ký duyệt trực tuyến"}
-                      </span>
-
-                      {req.status === "PENDING" ? (
-                        <div className="flex gap-2">
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleReviewCurfew(req.id, "APPROVED")
-                            }
-                            className="flex items-center gap-1 rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-emerald-700"
-                          >
-                            <Check className="h-3.5 w-3.5" />
-                            <span>Duyệt đơn hợp lệ</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleReviewCurfew(req.id, "REJECTED")
-                            }
-                            className="flex items-center gap-1 rounded-xl bg-blue-600 px-3 py-1.5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-blue-700"
-                          >
-                            <X className="h-3.5 w-3.5" />
-                            <span>Từ chối</span>
-                          </button>
-                        </div>
-                      ) : (
-                        <span className="text-xs font-semibold text-muted-foreground">
-                          Thao tác đã hoàn tất
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                ))}
-
             {/* 2. Maintenance Tickets */}
             {(requestTypeFilter === "ALL" ||
               requestTypeFilter === "MAINTENANCE") &&

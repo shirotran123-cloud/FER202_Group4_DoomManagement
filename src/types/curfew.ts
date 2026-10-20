@@ -11,39 +11,46 @@ export type CurfewReasonCategory =
 export type CurfewRequestStatus = "PENDING" | "APPROVED" | "REJECTED"
 
 export interface CurfewRequest {
-  id: string // e.g. "REQ-2026-089"
+  id: string
   studentId: string
   studentName: string
   room: string
   phone: string
   requestType: CurfewRequestType
-  date: string // YYYY-MM-DD
-  expectedReturnTime: string // e.g. "23:45" hoặc "06:30 (Sáng hôm sau)"
+  date: string
+  expectedReturnTime: string
   reasonCategory: CurfewReasonCategory
   reasonDetail: string
   parentPhone: string
   parentConfirmed: boolean
   submittedAt: string
-  isSubmittedBefore2100: boolean // BR: Nộp trước 21:00
+  isSubmittedBefore2100: boolean
   status: CurfewRequestStatus
   reviewedBy?: string
   reviewedAt?: string
   reviewNotes?: string
 }
 
+export type GateDirection = "ENTRY" | "EXIT"
+
 export type GateAccessStatus =
-  | "ON_TIME" // Trước 23:00 - Bình thường
-  | "APPROVED_LATE" // Sau 23:00 - Có đơn duyệt hợp lệ
-  | "UNAUTHORIZED_LATE" // Sau 23:00 - KHÔNG CÓ ĐƠN -> Vi phạm
+  | "VALID"
+  | "ENTRY"
+  | "EXIT"
+  | "ON_TIME"
+  | "APPROVED_LATE"
+  | "UNAUTHORIZED_LATE"
 
 export interface GateAccessLog {
   id: string
   studentId: string
   studentName: string
   room: string
-  timestamp: string // ISO string
-  scanTimeFormatted: string // e.g. "23:18:42"
-  curfewStatus: GateAccessStatus
+  timestamp: string
+  scanTimeFormatted: string
+  direction?: GateDirection // "ENTRY" | "EXIT"
+  status?: "VALID" | "NORMAL"
+  curfewStatus?: GateAccessStatus
   matchedRequestId?: string
   penaltyPointsDeducted?: number
   guardNotes?: string
@@ -51,16 +58,16 @@ export interface GateAccessLog {
 }
 
 export type InfractionType =
-  | "CURFEW_VIOLATION" // Vi phạm giờ giới nghiêm sau 23:00 (-10đ)
-  | "UNAUTHORIZED_COOKING" // Nấu ăn sai quy định trong phòng (-15đ)
-  | "NOISE_AFTER_HOURS" // Làm ồn sau 22:30 ảnh hưởng buồng khác (-10đ)
-  | "SMOKING_VAPING" // Hút thuốc lá / thuốc điện tử (-20đ)
-  | "UNAUTHORIZED_GUEST" // Đưa người lạ vào phòng qua đêm (-25đ)
-  | "HIGH_POWER_APPLIANCE" // Dùng thiết bị điện quá tải (-15đ)
-  | "OTHER" // Vi phạm khác (-5đ)
+  | "CURFEW_VIOLATION"
+  | "UNAUTHORIZED_COOKING"
+  | "NOISE_AFTER_HOURS"
+  | "SMOKING_VAPING"
+  | "UNAUTHORIZED_GUEST"
+  | "HIGH_POWER_APPLIANCE"
+  | "OTHER"
 
 export interface DisciplineRecord {
-  id: string // e.g. "VIO-2026-042"
+  id: string
   studentId: string
   studentName: string
   room: string
@@ -79,9 +86,9 @@ export interface StudentDemeritSummary {
   studentId: string
   studentName: string
   room: string
-  initialPoints: number // 100
+  initialPoints: number
   totalDeducted: number
   remainingPoints: number
-  status: "NORMAL" | "WARNING" | "SUSPENDED" // >=80 Normal, 70-79 Warning, <70 Suspended
+  status: "NORMAL" | "WARNING" | "SUSPENDED"
   violationCount: number
 }

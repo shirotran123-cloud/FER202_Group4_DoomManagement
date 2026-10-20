@@ -660,7 +660,7 @@ export const LoginPage: React.FC = () => {
                         required
                       />
                       <span>
-                        Tôi cam kết tuân thủ nghiêm túc Nội quy Ký túc xá FPT University (Giới nghiêm 23:00, không mang chất cấm, giữ gìn tài sản chung).
+                        Tôi cam kết tuân thủ nghiêm túc Nội quy Ký túc xá FPT University (Không mang chất cấm, giữ gìn an ninh trật tự, bảo vệ tài sản chung).
                       </span>
                     </label>
 

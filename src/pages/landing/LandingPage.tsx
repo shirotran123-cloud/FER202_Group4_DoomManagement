@@ -393,7 +393,7 @@ export const LandingPage: React.FC = () => {
         <div>
           
           <h2 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
-            Quy Định Chung & Kỷ Luật Lưu Trú
+            Quy Định Chung & Nội Quy Lưu Trú
           </h2>
           <p className="text-sm text-muted-foreground">
             Sinh viên cam kết thực hiện nghiêm túc khi ký hợp đồng lưu trú điện

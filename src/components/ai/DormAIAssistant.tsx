@@ -27,10 +27,10 @@ const INITIAL_MESSAGES: ChatMessage[] = [
   {
     id: "msg-1",
     sender: "ai",
-    text: "Xin chào! Mình là DomaAI - Trợ lý Ký túc xá FPT University được trang bị Google Gemini LLM. Mình có thể giải đáp chi tiết mọi vấn đề:\n\n• Chẩn đoán sự cố điện nước & quy trình báo hỏng\n• Tra cứu quy định giới nghiêm 23:00, thủ tục xin về muộn\n• Tư vấn chọn phòng, buồng, tầng lầu và vị trí giường\n• Giải thích thuật toán chia tiền điện nước và thanh toán VietQR",
+    text: "Xin chào! Mình là DomaAI - Trợ lý Ký túc xá FPT University được trang bị Google Gemini LLM. Mình có thể giải đáp chi tiết mọi vấn đề:\n\n• Chẩn đoán sự cố điện nước & quy trình báo hỏng\n• Kiểm soát an ninh ra vào cổng thông minh 24/7\n• Tư vấn chọn phòng, buồng, tầng lầu và vị trí giường\n• Giải thích thuật toán chia tiền điện nước và thanh toán VietQR",
     timestamp: "Vừa xong",
     suggestions: [
-      "Quy định giới nghiêm 23h và cách xin về muộn?",
+      "Hướng dẫn quẹt thẻ ra vào cổng KTX 24/7?",
       "Ổ cắm điện bị tóe lửa khét thì xử lý thế nào?",
       "Tư vấn giường tầng trên hay tầng dưới?",
       "Tiền điện nước phòng được chia như thế nào?",
@@ -299,7 +299,7 @@ export const DormAIAssistant: React.FC = () => {
         }),
         isError,
         suggestions: [
-          "Quy định giới nghiêm 23h?",
+          "Hướng dẫn ra vào cổng KTX 24/7?",
           "Hướng dẫn báo hỏng thiết bị",
           "Cách thanh toán tiền phòng qua VietQR",
         ],
