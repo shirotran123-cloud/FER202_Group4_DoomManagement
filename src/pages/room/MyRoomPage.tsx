@@ -1,7 +1,6 @@
 import React, { useState } from "react"
 import { useAuth } from "@/contexts/useAuth"
 import { ContractRenewalModal } from "@/components/contract/ContractRenewalModal"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
 import {
@@ -285,9 +284,6 @@ export const MyRoomPage: React.FC = () => {
               <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground px-2 py-0.5 rounded bg-[#eff6ff] dark:bg-[#1c262c]">
                 Khu A · Tầng 2
               </span>
-              <Badge variant="available" dot>
-                Đang Lưu Trú (Active)
-              </Badge>
             </div>
             <p className="text-xs text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1">
               <span className="font-semibold text-foreground">Buồng B (Balcony Wing)</span>
@@ -395,7 +391,7 @@ export const MyRoomPage: React.FC = () => {
               </h3>
             </div>
           </div>
-          <Badge variant="available">4 Thành Viên</Badge>
+          <span className="text-xs font-semibold text-muted-foreground">4 Thành Viên</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

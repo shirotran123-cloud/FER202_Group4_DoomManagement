@@ -145,9 +145,9 @@ export const StudentOverviewPage: React.FC = () => {
               <div className="text-2xl font-bold text-foreground tracking-tight">₫48,706</div>
               <span className="text-xs text-muted-foreground font-semibold">VND</span>
             </div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-destructive/15 text-destructive text-xs mt-2 font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-destructive animate-pulse"></span>
-              Hạn nộp: Còn 3 ngày (05/10)
+            <div className="flex items-center gap-1.5 text-destructive text-xs mt-2 font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-destructive"></span>
+              <span>Hạn nộp: Còn 3 ngày (05/10)</span>
             </div>
           </CardHeader>
 
@@ -173,9 +173,9 @@ export const StudentOverviewPage: React.FC = () => {
               </div>
             </div>
             <CardTitle className="text-lg font-bold">23:00 Khóa Cổng Trục Xoay</CardTitle>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/15 text-primary text-xs mt-2 font-medium">
+            <div className="flex items-center gap-1.5 text-primary text-xs mt-2 font-medium">
               <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-              Đã điểm danh / Trong phòng
+              <span>Đã điểm danh / Trong phòng</span>
             </div>
           </CardHeader>
 

@@ -1,6 +1,5 @@
 import React, { useState } from "react"
 import { useAuth } from "@/contexts/useAuth"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
     Receipt,
@@ -93,7 +92,7 @@ export const BillingPage: React.FC = () => {
             <h1 className="text-2xl font-black text-foreground tracking-tight">
               Điện Nước & Hóa Đơn (VietQR)
             </h1>
-            <Badge variant="available">Chu kỳ T09/2026</Badge>
+            <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">Chu kỳ T09/2026</span>
           </div>
         </div>
 
@@ -546,9 +545,10 @@ export const BillingPage: React.FC = () => {
                       <td className="py-2.5 px-2 font-semibold text-foreground">{inv.month}</td>
                       <td className="py-2.5 px-2 font-mono text-foreground">{inv.amount}</td>
                       <td className="py-2.5 px-2">
-                        <Badge variant="available" dot>
-                          Đã thanh toán ({inv.date})
-                        </Badge>
+                        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                          <span>Đã thanh toán ({inv.date})</span>
+                        </span>
                       </td>
                       <td className="py-2.5 px-2 text-right">
                         <button
