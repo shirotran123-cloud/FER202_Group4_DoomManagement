@@ -34,7 +34,7 @@ export const MaintenanceTicketCard: React.FC<MaintenanceTicketCardProps> = ({
   onDelete,
   onAssign: _onAssign,
   onComplete: _onComplete,
-  onReview: _onReview,
+  onReview,
 }) => {
   const isEmergency = ticket.urgency === "EMERGENCY"
   const isPending = ticket.status === "PENDING"
@@ -51,6 +51,9 @@ export const MaintenanceTicketCard: React.FC<MaintenanceTicketCardProps> = ({
 
   const canEditOrDelete =
     isManagerOrAdmin || (isMyTicket && ticket.status === "PENDING")
+
+  // Manager/Admin nghiệm thu khi kỹ thuật viên đã báo xong (RESOLVED)
+  const canReview = isManagerOrAdmin && isResolved
 
   return (
     <Card
@@ -250,6 +253,18 @@ export const MaintenanceTicketCard: React.FC<MaintenanceTicketCardProps> = ({
           )}
         </div>
 
+        {/* Right: Nút nghiệm thu (chỉ manager/admin khi phiếu RESOLVED) */}
+        {canReview && (
+          <Button
+            size="sm"
+            onClick={() => onReview(ticket)}
+            className="gap-1.5 text-xs h-7 px-3 font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs"
+            title="Nghiệm thu và đóng phiếu"
+          >
+            <FileCheck2 className="h-3.5 w-3.5" />
+            <span>Nghiệm Thu</span>
+          </Button>
+        )}
       </div>
     </Card>
   )

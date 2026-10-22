@@ -399,7 +399,7 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
                       <div className="flex items-end justify-center gap-1 w-full max-w-[46px] h-full">
                         {/* Cột Điện */}
                         <div className="relative flex flex-col items-center w-1/2 h-full justify-end">
-                          <span className="text-[10px] font-mono font-bold text-amber-600 dark:text-amber-400 mb-1 leading-none select-none">
+                          <span className="text-[10px] font-mono font-bold text-amber-600 dark:text-amber-400 mb-1 leading-none select-none whitespace-nowrap">
                             {item.elecCostText}
                           </span>
                           <div
@@ -410,7 +410,7 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
 
                         {/* Cột Nước */}
                         <div className="relative flex flex-col items-center w-1/2 h-full justify-end">
-                          <span className="text-[10px] font-mono font-bold text-sky-600 dark:text-sky-400 mb-1 leading-none select-none">
+                          <span className="text-[10px] font-mono font-bold text-sky-600 dark:text-sky-400 mb-1 leading-none select-none whitespace-nowrap">
                             {item.waterCostText}
                           </span>
                           <div

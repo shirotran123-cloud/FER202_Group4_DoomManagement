@@ -31,21 +31,14 @@ export const BookingPage: React.FC = () => {
   const [selectedFloor, setSelectedFloor] = useState(2)
   const [selectedRoom, setSelectedRoom] = useState("A205")
   const [selectedCompartment, setSelectedCompartment] = useState("B")
-  const [selectedBed, setSelectedBed] = useState<Bed>({
-    id: "A205-B-G03",
-    code: "A205-B-G03",
-    slot: "G03",
-    status: "available",
-    price: 950000,
-    tier: "lower",
-  })
+  const [selectedBed, setSelectedBed] = useState<Bed | null>(null)
 
   // Active step: which step is currently highlighted (others dim)
   // -1 means all steps done (payment confirmed)
   const [activeStep, setActiveStep] = useState<number>(1)
 
   // Whether a step has been "completed" (user clicked Next)
-  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set([2, 3, 4, 5]))
+  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set([2, 3, 4]))
 
   // Timer (15min)
   const [timeLeft, setTimeLeft] = useState(14 * 60 + 45)
@@ -168,9 +161,9 @@ export const BookingPage: React.FC = () => {
         room: selectedRoom,
         compartment: selectedCompartment,
         compartmentTitle: comp?.title || "Balcony Wing",
-        bedCode: selectedBed.code,
-        bedSlot: selectedBed.slot,
-        bedTier: selectedBed.tier,
+        bedCode: selectedBed?.code || "",
+        bedSlot: selectedBed?.slot || "",
+        bedTier: selectedBed?.tier || "lower",
         isConfirmed: true,
       })
       setActiveStep(-1)

@@ -686,35 +686,40 @@ export const BillingPage: React.FC = () => {
         {/* LEFT COLUMN: 7 COLS (BREAKDOWN & PHOTO VERIFICATION) */}
         <div className="lg:col-span-7 flex flex-col gap-6">
           <div className="bg-white dark:bg-[#161e23] rounded-xl border border-border p-5 shadow-xs space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-lg bg-[#eff6ff] dark:bg-[#1c262c] gap-3">
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">
-                  {isManager
-                    ? `Kỳ Sử Dụng Tiện Ích Phòng ${currentRoom} (Tòa A)`
-                    : `Kỳ Sử Dụng Tiện Ích Phòng ${currentRoom}`}
-                </span>
-                <span className="font-bold text-sm text-foreground">
-                  01 Tháng 09 – 30 Tháng 09, 2026
-                </span>
+            <div className="flex flex-col gap-3 p-3.5 rounded-lg bg-[#eff6ff] dark:bg-[#1c262c]">
+              {/* Row 1: Kỳ sử dụng + chọn phòng */}
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">
+                    {isManager
+                      ? `Kỳ Sử Dụng Tiện Ích Phòng ${currentRoom} (Tòa A)`
+                      : `Kỳ Sử Dụng Tiện Ích Phòng ${currentRoom}`}
+                  </span>
+                  <span className="font-bold text-sm text-foreground whitespace-nowrap">
+                    01 Tháng 09 – 30 Tháng 09, 2026
+                  </span>
+                </div>
+
+                {isManager && (
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="text-[11px] font-bold text-muted-foreground whitespace-nowrap">Phòng:</span>
+                    <select
+                      value={selectedRoom}
+                      onChange={(e) => setSelectedRoom(e.target.value)}
+                      className="p-1 px-2 rounded-lg border border-border bg-card text-xs font-bold text-foreground cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
+                    >
+                      {["A205", "A201", "A202", "A203", "A204", "A206", "A207"].map((r) => (
+                        <option key={r} value={r}>Phòng {r}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
 
-              {isManager && (
-                <div className="flex items-center gap-1.5 self-start sm:self-auto">
-                  <span className="text-[11px] font-bold text-muted-foreground">Phòng:</span>
-                  <select
-                    value={selectedRoom}
-                    onChange={(e) => setSelectedRoom(e.target.value)}
-                    className="p-1 px-2 rounded-lg border border-border bg-card text-xs font-bold text-foreground cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
-                  >
-                    {["A205", "A201", "A202", "A203", "A204", "A206", "A207"].map((r) => (
-                      <option key={r} value={r}>Phòng {r}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
+              {/* Row 2: SV cùng chia + nút phát hành */}
               <div className="flex flex-wrap items-center gap-2">
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-[#161e23] shadow-2xs border border-border text-xs font-semibold text-foreground">
-                  <Users className="h-4 w-4 text-primary" />
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-[#161e23] shadow-2xs border border-border text-xs font-semibold text-foreground whitespace-nowrap">
+                  <Users className="h-4 w-4 text-primary shrink-0" />
                   <span>{numStudents} SV Cùng Chia</span>
                 </div>
 
@@ -729,6 +734,7 @@ export const BillingPage: React.FC = () => {
                 )}
               </div>
             </div>
+
 
             {publishedBatch && (
               <div className="p-3 bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 rounded-lg text-xs font-semibold flex items-center gap-2 animate-in fade-in">
