@@ -1,3 +1,4 @@
+import { DemoAccountSwitcher } from "@/components/common/DemoAccountSwitcher"
 import React, { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
@@ -160,6 +161,7 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
 
           {/* Actions: Login or Dashboard */}
           <div className="flex shrink-0 items-center gap-3">
+            <DemoAccountSwitcher variant="navbar" />
             {isAuthenticated && user ? (
               <div className="flex shrink-0 items-center gap-2.5 sm:gap-3">
                 {/* Go to Dashboard button */}
@@ -254,6 +256,8 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
         {children}
       </main>
 
-    </div>
+          {/* Floating Demo Account Switcher on Landing Page */}
+      <DemoAccountSwitcher variant="floating" />
+</div>
   )
 }

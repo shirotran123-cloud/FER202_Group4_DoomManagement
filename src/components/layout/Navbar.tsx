@@ -1,3 +1,4 @@
+import { DemoAccountSwitcher } from "@/components/common/DemoAccountSwitcher"
 import React, { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
@@ -53,6 +54,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
       </div>
 
       <div className="flex items-center gap-2 sm:gap-4">
+        {/* Demo Account Switcher */}
+        <DemoAccountSwitcher variant="navbar" />
         {isAuthenticated && user ? (
           <>
             {/* Theme Toggle (Light / Dark) */}
