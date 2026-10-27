@@ -11,6 +11,9 @@ import {
   ArrowRight,
   CheckCircle2,
   FileCheck,
+  Flame,
+  Wifi,
+  Coffee,
   PhoneCall,
   MapPin,
   ChevronDown,
@@ -22,11 +25,6 @@ import {
 
 const FAQ_ITEMS = [
   {
-    question: "Ký túc xá phân chia các tòa nhà theo giới tính như thế nào?",
-    answer:
-      "Ký túc xá FPT gồm 4 tòa nhà hiện đại: Tòa A và Tòa B dành cho Nam sinh viên; Tòa C và Tòa D dành cho Nữ sinh viên. Phân khu nam nữ riêng biệt đảm bảo an ninh, trật tự và không gian sinh hoạt chuẩn mực.",
-  },
-  {
     question: "Phòng KTX có đảm bảo sự riêng tư không?",
     answer:
       "Mỗi căn phòng lớn tiêu chuẩn có 4 buồng riêng biệt (A, B, C, D) với 6 giường/buồng (tổng 24 giường). Mỗi giường có rèm che chống nhìn xuyên thấu, đèn bàn LED, ổ cắm đôi và tủ cá nhân khóa số riêng biệt.",
@@ -34,17 +32,17 @@ const FAQ_ITEMS = [
   {
     question: "Tiền điện nước được tính và chia như thế nào?",
     answer:
-      "Công tơ điện và đồng hồ nước được chụp ảnh nghiệm thu từ ngày 25-28 hàng tháng. Hệ thống tự động áp công thức chia đều (Total ÷ N) cho số lượng sinh viên đang thực tế lưu trú trong phòng kèm mã VietQR tự động.",
+      "Công tơ điện và đồng hồ nước được chụp ảnh nghiệm thu từ ngày 25-28 hàng tháng. Hệ thống tự động áp công thức chia đều cho số lượng sinh viên đang thực tế lưu trú trong phòng kèm mã VietQR tự động.",
   },
   {
-    question: "Ký túc xá có quy định thời gian ra vào cổng như thế nào?",
+    question: "Nếu tôi đi làm thêm hoặc học nhóm về muộn sau 23:00 thì sao?",
     answer:
-      "Ký túc xá hoạt động thuận tiện, sinh viên sử dụng thẻ sinh viên hoặc ứng dụng để ra vào cổng thuận tiện bất cứ lúc nào.",
+      "Sinh viên chỉ cần gửi Đơn xin về muộn trực tuyến trên hệ thống trước 21:00 cùng ngày. BQL duyệt tự động và cấp mã QR mở cổng trục xoay an ninh ban đêm mà không bị trừ điểm rèn luyện.",
   },
   {
-    question: "Quy trình đăng ký và thanh toán phí lưu trú KTX như thế nào?",
+    question: "Quy trình thanh toán và nhận cọc diễn ra như thế nào?",
     answer:
-      "Sau khi đăng ký giữ chỗ 15 phút, bạn quét mã VietQR để thanh toán tiền lưu trú học kỳ (3.200.000đ cho buồng 6 giường hoặc 4.000.000đ cho buồng 4 giường). Ký túc xá hoàn toàn KHÔNG thu tiền đặt cọc. Chuyển khoản xong bạn sẽ lập tức nhận phòng và bắt đầu lưu trú thuận tiện.",
+      "Sau khi giữ chỗ 15 phút, bạn quét mã VietQR để thanh toán. Tiền đặt cọc an ninh 1.000.000 VNĐ sẽ được hoàn trả 100% về tài khoản ngân hàng của sinh viên ngay sau khi hoàn tất Biên bản bàn giao số hóa.",
   },
   {
     question: "Sinh viên mới nhập học đăng nhập bằng tài khoản gì?",
@@ -59,7 +57,7 @@ const FAQ_ITEMS = [
   {
     question: "Cơ chế khóa giữ chỗ 15 phút hoạt động như thế nào?",
     answer:
-      'Khi bạn chọn buồng và nhấn "Đăng ký", hệ thống sẽ khóa chỗ trong 15 phút để bạn hoàn tất chuyển khoản tiền ở học kỳ qua VietQR. Sau khi chuyển khoản thành công, bạn nhận ngay phòng và mã số ra vào cổng KTX.',
+      'Khi bạn chọn giường và nhấn "Giữ chỗ", hệ thống sẽ khóa giường đó trong 15 phút để bạn hoàn tất thanh toán cọc qua VietQR. Nếu quá thời gian, giường sẽ tự động mở lại để sinh viên khác có thể đặt.',
   },
 ]
 
@@ -73,9 +71,7 @@ const FaqSection: React.FC = () => {
   return (
     <section id="faq" className="scroll-mt-24 space-y-6">
       <div className="max-w-2xl space-y-1">
-        <span className="text-xs font-bold tracking-wider text-sky-600 uppercase">
-          Hỏi đáp nhanh
-        </span>
+        
         <h2 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
           Câu Hỏi Thường Gặp Của Sinh Viên
         </h2>
@@ -156,7 +152,7 @@ export const LandingPage: React.FC = () => {
     {
       icon: Receipt,
       title: "Minh bạch Điện Nước",
-      desc: "Tự động tính thuế VAT 10% và chia đều chi phí phát sinh hàng tháng cho các thành viên trong phòng kèm mã VietQR.",
+      desc: "Tự động tính thuế VAT và chia đều chính xác cho số lượng sinh viên đang ở kèm mã VietQR.",
           },
     {
       icon: ShieldCheck,
@@ -166,40 +162,52 @@ export const LandingPage: React.FC = () => {
     {
       icon: FileCheck,
       title: "Biên bản Bàn giao Số hóa",
-      desc: "Checklist điện tử khi Check-in và Check-out với ảnh hiện trạng, hoàn tất bàn giao phòng nhanh chóng.",
+      desc: "Checklist điện tử khi Check-in và Check-out với ảnh hiện trạng, tự động quyết toán hoàn cọc.",
           },
   ]
 
   const feeTable = [
     {
-      item: "Tiền thuê buồng 6 giường",
-      price: "800.000 VNĐ",
+      item: "Tiền thuê giường",
+      price: "900.000 VNĐ",
       unit: "tháng / sinh viên",
-      note: "Thu theo kỳ 4 tháng (3.200.000 VNĐ / kỳ)",
+      note: "Thu theo kỳ 4 tháng (3.600.000 VNĐ)",
     },
     {
-      item: "Tiền thuê buồng 4 giường",
+      item: "Tiền ký quỹ đặt cọc tài sản",
       price: "1.000.000 VNĐ",
-      unit: "tháng / sinh viên",
-      note: "Thu theo kỳ 4 tháng (4.000.000 VNĐ / kỳ)",
+      unit: "lần đầu / hoàn lại khi trả phòng",
+      note: "Quyết toán sau khi trừ hư hại nếu có",
     },
     {
       item: "Đơn giá điện phòng",
       price: "2.500 VNĐ",
-      unit: "kWh (VAT 10%)",
-      note: "Chốt công tơ thực tế hàng tháng, chia đều số người",
+      unit: "kWh (chưa VAT 8%)",
+      note: "Chia đều cho số thành viên trong phòng",
     },
     {
       item: "Đơn giá nước sinh hoạt",
-      price: "18.000 VNĐ",
-      unit: "m³ (VAT 10%)",
-      note: "Chốt đồng hồ thực tế hàng tháng, chia đều số người",
+      price: "12.000 VNĐ",
+      unit: "m³ (chưa VAT 5%)",
+      note: "Chia đều cho số thành viên trong phòng",
     },
-    ]
+    {
+      item: "Phí dịch vụ & vệ sinh hành lang",
+      price: "30.000 VNĐ",
+      unit: "tháng / sinh viên",
+      note: "Bao gồm thu gom rác, vệ sinh khu chung",
+    },
+    {
+      item: "Internet Wi-Fi tốc độ cao",
+      price: "Miễn phí",
+      unit: "phủ sóng toàn tòa nhà",
+      note: "Tích hợp tài khoản sinh viên FPT",
+    },
+  ]
 
   const rules = [
     {
-      title: "1. Khung giờ Giới nghiêm 23:00",
+      title: "1. Khung giờ Giới nghiêm",
       content:
         "Cổng ký túc xá đóng lúc 23:00 và mở lúc 05:30 sáng hôm sau. Sinh viên về muộn do lịch học/công việc cần nộp đơn trực tuyến trên hệ thống trước 21:00.",
     },
@@ -209,7 +217,7 @@ export const LandingPage: React.FC = () => {
         "Nghiêm cấm nấu ăn bằng bếp gas, bếp từ, nồi chiên trong phòng ngủ. Chỉ sử dụng khu vực bếp chung tại Tầng 1. Tuyệt đối không tự ý câu móc dây điện.",
     },
     {
-      title: "3. Quản lý Điểm rèn luyện KTX (100 Điểm)",
+      title: "3. Quản lý Điểm rèn luyện KTX",
       content:
         "Mỗi sinh viên bắt đầu với 100 điểm. Vi phạm giờ giới nghiêm trừ 5-10 điểm/lần; gây mất trật tự sau 22:30 trừ 10 điểm. Bị trừ quá 30 điểm sẽ đình chỉ lưu trú kỳ tiếp theo.",
     },
@@ -398,7 +406,7 @@ export const LandingPage: React.FC = () => {
         <div>
           
           <h2 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
-            Quy Định Chung & Nội Quy Lưu Trú
+            Quy Định Chung & Kỷ Luật Lưu Trú
           </h2>
           <p className="text-sm text-muted-foreground">
             Sinh viên cam kết thực hiện nghiêm túc khi ký hợp đồng lưu trú điện
@@ -421,6 +429,60 @@ export const LandingPage: React.FC = () => {
               </p>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section
+        id="tien-ich"
+        className="space-y-6 rounded-3xl border border-border bg-muted/20 p-8 sm:p-10"
+      >
+        <div className="mx-auto max-w-xl space-y-2 text-center">
+          <h2 className="text-xl font-extrabold text-foreground sm:text-2xl">
+            Tiện Ích & Không Gian Chung Hiện Đại
+          </h2>
+          <p className="text-xs text-muted-foreground">
+            Môi trường sinh hoạt an toàn, tiện nghi giúp sinh viên tập trung tối
+            đa cho việc học.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="space-y-2 rounded-xl border border-border bg-card p-4 text-center">
+            <Wifi className="mx-auto h-6 w-6 text-sky-600" />
+            <h4 className="text-xs font-bold text-foreground">
+              Wi-Fi 6 Băng Thông Rộng
+            </h4>
+            <p className="text-[11px] text-muted-foreground">
+              Phủ sóng toàn bộ phòng ngủ & sảnh
+            </p>
+          </div>
+          <div className="space-y-2 rounded-xl border border-border bg-card p-4 text-center">
+            <Coffee className="mx-auto h-6 w-6 text-sky-600" />
+            <h4 className="text-xs font-bold text-foreground">
+              Phòng Tự Học 24/7
+            </h4>
+            <p className="text-[11px] text-muted-foreground">
+              Máy lạnh, bàn học nhóm yên tĩnh
+            </p>
+          </div>
+          <div className="space-y-2 rounded-xl border border-border bg-card p-4 text-center">
+            <Flame className="mx-auto h-6 w-6 text-sky-600" />
+            <h4 className="text-xs font-bold text-foreground">
+              Bếp Ăn Chung Tầng 1
+            </h4>
+            <p className="text-[11px] text-muted-foreground">
+              Khu vực nấu nướng an toàn PCCC
+            </p>
+          </div>
+          <div className="space-y-2 rounded-xl border border-border bg-card p-4 text-center">
+            <ShieldCheck className="mx-auto h-6 w-6 text-sky-600" />
+            <h4 className="text-xs font-bold text-foreground">
+              Bảo Vệ & Camera AI 24/7
+            </h4>
+            <p className="text-[11px] text-muted-foreground">
+              Kiểm soát ra vào thông minh
+            </p>
+          </div>
         </div>
       </section>
 
