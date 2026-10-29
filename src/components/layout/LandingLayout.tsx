@@ -11,6 +11,7 @@ import {
   ChevronDown,
   UserPlus,
   LogIn,
+  Smartphone,
 } from "lucide-react"
 
 interface LandingLayoutProps {
@@ -68,35 +69,20 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
     e: React.MouseEvent<HTMLAnchorElement>,
     href: string
   ) => {
-    e.preventDefault()
-    setActiveNav(href)
-    if (href === "#dat-phong") {
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      })
-      window.history.pushState(null, "", href)
-      return
-    }
-
-    if (!href.startsWith("#")) return
-    const targetElement = document.querySelector(href)
-    if (targetElement) {
-      const headerOffset = 80
-      const elementPosition = targetElement.getBoundingClientRect().top
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      })
-      window.history.pushState(null, "", href)
+    if (href.startsWith("#")) {
+      e.preventDefault()
+      const targetId = href.substring(1)
+      const element = document.getElementById(targetId)
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" })
+        window.history.pushState(null, "", href)
+        setActiveNav(href)
+      }
     }
   }
 
   const getDashboardLink = (role?: UserRole) => {
-    if (role === "student") return "/overview"
-    if (role === "manager") return "/manager"
+    if (role === "manager" || role === "admin") return "/manager"
     if (role === "technician") return "/maintenance"
     return "/overview"
   }
@@ -131,17 +117,6 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
           <nav className="hidden shrink-0 items-center gap-1.5 rounded-2xl border border-slate-200 bg-slate-100 p-1 text-xs font-semibold lg:flex xl:gap-2">
             {navItems.map((item) => {
               const isActive = activeNav === item.href
-              if (!item.href.startsWith("#")) {
-                return (
-                  <Link
-                    key={item.href}
-                    to={item.href}
-                    className="cursor-pointer rounded-xl px-3.5 py-1.5 text-xs font-semibold whitespace-nowrap text-[#42474b] transition-all duration-200 hover:bg-sky-500/15 hover:text-sky-600"
-                  >
-                    {item.label}
-                  </Link>
-                )
-              }
               return (
                 <a
                   key={item.href}
@@ -159,9 +134,21 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
             })}
           </nav>
 
-          {/* Actions: Login or Dashboard */}
-          <div className="flex shrink-0 items-center gap-3">
+          {/* Actions: Mobile App, Demo Account Switcher, Login or Dashboard */}
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+            {/* Direct Mobile App Button */}
+            <Link
+              to="/mobile"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs font-bold whitespace-nowrap text-emerald-700 shadow-2xs transition-all hover:bg-emerald-500/20"
+              title="Trải nghiệm ứng dụng di động"
+            >
+              <Smartphone className="h-3.5 w-3.5 text-emerald-600" />
+              <span className="hidden sm:inline">Mobile App</span>
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            </Link>
+
             <DemoAccountSwitcher variant="navbar" />
+
             {isAuthenticated && user ? (
               <div className="flex shrink-0 items-center gap-2.5 sm:gap-3">
                 {/* Go to Dashboard button */}
@@ -256,8 +243,9 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
         {children}
       </main>
 
-          {/* Floating Demo Account Switcher on Landing Page */}
+      {/* Floating Demo Account Switcher on Landing Page */}
       <DemoAccountSwitcher variant="floating" />
-</div>
+    </div>
   )
 }
+export default LandingLayout

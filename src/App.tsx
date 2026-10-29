@@ -16,6 +16,7 @@ import { MaintenancePage } from "@/pages/maintenance/MaintenancePage"
 import { ManagerDashboardPage } from "@/pages/manager/ManagerDashboardPage"
 import { UnauthorizedPage } from "@/pages/errors/UnauthorizedPage"
 import { NotFoundPage } from "@/pages/errors/NotFoundPage"
+import { MobileAppPage } from "@/pages/mobile/MobileAppPage"
 
 function HomeRoute() {
   const { isAuthenticated, user } = useAuth()
@@ -45,95 +46,97 @@ export function App() {
     <BrowserRouter>
       <AuthProvider>
         <BookingProvider>
-        <Routes>
-          {/* Trang chủ KTX: Chưa đăng nhập -> Trang chào mừng; Đã đăng nhập -> Bảng điều khiển */}
-          <Route path="/" element={<HomeRoute />} />
+          <Routes>
+            {/* Trang chủ KTX: Chưa đăng nhập -> Trang chào mừng; Đã đăng nhập -> Bảng điều khiển */}
+            <Route path="/" element={<HomeRoute />} />
 
-          {/* Đường dẫn xem trực tiếp trang chào mừng nếu cần */}
-          <Route
-            path="/welcome"
-            element={
-              <LandingLayout>
-                <LandingPage />
-              </LandingLayout>
-            }
-          />
-
-          {/* Các phân hệ tác vụ có Sidebar: /overview, /my-room, /booking, etc. */}
-          <Route element={<AppLayout />}>
-
-            {/* Bảng điều khiển sinh viên (Overview): Sau khi đăng nhập */}
+            {/* Đường dẫn xem trực tiếp trang chào mừng nếu cần */}
             <Route
-              path="/overview"
+              path="/welcome"
               element={
-                <ProtectedRoute allowedRoles={["student", "admin"]}>
-                  <StudentOverviewPage />
-                </ProtectedRoute>
+                <LandingLayout>
+                  <LandingPage />
+                </LandingLayout>
               }
             />
 
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <ProfilePage />
-                </ProtectedRoute>
-              }
-            />
+            {/* Trải nghiệm Ứng dụng Di Động (Mobile App Simulator / Standalone PWA Screen) */}
+            <Route path="/mobile" element={<MobileAppPage />} />
 
-            <Route
-              path="/my-room"
-              element={
-                <ProtectedRoute allowedRoles={["student", "admin"]}>
-                  <MyRoomPage />
-                </ProtectedRoute>
-              }
-            />
+            {/* Các phân hệ tác vụ có Sidebar & Mobile Bottom Navigation: /overview, /my-room, /booking, etc. */}
+            <Route element={<AppLayout />}>
+              {/* Bảng điều khiển sinh viên (Overview): Sau khi đăng nhập */}
+              <Route
+                path="/overview"
+                element={
+                  <ProtectedRoute allowedRoles={["student", "admin"]}>
+                    <StudentOverviewPage />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route
-              path="/booking"
-              element={
-                <ProtectedRoute allowedRoles={["student", "admin"]}>
-                  <BookingPage />
-                </ProtectedRoute>
-              }
-            />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <ProfilePage />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route
-              path="/billing"
-              element={
-                <ProtectedRoute>
-                  <BillingPage />
-                </ProtectedRoute>
-              }
-            />
+              <Route
+                path="/my-room"
+                element={
+                  <ProtectedRoute allowedRoles={["student", "admin"]}>
+                    <MyRoomPage />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route
-              path="/maintenance"
-              element={
-                <ProtectedRoute>
-                  <MaintenancePage />
-                </ProtectedRoute>
-              }
-            />
+              <Route
+                path="/booking"
+                element={
+                  <ProtectedRoute allowedRoles={["student", "admin"]}>
+                    <BookingPage />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route path="/curfew" element={<Navigate to="/manager" replace />} />
+              <Route
+                path="/billing"
+                element={
+                  <ProtectedRoute>
+                    <BillingPage />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route
-              path="/manager"
-              element={
-                <ProtectedRoute allowedRoles={["manager", "admin"]}>
-                  <ManagerDashboardPage />
-                </ProtectedRoute>
-              }
-            />
+              <Route
+                path="/maintenance"
+                element={
+                  <ProtectedRoute>
+                    <MaintenancePage />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route path="/unauthorized" element={<UnauthorizedPage />} />
-          </Route>
+              <Route path="/curfew" element={<Navigate to="/manager" replace />} />
 
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
+              <Route
+                path="/manager"
+                element={
+                  <ProtectedRoute allowedRoles={["manager", "admin"]}>
+                    <ManagerDashboardPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route path="/unauthorized" element={<UnauthorizedPage />} />
+            </Route>
+
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
         </BookingProvider>
       </AuthProvider>
     </BrowserRouter>

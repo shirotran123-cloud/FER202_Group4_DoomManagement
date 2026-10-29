@@ -3,6 +3,7 @@ import React, { useState } from "react"
 import { Outlet } from "react-router-dom"
 import { Navbar } from "./Navbar"
 import { Sidebar } from "./Sidebar"
+import { MobileBottomNav } from "./MobileBottomNav"
 
 export const AppLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -18,16 +19,19 @@ export const AppLayout: React.FC = () => {
         {/* Fixed Header */}
         <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
-        {/* Scrollable Page Body */}
-        <main className="relative z-10 w-full flex-1 bg-transparent pt-[68px]">
+        {/* Scrollable Page Body with padding-bottom for mobile bottom navigation */}
+        <main className="relative z-10 w-full flex-1 bg-transparent pt-[68px] pb-20 lg:pb-0">
           <div className="page-content mx-auto max-w-[1600px] space-y-6 p-4 sm:p-6 lg:p-8">
             <Outlet />
           </div>
         </main>
       </div>
 
-          {/* Floating Demo Account Switcher */}
+      {/* Mobile Bottom Navigation Bar (Visible on screens < 1024px) */}
+      <MobileBottomNav />
+
+      {/* Floating Demo Account Switcher */}
       <DemoAccountSwitcher variant="floating" />
-</div>
+    </div>
   )
 }
