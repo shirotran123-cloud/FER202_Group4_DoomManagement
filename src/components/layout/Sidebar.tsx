@@ -12,7 +12,7 @@ import {
   User,
   ShieldCheck,
   Zap,
-  Smartphone,
+  QrCode,
   type LucideIcon,
 } from "lucide-react"
 
@@ -46,7 +46,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           groupTitle: "Cổng Thông Tin KTX",
           items: [
             { title: "Xem phòng", to: "/booking", icon: BedDouble },
-            { title: "Mobile App", to: "/mobile", icon: Smartphone, badge: "Mới" },
             { title: "Đăng nhập", to: "/login", icon: LogIn },
           ],
         },
@@ -70,10 +69,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               badge: "A205",
             },
             {
-              title: "Mobile App (QR Cổng)",
+              title: "Thẻ QR Ra Vào Cổng",
               to: "/mobile",
-              icon: Smartphone,
-              badge: "Mới",
+              icon: QrCode,
+              badge: "HMAC",
             },
             { title: "Điện nước & VietQR", to: "/billing", icon: Receipt },
             { title: "Báo hỏng thiết bị", to: "/maintenance", icon: Wrench },
@@ -97,10 +96,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               icon: ShieldCheck,
             },
             {
-              title: "Mobile App (Quét Cổng)",
+              title: "Quét Mã QR Cổng",
               to: "/mobile",
-              icon: Smartphone,
-              badge: "Mới",
+              icon: QrCode,
+              badge: "Bảo vệ",
             },
             { title: "Chốt số & Chia điện nước", to: "/billing", icon: Zap },
             { title: "Điều phối Bảo trì", to: "/maintenance", icon: Wrench },
@@ -124,12 +123,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               icon: Wrench,
               badge: "2 phiếu",
             },
-            {
-              title: "Mobile App (Camera Báo Hỏng)",
-              to: "/mobile",
-              icon: Smartphone,
-              badge: "Mới",
-            },
             { title: "Nhập số Điện Nước", to: "/billing", icon: Zap },
           ],
         },
@@ -152,10 +145,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           },
           { title: "Bàn làm việc Quản trị", to: "/manager", icon: ShieldCheck },
           {
-            title: "Mobile App KTX",
+            title: "Thẻ QR Ra Vào Cổng",
             to: "/mobile",
-            icon: Smartphone,
-            badge: "Mới",
+            icon: QrCode,
+            badge: "24/7",
           },
           { title: "Quản lý Điện nước", to: "/billing", icon: Zap },
           { title: "Quản lý Bảo trì", to: "/maintenance", icon: Wrench },
@@ -170,21 +163,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   const navGroups = getNavGroups()
 
-  // Badge status of current role
-  const getRoleBadge = () => {
-    switch (currentRole) {
-      case "student":
-        return "Sinh viên KTX"
-      case "manager":
-        return "Trưởng BQL Tòa A"
-      case "technician":
-        return "Kỹ thuật viên Tòa A"
-      case "admin":
-        return "Quản trị viên Hệ thống"
-      default:
-        return "Khách vãng lai"
-    }
-  }
 
   return (
     <>
@@ -204,60 +182,30 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         }`}
       >
         {/* Brand / Logo Header */}
-        <div className="flex h-[68px] shrink-0 items-center justify-between border-b border-border px-5">
+        <div className="flex h-[68px] shrink-0 items-center justify-between border-b border-border px-4">
           <NavLink
             to="/"
             className="flex items-center gap-3 transition-opacity hover:opacity-90"
             onClick={onClose}
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-xs">
-              <span className="font-serif text-lg font-black tracking-wider">
-                KTX
-              </span>
-            </div>
-            <div>
-              <h1 className="text-base font-bold tracking-tight text-foreground">
+            <img
+              src="/images/logo.jpg"
+              alt="FPT University"
+              className="h-10 w-14 shrink-0 rounded-xl object-contain"
+            />
+            <div className="flex flex-col">
+              <span className="text-base leading-none font-bold tracking-tight text-foreground">
                 DOMANAGE
-              </h1>
-              <p className="text-[10px] font-medium text-muted-foreground">
-                FPT University Dormitory
-              </p>
+              </span>
+              <span className="mt-1 text-[11px] font-medium tracking-wide text-muted-foreground">
+                Ký túc xá FPT University
+              </span>
             </div>
           </NavLink>
         </div>
 
         {/* Scrollable middle nav */}
-        <div className="flex-1 overflow-y-auto">
-          {/* User profile snippet */}
-          <div className="border-b border-border p-4">
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <img
-                  src={
-                    user?.avatar ||
-                    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80"
-                  }
-                  alt={user?.fullName || "Người dùng"}
-                  className="h-10 w-10 rounded-full border border-border object-cover"
-                />
-                <span className="absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-background bg-emerald-500"></span>
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-xs font-bold text-foreground">
-                  {user?.fullName || "Chưa đăng nhập"}
-                </p>
-                <p className="truncate font-mono text-[11px] text-muted-foreground">
-                  {user?.studentId || user?.staffId || "Khách"}
-                </p>
-              </div>
-            </div>
-            <div className="mt-2.5 flex items-center justify-between">
-              <span className="rounded-md border border-border bg-muted px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
-                {getRoleBadge()}
-              </span>
-            </div>
-          </div>
-
+        <div className="flex-1 overflow-y-auto pt-2">
           {/* Role-tailored Navigation Links */}
           <nav className="flex-1 space-y-4 px-3 py-2 text-xs">
             {navGroups.map((group) => (

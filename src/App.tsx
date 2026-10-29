@@ -60,9 +60,6 @@ export function App() {
               }
             />
 
-            {/* Trải nghiệm Ứng dụng Di Động (Mobile App Simulator / Standalone PWA Screen) */}
-            <Route path="/mobile" element={<MobileAppPage />} />
-
             {/* Các phân hệ tác vụ có Sidebar & Mobile Bottom Navigation: /overview, /my-room, /booking, etc. */}
             <Route element={<AppLayout />}>
               {/* Bảng điều khiển sinh viên (Overview): Sau khi đăng nhập */}
@@ -71,6 +68,24 @@ export function App() {
                 element={
                   <ProtectedRoute allowedRoles={["student", "admin"]}>
                     <StudentOverviewPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Thẻ QR Ra Vào Cổng & Giới Nghiêm */}
+              <Route
+                path="/mobile"
+                element={
+                  <ProtectedRoute>
+                    <MobileAppPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/gate-pass"
+                element={
+                  <ProtectedRoute>
+                    <MobileAppPage />
                   </ProtectedRoute>
                 }
               />

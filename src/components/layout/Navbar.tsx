@@ -14,7 +14,6 @@ import {
   LogIn,
   Sun,
   Moon,
-  Smartphone,
 } from "lucide-react"
 import { useTheme } from "@/components/theme-provider"
 
@@ -54,18 +53,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 sm:gap-3">
-        {/* Mobile App Direct Button */}
-        <Link
-          to="/mobile"
-          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 transition-all shadow-2xs"
-          title="Mở giao diện App Di Động"
-        >
-          <Smartphone className="h-3.5 w-3.5" />
-          <span className="hidden sm:inline">Mobile App</span>
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-        </Link>
-
+      <div className="flex items-center gap-2 sm:gap-4">
         {/* Demo Account Switcher */}
         <DemoAccountSwitcher variant="navbar" />
         {isAuthenticated && user ? (

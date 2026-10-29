@@ -1,4 +1,3 @@
-import { DemoAccountSwitcher } from "@/components/common/DemoAccountSwitcher"
 import React, { useState } from "react"
 import { Outlet } from "react-router-dom"
 import { Navbar } from "./Navbar"
@@ -29,9 +28,7 @@ export const AppLayout: React.FC = () => {
 
       {/* Mobile Bottom Navigation Bar (Visible on screens < 1024px) */}
       <MobileBottomNav />
-
-      {/* Floating Demo Account Switcher */}
-      <DemoAccountSwitcher variant="floating" />
     </div>
   )
 }
+export default AppLayout

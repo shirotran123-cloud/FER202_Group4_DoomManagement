@@ -6,7 +6,7 @@ import {
   DoorClosed,
   Receipt,
   Wrench,
-  Smartphone,
+  QrCode,
   ShieldCheck,
   User,
   Zap,
@@ -35,11 +35,11 @@ export const MobileBottomNav: React.FC = () => {
           icon: DoorClosed,
         },
         {
-          label: "Mobile App",
+          label: "Mã QR",
           to: "/mobile",
-          icon: Smartphone,
+          icon: QrCode,
           highlight: true,
-          badge: "QR",
+          badge: "Cổng",
         },
         {
           label: "Điện nước",
@@ -59,11 +59,11 @@ export const MobileBottomNav: React.FC = () => {
           icon: ShieldCheck,
         },
         {
-          label: "Mobile App",
+          label: "Quét QR",
           to: "/mobile",
-          icon: Smartphone,
+          icon: QrCode,
           highlight: true,
-          badge: "Scan",
+          badge: "Cổng",
         },
         {
           label: "Điện nước",

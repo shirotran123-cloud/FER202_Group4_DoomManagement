@@ -11,7 +11,6 @@ import {
   ChevronDown,
   UserPlus,
   LogIn,
-  Smartphone,
 } from "lucide-react"
 
 interface LandingLayoutProps {
@@ -134,19 +133,8 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
             })}
           </nav>
 
-          {/* Actions: Mobile App, Demo Account Switcher, Login or Dashboard */}
+          {/* Actions: Demo Account Switcher, Login or Dashboard */}
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-            {/* Direct Mobile App Button */}
-            <Link
-              to="/mobile"
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs font-bold whitespace-nowrap text-emerald-700 shadow-2xs transition-all hover:bg-emerald-500/20"
-              title="Trải nghiệm ứng dụng di động"
-            >
-              <Smartphone className="h-3.5 w-3.5 text-emerald-600" />
-              <span className="hidden sm:inline">Mobile App</span>
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            </Link>
-
             <DemoAccountSwitcher variant="navbar" />
 
             {isAuthenticated && user ? (
@@ -242,9 +230,6 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
       <main className="page-content relative z-10 mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
         {children}
       </main>
-
-      {/* Floating Demo Account Switcher on Landing Page */}
-      <DemoAccountSwitcher variant="floating" />
     </div>
   )
 }
