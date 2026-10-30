@@ -19,7 +19,7 @@ export const AppLayout: React.FC = () => {
         <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
         {/* Scrollable Page Body with padding-bottom for mobile bottom navigation */}
-        <main className="relative z-10 w-full flex-1 bg-transparent pt-[68px] pb-20 lg:pb-0">
+        <main className="relative w-full flex-1 bg-transparent pt-[68px] pb-20 lg:pb-0">
           <div className="page-content mx-auto max-w-[1600px] space-y-6 p-4 sm:p-6 lg:p-8">
             <Outlet />
           </div>

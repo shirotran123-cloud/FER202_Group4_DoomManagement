@@ -1,0 +1,186 @@
+\documentclass[12pt,a4paper,oneside]{report}
+
+% ==============================================================================
+% 1. CẤU HÌNH NGÔN NGỮ TIẾNG VIỆT & PHÔNG CHỮ (CHUẨN OVERLEAF / PDFLATEX)
+% ==============================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage[T5]{fontenc}
+\usepackage{lmodern}
+
+% ==============================================================================
+% 2. CĂN CHỈNH TRANG IN (CANH LỀ CHUẨN ĐẠI HỌC FPT)
+% Lề trên: 2.5cm, Lề dưới: 2.5cm, Lề trái (đóng gáy): 3.0cm, Lề phải: 2.0cm
+% ==============================================================================
+\usepackage[a4paper,top=2.5cm,bottom=2.5cm,left=3.0cm,right=2.0cm]{geometry}
+\usepackage{setspace}
+\onehalfspacing % Giãn dòng 1.5 lines tiêu chuẩn học thuật
+
+% ==============================================================================
+% 3. CÁC GÓI BỔ TRỢ ĐỒ HỌA, MÀU SẮC & BẢNG BIỂU
+% ==============================================================================
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows, positioning, fit, calc}
+\usepackage[many]{tcolorbox}
+\usepackage{caption}
+\usepackage{subcaption}
+
+% ==============================================================================
+% 4. ĐỊNH DẠNG MÃ NGUỒN (CODE LISTINGS)
+% ==============================================================================
+\usepackage{listings}
+\definecolor{codebg}{rgb}{0.97,0.98,0.99}
+\definecolor{codeblue}{rgb}{0.12,0.47,0.71}
+\definecolor{codegreen}{rgb}{0.18,0.55,0.34}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codered}{rgb}{0.75,0.22,0.17}
+
+\lstdefinestyle{dmsStyle}{
+    backgroundcolor=\color{codebg},   
+    commentstyle=\color{codegreen}\itshape,
+    keywordstyle=\color{codeblue}\bfseries,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codered},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=7pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    frame=single,
+    rulecolor=\color{gray!30}
+}
+\lstset{style=dmsStyle}
+
+% ==============================================================================
+% 5. CẤU HÌNH LIÊN KẾT ĐIỆN TỬ (HYPERREF & BOOKMARKS)
+% ==============================================================================
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!75!black,
+    citecolor=blue!75!black,
+    urlcolor=teal!85!black,
+    pdfauthor={FER202_Group4},
+    pdftitle={Báo cáo Dự án Domanage - Hệ thống Quản lý KTX Trực tuyến},
+    pdfsubject={Front-End Web Development with React},
+    pdfkeywords={React 19, TypeScript, Tailwind CSS, Dormitory Management, Overleaf}
+}
+
+% ==============================================================================
+% 6. HEADER & FOOTER TIÊU CHUẨN (FANCYHDR)
+% ==============================================================================
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\slshape\nouppercase{\leftmark}}
+\fancyhead[R]{\slshape FER202 -- Nhóm 4}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% ==============================================================================
+% BẮT ĐẦU TÀI LIỆU
+% ==============================================================================
+\begin{document}
+
+% Trang bìa
+\input{cover}
+
+% Lời cam đoan
+\newpage
+\pagenumbering{roman}
+\chapter*{LỜI CAM ĐOAN}
+Chúng tôi xin cam đoan đề tài nghiên cứu và xây dựng hệ thống \textbf{``Domanage -- Hệ thống Quản lý Ký túc xá Trực tuyến (Online Dormitory Management System)''} là sản phẩm nghiên cứu và phát triển độc lập của tập thể nhóm 4 môn học FER202 (Front-End Web Development with React). 
+
+Tất cả các số liệu, sơ đồ, kiến trúc và mã nguồn trình bày trong báo cáo này hoàn toàn trung thực, phản ánh chính xác kết quả làm việc thực tế của nhóm; không sao chép bất hợp pháp từ bất kỳ công trình hay đồ án nào khác. Mọi tài liệu tham khảo và thư viện nguồn mở sử dụng trong dự án đều được trích dẫn nguồn đầy đủ theo tiêu chuẩn học thuật.
+
+\vspace{1.5cm}
+\begin{flushright}
+\textit{TP. Hồ Chí Minh, ngày 29 tháng 10 năm 2026}\\[0.3cm]
+\textbf{Đại diện Nhóm thực hiện -- Nhóm trưởng}\\[1.5cm]
+\textbf{Nguyễn Hoàng Vinh}
+\end{flushright}
+
+% Lời cảm ơn
+\newpage
+\chapter*{LỜI CẢM ƠN}
+Để hoàn thành xuất sắc dự án và bản báo cáo này, tập thể Nhóm 4 xin gửi lời tri ân sâu sắc nhất tới:
+\begin{itemize}
+    \item \textbf{Ban Giám hiệu \& Khoa Công nghệ Thông tin -- Trường Đại học FPT:} Đã tạo dựng môi trường học thuật chuyên nghiệp, giàu tính thực tiễn cùng cơ sở vật chất hiện đại hỗ trợ sinh viên trong suốt kỳ học.
+    \item \textbf{Giảng viên bộ môn FER202:} Thầy/Cô đã tận tình truyền đạt những kiến thức quý báu về tư duy lập trình giao diện người dùng hiện đại với React, các best practices trong kiến trúc Front-end, và luôn theo sát, góp ý định hướng quý báu cho đề tài của nhóm từ những ngày đầu.
+    \item \textbf{Toàn thể các thành viên Nhóm 4:} Đã luôn giữ vững tinh thần trách nhiệm, chủ động học hỏi, đoàn kết và nỗ lực hết mình để đưa dự án cán đích thành công vượt tiến độ.
+\end{itemize}
+
+Nhóm rất mong nhận được những ý kiến đóng góp quý báu từ Hội đồng Giảng viên để hệ thống ngày càng hoàn thiện hơn nữa!
+
+\vspace{1.5cm}
+\begin{flushright}
+\textbf{Tập thể sinh viên Nhóm 4 -- FER202}
+\end{flushright}
+
+% Tóm tắt đề tài (Abstract)
+\newpage
+\chapter*{TÓM TẮT ĐỀ TÀI (ABSTRACT)}
+\addcontentsline{toc}{chapter}{Tóm tắt đề tài (Abstract)}
+
+\textbf{Tóm tắt:} Dự án \textbf{Domanage (DMS)} tập trung giải quyết các bài toán bất cập trong công tác quản trị ký túc xá đại học quy mô lớn. Ứng dụng được xây dựng trên nền tảng Single Page Application với React 19, TypeScript và Tailwind CSS v4. Đề tài đem lại 3 điểm đột phá sáng tạo: (1) \textbf{Mô hình không gian 1:4:6} trực quan hóa việc chọn giường ngủ, xóa bỏ hoàn toàn cảm giác mơ hồ khi đăng ký phòng; (2) \textbf{Động cơ Tự động xét duyệt (Auto-Approval Engine)} 3 điều kiện và tự động kết xuất Hợp đồng lưu trú PDF trong dưới 3 giây; (3) \textbf{Thuật toán phân bổ chi phí điện nước ($Total / N$)} gắn liền với hình ảnh chụp công tơ thực tế làm bằng chứng đối soát minh bạch. Kết quả kiểm thử thực nghiệm trên 28 Use Cases và 90 ca kiểm thử đạt tỷ lệ thành công 100\%, chứng minh tính khả thi và tiềm năng ứng dụng thực tế cao của đề tài.
+
+\vspace{0.8cm}
+\noindent \textbf{Từ khóa:} \textit{Ký túc xá trực tuyến, React 19, TypeScript, Tailwind CSS, Auto-Approval Engine, Split-Billing, Mô hình 1:4:6, Thẻ QR Giới nghiêm.}
+
+\vspace{1.5cm}
+\noindent \rule{\textwidth}{0.5pt}\\[0.5cm]
+
+\textbf{Abstract:} The \textbf{Domanage (DMS)} project addresses key management and operational challenges in large-scale university dormitory accommodation. Built as a high-performance Single Page Application using React 19, TypeScript, and Tailwind CSS v4, the project delivers three primary innovations: (1) An \textbf{interactive 1:4:6 spatial topology} for bed allocation that eliminates uncertainty during room selection; (2) A 3-step \textbf{Auto-Approval Engine} that verifies student eligibility and digitally renders verifiable PDF contracts in under 3 seconds; and (3) A transparent \textbf{split-billing algorithm ($Total / N$)} supported by physical meter photo evidence. Empirical testing across 28 functional Use Cases and 90 test cases achieved a 100\% pass rate, demonstrating strong architectural soundness and high readiness for real-world deployment.
+
+\vspace{0.8cm}
+\noindent \textbf{Keywords:} \textit{Dormitory Management System, React 19, TypeScript, Tailwind CSS, Auto-Approval Engine, Split-Billing, 1:4:6 Topology, Dynamic QR Curfew.}
+
+% Mục lục & Danh mục bảng biểu
+\newpage
+\tableofcontents
+
+\newpage
+\listoffigures
+\addcontentsline{toc}{chapter}{\listfigurename}
+
+\newpage
+\listoftables
+\addcontentsline{toc}{chapter}{\listtablename}
+
+% ==============================================================================
+% NỘI DUNG CHÍNH (ĐÁNH SỐ TRANG 1, 2, 3...)
+% ==============================================================================
+\newpage
+\pagenumbering{arabic}
+
+\input{chapters/01_introduction}
+\input{chapters/02_system_requirements}
+\input{chapters/03_system_architecture}
+\input{chapters/04_core_modules}
+\input{chapters/05_testing_qa}
+\input{chapters/06_project_management}
+\input{chapters/07_conclusion}
+
+% ==============================================================================
+% TÀI LIỆU THAM KHẢO
+% ==============================================================================
+\newpage
+\addcontentsline{toc}{chapter}{TÀI LIỆU THAM KHẢO}
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}
+

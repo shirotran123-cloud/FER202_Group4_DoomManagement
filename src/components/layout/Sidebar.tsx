@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   Zap,
   QrCode,
+  Database,
   type LucideIcon,
 } from "lucide-react"
 
@@ -103,6 +104,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             },
             { title: "Chốt số & Chia điện nước", to: "/billing", icon: Zap },
             { title: "Điều phối Bảo trì", to: "/maintenance", icon: Wrench },
+            {
+              title: "CSDL Supabase",
+              to: "/supabase",
+              icon: Database,
+              badge: "Cloud",
+            },
           ],
         },
         {
@@ -152,6 +159,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           },
           { title: "Quản lý Điện nước", to: "/billing", icon: Zap },
           { title: "Quản lý Bảo trì", to: "/maintenance", icon: Wrench },
+          {
+            title: "CSDL Supabase",
+            to: "/supabase",
+            icon: Database,
+            badge: "Cloud",
+          },
         ],
       },
       {

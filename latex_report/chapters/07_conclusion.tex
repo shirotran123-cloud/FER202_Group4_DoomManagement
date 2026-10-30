@@ -1,0 +1,46 @@
+\chapter{KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN}
+\label{ch:conclusion}
+
+\section{Kết quả Đạt được của Đề tài}
+Trải qua 5 tuần nghiên cứu và phát triển nghiêm túc, nhóm sinh viên \textbf{FER202\_Group4} đã hoàn thành toàn diện các mục tiêu đề ra cho dự án \textbf{Domanage -- Hệ thống Quản lý Ký túc xá Trực tuyến}:
+\begin{enumerate}
+    \item \textbf{Về mặt Học thuật và Kỹ thuật:}
+    \begin{itemize}
+        \item Làm chủ và ứng dụng thành công các công nghệ tiên tiến nhất trong hệ sinh thái Front-end hiện đại: React 19, TypeScript, Tailwind CSS v4, Radix UI và Vite.
+        \item Xây dựng cấu trúc mã nguồn dạng module phân tách cao, tuân thủ nguyên lý Clean Architecture và Single Responsibility Principle (SRP).
+        \item Thiết kế và hiện thực hóa thành công \textbf{Mô hình không gian 1:4:6} và \textbf{Động cơ Tự động xét duyệt (Auto-Approval Engine)}, giải quyết triệt để bài toán xếp phòng và phê duyệt hợp đồng lưu trú vốn tốn nhiều thời gian và nhân lực.
+    \end{itemize}
+
+    \item \textbf{Về mặt Nghiệp vụ và Thực tiễn:}
+    \begin{itemize}
+        \item Hệ thống giải quyết trọn vẹn 28 Use Cases nghiệp vụ trải dài qua 7 phân hệ chức năng: từ đăng ký phòng, hợp đồng điện tử, quản lý công tơ, tính toán chia tiền điện nước minh bạch, bảo trì tài sản cho tới giám sát an ninh giờ giới nghiêm.
+        \item Xây dựng giao diện Responsive tối ưu, cho phép cán bộ quản lý làm việc hiệu quả trên máy tính bàn và sinh viên, nhân viên bảo vệ thao tác mượt mà trên thiết bị di động.
+    \end{itemize}
+
+    \item \textbf{Về mặt Đảm bảo Chất lượng và Quản trị Dự án:}
+    \begin{itemize}
+        \item Hoàn thành bộ 90 ca kiểm thử thực nghiệm đạt tỷ lệ thành công 100\%, xử lý triệt để các tình huống xung đột đồng thời, sai số làm tròn số học và khôi phục trạng thái khi hết hạn thời gian giữ chỗ.
+        \item Đội ngũ 6 thành viên phối hợp nhịp nhàng theo quy trình Agile Scrum, bảo đảm tiến độ bàn giao sản phẩm chuẩn xác theo từng mốc Sprint.
+    \end{itemize}
+\end{enumerate}
+
+\section{Hạn chế của Hệ thống Hiện tại}
+Bên cạnh những kết quả nổi bật đã đạt được, dự án vẫn còn một số hạn chế do giới hạn về thời gian và phạm vi của môn học Front-End Web:
+\begin{itemize}
+    \item \textbf{Tầng Backend:} Hệ thống hiện tại đang sử dụng máy chủ mô phỏng JSON-Server kết hợp LowDB; chưa triển khai một hệ thống Backend hoàn chỉnh bằng Node.js (NestJS/Express) hoặc Spring Boot kết nối PostgreSQL phân tán trong môi trường sản xuất thực tế.
+    \item \textbf{Cổng thanh toán:} Các giao dịch thanh toán VietQR và VNPay hiện tại đang dừng ở mức độ mô phỏng giao thức và tạo mã QR động; chưa kết nối Webhook trực tiếp với Ngân hàng thương mại để tự động lắng nghe biến động số dư theo thời gian thực.
+    \item \textbf{Hạ tầng phần cứng:} Việc ghi nhận chỉ số công tơ điện nước vẫn cần kỹ thuật viên đến tận nơi đọc và chụp ảnh thủ công, chưa được tự động hóa bằng cảm biến IoT.
+\end{itemize}
+
+\section{Hướng Phát triển trong Tương lai}
+Nhằm phát triển Domanage thành một giải pháp phần mềm thương mại hoàn chỉnh cho các trường đại học và khu đô thị đại học, nhóm đề xuất các hướng nâng cấp tiếp theo:
+\begin{enumerate}
+    \item \textbf{Phát triển Ứng dụng Di động Native (React Native / Flutter):} Chuyển đổi phân hệ Mobile Web sang ứng dụng di động độc lập trên App Store và Google Play, tích hợp Push Notification đẩy thông báo hóa đơn và nhắc nhở giờ giới nghiêm theo thời gian thực.
+    \item \textbf{Tích hợp Hệ sinh thái Vạn vật Kết nối (IoT Smart Dormitory):}
+    \begin{itemize}
+        \item Lắp đặt công tơ điện và đồng hồ nước thông minh có kết nối Wi-Fi/LoRaWAN để tự động truyền dữ liệu tiêu thụ về hệ thống mỗi ngày, phát hiện cảnh báo rò rỉ nước hoặc chập cháy điện tức thời.
+        \item Lắp đặt khóa cửa điện tử buồng cá nhân mở bằng thẻ RFID sinh viên hoặc nhận diện khuôn mặt (FaceID Check-in) tại cổng ký túc xá.
+    \end{itemize}
+    \item \textbf{Tích hợp AI \& Trợ lý Ảo Hỗ trợ Sinh viên:} Ứng dụng mô hình ngôn ngữ lớn (LLM) để xây dựng Chatbot hỗ trợ tự động giải đáp nội quy KTX, tiếp nhận thắc mắc và tự động phân loại mức độ khẩn cấp của các phiếu báo hỏng cơ sở vật chất.
+\end{enumerate}
+

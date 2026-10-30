@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import { useAuth } from "@/contexts/useAuth"
 import { ContractRenewalModal } from "@/components/contract/ContractRenewalModal"
+import { StudentContractModal } from "@/components/contract/StudentContractModal"
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
 import {
@@ -224,6 +225,7 @@ export const MyRoomPage: React.FC = () => {
   const [showCheckoutModal, setShowCheckoutModal] = useState(false)
   const [showActionsDropdown, setShowActionsDropdown] = useState(false)
   const [showRenewModal, setShowRenewModal] = useState(false)
+  const [showContractModal, setShowContractModal] = useState(false)
 
   const roommates = [
     {
@@ -320,7 +322,7 @@ export const MyRoomPage: React.FC = () => {
                 <button
                   onClick={() => {
                     setShowActionsDropdown(false)
-                    alert("Đang mở bản xem trước Hợp đồng điện tử e-Contract PDF...")
+                    setShowContractModal(true)
                   }}
                   className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs text-foreground transition-colors hover:bg-slate-100 dark:hover:bg-[#283740]"
                 >
@@ -440,6 +442,15 @@ export const MyRoomPage: React.FC = () => {
         </div>
       </div>
 
+      {/* VIEW CONTRACT MODAL */}
+      {user && (
+        <StudentContractModal
+          isOpen={showContractModal}
+          onClose={() => setShowContractModal(false)}
+          user={user}
+        />
+      )}
+
       {/* CONTRACT RENEWAL MODAL */}
       {user && (
         <ContractRenewalModal
@@ -451,7 +462,7 @@ export const MyRoomPage: React.FC = () => {
 
       {/* CHECKOUT MODAL */}
       {showCheckoutModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto animate-in fade-in">
           <div className="bg-white dark:bg-[#161e23] border border-border w-full max-w-md rounded-2xl shadow-xl p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h3 className="font-bold text-sm text-foreground">

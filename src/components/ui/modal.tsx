@@ -1,4 +1,5 @@
 import * as React from "react"
+import { createPortal } from "react-dom"
 import { X } from "lucide-react"
 import { cn } from "cn"
 
@@ -49,8 +50,8 @@ export function Modal({
     "4xl": "max-w-4xl",
   }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+  const modalDom = (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-y-auto">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
@@ -63,7 +64,7 @@ export function Modal({
         role="dialog"
         aria-modal="true"
         className={cn(
-          "relative z-50 w-full rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-2xl transition-all duration-200 animate-in zoom-in-95 max-h-[90vh] flex flex-col",
+          "relative z-[100] my-auto w-full rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-2xl transition-all duration-200 animate-in zoom-in-95 max-h-[calc(100vh-3rem)] flex flex-col",
           maxWidthClasses[maxWidth],
           className
         )}
@@ -103,4 +104,10 @@ export function Modal({
       </div>
     </div>
   )
+
+  if (typeof document !== "undefined") {
+    return createPortal(modalDom, document.body)
+  }
+
+  return modalDom
 }

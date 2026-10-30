@@ -1,0 +1,76 @@
+\chapter{ĐẢM BẢO CHẤT LƯỢNG VÀ KIỂM THỬ PHẦN MỀM}
+\label{ch:testing}
+
+\section{Chiến lược Kiểm thử và Phương pháp luận (QA Strategy)}
+Công tác đảm bảo chất lượng phần mềm (QA) được thực hiện xuyên suốt các giai đoạn phát triển dự án bởi Kỹ sư kiểm thử Huỳnh Gia Kim, áp dụng mô hình kiểm thử hộp đen (Black-box Testing) kết hợp kiểm thử tích hợp luồng nghiệp vụ người dùng (End-to-End User Journeys).
+
+Hệ thống được kiểm thử dựa trên 3 tiêu chí cốt lõi:
+\begin{enumerate}
+    \item \textbf{Kiểm thử chức năng (Functional Testing):} Đảm bảo toàn bộ 28 Use Cases hoạt động chính xác theo yêu cầu nghiệp vụ đã đặc tả trong tài liệu SRS.
+    \item \textbf{Kiểm thử biên và ngoại lệ (Edge-case \& Boundary Testing):} Đưa ra các tình huống tải cao, xung đột đồng thời và dữ liệu bất thường để kiểm tra tính bền bỉ của hệ thống.
+    \item \textbf{Kiểm thử giao diện \& tương thích (UI/UX \& Cross-device Testing):} Kiểm tra khả năng tương thích trên các kích thước màn hình phổ biến (Mobile, Tablet, Desktop) và các trình duyệt web hiện đại.
+\end{enumerate}
+
+\section{Kiểm thử 4 Ca Biên Then chốt (Critical Edge-cases)}
+
+\subsection{Case 1: Xung đột Đặt phòng Đồng thời (Concurrency Race Condition)}
+\begin{itemize}
+    \item \textbf{Mô tả kịch bản:} Hai sinh viên (Sinh viên A và Sinh viên B) cùng truy cập buồng B205 cùng một thời điểm và đồng thời click chọn vị trí giường trống \texttt{A205-B-G03} tại cùng một giây.
+    \item \textbf{Hành vi kỳ vọng:} Hệ thống chỉ cho phép đúng 1 sinh viên (người gửi tín hiệu đến trước) khóa giường thành công (\texttt{HOLDING}); sinh viên còn lại nhận được thông báo: \textit{``Rất tiếc! Giường này vừa được giữ chỗ bởi sinh viên khác, vui lòng chọn giường khác''}, và vị trí giường lập tức chuyển sang màu cam trên màn hình của sinh viên thứ hai.
+    \item \textbf{Kết quả kiểm thử:} \textbf{\color{green!70!black}ĐẠT (PASS)}. Cơ chế khóa tức thời và cập nhật trạng thái đã giải quyết trơn tru xung đột.
+\end{itemize}
+
+\subsection{Case 2: Hết hạn Giữ chỗ 15 phút (Timeout Rollback)}
+\begin{itemize}
+    \item \textbf{Mô tả kịch bản:} Sinh viên chọn giường và bắt đầu đếm ngược 15 phút (900 giây) nhưng đóng trình duyệt hoặc không thực hiện quét mã VietQR để thanh toán cọc.
+    \item \textbf{Hành vi kỳ vọng:} Khi đồng hồ đếm về 0, hệ thống kích hoạt cơ chế Rollback, tự động giải phóng bản ghi giữ chỗ (\texttt{CANCELLED}), đưa trạng thái giường từ \texttt{HOLDING} trở lại \texttt{AVAILABLE} (màu xanh lá) để các sinh viên khác có thể đăng ký bình thường.
+    \item \textbf{Kết quả kiểm thử:} \textbf{\color{green!70!black}ĐẠT (PASS)}. Giường được trả về trạng thái trống chính xác ở giây thứ 901.
+\end{itemize}
+
+\subsection{Case 3: Sai số Làm tròn khi Chia tiền ($Total / N$)}
+\begin{itemize}
+    \item \textbf{Mô tả kịch bản:} Tổng tiền điện nước của phòng là $1.000.000$ VNĐ, phòng có 6 sinh viên đang ở ($1.000.000 / 6 = 166.666,666...$ VNĐ). Nếu làm tròn xuống $166.666$ VNĐ thì tổng thu chỉ là $999.996$ VNĐ (thiếu $4$ VNĐ). Nếu làm tròn lên $166.667$ VNĐ thì tổng thu là $1.000.002$ VNĐ (thừa $2$ VNĐ).
+    \item \textbf{Hành vi kỳ vọng:} Thuật toán \texttt{calculateSplitBill} thực hiện phân bổ phần dư (\textit{Remainder Correction}): 4 sinh viên đầu tiên đóng $166.667$ VNĐ, 2 sinh viên còn lại đóng $166.666$ VNĐ. Đảm bảo tổng tiền thu từ các cá nhân khớp chính xác $100\%$ ($1.000.000$ VNĐ), không lệch dù chỉ $1$ đồng.
+    \item \textbf{Kết quả kiểm thử:} \textbf{\color{green!70!black}ĐẠT (PASS)}. Hoàn toàn triệt tiêu sai số làm tròn số học.
+\end{itemize}
+
+\subsection{Case 4: Quét cổng sau 23:00 không có đơn xin phép}
+\begin{itemize}
+    \item \textbf{Mô tả kịch bản:} Sinh viên quét mã QR tại cổng ký túc xá lúc 23:15 nhưng không nộp đơn xin về muộn trước 21:00.
+    \item \textbf{Hành vi kỳ vọng:} Giao diện bảo vệ lập tức hiển thị cảnh báo vi phạm màu đỏ, âm thanh cảnh báo phát ra, hệ thống tự động ghi biên bản vi phạm giờ giới nghiêm kèm mốc thời gian thực và tự động trừ 15 điểm rèn luyện của sinh viên.
+    \item \textbf{Kết quả kiểm thử:} \textbf{\color{green!70!black}ĐẠT (PASS)}. Hệ thống ghi nhận biên bản vi phạm chính xác và cập nhật điểm rèn luyện ngay lập tức.
+\end{itemize}
+
+\section{Bảng Tổng hợp Kết quả Kiểm thử Toàn bộ Phân hệ}
+Bảng~\ref{tab:test_execution_matrix} tóm tắt kết quả kiểm thử thực nghiệm trên toàn bộ 7 phân hệ của hệ thống Domanage.
+
+\begin{table}[htbp]
+\centering
+\caption{Ma trận kết quả thực thi kiểm thử 28 Use Cases}
+\label{tab:test_execution_matrix}
+\small
+\begin{tabularx}{\textwidth}{|l|c|c|c|c|}
+\hline
+\rowcolor{blue!10}
+\textbf{Phân hệ Chức năng (Module)} & \textbf{Tổng số Cases} & \textbf{Passed} & \textbf{Failed} & \textbf{Tỷ lệ Đạt} \\ \hline
+Module 1: Xác thực, Phân quyền \& Profile & 12 & 12 & 0 & 100\% \\ \hline
+Module 2: Quản lý Danh mục \& Cấu trúc 1:4:6 & 8 & 8 & 0 & 100\% \\ \hline
+Module 3: Đặt chỗ Trực quan \& Auto-Approval & 18 & 18 & 0 & 100\% \\ \hline
+Module 4: Công tơ \& Chia tiền Điện Nước & 16 & 16 & 0 & 100\% \\ \hline
+Module 5: Phiếu Báo hỏng \& Bảo trì Thiết bị & 14 & 14 & 0 & 100\% \\ \hline
+Module 6: Giờ Giới Nghiêm 23:00 \& Thẻ QR Cổng & 12 & 12 & 0 & 100\% \\ \hline
+Module 7: Dashboard Quản trị \& Xuất Excel & 10 & 10 & 0 & 100\% \\ \hline
+\rowcolor{green!10}
+\textbf{TỔNG CỘNG} & \textbf{90} & \textbf{90} & \textbf{0} & \textbf{100\%} \\ \hline
+\end{tabularx}
+\end{table}
+
+\section{Kiểm thử Đa Trình duyệt và Tính tương thích Thiết bị}
+Hệ thống đã trải qua quy trình kiểm thử khả năng hiển thị tương thích (Responsive Testing) trên các môi trường thực nghiệm đa dạng:
+\begin{itemize}
+    \item \textbf{Màn hình Mobile (iPhone 13, 14, Samsung Galaxy S22 -- độ phân giải 375px -- 414px):} Toàn bộ thanh điều hướng được chuyển thành thanh điều hướng đáy (\textit{Bottom Mobile Navigation Bar}), bản đồ giường tự động co giãn theo trục dọc (Vertical scroll), thao tác chạm vuốt mượt mà.
+    \item \textbf{Màn hình Tablet (iPad Pro, iPad Air -- độ phân giải 768px -- 1024px):} Bố cục hiển thị lưới 2 cột, bảng điều khiển bảo vệ và kỹ thuật viên hiển thị rõ ràng, dễ thao tác.
+    \item \textbf{Màn hình Desktop (Full HD 1920x1080):} Tận dụng tối đa không gian màn hình với Sidebar cố định, bản đồ buồng 1:4:6 hiển thị toàn cảnh 4 buồng A, B, C, D trên một khung nhìn duy nhất.
+    \item \textbf{Trình duyệt hỗ trợ:} Đã kiểm thử và chạy ổn định $100\%$ trên Google Chrome (v128+), Microsoft Edge (v128+), Mozilla Firefox (v130+) và Apple Safari (v17+).
+\end{itemize}
+

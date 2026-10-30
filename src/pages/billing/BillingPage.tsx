@@ -21,6 +21,11 @@ import {
   Send,
   Building2,
 } from "lucide-react"
+import {
+  generateStudentInvoicePDF,
+  generatePaymentReceiptPDF,
+  generateBuildingUtilityReportPDF,
+} from "@/lib/pdfGenerator"
 
 export const BillingPage: React.FC = () => {
   const { user } = useAuth()
@@ -181,6 +186,72 @@ export const BillingPage: React.FC = () => {
   const handleRemindBatch = () => {
     setRemindedBatch(true)
     setTimeout(() => setRemindedBatch(false), 4000)
+  }
+
+  const [downloadSuccessToast, setDownloadSuccessToast] = useState<string | null>(null)
+
+  const handleDownloadStudentInvoice = () => {
+    generateStudentInvoicePDF({
+      period: "Tháng 09/2026",
+      dateRange: "01/09/2026 – 30/09/2026",
+      issueDate: "30/09/2026",
+      dueDate: "05/10/2026",
+      studentName: user?.fullName || "Trần Thanh Nguyên",
+      studentId: user?.studentId || "SE185240",
+      citizenId: user?.citizenId || "079204001235",
+      phone: user?.phone || "0987 654 321",
+      email: user?.email || "student@fpt.edu.vn",
+      building: user?.dormitoryStatus?.building || "Tòa A (Khu Nam)",
+      room: currentRoom,
+      bedCode: user?.dormitoryStatus?.bedCode || `${currentRoom}-B-G01`,
+      numStudentsInRoom: numStudents,
+      elecOld,
+      elecNew,
+      deltaElec,
+      elecRate: 2500,
+      elecCost,
+      waterOld,
+      waterNew,
+      deltaWater,
+      waterRate: 18000,
+      waterCost,
+      subtotal,
+      vatCost,
+      totalRoomBill: totalBill,
+      perStudentAmount: perStudentUtility,
+      hasPaid,
+    })
+
+    setDownloadSuccessToast(`Đã xuất hóa đơn PDF điện tử Tháng 09/2026 phòng ${currentRoom}!`)
+    setTimeout(() => setDownloadSuccessToast(null), 4500)
+  }
+
+  const handleDownloadReceipt = (inv: { month: string; amount: string; date: string }) => {
+    generatePaymentReceiptPDF({
+      month: inv.month,
+      amount: inv.amount,
+      date: inv.date,
+      studentName: user?.fullName || "Trần Thanh Nguyên",
+      studentId: user?.studentId || "SE185240",
+      room: currentRoom,
+      bedCode: user?.dormitoryStatus?.bedCode || `${currentRoom}-B-G01`,
+      building: user?.dormitoryStatus?.building || "Tòa A (Khu Nam)",
+    })
+
+    setDownloadSuccessToast(`Đã tải xuống Biên lai điện tử ${inv.month} thành công!`)
+    setTimeout(() => setDownloadSuccessToast(null), 4500)
+  }
+
+  const handleDownloadManagerReport = (month: string) => {
+    generateBuildingUtilityReportPDF({
+      month,
+      building: "Tòa A",
+      rooms: MOCK_ROOMS_REGISTRY,
+      managerName: user?.fullName || "Vũ Thành Nam",
+    })
+
+    setDownloadSuccessToast(`Đã tải xuống Bảng kê điện nước ${month} Tòa A!`)
+    setTimeout(() => setDownloadSuccessToast(null), 4500)
   }
 
     // =========================================================================
@@ -516,7 +587,15 @@ export const BillingPage: React.FC = () => {
   }
 
   return (
-    <div className="max-w-[1600px] mx-auto space-y-6 pb-12">
+    <div className="max-w-[1600px] mx-auto space-y-6 pb-12 relative">
+      {/* Toast Notification */}
+      {downloadSuccessToast && (
+        <div className="fixed top-20 right-6 z-50 flex items-center gap-2.5 rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-xs font-bold text-emerald-800 shadow-xl dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-200 animate-in fade-in slide-in-from-top-3">
+          <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+          <span>{downloadSuccessToast}</span>
+        </div>
+      )}
+
       {/* 01. PAGE ACTION HEADER */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -536,8 +615,9 @@ export const BillingPage: React.FC = () => {
         {!isTechnicianOrManager && (
           <div className="flex items-center gap-2">
             <Button
-              onClick={() => alert("Đang xuất tệp hóa đơn điện tử e-Invoice PDF...")}
-              className="text-xs h-9 gap-1.5 bg-primary text-white whitespace-nowrap shrink-0"
+              onClick={handleDownloadStudentInvoice}
+              className="text-xs h-9 gap-1.5 bg-primary text-white whitespace-nowrap shrink-0 hover:opacity-95 shadow-xs cursor-pointer"
+              title="Tải hóa đơn tiền điện nước phòng hiện tại (PDF)"
             >
               <Download className="h-4 w-4 shrink-0" />
               <span>Tải Hóa Đơn (PDF)</span>
@@ -1084,9 +1164,9 @@ export const BillingPage: React.FC = () => {
                           </td>
                           <td className="py-2 px-2.5 text-right whitespace-nowrap">
                             <button
-                              onClick={() => alert(`Đang tải bảng kê ${inv.month}...`)}
-                              className="p-1 rounded text-primary hover:bg-[#eff6ff] dark:hover:bg-[#1c262c]"
-                              title="Tải bảng kê Excel"
+                              onClick={() => handleDownloadManagerReport(inv.month)}
+                              className="p-1 rounded text-primary hover:bg-[#eff6ff] dark:hover:bg-[#1c262c] cursor-pointer"
+                              title="Tải bảng kê PDF"
                             >
                               <Download className="h-3.5 w-3.5 inline" />
                             </button>
@@ -1249,9 +1329,9 @@ export const BillingPage: React.FC = () => {
                           </td>
                           <td className="py-2.5 px-2 text-right">
                             <button
-                              onClick={() => alert(`Đang tải biên lai ${inv.month}...`)}
-                              className="p-1 rounded text-primary hover:bg-[#eff6ff] dark:hover:bg-[#1c262c]"
-                              title="Tải PDF"
+                              onClick={() => handleDownloadReceipt(inv)}
+                              className="p-1 rounded text-primary hover:bg-[#eff6ff] dark:hover:bg-[#1c262c] cursor-pointer"
+                              title="Tải Biên lai PDF"
                             >
                               <Download className="h-3.5 w-3.5 inline" />
                             </button>

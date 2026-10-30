@@ -16,7 +16,26 @@ import {
   Check,
   Flame,
   Radio,
+  LogIn,
+  LogOut,
+  Search,
+  RefreshCw,
+  DoorOpen,
+  Sparkles,
+  Users,
 } from "lucide-react"
+import {
+  recordGateScan,
+  getGateLogs,
+  getStudentGateLogs,
+  subscribeGateLogs,
+  resetGateLogs,
+  getGateStats,
+  getAvailableDormStudents,
+  type GateAccessRecord,
+  type GateDirection,
+  type GateScanStatus,
+} from "@/services/gateAccessService"
 
 type SubTab = "vietqr" | "repair"
 
@@ -27,6 +46,23 @@ export const MobileAppPage: React.FC = () => {
   const appRole =
     user?.role === "manager" || user?.role === "admin" ? "guard" : "student"
   const [subTab, setSubTab] = useState<SubTab>("vietqr")
+
+  // Current Student Identity
+  const studentName = user?.fullName || "Trần Thanh Nguyên"
+  const studentId = user?.studentId || "SE185240"
+  const room = user?.dormitoryStatus?.room || "A205"
+  const building = user?.dormitoryStatus?.building || "Tòa A (Khu Nam)"
+  const bedCode = user?.dormitoryStatus?.bedCode || "A205-B-G03"
+  const compartment = user?.dormitoryStatus?.compartment || "Buồng B (Balcony Wing)"
+  const avatar =
+    user?.avatar ||
+    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80"
+
+  // Student specific controls
+  const [studentDirection, setStudentDirection] = useState<GateDirection>("IN")
+  const [studentRecentLogs, setStudentRecentLogs] = useState<GateAccessRecord[]>(() =>
+    getStudentGateLogs(studentId)
+  )
 
   // Clock & countdown state
   const [currentTime, setCurrentTime] = useState(new Date())
@@ -42,6 +78,7 @@ export const MobileAppPage: React.FC = () => {
 
   // Interactive feedback states
   const [gateOpenSuccess, setGateOpenSuccess] = useState(false)
+  const [lastScannedRecord, setLastScannedRecord] = useState<GateAccessRecord | null>(null)
   const [isHighContrast, setIsHighContrast] = useState(false)
   const [copiedField, setCopiedField] = useState<string | null>(null)
   const [showNotificationModal, setShowNotificationModal] = useState(false)
@@ -68,45 +105,43 @@ export const MobileAppPage: React.FC = () => {
     },
   ])
 
-  // Guard Scanner state
-  const [guardScanResult, setGuardScanResult] = useState<{
-    status: "success" | "warning" | "danger" | null
-    name: string
-    studentId: string
-    room: string
-    time: string
-    message: string
-  }>({
-    status: null,
-    name: "",
-    studentId: "",
-    room: "",
-    time: "",
-    message: "",
+  // =========================================================================
+  // GUARD / MANAGER SCANNER STATE (REAL-TIME SYNCED)
+  // =========================================================================
+  const [guardLogs, setGuardLogs] = useState<GateAccessRecord[]>(() => getGateLogs())
+  const [latestGuardScan, setLatestGuardScan] = useState<GateAccessRecord | null>(() => {
+    const logs = getGateLogs()
+    return logs.length > 0 ? logs[0] : null
   })
-  const [guardHistory, setGuardHistory] = useState([
-    {
-      name: "Phạm Minh Hoàng",
-      id: "SE183011",
-      room: "A204",
-      time: "21:35:12",
-      status: "success",
-    },
-    {
-      name: "Lê Thị Thảo",
-      id: "SS170421",
-      room: "B102",
-      time: "21:32:05",
-      status: "success",
-    },
-    {
-      name: "Trần Bảo Long",
-      id: "SE172901",
-      room: "A301",
-      time: "21:28:44",
-      status: "warning",
-    },
-  ])
+  const [gateStats, setGateStats] = useState(() => getGateStats())
+  const [selectedStudentId, setSelectedStudentId] = useState<string>(studentId)
+  const [guardSearchQuery, setGuardSearchQuery] = useState<string>("")
+  const [logFilter, setLogFilter] = useState<"ALL" | "IN" | "OUT" | "WARNING">("ALL")
+  const [newScanAlert, setNewScanAlert] = useState<string | null>(null)
+  const availableStudents = getAvailableDormStudents()
+
+  // Real-time synchronization subscription across tabs and views
+  useEffect(() => {
+    const unsubscribe = subscribeGateLogs((logs, latest) => {
+      setGuardLogs(logs)
+      setGateStats(getGateStats())
+      setStudentRecentLogs(
+        logs.filter((l) => l.studentId.toLowerCase() === studentId.toLowerCase())
+      )
+
+      if (latest) {
+        setLatestGuardScan(latest)
+        setNewScanAlert(
+          `⚡ Vừa quẹt thẻ: ${latest.studentName} (${latest.studentId}) · ${
+            latest.direction === "IN" ? "CỔNG VÀO (IN)" : "CỔNG RA (OUT)"
+          } lúc ${latest.timeStr}`
+        )
+        setTimeout(() => setNewScanAlert(null), 5000)
+      }
+    })
+
+    return () => unsubscribe()
+  }, [studentId])
 
   // Live real-time clock
   useEffect(() => {
@@ -163,75 +198,84 @@ export const MobileAppPage: React.FC = () => {
     setQrCountdown(60)
   }
 
-  // Simulate passing through gate turnstile
-  const triggerPassGate = () => {
+  // =========================================================================
+  // ACTION: STUDENT PASSES THROUGH GATE (REAL LOGIC & SYNC)
+  // =========================================================================
+  const handleStudentPassGate = () => {
+    const hasApprovedLate = lateRequestsList[0]?.status === "approved"
+    const record = recordGateScan({
+      studentId,
+      studentName,
+      room,
+      bedCode,
+      building,
+      avatar,
+      direction: studentDirection,
+      hmacToken: qrToken,
+      source: "student_app",
+      reason: hasApprovedLate ? lateRequestsList[0]?.reason : undefined,
+    })
+
+    setLastScannedRecord(record)
     setGateOpenSuccess(true)
     setTimeout(() => {
       setGateOpenSuccess(false)
-    }, 3500)
+    }, 4500)
   }
 
-  // Guard test scanner action
-  const handleGuardScan = (type: "valid" | "late" | "expired") => {
-    const timeStr = currentTime.toLocaleTimeString("vi-VN")
-    if (type === "valid") {
-      setGuardScanResult({
-        status: "success",
-        name: "Nguyễn Hoàng Vinh",
-        studentId: "SE182049",
-        room: "A205 - Giường G03",
-        time: timeStr,
-        message: "HỢP LỆ · CỬA XOAY ĐÃ MỞ (0.3s)",
-      })
-      setGuardHistory((prev) => [
-        {
-          name: "Nguyễn Hoàng Vinh",
-          id: "SE182049",
-          room: "A205",
-          time: timeStr,
-          status: "success",
-        },
-        ...prev.slice(0, 4),
-      ])
-    } else if (type === "late") {
-      setGuardScanResult({
-        status: "warning",
-        name: "Trần Minh Quân",
-        studentId: "SE174201",
-        room: "A205 - Giường G01",
-        time: timeStr,
-        message: "VỀ MUỘN CÓ PHÉP (ĐÃ DUYỆT ĐƠN #LAT-0988) · MỜI VÀO",
-      })
-      setGuardHistory((prev) => [
-        {
-          name: "Trần Minh Quân",
-          id: "SE174201",
-          room: "A205",
-          time: timeStr,
-          status: "warning",
-        },
-        ...prev.slice(0, 4),
-      ])
-    } else {
-      setGuardScanResult({
-        status: "danger",
-        name: "Lê Quốc Bảo",
-        studentId: "SE160999",
-        room: "A102 - Giường G02",
-        time: timeStr,
-        message: "MÃ QR HẾT HẠN HOẶC CHƯA XIN PHÉP VỀ MUỘN · GIỮ LẠI XÁC MINH",
-      })
-      setGuardHistory((prev) => [
-        {
-          name: "Lê Quốc Bảo",
-          id: "SE160999",
-          room: "A102",
-          time: timeStr,
-          status: "danger",
-        },
-        ...prev.slice(0, 4),
-      ])
+  // =========================================================================
+  // ACTION: GUARD SCANS OR SIMULATES STUDENT GATE CHECK
+  // =========================================================================
+  const handleGuardExecuteScan = (
+    targetStudentId: string,
+    direction: GateDirection,
+    forcedStatus?: GateScanStatus,
+    customMessage?: string
+  ) => {
+    const found = availableStudents.find(
+      (s) => s.studentId.toLowerCase() === targetStudentId.toLowerCase()
+    )
+    const isCurrent = targetStudentId.toLowerCase() === studentId.toLowerCase()
+
+    const sName = found ? found.fullName : isCurrent ? studentName : `Sinh viên ${targetStudentId}`
+    const sRoom = found ? found.room : isCurrent ? room : "A205"
+    const sBed = found ? found.bedCode : isCurrent ? bedCode : "A205-B-G01"
+    const sBuilding = found ? found.building : isCurrent ? building : "Tòa A (Khu Nam)"
+    const sAvatar = isCurrent ? avatar : undefined
+
+    let status: GateScanStatus = forcedStatus || "success"
+    let message = customMessage
+
+    if (!forcedStatus) {
+      if (direction === "IN") {
+        const h = currentTime.getHours()
+        if (h >= 23 || h < 5) {
+          status = "warning"
+          message = "VỀ MUỘN CÓ PHÉP (ĐÃ DUYỆT ĐƠN #LAT-0988) · MỜI VÀO"
+        } else {
+          status = "success"
+          message = "HỢP LỆ · CỬA XOAY ĐÃ MỞ (0.3s)"
+        }
+      } else {
+        status = "success"
+        message = "HỢP LỆ · XÁC NHẬN RA NGOÀI KTX"
+      }
     }
+
+    const record = recordGateScan({
+      studentId: targetStudentId,
+      studentName: sName,
+      room: sRoom,
+      bedCode: sBed,
+      building: sBuilding,
+      avatar: sAvatar,
+      direction,
+      status,
+      message,
+      source: "guard_scanner",
+    })
+
+    setLatestGuardScan(record)
   }
 
   // Quick photo capture simulation
@@ -267,6 +311,22 @@ export const MobileAppPage: React.FC = () => {
     setTimeout(() => setLateSubmitted(false), 4000)
   }
 
+  // Filtered guard logs
+  const filteredGuardLogs = guardLogs.filter((log) => {
+    if (logFilter === "IN" && log.direction !== "IN") return false
+    if (logFilter === "OUT" && log.direction !== "OUT") return false
+    if (logFilter === "WARNING" && log.status === "success") return false
+    if (guardSearchQuery.trim()) {
+      const q = guardSearchQuery.toLowerCase().trim()
+      return (
+        log.studentName.toLowerCase().includes(q) ||
+        log.studentId.toLowerCase().includes(q) ||
+        log.room.toLowerCase().includes(q)
+      )
+    }
+    return true
+  })
+
   return (
     <div className="space-y-6 pb-12">
       {/* Top Page Header Banner */}
@@ -281,8 +341,15 @@ export const MobileAppPage: React.FC = () => {
               <span>Hệ thống Kiểm Soát An Ninh Cổng 24/7 · Cửa Xoay Tự Động</span>
             </div>
             <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              Thẻ QR Ra Vào Cổng & Giờ Giới Nghiêm
+              {appRole === "guard"
+                ? "Bàn Điều Phối & Quét Thẻ Cổng An Ninh (Guard Station)"
+                : "Thẻ QR Ra Vào Cổng & Giờ Giới Nghiêm"}
             </h1>
+            <p className="text-xs text-muted-foreground">
+              {appRole === "guard"
+                ? "Dữ liệu quẹt thẻ được đồng bộ thời gian thực 2 chiều giữa thiết bị Sinh viên và Ban Quản lý"
+                : "Xuất trình thẻ QR động HMAC hoặc quét mã trực tiếp tại cửa xoay turnstile để ra vào KTX"}
+            </p>
           </div>
 
           <div className="flex shrink-0 items-center gap-2 self-start sm:self-center">
@@ -377,16 +444,23 @@ export const MobileAppPage: React.FC = () => {
               <div className="rounded-xl border border-border bg-muted/30 p-4 space-y-2.5 text-xs">
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Sinh viên lưu trú:</span>
-                  <span className="font-bold text-foreground">Nguyễn Hoàng Vinh</span>
+                  <span className="font-bold text-foreground flex items-center gap-2">
+                    <img
+                      src={avatar}
+                      alt={studentName}
+                      className="h-5 w-5 rounded-full object-cover ring-1 ring-primary/40"
+                    />
+                    <span>{studentName}</span>
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Mã số sinh viên (MSSV):</span>
-                  <span className="font-mono font-bold text-foreground">SE182049</span>
+                  <span className="font-mono font-bold text-foreground">{studentId}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Vị trí phòng & buồng:</span>
                   <span className="font-semibold text-primary dark:text-emerald-400">
-                    Tòa A (High-Rise) · Phòng A205 · Buồng B · Giường G03
+                    {building} · Phòng {room} · {compartment} · {bedCode}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
@@ -411,29 +485,125 @@ export const MobileAppPage: React.FC = () => {
                 </div>
               </div>
 
+              {/* Gate Direction Selector for Student */}
+              <div className="mt-4 rounded-xl border border-border bg-muted/20 p-3 space-y-2 text-xs">
+                <span className="text-[11px] font-semibold text-muted-foreground block">
+                  Chọn chiều đi qua cổng xoay an ninh:
+                </span>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setStudentDirection("IN")}
+                    className={`flex items-center justify-center gap-2 rounded-xl border p-2.5 font-bold transition-all ${
+                      studentDirection === "IN"
+                        ? "border-emerald-500 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 shadow-2xs"
+                        : "border-border bg-card text-muted-foreground hover:bg-muted"
+                    }`}
+                  >
+                    <LogIn className="h-4 w-4" />
+                    <span>Cổng Vào (Check-In)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setStudentDirection("OUT")}
+                    className={`flex items-center justify-center gap-2 rounded-xl border p-2.5 font-bold transition-all ${
+                      studentDirection === "OUT"
+                        ? "border-sky-500 bg-sky-500/15 text-sky-700 dark:text-sky-300 shadow-2xs"
+                        : "border-border bg-card text-muted-foreground hover:bg-muted"
+                    }`}
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>Cổng Ra (Check-Out)</span>
+                  </button>
+                </div>
+              </div>
+
               {/* Action: Simulate Turnstile Check */}
               <div className="mt-5 space-y-3">
                 <Button
-                  onClick={triggerPassGate}
-                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-6 text-sm rounded-xl shadow-md flex items-center justify-center gap-2"
+                  onClick={handleStudentPassGate}
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-6 text-sm rounded-xl shadow-md flex items-center justify-center gap-2 transition-all hover:scale-[1.01]"
                 >
                   <Radio className="h-4 w-4 animate-pulse" />
-                  <span>Mô phỏng quét mã qua cổng xoay an ninh</span>
+                  <span>
+                    Quét mã qua cổng xoay · {studentDirection === "IN" ? "VÀO KTX" : "RA NGOÀI"}
+                  </span>
                 </Button>
 
-                {gateOpenSuccess && (
+                {gateOpenSuccess && lastScannedRecord && (
                   <div className="flex items-center gap-3 rounded-xl border border-emerald-500/40 bg-emerald-500/15 p-4 text-emerald-800 dark:text-emerald-200 animate-in zoom-in-95">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white font-bold">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white font-bold">
                       <Check className="h-5 w-5 stroke-[3]" />
                     </div>
                     <div>
                       <p className="font-bold text-xs sm:text-sm">
-                        CỔNG XOAY ĐÃ MỞ (TURNSTILE BARRIER OPENED)
+                        {lastScannedRecord.message}
                       </p>
-                      <p className="text-xs opacity-90">
-                        Xác thực danh tính sinh viên thành công lúc {currentTime.toLocaleTimeString("vi-VN")}. Mời bạn bước qua cổng!
+                      <p className="text-xs opacity-90 mt-0.5">
+                        Xác thực sinh viên <strong>{lastScannedRecord.studentName}</strong> ({lastScannedRecord.studentId}) thành công lúc {lastScannedRecord.timeStr}. Dữ liệu đã đồng bộ sang Ban Quản lý!
                       </p>
                     </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Lịch sử quẹt thẻ gần đây của chính sinh viên */}
+              <div className="mt-6 pt-4 border-t border-border space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    Lịch sử qua cổng gần đây của bạn:
+                  </span>
+                  <span className="text-[11px] font-mono text-primary font-bold">
+                    {studentRecentLogs.length} lượt
+                  </span>
+                </div>
+
+                {studentRecentLogs.length === 0 ? (
+                  <p className="text-xs text-muted-foreground py-2 italic text-center">
+                    Chưa có lượt quét nào hôm nay. Nhấn nút quét mã phía trên để bắt đầu!
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {studentRecentLogs.slice(0, 3).map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex items-center justify-between rounded-xl border border-border bg-muted/20 p-2.5 text-xs"
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <span
+                            className={`flex h-7 w-7 items-center justify-center rounded-lg ${
+                              item.direction === "IN"
+                                ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                                : "bg-sky-500/15 text-sky-600 dark:text-sky-400"
+                            }`}
+                          >
+                            {item.direction === "IN" ? (
+                              <LogIn className="h-3.5 w-3.5" />
+                            ) : (
+                              <LogOut className="h-3.5 w-3.5" />
+                            )}
+                          </span>
+                          <div>
+                            <span className="font-semibold text-foreground">
+                              {item.direction === "IN" ? "Cổng Vào (Check-In)" : "Cổng Ra (Check-Out)"}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground block">
+                              {item.gateName} · {item.timeStr}
+                            </span>
+                          </div>
+                        </div>
+                        <span
+                          className={`rounded-md px-2 py-0.5 text-[10px] font-bold ${
+                            item.status === "success"
+                              ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                              : "bg-amber-500/15 text-amber-600 dark:text-amber-400"
+                          }`}
+                        >
+                          {item.status === "success" ? "Hợp Lệ" : "Về Muộn"}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
@@ -785,140 +955,421 @@ export const MobileAppPage: React.FC = () => {
       )}
 
       {/* =========================================================================
-          CHẾ ĐỘ 2: GIAO DIỆN BẢO VỆ TRỰC CỔNG (GUARD CHECKPOINT VIEW)
+          CHẾ ĐỘ 2: GIAO DIỆN BẢO VỆ / QUẢN LÝ (GUARD / MANAGER CHECKPOINT VIEW)
+          TỰ ĐỘNG ĐỒNG BỘ 100% VỚI SINH VIÊN KHI QUẸT THẺ
           ========================================================================= */}
       {appRole === "guard" && (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-          {/* CỘT TRÁI (7 COLS): MÀN HÌNH QUÉT MÃ TỐC ĐỘ CAO TRỰC TIẾP TRÊN NỀN */}
-          <div className="space-y-6 lg:col-span-7">
-            <div className="rounded-2xl border border-border bg-card p-6 shadow-md space-y-4">
-              <div className="flex items-center justify-between border-b border-border pb-3">
-                <div className="flex items-center gap-2">
-                  <span className="flex h-2.5 w-2.5 rounded-full bg-sky-500 animate-ping" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-secondary dark:text-sky-400">
-                    Camera Máy Quét Thẻ Cổng An Ninh · Tốc Độ &lt; 0.3s
-                  </span>
-                </div>
-                <span className="text-xs font-mono text-muted-foreground">
-                  CỔNG CHÍNH TÒA A
-                </span>
+        <div className="space-y-6">
+          {/* Live New Scan Banner Alert */}
+          {newScanAlert && (
+            <div className="flex items-center justify-between gap-3 rounded-2xl border border-emerald-500/60 bg-emerald-500/20 p-4 text-emerald-950 dark:text-emerald-100 shadow-lg animate-in slide-in-from-top-4">
+              <div className="flex items-center gap-3">
+                <span className="flex h-3 w-3 rounded-full bg-emerald-500 animate-ping" />
+                <p className="text-sm font-bold">{newScanAlert}</p>
               </div>
-
-              {/* Live Scanner Viewport */}
-              <div className="relative h-64 overflow-hidden rounded-2xl border-2 border-dashed border-secondary/50 bg-slate-950 flex flex-col items-center justify-center">
-                <div className="pointer-events-none absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_16px_#22d3ee] animate-bounce" />
-                <div className="h-40 w-40 rounded-2xl border-2 border-dashed border-cyan-400/60 flex items-center justify-center">
-                  <QrCode className="h-16 w-16 text-cyan-400/50 animate-pulse" />
-                </div>
-                <div className="absolute bottom-3 rounded-md bg-black/70 px-3 py-1 text-xs text-slate-300">
-                  Hướng camera vào mã QR trên điện thoại sinh viên
-                </div>
-              </div>
-
-              {/* Simulation Test Buttons */}
-              <div className="space-y-2">
-                <span className="text-xs font-semibold text-muted-foreground">
-                  Mô phỏng quẹt thẻ kiểm tra:
-                </span>
-                <div className="grid grid-cols-3 gap-2">
-                  <button
-                    onClick={() => handleGuardScan("valid")}
-                    className="rounded-xl border border-emerald-500/50 bg-emerald-500/10 hover:bg-emerald-500/20 p-2.5 text-center text-xs font-bold text-emerald-600 dark:text-emerald-400 transition-colors"
-                  >
-                    ✅ SV Hợp lệ
-                  </button>
-                  <button
-                    onClick={() => handleGuardScan("late")}
-                    className="rounded-xl border border-amber-500/50 bg-amber-500/10 hover:bg-amber-500/20 p-2.5 text-center text-xs font-bold text-amber-600 dark:text-amber-400 transition-colors"
-                  >
-                    ⚠️ Về muộn có phép
-                  </button>
-                  <button
-                    onClick={() => handleGuardScan("expired")}
-                    className="rounded-xl border border-rose-500/50 bg-rose-500/10 hover:bg-rose-500/20 p-2.5 text-center text-xs font-bold text-rose-600 dark:text-rose-400 transition-colors"
-                  >
-                    ❌ Chưa phép / Khóa
-                  </button>
-                </div>
-              </div>
-
-              {/* Scan Result Feedback Card */}
-              {guardScanResult.status && (
-                <div
-                  className={`rounded-xl border p-4 text-xs animate-in zoom-in-95 ${
-                    guardScanResult.status === "success"
-                      ? "border-emerald-500/50 bg-emerald-500/15 text-emerald-900 dark:text-emerald-200"
-                      : guardScanResult.status === "warning"
-                        ? "border-amber-500/50 bg-amber-500/15 text-amber-900 dark:text-amber-200"
-                        : "border-rose-500/50 bg-rose-500/15 text-rose-900 dark:text-rose-200"
-                  }`}
-                >
-                  <div className="flex items-center justify-between font-bold text-sm">
-                    <span>{guardScanResult.message}</span>
-                    <span className="font-mono text-xs">{guardScanResult.time}</span>
-                  </div>
-                  <div className="mt-2 text-xs space-y-0.5">
-                    <p>
-                      Sinh viên: <strong>{guardScanResult.name}</strong> ({guardScanResult.studentId})
-                    </p>
-                    <p>Phòng lưu trú: {guardScanResult.room}</p>
-                  </div>
-                </div>
-              )}
+              <span className="rounded-full bg-emerald-600 px-3 py-1 text-[11px] font-extrabold text-white">
+                LIVE REALTIME
+              </span>
             </div>
-          </div>
+          )}
 
-          {/* CỘT PHẢI (5 COLS): NHẬT KÝ RA VÀO NGOẠI TUYẾN & THỐNG KÊ */}
-          <div className="space-y-6 lg:col-span-5">
-            <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4">
-              <div className="flex items-center justify-between border-b border-border pb-3">
-                <h3 className="text-sm font-bold text-foreground">Nhật Ký Quẹt Cổng (Offline Cache)</h3>
-                <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                  Đồng bộ 100%
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-xl border border-border bg-muted/40 p-3 text-center">
-                  <span className="block font-mono text-2xl font-black text-foreground">842</span>
-                  <span className="text-[10px] text-muted-foreground uppercase font-bold">Lượt qua cổng hôm nay</span>
-                </div>
-                <div className="rounded-xl border border-border bg-muted/40 p-3 text-center">
-                  <span className="block font-mono text-2xl font-black text-amber-600 dark:text-amber-400">48</span>
-                  <span className="text-[10px] text-muted-foreground uppercase font-bold">Đang ở ngoài khuôn viên</span>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  Lượt quẹt gần nhất:
-                </span>
-                {guardHistory.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-between rounded-xl border border-border bg-muted/30 p-3 text-xs"
-                  >
-                    <div>
-                      <p className="font-semibold text-foreground">
-                        {item.name} · <span className="font-mono text-muted-foreground">{item.id}</span>
-                      </p>
-                      <p className="text-[10px] text-muted-foreground">
-                        Phòng {item.room} · {item.time}
-                      </p>
-                    </div>
-                    <span
-                      className={`rounded-md px-2 py-0.5 text-[10px] font-bold ${
-                        item.status === "success"
-                          ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
-                          : item.status === "warning"
-                            ? "bg-amber-500/15 text-amber-600 dark:text-amber-400"
-                            : "bg-rose-500/15 text-rose-600 dark:text-rose-400"
-                      }`}
-                    >
-                      {item.status === "success" ? "Hợp Lệ" : item.status === "warning" ? "Có Phép" : "Cảnh Báo"}
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+            {/* CỘT TRÁI (7 COLS): MÀN HÌNH QUÉT CAMERA & BẢNG ĐIỀU PHỐI NGHIỆP VỤ AN NINH */}
+            <div className="space-y-6 lg:col-span-7">
+              <div className="rounded-2xl border border-border bg-card p-6 shadow-md space-y-5">
+                <div className="flex items-center justify-between border-b border-border pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-2.5 w-2.5 rounded-full bg-sky-500 animate-ping" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-secondary dark:text-sky-400">
+                      Camera Máy Quét Thẻ Cổng An Ninh · Phản Hồi &lt; 0.3s
                     </span>
                   </div>
-                ))}
+                  <span className="text-xs font-mono font-bold text-muted-foreground flex items-center gap-1.5">
+                    <DoorOpen className="h-4 w-4 text-primary" />
+                    CỔNG CHÍNH TÒA A (TURNSTILE 01)
+                  </span>
+                </div>
+
+                {/* Live Scanner Viewport Canvas */}
+                <div className="relative h-64 overflow-hidden rounded-2xl border-2 border-dashed border-secondary/50 bg-slate-950 flex flex-col items-center justify-center p-4">
+                  <div className="pointer-events-none absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_16px_#22d3ee] animate-bounce" />
+
+                  {latestGuardScan ? (
+                    <div className="relative z-10 w-full max-w-md rounded-2xl border border-cyan-500/30 bg-slate-900/90 p-4 text-center text-white backdrop-blur-sm animate-in zoom-in-95">
+                      <div className="flex items-center justify-between text-xs pb-2 border-b border-slate-800">
+                        <span className="flex items-center gap-1 text-cyan-400 font-mono font-bold">
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          QUÉT THÀNH CÔNG
+                        </span>
+                        <span className="font-mono text-[11px] text-slate-400">
+                          {latestGuardScan.timeStr} · {latestGuardScan.dateStr}
+                        </span>
+                      </div>
+
+                      <div className="mt-3 flex items-center gap-3 text-left">
+                        <img
+                          src={
+                            latestGuardScan.avatar ||
+                            "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80"
+                          }
+                          alt={latestGuardScan.studentName}
+                          className="h-14 w-14 rounded-2xl object-cover ring-2 ring-cyan-400/50"
+                        />
+                        <div className="flex-1">
+                          <h4 className="font-bold text-base text-white">
+                            {latestGuardScan.studentName}
+                          </h4>
+                          <p className="text-xs text-slate-300">
+                            MSSV: <span className="font-mono font-bold text-cyan-300">{latestGuardScan.studentId}</span> • Phòng {latestGuardScan.room}
+                          </p>
+                          <div className="mt-1 flex items-center gap-2">
+                            <span
+                              className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold ${
+                                latestGuardScan.direction === "IN"
+                                  ? "bg-emerald-500/20 text-emerald-300"
+                                  : "bg-sky-500/20 text-sky-300"
+                              }`}
+                            >
+                              {latestGuardScan.direction === "IN" ? (
+                                <LogIn className="h-3 w-3" />
+                              ) : (
+                                <LogOut className="h-3 w-3" />
+                              )}
+                              {latestGuardScan.direction === "IN" ? "CỔNG VÀO (IN)" : "CỔNG RA (OUT)"}
+                            </span>
+                            <span className="text-[10px] text-slate-400">
+                              Nguồn: {latestGuardScan.source === "student_app" ? "App Sinh viên" : "Máy quét Bảo vệ"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-3 rounded-xl bg-slate-950/80 p-2 text-xs font-mono font-bold text-emerald-400 border border-emerald-500/30">
+                        {latestGuardScan.message}
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="h-40 w-40 rounded-2xl border-2 border-dashed border-cyan-400/60 flex items-center justify-center">
+                        <QrCode className="h-16 w-16 text-cyan-400/50 animate-pulse" />
+                      </div>
+                      <div className="absolute bottom-3 rounded-md bg-black/70 px-3 py-1 text-xs text-slate-300">
+                        Sẵn sàng nhận diện mã QR HMAC từ ứng dụng sinh viên
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* BẢNG ĐIỀU KHIỂN & NGHIỆP VỤ QUÉT THỰC TẾ (THAY THẾ 3 NÚT DEMO CŨ) */}
+                <div className="space-y-4 pt-2">
+                  {/* Mục 1: Quét nhanh Sinh viên đang kiểm thử */}
+                  <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                        <Sparkles className="h-4 w-4 text-primary" />
+                        Quét Thẻ Sinh Viên Đang Test ({studentName} - {studentId}):
+                      </span>
+                      <span className="text-[11px] text-muted-foreground font-mono">
+                        Phòng {room}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2.5">
+                      <button
+                        onClick={() => handleGuardExecuteScan(studentId, "IN")}
+                        className="flex items-center justify-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/15 hover:bg-emerald-500/25 p-3 text-xs font-bold text-emerald-700 dark:text-emerald-300 transition-all hover:scale-[1.01]"
+                      >
+                        <LogIn className="h-4 w-4 text-emerald-600" />
+                        <span>Quét Cổng VÀO (IN)</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleGuardExecuteScan(studentId, "OUT")}
+                        className="flex items-center justify-center gap-2 rounded-xl border border-sky-500/40 bg-sky-500/15 hover:bg-sky-500/25 p-3 text-xs font-bold text-sky-700 dark:text-sky-300 transition-all hover:scale-[1.01]"
+                      >
+                        <LogOut className="h-4 w-4 text-sky-600" />
+                        <span>Quét Cổng RA (OUT)</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Mục 2: Chọn sinh viên KTX từ danh mục thực tế (14 Sinh viên CSDL) */}
+                  <div className="rounded-xl border border-border bg-muted/20 p-4 space-y-3">
+                    <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                      <Users className="h-4 w-4 text-secondary" />
+                      Chọn Sinh viên KTX để Quét Thẻ / Kiểm Tra:
+                    </span>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 text-xs">
+                      <div className="sm:col-span-7">
+                        <select
+                          value={selectedStudentId}
+                          onChange={(e) => setSelectedStudentId(e.target.value)}
+                          className="w-full rounded-xl border border-border bg-card p-2.5 text-xs text-foreground font-medium"
+                        >
+                          {availableStudents.map((std) => (
+                            <option key={std.studentId} value={std.studentId}>
+                              {std.fullName} ({std.studentId}) · Phòng {std.room} ({std.bedCode})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="sm:col-span-5 grid grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleGuardExecuteScan(selectedStudentId, "IN")}
+                          className="rounded-xl border border-emerald-500/30 bg-card hover:bg-emerald-500/10 p-2 text-center text-xs font-bold text-emerald-600 dark:text-emerald-400 transition-colors flex items-center justify-center gap-1"
+                        >
+                          <LogIn className="h-3.5 w-3.5" />
+                          <span>Vào (IN)</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleGuardExecuteScan(selectedStudentId, "OUT")}
+                          className="rounded-xl border border-sky-500/30 bg-card hover:bg-sky-500/10 p-2 text-center text-xs font-bold text-sky-600 dark:text-sky-400 transition-colors flex items-center justify-center gap-1"
+                        >
+                          <LogOut className="h-3.5 w-3.5" />
+                          <span>Ra (OUT)</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Mục 3: Mô phỏng kịch bản an ninh nghiệp vụ */}
+                  <div className="space-y-2">
+                    <span className="text-xs font-bold text-muted-foreground block">
+                      Mô phỏng tình huống an ninh cổng KTX:
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      <button
+                        onClick={() =>
+                          handleGuardExecuteScan(
+                            selectedStudentId,
+                            "IN",
+                            "success",
+                            "HỢP LỆ · CỬA XOAY ĐÃ MỞ (0.3s)"
+                          )
+                        }
+                        className="rounded-xl border border-emerald-500/50 bg-emerald-500/10 hover:bg-emerald-500/20 p-2.5 text-center text-xs font-bold text-emerald-700 dark:text-emerald-300 transition-colors"
+                      >
+                        ✅ SV Hợp lệ (Cửa mở)
+                      </button>
+
+                      <button
+                        onClick={() =>
+                          handleGuardExecuteScan(
+                            selectedStudentId,
+                            "IN",
+                            "warning",
+                            "VỀ MUỘN CÓ PHÉP (ĐÃ DUYỆT ĐƠN #LAT-0988) · MỜI VÀO"
+                          )
+                        }
+                        className="rounded-xl border border-amber-500/50 bg-amber-500/10 hover:bg-amber-500/20 p-2.5 text-center text-xs font-bold text-amber-700 dark:text-amber-300 transition-colors"
+                      >
+                        ⚠️ Về muộn có phép (#LAT)
+                      </button>
+
+                      <button
+                        onClick={() =>
+                          handleGuardExecuteScan(
+                            selectedStudentId,
+                            "IN",
+                            "danger",
+                            "QUÁ GIỜ GIỚI NGHIÊM 23:00 (CHƯA NỘP ĐƠN) · GIỮ LẠI XÁC MINH"
+                          )
+                        }
+                        className="rounded-xl border border-rose-500/50 bg-rose-500/10 hover:bg-rose-500/20 p-2.5 text-center text-xs font-bold text-rose-700 dark:text-rose-300 transition-colors"
+                      >
+                        ❌ Vi phạm giới nghiêm
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* CỘT PHẢI (5 COLS): NHẬT KÝ QUẸT CỔNG THỜI GIAN THỰC & THỐNG KÊ */}
+            <div className="space-y-6 lg:col-span-5">
+              <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4">
+                <div className="flex items-center justify-between border-b border-border pb-3">
+                  <div>
+                    <h3 className="text-sm font-bold text-foreground">
+                      Nhật Ký Quẹt Cổng (Live Realtime Sync)
+                    </h3>
+                    <p className="text-[11px] text-muted-foreground">
+                      Tự động cập nhật tức thời khi sinh viên quẹt thẻ
+                    </p>
+                  </div>
+                  <span className="flex items-center gap-1 rounded-full bg-emerald-500/15 px-2.5 py-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
+                    ĐÃ ĐỒNG BỘ CSDL
+                  </span>
+                </div>
+
+                {/* Live Stats */}
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  <div className="rounded-xl border border-border bg-muted/40 p-2.5">
+                    <span className="block font-mono text-xl font-black text-foreground">
+                      {gateStats.totalScansToday}
+                    </span>
+                    <span className="text-[9px] text-muted-foreground uppercase font-bold">
+                      Lượt qua cổng
+                    </span>
+                  </div>
+                  <div className="rounded-xl border border-border bg-muted/40 p-2.5">
+                    <span className="block font-mono text-xl font-black text-sky-600 dark:text-sky-400">
+                      {gateStats.currentlyOutside}
+                    </span>
+                    <span className="text-[9px] text-muted-foreground uppercase font-bold">
+                      Đang ở ngoài
+                    </span>
+                  </div>
+                  <div className="rounded-xl border border-border bg-muted/40 p-2.5">
+                    <span className="block font-mono text-xl font-black text-amber-600 dark:text-amber-400">
+                      {gateStats.warningCount}
+                    </span>
+                    <span className="text-[9px] text-muted-foreground uppercase font-bold">
+                      Cảnh báo/Muộn
+                    </span>
+                  </div>
+                </div>
+
+                {/* Filters & Actions */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-1 text-xs">
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => setLogFilter("ALL")}
+                        className={`rounded-lg px-2 py-1 text-[11px] font-bold ${
+                          logFilter === "ALL"
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        Tất cả ({guardLogs.length})
+                      </button>
+                      <button
+                        onClick={() => setLogFilter("IN")}
+                        className={`rounded-lg px-2 py-1 text-[11px] font-bold ${
+                          logFilter === "IN"
+                            ? "bg-emerald-600 text-white"
+                            : "bg-muted text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        Vào (IN)
+                      </button>
+                      <button
+                        onClick={() => setLogFilter("OUT")}
+                        className={`rounded-lg px-2 py-1 text-[11px] font-bold ${
+                          logFilter === "OUT"
+                            ? "bg-sky-600 text-white"
+                            : "bg-muted text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        Ra (OUT)
+                      </button>
+                      <button
+                        onClick={() => setLogFilter("WARNING")}
+                        className={`rounded-lg px-2 py-1 text-[11px] font-bold ${
+                          logFilter === "WARNING"
+                            ? "bg-amber-600 text-white"
+                            : "bg-muted text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        Cảnh báo
+                      </button>
+                    </div>
+
+                    <button
+                      onClick={() => resetGateLogs()}
+                      title="Khôi phục danh sách mẫu ban đầu"
+                      className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                    >
+                      <RefreshCw className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+
+                  {/* Search input */}
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                    <input
+                      type="text"
+                      value={guardSearchQuery}
+                      onChange={(e) => setGuardSearchQuery(e.target.value)}
+                      placeholder="Tìm theo MSSV, Họ tên hoặc Phòng..."
+                      className="w-full rounded-xl border border-border bg-card pl-8 pr-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground"
+                    />
+                  </div>
+                </div>
+
+                {/* Log List */}
+                <div className="space-y-2 max-h-[460px] overflow-y-auto pr-1">
+                  {filteredGuardLogs.length === 0 ? (
+                    <p className="text-xs text-muted-foreground text-center py-6 italic">
+                      Không tìm thấy lượt quẹt nào phù hợp với bộ lọc.
+                    </p>
+                  ) : (
+                    filteredGuardLogs.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex items-center justify-between rounded-xl border border-border bg-muted/20 hover:bg-muted/40 p-3 text-xs transition-colors"
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <span
+                            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl font-bold ${
+                              item.direction === "IN"
+                                ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                                : "bg-sky-500/15 text-sky-600 dark:text-sky-400"
+                            }`}
+                          >
+                            {item.direction === "IN" ? (
+                              <LogIn className="h-4 w-4" />
+                            ) : (
+                              <LogOut className="h-4 w-4" />
+                            )}
+                          </span>
+                          <div>
+                            <p className="font-semibold text-foreground flex items-center gap-1.5">
+                              <span>{item.studentName}</span>
+                              <span className="font-mono text-[11px] text-muted-foreground">
+                                ({item.studentId})
+                              </span>
+                            </p>
+                            <p className="text-[10px] text-muted-foreground">
+                              Phòng {item.room} · {item.timeStr}
+                              {item.source === "student_app" && (
+                                <span className="ml-1.5 text-primary font-medium">
+                                  • Từ App SV
+                                </span>
+                              )}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="text-right space-y-1">
+                          <span
+                            className={`inline-block rounded-md px-2 py-0.5 text-[10px] font-bold ${
+                              item.status === "success"
+                                ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                                : item.status === "warning"
+                                  ? "bg-amber-500/15 text-amber-600 dark:text-amber-400"
+                                  : "bg-rose-500/15 text-rose-600 dark:text-rose-400"
+                            }`}
+                          >
+                            {item.status === "success"
+                              ? item.direction === "IN"
+                                ? "Vào Hợp Lệ"
+                                : "Ra Hợp Lệ"
+                              : item.status === "warning"
+                                ? "Về Muộn Có Phép"
+                                : "Cảnh Báo"}
+                          </span>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -986,4 +1437,5 @@ export const MobileAppPage: React.FC = () => {
     </div>
   )
 }
+
 export default MobileAppPage

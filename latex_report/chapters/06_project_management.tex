@@ -1,0 +1,114 @@
+\chapter{QUẢN TRỊ DỰ ÁN VÀ PHÂN CÔNG CÔNG VIỆC}
+\label{ch:project_management}
+
+\section{Cơ cấu Tổ chức Nhóm và Ma trận Trách nhiệm RACI}
+Dự án được thực hiện bởi nhóm gồm 6 thành viên với sự phân công vai trò rõ ràng, chuyên môn hóa cao theo từng phân hệ nghiệp vụ. Để quản trị trách nhiệm hiệu quả, nhóm áp dụng mô hình \textbf{Ma trận RACI} (Responsible, Accountable, Consulted, Informed) như được trình bày chi tiết trong Bảng~\ref{tab:raci_matrix}.
+
+\begin{table}[htbp]
+\centering
+\caption{Ma trận Trách nhiệm RACI chi tiết 6 thành viên nhóm FER202\_Group4}
+\label{tab:raci_matrix}
+\small
+\begin{tabularx}{\textwidth}{|l|c|c|c|c|c|c|}
+\hline
+\rowcolor{blue!10}
+\textbf{Phân hệ / Gói công việc (WBS)} & \textbf{Vinh} & \textbf{Tiến} & \textbf{Nguyên} & \textbf{V.Trung} & \textbf{Đ.Trung} & \textbf{Kim} \\ \hline
+Module 1: Authentication \& Identity (OAuth, JWT) & \textbf{R/A} & C & C & I & I & C \\ \hline
+Module 2: Topology Cấu trúc Không gian 1:4:6 & A & \textbf{R} & \textbf{R} & I & I & C \\ \hline
+Module 3: Đặt giường Trực quan \& Auto-Approval & A & \textbf{R} & \textbf{R} & I & I & C \\ \hline
+Module 4: Chia tiền Điện Nước ($Total / N$) \& Handover & A & C & C & \textbf{R} & I & C \\ \hline
+Module 5: Phiếu Báo hỏng \& Bảo trì Thiết bị & A & I & I & I & \textbf{R} & C \\ \hline
+Module 6: Giờ Giới Nghiêm 23:00 \& Thẻ QR Cổng & A & I & I & I & \textbf{R} & C \\ \hline
+Module 7: Dashboard Quản trị \& Xuất Báo cáo Excel & A & C & I & I & \textbf{R} & C \\ \hline
+Đảm bảo Chất lượng, Viết Test Cases \& Soạn Slide & A & I & I & I & I & \textbf{R} \\ \hline
+\end{tabularx}
+\end{table}
+
+\begin{flushleft}
+\footnotesize
+\textit{Quy ước:} \textbf{R (Responsible):} Người trực tiếp thực hiện; \textbf{A (Accountable):} Người chịu trách nhiệm cao nhất (Lead); \textbf{C (Consulted):} Người tham gia tư vấn/hỗ trợ; \textbf{I (Informed):} Người nhận thông tin kết quả.
+\end{flushleft}
+
+\section{Lộ trình Triển khai 5 Tuần (Sprint Roadmap)}
+Quá trình phát triển dự án tuân thủ phương pháp luận linh hoạt (Agile Scrum), chia thành 5 Sprint tuần rõ ràng:
+\begin{itemize}
+    \item \textbf{Tuần 1 -- Thiết lập Kiến trúc \& Nền tảng (Foundation Week):}
+    \begin{itemize}
+        \item Khảo sát nghiệp vụ ký túc xá, hoàn thiện tài liệu SRS và đặc tả 28 Use Cases.
+        \item Cấu hình mã nguồn Git Repository, tích hợp Vite, TypeScript, Tailwind CSS v4, Prettier, ESLint.
+        \item Thiết kế kiến trúc định tuyến và State Management (\texttt{AuthContext}, \texttt{BookingContext}).
+        \item Xây dựng cơ sở dữ liệu mô phỏng 12 thực thể (\texttt{db.json}) và nạp dữ liệu mẫu Tòa A (5 tầng, 20 phòng).
+    \end{itemize}
+
+    \item \textbf{Tuần 2 -- Luồng Đặt phòng Trọng tâm (Core Booking Workflow):}
+    \begin{itemize}
+        \item Xây dựng Component bản đồ phòng trực quan 1:4:6 (Tòa $\rightarrow$ Tầng $\rightarrow$ Phòng $\rightarrow$ Buồng $\rightarrow$ Giường).
+        \item Tích hợp Modal khóa giữ chỗ 15 phút, đồng hồ đếm ngược và hiển thị cổng VietQR động.
+        \item Cài đặt động cơ tự động xét duyệt (Auto-Approval Engine) 3 bước trong \texttt{server.js}.
+        \item Tích hợp thư viện \texttt{jspdf} tự động kết xuất Hợp đồng lưu trú điện tử PDF.
+    \end{itemize}
+
+    \item \textbf{Tuần 3 -- Điện Nước \& Quy trình Bàn giao (Billing \& Handover Workflow):}
+    \begin{itemize}
+        \item Xây dựng form ghi chỉ số công tơ điện nước định kỳ cho Kỹ thuật viên (kèm tính năng tải ảnh đồng hồ).
+        \item Cài đặt thuật toán tự động chia tiền phòng $Total / N$ kèm xử lý sai số làm tròn số học và tính tiền pro-rata.
+        \item Xây dựng giao diện Hóa đơn cá nhân minh bạch kèm mã VietQR cá thể hóa.
+        \item Hiện thực form biên bản điện tử cho quy trình Check-in và Check-out bàn giao tài sản.
+    \end{itemize}
+
+    \item \textbf{Tuần 4 -- Vận hành Cơ sở vật chất \& Quản trị (Operations \& Analytics):}
+    \begin{itemize}
+        \item Hoàn thiện hệ thống tiếp nhận phiếu báo hỏng và bảng nhận việc kỹ thuật viên (Bounty Board).
+        \item Xây dựng phân hệ Thẻ sinh viên điện tử QR động (HMAC làm mới mỗi 60s) và Bảng điều khiển Cổng bảo vệ.
+        \item Cài đặt thuật toán phát hiện vi phạm giờ giới nghiêm 23:00 và tự động trừ điểm rèn luyện KTX.
+        \item Xây dựng Dashboard quản trị với biểu đồ tỷ lệ lấp đầy phòng và tính năng xuất dữ liệu tạm trú/công nợ sang Excel.
+    \end{itemize}
+
+    \item \textbf{Tuần 5 -- Kiểm thử Toàn diện \& Chuẩn bị Bảo vệ (Final Polish \& Defense):}
+    \begin{itemize}
+        \item Thực thi 90 ca kiểm thử cho toàn bộ 28 Use Cases và kiểm tra các kịch bản biên (Edge-cases).
+        \item Tối ưu hóa hiệu năng tải trang, kiểm thử Responsive đa thiết bị và sửa chữa toàn bộ lỗi tồn đọng.
+        \item Đóng băng mã nguồn (Code Freeze), viết tài liệu báo cáo dự án và chuẩn bị kịch bản demo bảo vệ.
+    \end{itemize}
+\end{itemize}
+
+\section{Quy ước Làm việc Nhóm (Team Working Agreements)}
+Để đảm bảo tính đồng bộ và chất lượng mã nguồn cao nhất, nhóm đã thống nhất và tuân thủ các quy ước kỹ thuật sau:
+\begin{enumerate}
+    \item \textbf{Chiến lược Nhánh Git (Git Flow):}
+    \begin{itemize}
+        \item Nhánh \texttt{main}: Mã nguồn phiên bản phát hành chính thức, chỉ merge khi có sự chấp thuận của Project Manager (Vinh).
+        \item Nhánh \texttt{develop}: Nhánh tích hợp liên tục của cả nhóm.
+        \item Các nhánh tính năng con: Đặt tên theo tiền tố chuẩn: \texttt{feature/booking-146}, \texttt{feature/utility-split}, \texttt{feature/curfew-guard}, v.v.
+    \end{itemize}
+    \item \textbf{Quy chuẩn Thông điệp Commit (Conventional Commits):}
+    \begin{itemize}
+        \item \texttt{feat: thêm chức năng chọn giường trực quan 1:4:6}
+        \item \texttt{fix: khắc phục lỗi đếm ngược 15 phút không nhả giường}
+        \item \texttt{style: tinh chỉnh giao diện hóa đơn cá nhân trên mobile}
+        \item \texttt{docs: cập nhật tài liệu kiểm thử và báo cáo LaTeX}
+    \end{itemize}
+    \item \textbf{Giao tiếp và Đánh giá:} Nhóm duy trì phiên họp nhanh (Daily Standup) 15 phút vào mỗi sáng để rà soát tiến độ và giải quyết ngay các điểm nghẽn kỹ thuật.
+\end{enumerate}
+
+\section{Đánh giá Mức độ Đóng góp của Từng Thành viên}
+Tất cả 6 thành viên trong nhóm đã hoàn thành xuất sắc các nhiệm vụ được giao, đóng góp tích cực vào sự thành công chung của đề tài như được ghi nhận trong Bảng~\ref{tab:member_evaluation}.
+
+\begin{table}[htbp]
+\centering
+\caption{Bảng đánh giá mức độ hoàn thành nhiệm vụ của các thành viên}
+\label{tab:member_evaluation}
+\small
+\begin{tabularx}{\textwidth}{|c|l|X|c|c|}
+\hline
+\rowcolor{blue!10}
+\textbf{STT} & \textbf{Họ và Tên} & \textbf{Sản phẩm bàn giao cụ thể (Deliverables)} & \textbf{Tiến độ} & \textbf{Đóng góp} \\ \hline
+1 & Nguyễn Hoàng Vinh & Kiến trúc dự án, AuthContext, ProtectedRoute, tích hợp API, quản lý tiến độ. & 100\% & 100\% \\ \hline
+2 & Trần Công Tiến & Design System, Bản đồ chọn giường 1:4:6, Modal giữ chỗ 15m, VietQR UI. & 100\% & 100\% \\ \hline
+3 & Trần Thanh Nguyên & Schema 12 bảng, Seed Data, Auto-Approval Engine, kết xuất Hợp đồng PDF. & 100\% & 100\% \\ \hline
+4 & Văn Thái Trung & Form ghi chỉ số công tơ kèm ảnh, Thuật toán chia tiền $Total/N$, Form Handover. & 100\% & 100\% \\ \hline
+5 & Đinh Thanh Trung & Ticket báo hỏng, Bounty Board, Quản lý giới nghiêm 23:00, Dashboard Recharts, Xuất Excel. & 100\% & 100\% \\ \hline
+6 & Huỳnh Gia Kim & Bộ 90 Test Cases, kiểm thử 4 Edge-cases, kiểm thử Responsive, Slide \& Kịch bản demo. & 100\% & 100\% \\ \hline
+\end{tabularx}
+\end{table}
+

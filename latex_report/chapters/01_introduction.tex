@@ -1,0 +1,57 @@
+\chapter{GIỚI THIỆU VÀ ĐẶT VẤN ĐỀ}
+\label{ch:introduction}
+
+\section{Bối cảnh và Lý do chọn đề tài}
+Trong môi trường giáo dục đại học hiện đại, ký túc xá (KTX) không chỉ đơn thuần là nơi lưu trú mà còn là một hệ sinh thái sinh hoạt, học tập và rèn luyện quan trọng của sinh viên. Tại các cơ sở đào tạo quy mô lớn như Đại học FPT, số lượng sinh viên nội trú lên tới hàng ngàn người mỗi học kỳ, đặt ra thách thức quản trị vô cùng lớn cho Ban Quản lý KTX.
+
+Trước đây, phần lớn các nghiệp vụ tại ký túc xá vẫn được thực hiện theo phương thức bán thủ công hoặc dựa trên các tệp bảng tính rời rạc (Google Sheets, Excel):
+\begin{itemize}
+    \item \textbf{Đăng ký và xếp phòng thiếu trực quan:} Sinh viên không thể hình dung vị trí cụ thể của giường ngủ trong phòng (hướng cửa sổ, tầng trên hay tầng dưới), dẫn tới tình trạng bất mãn khi nhận phòng thực tế.
+    \item \textbf{Quy trình phê duyệt hợp đồng chậm trễ:} Việc đối chiếu hồ sơ, kiểm tra điều kiện sinh viên (giới tính, công nợ kỳ trước, kỷ luật) và xác nhận tiền cọc tốn nhiều ngày làm việc của cán bộ.
+    \item \textbf{Bất cập và thiếu minh bạch trong tính tiền điện nước:} Tiền điện nước phòng chung thường gây tranh cãi gay gắt giữa các bạn cùng phòng do thiếu bằng chứng chỉ số công tơ, không rõ công thức chia sẻ chi phí khi có người chuyển vào hoặc chuyển đi giữa kỳ.
+    \item \textbf{Báo hỏng và bảo trì cơ sở vật chất chậm trễ:} Phiếu báo hỏng bằng giấy hoặc gửi qua mạng xã hội dễ bị thất lạc, kỹ thuật viên không nắm rõ mức độ khẩn cấp, sinh viên không theo dõi được tiến độ sửa chữa.
+    \item \textbf{Kiểm soát an ninh và giờ giới nghiêm 23:00 thiếu chính xác:} Việc ghi sổ giấy tại cổng bảo vệ dễ dẫn tới sai sót, gian lận quẹt thẻ hộ, và khó đối chiếu với các đơn xin về muộn đã được duyệt trước đó.
+\end{itemize}
+
+Xuất phát từ những bất cập thực tế nêu trên, dự án \textbf{``Domanage -- Online Dormitory Management System (DMS)''} được nghiên cứu và phát triển trong khuôn khổ môn học \textit{FER202 (Front-End Web Development with React)}. Dự án hướng tới mục tiêu hiện đại hóa, tự động hóa và minh bạch hóa toàn bộ vòng đời lưu trú của sinh viên tại ký túc xá trường đại học.
+
+\section{Mục tiêu của Dự án}
+Hệ thống \textbf{Domanage} được thiết kế với các mục tiêu trọng tâm sau:
+\begin{enumerate}
+    \item \textbf{Trải nghiệm người dùng vượt trội (User-Centric UI/UX):} Cung cấp bản đồ chọn giường trực quan theo phân cấp không gian \textbf{1:4:6} (1 Tòa nhà $\rightarrow$ Nhiều Tầng $\rightarrow$ Các Phòng $\rightarrow$ 4 Buồng cá nhân $\rightarrow$ 6 Giường/buồng), mô phỏng chân thực layout thực tế của phòng ở KTX.
+    \item \textbf{Cơ chế giữ chỗ và thanh toán tức thì:} Áp dụng cơ chế khóa giường tạm thời 15 phút kèm đồng hồ đếm ngược, tích hợp mã chuyển khoản VietQR động theo chuẩn Napas 247, giúp sinh viên hoàn tất đặt chỗ nhanh chóng.
+    \item \textbf{Động cơ tự động xét duyệt (Auto-Approval Engine):} Xóa bỏ hoàn toàn khâu duyệt thủ công bằng thuật toán tự động kiểm tra 3 điều kiện (khớp giới tính tòa nhà, không nợ kỳ trước/không kỷ luật, xác nhận cọc 100\%) và tự động xuất Hợp đồng điện tử (e-Contract PDF) có mã định danh xác thực.
+    \item \textbf{Minh bạch hóa thu phí điện nước phòng:} Xây dựng thuật toán phân bổ chi phí tự động ($Total / N$) kèm tính năng Pro-rata theo số ngày lưu trú, lưu trữ hình ảnh chụp thực tế công tơ điện nước làm bằng chứng đối soát minh bạch.
+    \item \textbf{Vận hành khép kín quy trình bảo trì & an ninh:} Số hóa toàn diện quy trình tiếp nhận phiếu báo hỏng thiết bị kèm ảnh chụp, bảng điều khiển kỹ thuật viên (Technician Bounty Board), và hệ thống quản lý giờ giới nghiêm 23:00 với mã QR động chống gian lận và trừ điểm kỷ luật KTX.
+\end{enumerate}
+
+\section{Phạm vi của Đề tài}
+Dự án tập trung vào việc nghiên cứu, thiết kế và hiện thực hóa ứng dụng Web hiện đại:
+\begin{itemize}
+    \item \textbf{Công nghệ cốt lõi:} Single Page Application (SPA) xây dựng trên nền tảng React 19, TypeScript, Vite, Tailwind CSS v4 và Radix UI / ShadCN UI.
+    \item \textbf{Mô phỏng dữ liệu & Backend:} Sử dụng JSON-Server với Engine tự động xét duyệt tùy biến (custom endpoints), kết hợp kiến trúc RESTful API và lưu trữ trạng thái đồng bộ LocalStorage/SessionStorage.
+    \item \textbf{Đa nền tảng và Responsive:} Hệ thống hỗ trợ tối ưu hiển thị trên màn hình Desktop (cho Cán bộ quản lý KTX) và giao diện Mobile Web/PWA (cho Sinh viên tra cứu hóa đơn, thẻ QR ra vào cổng và Bảo vệ trực chốt).
+\end{itemize}
+
+\section{Đối tượng sử dụng hệ thống (Stakeholders \& Actors)}
+Hệ thống phân quyền truy cập nghiêm ngặt dựa trên vai trò (Role-Based Access Control -- RBAC) với 5 nhóm người dùng chính:
+\begin{enumerate}
+    \item \textbf{Sinh viên (Student):} Đăng nhập bằng Gmail cá nhân/trường, thực hiện đăng ký và chọn giường trực quan, thanh toán cọc, nhận hợp đồng điện tử, theo dõi hóa đơn điện nước phòng, nộp phiếu báo hỏng thiết bị, và xuất trình thẻ QR di động khi qua cổng KTX sau 23:00.
+    \item \textbf{Cán bộ Quản lý KTX (Dorm Manager):} Giám sát công suất phòng và tỷ lệ lấp đầy qua biểu đồ trực quan, phát hành hóa đơn điện nước hàng tháng, phê duyệt đơn xin về muộn ngoài giờ, xử lý biên bản vi phạm kỷ luật, và xuất báo cáo lưu trú/công nợ sang định dạng Excel.
+    \item \textbf{Kỹ thuật viên (Technician):} Tiếp nhận các phiếu báo hỏng thiết bị theo bảng việc (Bounty Board), ghi nhận vật tư thay thế, chụp ảnh nghiệm thu hoàn thành sửa chữa, và thực hiện ghi chỉ số công tơ điện nước định kỳ kèm ảnh chụp đồng hồ.
+    \item \textbf{Nhân viên Bảo vệ (Security Guard):} Sử dụng máy quét hoặc giao diện tra cứu nhanh MSSV tại cổng KTX, đối chiếu đơn xin về muộn đã duyệt, tự động ghi nhận biên bản vi phạm giờ giới nghiêm sau 23:00.
+    \item \textbf{Quản trị viên Hệ thống (System Administrator):} Quản lý danh mục cơ sở vật chất (Tòa nhà, Tầng, Phòng, Giường), cấu hình đơn giá điện nước và thuế VAT, phân quyền tài khoản người dùng và bảo trì dữ liệu hệ thống.
+\end{enumerate}
+
+\section{Bố cục của Báo cáo}
+Nội dung báo cáo dự án được kết cấu thành 7 chương chính như sau:
+\begin{itemize}
+    \item \textbf{Chương 1: Giới thiệu và Đặt vấn đề:} Trình bày bối cảnh, tính cấp thiết, mục tiêu và phạm vi đề tài.
+    \item \textbf{Chương 2: Phân tích Yêu cầu Hệ thống:} Đặc tả 28 Use Cases, yêu cầu phi chức năng (NFR) và các quy tắc nghiệp vụ (Business Rules).
+    \item \textbf{Chương 3: Kiến trúc Hệ thống và Thiết kế Dữ liệu:} Kiến trúc kỹ thuật, mô hình dữ liệu 12 thực thể chuẩn 3NF, mô hình không gian 1:4:6 và luồng xử lý nghiệp vụ trọng tâm.
+    \item \textbf{Chương 4: Hiện thực các Phân hệ Cốt lõi:} Chi tiết giải pháp kỹ thuật và mã nguồn tiêu biểu cho 7 phân hệ chức năng.
+    \item \textbf{Chương 5: Đảm bảo Chất lượng và Kiểm thử:} Kế hoạch kiểm thử, 4 ca kiểm thử biên (Edge-cases) then chốt, ma trận kết quả kiểm thử và đánh giá độ phủ.
+    \item \textbf{Chương 6: Quản trị Dự án và Phân công Công việc:} Ma trận trách nhiệm RACI, lộ trình Sprint 5 tuần và đánh giá mức độ hoàn thành của từng thành viên.
+    \item \textbf{Chương 7: Kết luận và Hướng phát triển Tương lai:} Tổng kết kết quả đạt được, hạn chế còn tồn đọng và định hướng mở rộng hệ thống.
+\end{itemize}
+

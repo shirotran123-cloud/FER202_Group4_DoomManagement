@@ -1,0 +1,135 @@
+\chapter{PHÂN TÍCH YÊU CẦU HỆ THỐNG}
+\label{ch:requirements}
+
+\section{Tổng quan Yêu cầu và Danh mục Actor}
+Hệ thống Ký túc xá Trực tuyến (DMS) được phân tích dựa trên tiêu chuẩn tài liệu đặc tả yêu cầu phần mềm IEEE Std 830-1998. Hệ thống phục vụ 5 tác nhân (Actors) với các quyền hạn được phân định rõ ràng như được tóm tắt trong Bảng~\ref{tab:actors}.
+
+\begin{table}[htbp]
+\centering
+\caption{Danh mục các Tác nhân (Actors) trong Hệ thống Domanage}
+\label{tab:actors}
+\small
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\rowcolor{blue!10}
+\textbf{Tác nhân (Actor)} & \textbf{Vai trò hệ thống} & \textbf{Mô tả quyền hạn và phạm vi tác vụ} \\ \hline
+\textbf{Sinh viên (Student)} & \texttt{role: student} & Đăng nhập tài khoản cá nhân, xem bản đồ giường, giữ chỗ 15 phút, thanh toán VietQR, nhận hợp đồng PDF, tra cứu hóa đơn chia đều, báo hỏng thiết bị, nộp đơn về muộn và xuất trình thẻ QR ra vào. \\ \hline
+\textbf{Quản lý KTX (Manager)} & \texttt{role: manager} & Quản lý danh mục phòng, duyệt đơn về muộn, phát hành hóa đơn điện nước định kỳ, giải quyết khiếu nại, giám sát tỷ lệ lấp đầy phòng, xuất báo cáo công nợ/tạm trú Excel. \\ \hline
+\textbf{Kỹ thuật viên (Technician)} & \texttt{role: technician} & Nhận phiếu sửa chữa (Bounty Board), cập nhật tiến độ, ghi nhận linh kiện thay thế, chụp ảnh hoàn thành sửa chữa, ghi chỉ số công tơ điện nước phòng ngày 25--28. \\ \hline
+\textbf{Bảo vệ (Guard)} & \texttt{role: guard} & Quét mã QR ra vào cổng ký túc xá, tra cứu danh sách về muộn, lập biên bản vi phạm giờ giới nghiêm sau 23:00 và trừ điểm kỷ luật KTX. \\ \hline
+\textbf{Quản trị viên (Admin)} & \texttt{role: admin} & Quản trị toàn bộ cơ sở dữ liệu, phân quyền tài khoản, cấu hình bảng giá và hệ thống tự động xét duyệt (Auto-Approval Engine). \\ \hline
+\end{tabularx}
+\end{table}
+
+\section{Danh mục Yêu cầu Chức năng (28 Use Cases)}
+Hệ thống bao gồm 28 Use Cases chức năng được tổ chức thành 7 phân hệ chính như trong Bảng~\ref{tab:usecases_summary}.
+
+\begin{table}[htbp]
+\centering
+\caption{Bảng tổng hợp 28 Use Cases phân theo 7 phân hệ nghiệp vụ}
+\label{tab:usecases_summary}
+\footnotesize
+\begin{tabularx}{\textwidth}{|c|l|l|X|}
+\hline
+\rowcolor{blue!10}
+\textbf{Mã UC} & \textbf{Tên Use Case} & \textbf{Actor chính} & \textbf{Tóm tắt mục tiêu chức năng} \\ \hline
+\multicolumn{4}{|l|}{\textbf{Phân hệ 1: Xác thực, Phân quyền \& Hồ sơ cá nhân (Authentication \& Identity)}} \\ \hline
+\texttt{UC-01} & Trang chủ giới thiệu KTX & Khách, Sinh viên & Giới thiệu cơ sở vật chất, biểu phí dịch vụ, nội quy chung. \\ \hline
+\texttt{UC-02} & Đăng nhập Google OAuth 2.0 & Tất cả & Phân luồng đăng nhập (Gmail sinh viên tuyển sinh vs Email FPT). \\ \hline
+\texttt{UC-03} & Quản lý phiên JWT \& Đăng xuất & Tất cả & Quản lý Access/Refresh Token, bảo vệ phiên đăng nhập an toàn. \\ \hline
+\texttt{UC-04} & Quản lý Hồ sơ cá nhân (Profile) & Sinh viên & Cập nhật CCCD, thông tin liên hệ khẩn cấp cha mẹ. \\ \hline
+\multicolumn{4}{|l|}{\textbf{Phân hệ 2: Quản lý Danh mục \& Cấu trúc Phòng ở (Topology Management)}} \\ \hline
+\texttt{UC-05} & Quản lý Tòa nhà \& Tầng lầu & Admin, Manager & Quản lý danh mục tòa nhà (Nam/Nữ) và các tầng lầu. \\ \hline
+\texttt{UC-06} & Quản lý Cấu trúc Phòng 1:4:6 & Admin, Manager & Thiết lập 1 phòng = 4 buồng (A,B,C,D), 1 buồng = 6 giường. \\ \hline
+\texttt{UC-07} & Cấu hình Bảng giá \& Biểu phí & Admin & Cấu hình giá thuê giường, đơn giá điện, nước, thuế VAT. \\ \hline
+\texttt{UC-08} & Quản lý Tài khoản \& Import DSSV & Admin & Quản lý phân quyền RBAC và nạp danh sách sinh viên tuyển sinh. \\ \hline
+\multicolumn{4}{|l|}{\textbf{Phân hệ 3: Đặt chỗ Trực quan \& Xét duyệt Tự động (Core Booking Workflow)}} \\ \hline
+\texttt{UC-09} & Bản đồ chọn giường trực quan & Sinh viên & Giao diện đồ họa chọn Tòa $\rightarrow$ Tầng $\rightarrow$ Phòng $\rightarrow$ Buồng $\rightarrow$ Giường. \\ \hline
+\texttt{UC-10} & Khóa giữ chỗ 15 phút \& VietQR & Sinh viên & Đồng hồ đếm ngược 900 giây và hiển thị mã QR thanh toán cọc. \\ \hline
+\texttt{UC-11} & Động cơ Auto-Approval & Hệ thống & Tự động kiểm tra giới tính, công nợ, cọc và duyệt đặt chỗ tức thì. \\ \hline
+\texttt{UC-12} & Tạo Hợp đồng điện tử e-Contract & Sinh viên & Tự động render file PDF hợp đồng lưu trú có mã tra cứu duy nhất. \\ \hline
+\texttt{UC-13} & Giám sát phòng \& Ngoại lệ đổi chỗ & Manager & Bảng điều khiển quản lý phòng trống và xử lý ngoại lệ đổi giường. \\ \hline
+\multicolumn{4}{|l|}{\textbf{Phân hệ 4: Quản lý Công tơ \& Chia đều Tiền Điện Nước (Utility \& Split Billing)}} \\ \hline
+\texttt{UC-14} & Quy trình Check-in nhận phòng & Sinh viên, Manager & Lập biên bản bàn giao thiết bị phòng và ghi nhận chỉ số công tơ đầu. \\ \hline
+\texttt{UC-15} & Quy trình Check-out trả phòng & Sinh viên, Manager & Nghiệm thu hiện trạng tài sản và lập quyết toán hoàn cọc lưu trú. \\ \hline
+\texttt{UC-16} & Ghi số điện nước kèm ảnh chụp & Technician & Form nhập chỉ số $\Delta E, \Delta W$ ngày 25--28 và tải ảnh chụp đồng hồ. \\ \hline
+\texttt{UC-17} & Thuật toán chia tiền $Total / N$ & Hệ thống & Tính tổng tiền phòng kèm VAT và chia đều theo đầu sinh viên đang ở. \\ \hline
+\texttt{UC-18} & Xem \& Thanh toán Hóa đơn phòng & Sinh viên & Xem hóa đơn minh bạch kèm ảnh công tơ gốc, thanh toán VietQR riêng. \\ \hline
+\texttt{UC-19} & Thông báo phát hành \& Nhắc nợ & Hệ thống & Tự động gửi thông báo hóa đơn và nhắc nhở kỳ hạn thanh toán. \\ \hline
+\multicolumn{4}{|l|}{\textbf{Phân hệ 5: Tiếp nhận Báo hỏng \& Bảo trì Thiết bị (Maintenance Ticket)}} \\ \hline
+\texttt{UC-20} & Nộp phiếu báo hỏng kèm ảnh chụp & Sinh viên & Tạo ticket báo hỏng phân loại Phòng chung vs Buồng cá nhân. \\ \hline
+\texttt{UC-21} & Bảng điều phối việc kỹ thuật & Technician, Manager & Nhận phiếu sửa chữa (Bounty Board), phân công công việc. \\ \hline
+\texttt{UC-22} & Nghiệm thu \& Ghi nhận vật tư & Technician & Ghi nhận phụ tùng thay thế và tải ảnh kết quả sau sửa chữa. \\ \hline
+\texttt{UC-23} & Đánh giá dịch vụ 1--5 sao & Sinh viên & Sinh viên nghiệm thu chất lượng sửa chữa và đánh giá điểm sao. \\ \hline
+\multicolumn{4}{|l|}{\textbf{Phân hệ 6: Quản lý Giờ giới nghiêm 23:00 \& Thẻ QR Di động (Curfew \& Security)}} \\ \hline
+\texttt{UC-24} & Nộp đơn xin về muộn ngoài giờ & Sinh viên & Tạo đơn xin phép về muộn nộp trước 21:00 kèm lý do hợp lệ. \\ \hline
+\texttt{UC-25} & Bảng điều khiển Cổng bảo vệ & Guard & Quét thẻ QR/nhập MSSV, đối chiếu đơn duyệt, phát hiện vi phạm 23:00. \\ \hline
+\texttt{UC-26} & Lập biên bản \& Trừ điểm rèn luyện & Guard, Manager & Trừ điểm rèn luyện KTX theo thang 100 điểm, cảnh báo đình chỉ. \\ \hline
+\multicolumn{4}{|l|}{\textbf{Phân hệ 7: Báo cáo Thống kê \& Xuất dữ liệu (Analytics \& Export)}} \\ \hline
+\texttt{UC-27} & Dashboard tổng quan công suất & Manager & Biểu đồ Donut tỷ lệ lấp đầy giường và biểu đồ cột doanh thu. \\ \hline
+\texttt{UC-28} & Xuất báo cáo lưu trú/công nợ & Manager & Xuất danh sách sinh viên tạm trú và nợ tiền sang file Excel (.xlsx). \\ \hline
+\end{tabularx}
+\end{table}
+
+\section{Đặc tả Chi tiết các Use Case Trọng tâm}
+
+\subsection{Use Case UC-09: Đặt chỗ Giường trực quan (Interactive Bed Booking)}
+\begin{itemize}
+    \item \textbf{Actor chính:} Sinh viên (Student).
+    \item \textbf{Tiền điều kiện:} Sinh viên đã đăng nhập tài khoản thành công và chưa có hợp đồng lưu trú đang hiệu lực trong học kỳ hiện tại.
+    \item \textbf{Luồng sự kiện chính (Main Flow):}
+    \begin{enumerate}
+        \item Sinh viên truy cập trang ``Đăng ký & Chọn Giường'' (\texttt{/booking}).
+        \item Hệ thống hiển thị bộ lọc chọn Tòa nhà (mặc định theo giới tính của sinh viên), danh sách Tầng lầu và Phòng trống.
+        \item Sinh viên chọn Phòng (ví dụ: \texttt{A205}). Hệ thống hiển thị mô hình không gian của phòng gồm 4 buồng (\texttt{A, B, C, D}).
+        \item Sinh viên chọn Buồng mong muốn. Hệ thống hiển thị danh sách 6 giường (\texttt{G01} đến \texttt{G06}) phân loại rõ Tầng dưới (\textit{Lower tier}) và Tầng trên (\textit{Upper tier}) cùng trạng thái màu sắc trực quan (Xanh lá: Còn trống, Xám: Đã có người ở, Đỏ: Đang bảo trì).
+        \item Sinh viên click chọn một giường trống (ví dụ: \texttt{A205-B-G03}).
+        \item Hệ thống hiển thị bảng tóm tắt chi phí, quy chuẩn phòng và kích hoạt bước Khóa giữ chỗ 15 phút.
+    \end{enumerate}
+    \item \textbf{Hậu điều kiện:} Giường được chuyển sang trạng thái \texttt{HOLDING}, đồng hồ 15 phút bắt đầu đếm ngược.
+\end{itemize}
+
+\subsection{Use Case UC-11: Động cơ Xét duyệt Tự động (Auto-Approval Engine)}
+\begin{itemize}
+    \item \textbf{Actor chính:} Hệ thống (System Engine).
+    \item \textbf{Tiền điều kiện:} Sinh viên gửi yêu cầu xác nhận thanh toán tiền cọc giường thành công.
+    \item \textbf{Thuật toán kiểm tra 3 bước:}
+    \begin{enumerate}
+        \item \textbf{Kiểm tra Giới tính (\textit{Gender Matching}):} Đối chiếu thuộc tính \texttt{user.gender} với \texttt{building.genderType}. Nếu không khớp, từ chối duyệt ngay lập tức để tránh nhầm lẫn phòng nam/nữ.
+        \item \textbf{Kiểm tra Lịch sử Tài chính \& Kỷ luật (\textit{Clearance Check}):} Kiểm tra \texttt{user.previousDebt == 0} và \texttt{user.isSuspended == false}. Nếu sinh viên còn nợ tiền điện nước kỳ trước hoặc bị đình chỉ nội trú, yêu cầu giải quyết công nợ trước.
+        \item \textbf{Xác thực Tiền cọc (\textit{Deposit Verification}):} Kiểm tra trạng thái giao dịch \texttt{booking.status == 'PAID'} (được đối soát qua cổng VietQR/VNPay).
+    \end{enumerate}
+    \item \textbf{Kết quả:} Nếu thỏa mãn đủ 3 điều kiện, hệ thống tự động:
+    \begin{itemize}
+        \item Cập nhật trạng thái giường sang \texttt{OCCUPIED}.
+        \item Đổi trạng thái đặt chỗ sang \texttt{APPROVED}.
+        \item Khởi tạo bản ghi Hợp đồng lưu trú (\texttt{Contract}) với mã định danh duy nhất và tạo đường dẫn tải file Hợp đồng điện tử PDF.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Use Case UC-17: Thuật toán Chia đều Tiền Điện Nước ($Total / N$)}
+\begin{itemize}
+    \item \textbf{Actor chính:} Hệ thống (System Engine).
+    \item \textbf{Công thức tính toán:}
+    \begin{equation}
+        \text{Tiền cá nhân}_i = \frac{T_{\text{Điện}} + T_{\text{Nước}} + T_{\text{Dịch vụ}}}{N_{\text{active}}} \times \omega_i
+    \end{equation}
+    Trong đó:
+    \begin{itemize}
+        \item $T_{\text{Điện}} = \Delta E \times \text{Đơn giá điện} \times (1 + \text{VAT}_{\text{điện}})$.
+        \item $T_{\text{Nước}} = \Delta W \times \text{Đơn giá nước} \times (1 + \text{VAT}_{\text{nước}})$.
+        \item $N_{\text{active}}$: Tổng số sinh viên đang lưu trú thực tế tại phòng trong kỳ hóa đơn.
+        \item $\omega_i$: Trọng số tỷ lệ ngày ở (\textit{Pro-rata factor}), với $\omega_i = \frac{\text{Số ngày lưu trú thực tế}}{\text{Tổng số ngày trong tháng}}$. Trường hợp ở trọn vẹn tháng, $\omega_i = 1$.
+    \end{itemize}
+    \item \textbf{Ràng buộc bảo toàn số tiền:} Sai số làm tròn khi chia cho $N$ sinh viên không được vượt quá $1$ VNĐ so với tổng hóa đơn phòng (sử dụng thuật toán phân bổ phần dư cho sinh viên có số thứ tự đầu tiên).
+\end{itemize}
+
+\section{Yêu cầu Phi chức năng (Non-Functional Requirements -- NFR)}
+Hệ thống đáp ứng các tiêu chuẩn chất lượng nghiêm ngặt theo ISO/IEC 25010:
+\begin{enumerate}
+    \item \textbf{Hiệu năng (Performance):} Thời gian phản hồi của các thao tác giao diện không quá $0.5$ giây. Động cơ Auto-Approval hoàn tất quy trình kiểm tra và xuất hợp đồng trong vòng dưới $3$ giây.
+    \item \textbf{Khả năng sử dụng (Usability):} Giao diện trực quan, đạt chuẩn Accessibility WCAG 2.1 AA với tỷ lệ tương phản màu sắc cao, hỗ trợ chế độ tương phản đặc biệt (High-contrast mode) cho màn hình di động ngoài trời nắng.
+    \item \textbf{Bảo mật (Security):} Sử dụng cơ chế phân quyền RBAC, token JWT kết hợp Refresh Token lưu trong HttpOnly Cookie để chống tấn công XSS/CSRF. Mã QR ra vào cổng áp dụng HMAC mã hóa thay đổi mỗi 60 giây để chống hành vi chụp màn hình chia sẻ cho người khác.
+    \item \textbf{Tính thích ứng (Responsive):} Hệ thống tương thích hoàn hảo trên các độ phân giải từ Mobile (375px), Tablet (768px) đến Desktop Full HD (1920px).
+\end{enumerate}
+

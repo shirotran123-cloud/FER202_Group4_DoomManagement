@@ -1,0 +1,185 @@
+\chapter{HIỆN THỰC CÁC PHÂN HỆ CỐT LÕI}
+\label{ch:core_modules}
+
+\section{Module 1: Xác thực, Phân quyền RBAC và Điều hướng}
+Phân hệ xác thực sử dụng React Context API (\texttt{AuthContext}) để quản lý phiên làm việc toàn cục và Component bảo vệ \texttt{ProtectedRoute} để ngăn chặn việc truy cập trái phép vào các đường dẫn nhạy cảm.
+
+\begin{lstlisting}[language=TypeScript, caption={Cơ chế bảo vệ định tuyến theo quyền hạn (ProtectedRoute.tsx)}]
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+  allowedRoles?: Array<"student" | "manager" | "technician" | "admin">;
+}
+
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
+  children, 
+  allowedRoles 
+}) => {
+  const { user, isAuthenticated } = useAuth();
+  const location = useLocation();
+
+  if (!isAuthenticated || !user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/unauthorized" replace />;
+  }
+
+  return <>{children}</>;
+};
+\end{lstlisting}
+
+Khi người dùng đăng nhập thành công qua giao diện, hệ thống tự động kiểm tra vai trò (\texttt{user.role}) và điều hướng tới phân hệ tương ứng:
+\begin{itemize}
+    \item Sinh viên (\texttt{student}) $\longrightarrow$ \texttt{/overview} (Bảng điều khiển cá nhân, phòng đang ở, hóa đơn).
+    \item Cán bộ Quản lý (\texttt{manager}) $\longrightarrow$ \texttt{/manager} (Dashboard tổng quan, duyệt đơn, xuất báo cáo).
+    \item Kỹ thuật viên (\texttt{technician}) $\longrightarrow$ \texttt{/maintenance} (Bảng nhận việc sửa chữa Bounty Board).
+\end{itemize}
+
+\section{Module 2 \& 3: Đặt chỗ Trực quan 1:4:6 và Động cơ Auto-Approval}
+
+\subsection{Giao diện Bản đồ Giường trực quan}
+Màn hình \texttt{BookingPage.tsx} hiện thực hóa mô hình không gian 1:4:6 cho phép sinh viên duyệt qua từng cấp độ một cách tự nhiên. Khi sinh viên click vào một buồng (ví dụ Buồng B), giao diện hiển thị 6 giường với 4 trạng thái màu sắc trực quan:
+\begin{itemize}
+    \item \textbf{Màu xanh lá (\texttt{AVAILABLE}):} Giường còn trống, sẵn sàng chọn.
+    \item \textbf{Màu cam nhấp nháy (\texttt{HOLDING}):} Giường đang được một sinh viên khác giữ chỗ trong thời gian 15 phút.
+    \item \textbf{Màu xám (\texttt{OCCUPIED}):} Giường đã có sinh viên đang sinh sống.
+    \item \textbf{Màu đỏ (\texttt{MAINTENANCE}):} Giường đang hỏng hóc hoặc khóa bảo trì.
+\end{itemize}
+
+\subsection{Cơ chế Khóa giữ chỗ 15 phút (Countdown Timer)}
+Khi sinh viên chọn giường trống, hệ thống kích hoạt bộ đếm thời gian 900 giây (15 phút). Nếu quá thời gian đếm ngược mà sinh viên chưa xác nhận thanh toán cọc, sự kiện \texttt{rollback} sẽ tự động kích hoạt để giải phóng giường về trạng thái \texttt{AVAILABLE}.
+
+\begin{lstlisting}[language=TypeScript, caption={Đồng hồ đếm ngược giữ chỗ 15 phút và tự động giải phóng}]
+useEffect(() => {
+  if (!isLocked) return;
+  const timer = setInterval(() => {
+    setTimeLeft((prev) => {
+      if (prev <= 1) {
+        clearInterval(timer);
+        setIsLocked(false);
+        toast.warning("Hết thời gian giữ chỗ! Giường đã được giải phóng.");
+        return 0;
+      }
+      return prev - 1;
+    });
+  }, 1000);
+  return () => clearInterval(timer);
+}, [isLocked]);
+\end{lstlisting}
+
+\subsection{Động cơ Tự động Xét duyệt (Auto-Approval Engine)}
+Tại tầng backend mô phỏng (\texttt{server.js}), API \texttt{/api/bookings/approve} tiếp nhận mã đặt phòng và tự động kiểm tra 3 điều kiện tiên quyết mà không cần bất kỳ sự can thiệp thủ công nào từ phía con người:
+
+\begin{lstlisting}[language=JavaScript, caption={Thuật toán 3 bước xét duyệt tự động trong server.js}]
+server.post('/api/bookings/approve', (req, res) => {
+  const { bookingId } = req.body;
+  const db = router.db;
+
+  const booking = db.get('bookings').find({ id: bookingId }).value();
+  const user = db.get('users').find({ id: booking.userId }).value();
+  const bed = db.get('beds').find({ id: booking.bedId }).value();
+  const building = getBuildingByBedId(db, bed.id);
+
+  // Dieu kien 1: Kiem tra khop gioi tinh
+  if (user.gender !== building.genderType) {
+    return res.status(400).json({ success: false, message: 'Sai gioi tinh toa nha.' });
+  }
+
+  // Dieu kien 2: Kiem tra cong no cu & ky luat
+  if (user.previousDebt > 0 || user.isSuspended) {
+    return res.status(400).json({ success: false, message: 'Sinh vien con no hoac bi dinh chi.' });
+  }
+
+  // Dieu kien 3: Xac thuc thanh toan 100% tien coc
+  if (booking.status !== 'PAID') {
+    return res.status(400).json({ success: false, message: 'Chua thanh toan tien coc.' });
+  }
+
+  // Phe duyet tu dong & Khoi tao Hop dong dien tu
+  db.get('bookings').find({ id: bookingId }).assign({ status: 'APPROVED' }).write();
+  db.get('beds').find({ id: booking.bedId }).assign({ status: 'OCCUPIED', studentId: user.id }).write();
+
+  const contract = {
+    id: `ct_${Date.now()}`,
+    bookingId,
+    userId: user.id,
+    bedCode: bed.fullCode,
+    status: 'ACTIVE',
+    createdAt: new Date().toISOString()
+  };
+  db.get('contracts').push(contract).write();
+
+  return res.json({ success: true, message: 'Auto-Approval hoan tat', data: { contract } });
+});
+\end{lstlisting}
+
+Sau khi API duyệt thành công, giao diện phía client tự động kích hoạt thư viện \texttt{jspdf} để xuất file PDF Hợp đồng lưu trú gửi đến thiết bị của sinh viên với đầy đủ thông tin: họ tên, MSSV, mã giường, giá thuê, điều khoản ký túc xá và mã xác thực điện tử duy nhất.
+
+\section{Module 4: Quản lý Công tơ và Thuật toán Chia đều Tiền Điện Nước}
+
+\subsection{Giao diện Ghi chỉ số Công tơ định kỳ}
+Vào ngày 25--28 hàng tháng, Kỹ thuật viên tòa nhà sử dụng phân hệ \texttt{BillingPage.tsx} để nhập chỉ số điện mới ($\text{elecNew}$) và chỉ số nước mới ($\text{waterNew}$). Điểm đặc biệt là hệ thống bắt buộc kỹ thuật viên phải tải lên hình ảnh chụp thực tế đồng hồ điện và đồng hồ nước tại cửa phòng. Hình ảnh này được lưu trữ và hiển thị trực tiếp trên hóa đơn của sinh viên, chấm dứt hoàn toàn tình trạng nghi ngờ gian lận hoặc sai lệch chỉ số.
+
+\subsection{Thuật toán Phân bổ Hóa đơn ($Total / N$)}
+Hệ thống tính toán tổng tiền phòng và phân bổ cho từng sinh viên:
+\begin{lstlisting}[language=TypeScript, caption={Thuật toán tính toán và chia đều hóa đơn phòng}]
+const calculateSplitBill = (
+  elecUsage: number,     // Delta E (kWh)
+  waterUsage: number,    // Delta W (m3)
+  elecRate: number = 3200,
+  waterRate: number = 18000,
+  vatRate: number = 0.10,
+  cleaningFee: number = 120000,
+  residentsCount: number = 6
+) => {
+  const elecCost = elecUsage * elecRate * (1 + vatRate);
+  const waterCost = waterUsage * waterRate * (1 + vatRate);
+  const totalRoomBill = elecCost + waterCost + cleaningFee;
+
+  // Chia deu cho N sinh vien dang luu tru
+  const perStudentBase = Math.floor(totalRoomBill / residentsCount);
+  const remainder = totalRoomBill - (perStudentBase * residentsCount);
+
+  return {
+    elecCost,
+    waterCost,
+    totalRoomBill,
+    perStudentAmount: perStudentBase,
+    remainderCorrection: remainder // Cong vao sinh vien stt 1 de bao toan tong
+  };
+};
+\end{lstlisting}
+
+Mỗi sinh viên khi đăng nhập vào hệ thống sẽ thấy hóa đơn cá nhân với mã VietQR riêng biệt chứa nội dung chuyển khoản được định dạng chuẩn: \texttt{DMS [Mã\_HĐ] [MSSV]}, giúp việc gạch nợ diễn ra hoàn toàn tự động.
+
+\section{Module 5: Phân hệ Tiếp nhận Báo hỏng và Bảo trì Thiết bị}
+Quy trình bảo trì thiết bị ký túc xá được khép kín thành vòng đời 5 trạng thái thông qua \texttt{MaintenancePage.tsx}:
+\begin{enumerate}
+    \item \textbf{Khởi tạo (SUBMITTED):} Sinh viên nộp phiếu báo hỏng, chọn phạm vi (Thiết bị phòng chung như điều hòa, bình nóng lạnh hoặc Thiết bị buồng riêng như bóng đèn bàn học, ổ cắm), chụp ảnh hiện trạng hỏng hóc và chọn mức độ khẩn cấp (Thường, Gấp, Khẩn cấp).
+    \item \textbf{Tiếp nhận (ASSIGNED):} Phiếu được đưa lên \textit{Technician Bounty Board}. Kỹ thuật viên tòa nhà chủ động nhận việc hoặc được Ban Quản lý điều phối.
+    \item \textbf{Đang xử lý (IN\_PROGRESS):} Kỹ thuật viên đến hiện trường kiểm tra, thay thế phụ tùng và cập nhật ghi chú kỹ thuật.
+    \item \textbf{Nghiệm thu hoàn thành (COMPLETED):} Kỹ thuật viên chụp ảnh hiện trạng sau khi sửa chữa xong, nhập danh mục linh kiện thay thế và đánh dấu hoàn thành.
+    \item \textbf{Đánh giá dịch vụ (REVIEWED):} Sinh viên nhận được thông báo, xác nhận thiết bị hoạt động tốt và chấm điểm mức độ hài lòng từ 1 đến 5 sao.
+\end{enumerate}
+
+\section{Module 6: Thẻ QR Di động và Kiểm soát Giờ Giới Nghiêm 23:00}
+Phân hệ \texttt{MobileAppPage.tsx} đóng vai trò như một ứng dụng di động giả lập dành cho sinh viên và bảo vệ trực cổng:
+\begin{itemize}
+    \item \textbf{Thẻ sinh viên điện tử (Digital Gate Pass):} Hiển thị mã QR động được sinh dựa trên thuật toán mã hóa HMAC. Mã QR này tự động làm mới sau mỗi 60 giây và hiển thị đồng hồ đếm ngược, ngăn chặn việc chụp ảnh màn hình gửi cho người khác đi hộ.
+    \item \textbf{Đơn xin về muộn ngoài giờ:} Sinh viên có lịch học thêm hoặc làm thêm phải nộp đơn xin phép trước 21:00. Đơn được Quản lý KTX duyệt điện tử.
+    \item \textbf{Bảng điều khiển Bảo vệ (Security Gate Console):} Khi sinh viên qua cổng sau 23:00, bảo vệ quét mã QR hoặc nhập nhanh MSSV. Hệ thống lập tức đối chiếu:
+    \begin{itemize}
+        \item Nếu sinh viên \textbf{có đơn xin về muộn đã duyệt}: Cổng mở, hệ thống ghi nhận trạng thái về hợp lệ.
+        \item Nếu sinh viên \textbf{không có đơn}: Hệ thống bật cảnh báo đỏ, tự động ghi nhận biên bản vi phạm giờ giới nghiêm và trừ 15 điểm rèn luyện KTX. Nếu tổng điểm rèn luyện giảm dưới 70 điểm, sinh viên bị cảnh cáo; dưới 50 điểm sẽ bị đình chỉ quyền nội trú học kỳ kế tiếp.
+    \end{itemize}
+\end{itemize}
+
+\section{Module 7: Bảng điều khiển Quản trị và Báo cáo Excel}
+Màn hình \texttt{ManagerDashboardPage.tsx} cung cấp các chỉ số kinh doanh quan trọng (KPIs) cho Ban Quản lý KTX:
+\begin{itemize}
+    \item \textbf{Biểu đồ Donut Tỷ lệ Lấp đầy (Occupancy Rate):} Thống kê số giường đang ở, số giường trống và số giường bảo trì theo từng tầng, từng tòa nhà.
+    \item \textbf{Biểu đồ Cột Xu hướng Doanh thu (Revenue Trend):} Theo dõi doanh thu tiền phòng và tiền dịch vụ điện nước theo từng tháng.
+    \item \textbf{Xuất báo cáo định dạng Excel (\texttt{.xlsx}):} Tích hợp module \texttt{excelExport.ts} cho phép xuất danh sách sinh viên tạm trú (phục vụ đăng ký lưu trú với Công an địa phương) và danh sách sinh viên nợ tiền quá hạn chỉ với một cú click chuột.
+\end{itemize}
+

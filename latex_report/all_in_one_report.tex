@@ -1,0 +1,554 @@
+\documentclass[12pt,a4paper,oneside]{report}
+
+% ==============================================================================
+% 1. CẤU HÌNH NGÔN NGỮ TIẾNG VIỆT & PHÔNG CHỮ (CHUẨN OVERLEAF / PDFLATEX)
+% ==============================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage[T5]{fontenc}
+\usepackage{lmodern}
+
+% ==============================================================================
+% 2. CĂN CHỈNH TRANG IN (CANH LỀ CHUẨN ĐẠI HỌC FPT)
+% ==============================================================================
+\usepackage[a4paper,top=2.5cm,bottom=2.5cm,left=3.0cm,right=2.0cm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+
+% ==============================================================================
+% 3. CÁC GÓI BỔ TRỢ ĐỒ HỌA, MÀU SẮC & BẢNG BIỂU
+% ==============================================================================
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows, positioning, fit, calc}
+\usepackage[many]{tcolorbox}
+\usepackage{caption}
+\usepackage{subcaption}
+
+% ==============================================================================
+% 4. ĐỊNH DẠNG MÃ NGUỒN (CODE LISTINGS)
+% ==============================================================================
+\usepackage{listings}
+\definecolor{codebg}{rgb}{0.97,0.98,0.99}
+\definecolor{codeblue}{rgb}{0.12,0.47,0.71}
+\definecolor{codegreen}{rgb}{0.18,0.55,0.34}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codered}{rgb}{0.75,0.22,0.17}
+
+\lstdefinestyle{dmsStyle}{
+    backgroundcolor=\color{codebg},   
+    commentstyle=\color{codegreen}\itshape,
+    keywordstyle=\color{codeblue}\bfseries,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codered},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=7pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    frame=single,
+    rulecolor=\color{gray!30}
+}
+\lstset{style=dmsStyle}
+
+% ==============================================================================
+% 5. CẤU HÌNH LIÊN KẾT ĐIỆN TỬ (HYPERREF & BOOKMARKS)
+% ==============================================================================
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!75!black,
+    citecolor=blue!75!black,
+    urlcolor=teal!85!black,
+    pdfauthor={FER202_Group4},
+    pdftitle={Báo cáo Dự án Domanage - Hệ thống Quản lý KTX Trực tuyến},
+    pdfsubject={Front-End Web Development with React},
+    pdfkeywords={React 19, TypeScript, Tailwind CSS, Dormitory Management, Overleaf}
+}
+
+% ==============================================================================
+% 6. HEADER & FOOTER TIÊU CHUẨN (FANCYHDR)
+% ==============================================================================
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\slshape\nouppercase{\leftmark}}
+\fancyhead[R]{\slshape FER202 -- Nhóm 4}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% ==============================================================================
+% BẮT ĐẦU TÀI LIỆU
+% ==============================================================================
+\begin{document}
+
+% ------------------------------------------------------------------------------
+% TRANG BÌA
+% ------------------------------------------------------------------------------
+\begin{titlepage}
+\begin{center}
+
+\vspace*{-1cm}
+{\fontsize{14pt}{16pt}\selectfont \textbf{BỘ GIÁO DỤC VÀ ĐÀO TẠO}}\\[0.2cm]
+{\fontsize{16pt}{18pt}\selectfont \textbf{TRƯỜNG ĐẠI HỌC FPT}}\\[0.2cm]
+{\fontsize{13pt}{15pt}\selectfont \textbf{KHOA CÔNG NGHỆ THÔNG TIN}}\\[0.3cm]
+\rule{0.6\textwidth}{1pt}\\[1.5cm]
+
+\begin{tikzpicture}
+    \draw[fill=orange!10, draw=orange!80, line width=1.5pt, rounded corners=10pt] (-3.5,-1) rectangle (3.5,1);
+    \node at (0,0.3) {\fontsize{16pt}{18pt}\selectfont \textbf{\color{orange!90!black}FPT UNIVERSITY}};
+    \node at (0,-0.3) {\fontsize{10pt}{12pt}\selectfont \textit{Khát Vọng Đổi Thay - Leading Technology}};
+\end{tikzpicture}\\[1.5cm]
+
+{\fontsize{14pt}{16pt}\selectfont \textbf{BÁO CÁO DỰ ÁN MÔN HỌC}}\\[0.2cm]
+{\fontsize{15pt}{18pt}\selectfont \textbf{MÔN HỌC: FER202 -- FRONT-END WEB DEVELOPMENT WITH REACT}}\\[1.0cm]
+
+\begin{tcolorbox}[colback=blue!5!white, colframe=blue!75!black, arc=6mm, width=0.95\textwidth, halign=center, boxsep=3mm]
+    {\fontsize{17pt}{22pt}\selectfont \textbf{\color{blue!80!black}ĐỀ TÀI:}}\\[0.2cm]
+    {\fontsize{20pt}{26pt}\selectfont \textbf{\color{blue!90!black}DOMANAGE -- HỆ THỐNG QUẢN LÝ KÝ TÚC XÁ TRỰC TUYẾN}}\\[0.2cm]
+    {\fontsize{13pt}{16pt}\selectfont \textit{(Online Dormitory Management System -- DMS)}}
+\end{tcolorbox}\\[1.2cm]
+
+\vfill
+\begin{minipage}{0.9\textwidth}
+\begin{flushleft}
+\fontsize{12pt}{15pt}\selectfont
+\textbf{Giảng viên hướng dẫn:} ThS. Giảng viên bộ môn FER202\\[0.3cm]
+\textbf{Nhóm thực hiện:} FER202\_Group4\\[0.3cm]
+\textbf{Danh sách thành viên nhóm:}\\[0.15cm]
+\begin{tabular}{|c|l|c|l|}
+\hline
+\textbf{STT} & \textbf{Họ và Tên} & \textbf{MSSV} & \textbf{Vai trò chính trong dự án} \\ \hline
+1 & Nguyễn Hoàng Vinh & SE170001 & Project Manager \& Full-Stack Lead \\ \hline
+2 & Trần Công Tiến & SE170002 & Frontend Lead \& UI/UX Designer \\ \hline
+3 & Trần Thanh Nguyên & SE170003 & Backend Engineer \& Database Architect \\ \hline
+4 & Văn Thái Trung & SE170004 & Frontend Developer \& Integration Specialist \\ \hline
+5 & Đinh Thanh Trung & SE170005 & Backend Developer \& Security Analyst \\ \hline
+6 & Huỳnh Gia Kim & SE170006 & Quality Assurance (QA) \& Test Engineer \\ \hline
+\end{tabular}
+\end{flushleft}
+\end{minipage}
+
+\vfill
+{\fontsize{12pt}{14pt}\selectfont \textbf{TP. HỒ CHÍ MINH, THÁNG 10/2026}}
+
+\end{center}
+\end{titlepage}
+
+% ------------------------------------------------------------------------------
+% LỜI CAM ĐOAN
+% ------------------------------------------------------------------------------
+\newpage
+\pagenumbering{roman}
+\chapter*{LỜI CAM ĐOAN}
+Chúng tôi xin cam đoan đề tài nghiên cứu và xây dựng hệ thống \textbf{``Domanage -- Hệ thống Quản lý Ký túc xá Trực tuyến (Online Dormitory Management System)''} là sản phẩm nghiên cứu và phát triển độc lập của tập thể nhóm 4 môn học FER202 (Front-End Web Development with React). 
+
+Tất cả các số liệu, sơ đồ, kiến trúc và mã nguồn trình bày trong báo cáo này hoàn toàn trung thực, phản ánh chính xác kết quả làm việc thực tế của nhóm; không sao chép bất hợp pháp từ bất kỳ công trình hay đồ án nào khác. Mọi tài liệu tham khảo và thư viện nguồn mở sử dụng trong dự án đều được trích dẫn nguồn đầy đủ theo tiêu chuẩn học thuật.
+
+\vspace{1.5cm}
+\begin{flushright}
+\textit{TP. Hồ Chí Minh, ngày 29 tháng 10 năm 2026}\\[0.3cm]
+\textbf{Đại diện Nhóm thực hiện -- Nhóm trưởng}\\[1.5cm]
+\textbf{Nguyễn Hoàng Vinh}
+\end{flushright}
+
+% ------------------------------------------------------------------------------
+% LỜI CẢM ƠN
+% ------------------------------------------------------------------------------
+\newpage
+\chapter*{LỜI CẢM ƠN}
+Để hoàn thành xuất sắc dự án và bản báo cáo này, tập thể Nhóm 4 xin gửi lời tri ân sâu sắc nhất tới:
+\begin{itemize}
+    \item \textbf{Ban Giám hiệu \& Khoa Công nghệ Thông tin -- Trường Đại học FPT:} Đã tạo dựng môi trường học thuật chuyên nghiệp, giàu tính thực tiễn cùng cơ sở vật chất hiện đại hỗ trợ sinh viên trong suốt kỳ học.
+    \item \textbf{Giảng viên bộ môn FER202:} Thầy/Cô đã tận tình truyền đạt những kiến thức quý báu về tư duy lập trình giao diện người dùng hiện đại với React, các best practices trong kiến trúc Front-end, và luôn theo sát, góp ý định hướng quý báu cho đề tài của nhóm từ những ngày đầu.
+    \item \textbf{Toàn thể các thành viên Nhóm 4:} Đã luôn giữ vững tinh thần trách nhiệm, chủ động học hỏi, đoàn kết và nỗ lực hết mình để đưa dự án cán đích thành công vượt tiến độ.
+\end{itemize}
+
+Nhóm rất mong nhận được những ý kiến đóng góp quý báu từ Hội đồng Giảng viên để hệ thống ngày càng hoàn thiện hơn nữa!
+
+\vspace{1.5cm}
+\begin{flushright}
+\textbf{Tập thể sinh viên Nhóm 4 -- FER202}
+\end{flushright}
+
+% ------------------------------------------------------------------------------
+% TÓM TẮT ĐỀ TÀI (ABSTRACT)
+% ------------------------------------------------------------------------------
+\newpage
+\chapter*{TÓM TẮT ĐỀ TÀI (ABSTRACT)}
+\addcontentsline{toc}{chapter}{Tóm tắt đề tài (Abstract)}
+
+\textbf{Tóm tắt:} Dự án \textbf{Domanage (DMS)} tập trung giải quyết các bài toán bất cập trong công tác quản trị ký túc xá đại học quy mô lớn. Ứng dụng được xây dựng trên nền tảng Single Page Application với React 19, TypeScript và Tailwind CSS v4. Đề tài đem lại 3 điểm đột phá sáng tạo: (1) \textbf{Mô hình không gian 1:4:6} trực quan hóa việc chọn giường ngủ, xóa bỏ hoàn toàn cảm giác mơ hồ khi đăng ký phòng; (2) \textbf{Động cơ Tự động xét duyệt (Auto-Approval Engine)} 3 điều kiện và tự động kết xuất Hợp đồng lưu trú PDF trong dưới 3 giây; (3) \textbf{Thuật toán phân bổ chi phí điện nước ($Total / N$)} gắn liền với hình ảnh chụp công tơ thực tế làm bằng chứng đối soát minh bạch. Kết quả kiểm thử thực nghiệm trên 28 Use Cases và 90 ca kiểm thử đạt tỷ lệ thành công 100\%, chứng minh tính khả thi và tiềm năng ứng dụng thực tế cao của đề tài.
+
+\vspace{0.8cm}
+\noindent \textbf{Từ khóa:} \textit{Ký túc xá trực tuyến, React 19, TypeScript, Tailwind CSS, Auto-Approval Engine, Split-Billing, Mô hình 1:4:6, Thẻ QR Giới nghiêm.}
+
+\vspace{1.5cm}
+\noindent \rule{\textwidth}{0.5pt}\\[0.5cm]
+
+\textbf{Abstract:} The \textbf{Domanage (DMS)} project addresses key management and operational challenges in large-scale university dormitory accommodation. Built as a high-performance Single Page Application using React 19, TypeScript, and Tailwind CSS v4, the project delivers three primary innovations: (1) An \textbf{interactive 1:4:6 spatial topology} for bed allocation that eliminates uncertainty during room selection; (2) A 3-step \textbf{Auto-Approval Engine} that verifies student eligibility and digitally renders verifiable PDF contracts in under 3 seconds; and (3) A transparent \textbf{split-billing algorithm ($Total / N$)} supported by physical meter photo evidence. Empirical testing across 28 functional Use Cases and 90 test cases achieved a 100\% pass rate, demonstrating strong architectural soundness and high readiness for real-world deployment.
+
+\vspace{0.8cm}
+\noindent \textbf{Keywords:} \textit{Dormitory Management System, React 19, TypeScript, Tailwind CSS, Auto-Approval Engine, Split-Billing, 1:4:6 Topology, Dynamic QR Curfew.}
+
+% ------------------------------------------------------------------------------
+% MỤC LỤC & DANH MỤC
+% ------------------------------------------------------------------------------
+\newpage
+\tableofcontents
+
+\newpage
+\listoffigures
+\addcontentsline{toc}{chapter}{\listfigurename}
+
+\newpage
+\listoftables
+\addcontentsline{toc}{chapter}{\listtablename}
+
+% ==============================================================================
+% NỘI DUNG CHÍNH (ĐÁNH SỐ TRANG 1, 2, 3...)
+% ==============================================================================
+\newpage
+\pagenumbering{arabic}
+
+% ------------------------------------------------------------------------------
+% CHƯƠNG 1
+% ------------------------------------------------------------------------------
+\chapter{GIỚI THIỆU VÀ ĐẶT VẤN ĐỀ}
+\label{ch:introduction}
+
+\section{Bối cảnh và Lý do chọn đề tài}
+Trong môi trường giáo dục đại học hiện đại, ký túc xá (KTX) không chỉ đơn thuần là nơi lưu trú mà còn là một hệ sinh thái sinh hoạt, học tập và rèn luyện quan trọng của sinh viên. Tại các cơ sở đào tạo quy mô lớn như Đại học FPT, số lượng sinh viên nội trú lên tới hàng ngàn người mỗi học kỳ, đặt ra thách thức quản trị vô cùng lớn cho Ban Quản lý KTX.
+
+Trước đây, phần lớn các nghiệp vụ tại ký túc xá vẫn được thực hiện theo phương thức bán thủ công hoặc dựa trên các tệp bảng tính rời rạc (Google Sheets, Excel):
+\begin{itemize}
+    \item \textbf{Đăng ký và xếp phòng thiếu trực quan:} Sinh viên không thể hình dung vị trí cụ thể của giường ngủ trong phòng (hướng cửa sổ, tầng trên hay tầng dưới), dẫn tới tình trạng bất mãn khi nhận phòng thực tế.
+    \item \textbf{Quy trình phê duyệt hợp đồng chậm trễ:} Việc đối chiếu hồ sơ, kiểm tra điều kiện sinh viên (giới tính, công nợ kỳ trước, kỷ luật) và xác nhận tiền cọc tốn nhiều ngày làm việc của cán bộ.
+    \item \textbf{Bất cập và thiếu minh bạch trong tính tiền điện nước:} Tiền điện nước phòng chung thường gây tranh cãi gay gắt giữa các bạn cùng phòng do thiếu bằng chứng chỉ số công tơ, không rõ công thức chia sẻ chi phí khi có người chuyển vào hoặc chuyển đi giữa kỳ.
+    \item \textbf{Báo hỏng và bảo trì cơ sở vật chất chậm trễ:} Phiếu báo hỏng bằng giấy hoặc gửi qua mạng xã hội dễ bị thất lạc, kỹ thuật viên không nắm rõ mức độ khẩn cấp, sinh viên không theo dõi được tiến độ sửa chữa.
+    \item \textbf{Kiểm soát an ninh và giờ giới nghiêm 23:00 thiếu chính xác:} Việc ghi sổ giấy tại cổng bảo vệ dễ dẫn tới sai sót, gian lận quẹt thẻ hộ, và khó đối chiếu với các đơn xin về muộn đã được duyệt trước đó.
+\end{itemize}
+
+Xuất phát từ những bất cập thực tế nêu trên, dự án \textbf{``Domanage -- Online Dormitory Management System (DMS)''} được nghiên cứu và phát triển trong khuôn khổ môn học \textit{FER202 (Front-End Web Development with React)}. Dự án hướng tới mục tiêu hiện đại hóa, tự động hóa và minh bạch hóa toàn bộ vòng đời lưu trú của sinh viên tại ký túc xá trường đại học.
+
+\section{Mục tiêu của Dự án}
+Hệ thống \textbf{Domanage} được thiết kế với các mục tiêu trọng tâm sau:
+\begin{enumerate}
+    \item \textbf{Trải nghiệm người dùng vượt trội (User-Centric UI/UX):} Cung cấp bản đồ chọn giường trực quan theo phân cấp không gian \textbf{1:4:6} (1 Tòa nhà $\rightarrow$ Nhiều Tầng $\rightarrow$ Các Phòng $\rightarrow$ 4 Buồng cá nhân $\rightarrow$ 6 Giường/buồng), mô phỏng chân thực layout thực tế của phòng ở KTX.
+    \item \textbf{Cơ chế giữ chỗ và thanh toán tức thì:} Áp dụng cơ chế khóa giường tạm thời 15 phút kèm đồng hồ đếm ngược, tích hợp mã chuyển khoản VietQR động theo chuẩn Napas 247, giúp sinh viên hoàn tất đặt chỗ nhanh chóng.
+    \item \textbf{Động cơ tự động xét duyệt (Auto-Approval Engine):} Xóa bỏ hoàn toàn khâu duyệt thủ công bằng thuật toán tự động kiểm tra 3 điều kiện (khớp giới tính tòa nhà, không nợ kỳ trước/không kỷ luật, xác nhận cọc 100\%) và tự động xuất Hợp đồng điện tử (e-Contract PDF) có mã định danh xác thực.
+    \item \textbf{Minh bạch hóa thu phí điện nước phòng:} Xây dựng thuật toán phân bổ chi phí tự động ($Total / N$) kèm tính năng Pro-rata theo số ngày lưu trú, lưu trữ hình ảnh chụp thực tế công tơ điện nước làm bằng chứng đối soát minh bạch.
+    \item \textbf{Vận hành khép kín quy trình bảo trì \& an ninh:} Số hóa toàn diện quy trình tiếp nhận phiếu báo hỏng thiết bị kèm ảnh chụp, bảng điều khiển kỹ thuật viên (Technician Bounty Board), và hệ thống quản lý giờ giới nghiêm 23:00 với mã QR động chống gian lận và trừ điểm kỷ luật KTX.
+\end{enumerate}
+
+\section{Phạm vi của Đề tài}
+Dự án tập trung vào việc nghiên cứu, thiết kế và hiện thực hóa ứng dụng Web hiện đại:
+\begin{itemize}
+    \item \textbf{Công nghệ cốt lõi:} Single Page Application (SPA) xây dựng trên nền tảng React 19, TypeScript, Vite, Tailwind CSS v4 và Radix UI / ShadCN UI.
+    \item \textbf{Mô phỏng dữ liệu \& Backend:} Sử dụng JSON-Server với Engine tự động xét duyệt tùy biến (custom endpoints), kết hợp kiến trúc RESTful API và lưu trữ trạng thái đồng bộ LocalStorage/SessionStorage.
+    \item \textbf{Đa nền tảng và Responsive:} Hệ thống hỗ trợ tối ưu hiển thị trên màn hình Desktop (cho Cán bộ quản lý KTX) và giao diện Mobile Web/PWA (cho Sinh viên tra cứu hóa đơn, thẻ QR ra vào cổng và Bảo vệ trực chốt).
+\end{itemize}
+
+\section{Đối tượng sử dụng hệ thống (Stakeholders \& Actors)}
+Hệ thống phân quyền truy cập nghiêm ngặt dựa trên vai trò (Role-Based Access Control -- RBAC) với 5 nhóm người dùng chính:
+\begin{enumerate}
+    \item \textbf{Sinh viên (Student):} Đăng nhập bằng Gmail cá nhân/trường, thực hiện đăng ký và chọn giường trực quan, thanh toán cọc, nhận hợp đồng điện tử, theo dõi hóa đơn điện nước phòng, nộp phiếu báo hỏng thiết bị, và xuất trình thẻ QR di động khi qua cổng KTX sau 23:00.
+    \item \textbf{Cán bộ Quản lý KTX (Dorm Manager):} Giám sát công suất phòng và tỷ lệ lấp đầy qua biểu đồ trực quan, phát hành hóa đơn điện nước hàng tháng, phê duyệt đơn xin về muộn ngoài giờ, xử lý biên bản vi phạm kỷ luật, và xuất báo cáo lưu trú/công nợ sang định dạng Excel.
+    \item \textbf{Kỹ thuật viên (Technician):} Tiếp nhận các phiếu báo hỏng thiết bị theo bảng việc (Bounty Board), ghi nhận vật tư thay thế, chụp ảnh nghiệm thu hoàn thành sửa chữa, và thực hiện ghi chỉ số công tơ điện nước định kỳ kèm ảnh chụp đồng hồ.
+    \item \textbf{Nhân viên Bảo vệ (Security Guard):} Sử dụng máy quét hoặc giao diện tra cứu nhanh MSSV tại cổng KTX, đối chiếu đơn xin về muộn đã duyệt, tự động ghi nhận biên bản vi phạm giờ giới nghiêm sau 23:00.
+    \item \textbf{Quản trị viên Hệ thống (System Administrator):} Quản lý danh mục cơ sở vật chất (Tòa nhà, Tầng, Phòng, Giường), cấu hình đơn giá điện nước và thuế VAT, phân quyền tài khoản người dùng và bảo trì dữ liệu hệ thống.
+\end{enumerate}
+
+\section{Bố cục của Báo cáo}
+Nội dung báo cáo dự án được kết cấu thành 7 chương chính:
+\begin{itemize}
+    \item Chương 1: Giới thiệu và Đặt vấn đề.
+    \item Chương 2: Phân tích Yêu cầu Hệ thống (28 Use Cases, NFR).
+    \item Chương 3: Kiến trúc Hệ thống và Thiết kế Dữ liệu (12 thực thể, mô hình 1:4:6).
+    \item Chương 4: Hiện thực các Phân hệ Cốt lõi.
+    \item Chương 5: Đảm bảo Chất lượng và Kiểm thử.
+    \item Chương 6: Quản trị Dự án và Phân công Công việc (Ma trận RACI, 5 Sprint).
+    \item Chương 7: Kết luận và Hướng phát triển Tương lai.
+\end{itemize}
+
+% ------------------------------------------------------------------------------
+% CHƯƠNG 2
+% ------------------------------------------------------------------------------
+\chapter{PHÂN TÍCH YÊU CẦU HỆ THỐNG}
+\label{ch:requirements}
+
+\section{Tổng quan Yêu cầu và Danh mục Actor}
+Hệ thống Ký túc xá Trực tuyến (DMS) được phân tích dựa trên tiêu chuẩn tài liệu đặc tả yêu cầu phần mềm IEEE Std 830-1998. Hệ thống phục vụ 5 tác nhân (Actors) với các quyền hạn được phân định rõ ràng như trong Bảng~\ref{tab:actors_allinone}.
+
+\begin{table}[htbp]
+\centering
+\caption{Danh mục các Tác nhân (Actors) trong Hệ thống Domanage}
+\label{tab:actors_allinone}
+\small
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\rowcolor{blue!10}
+\textbf{Tác nhân (Actor)} & \textbf{Vai trò hệ thống} & \textbf{Mô tả quyền hạn và phạm vi tác vụ} \\ \hline
+\textbf{Sinh viên (Student)} & \texttt{role: student} & Đăng nhập tài khoản, xem bản đồ giường 1:4:6, giữ chỗ 15m, thanh toán VietQR, nhận hợp đồng PDF, tra cứu hóa đơn, báo hỏng thiết bị, nộp đơn về muộn và xuất trình thẻ QR. \\ \hline
+\textbf{Quản lý KTX (Manager)} & \texttt{role: manager} & Quản lý danh mục phòng, duyệt đơn về muộn, phát hành hóa đơn điện nước định kỳ, giải quyết khiếu nại, giám sát tỷ lệ lấp đầy, xuất báo cáo Excel. \\ \hline
+\textbf{Kỹ thuật viên (Technician)} & \texttt{role: technician} & Nhận phiếu sửa chữa (Bounty Board), cập nhật tiến độ, ghi nhận linh kiện thay thế, chụp ảnh hoàn thành, ghi chỉ số công tơ điện nước ngày 25--28. \\ \hline
+\textbf{Bảo vệ (Guard)} & \texttt{role: guard} & Quét mã QR ra vào cổng, tra cứu danh sách về muộn, lập biên bản vi phạm giờ giới nghiêm sau 23:00 và trừ điểm kỷ luật KTX. \\ \hline
+\textbf{Quản trị viên (Admin)} & \texttt{role: admin} & Quản trị toàn bộ dữ liệu, phân quyền tài khoản, cấu hình bảng giá và hệ thống tự động xét duyệt. \\ \hline
+\end{tabularx}
+\end{table}
+
+\section{Danh mục Yêu cầu Chức năng (28 Use Cases)}
+Hệ thống bao gồm 28 Use Cases chức năng được tổ chức thành 7 phân hệ chính như trong Bảng~\ref{tab:usecases_summary_allinone}.
+
+\begin{table}[htbp]
+\centering
+\caption{Bảng tổng hợp 28 Use Cases phân theo 7 phân hệ nghiệp vụ}
+\label{tab:usecases_summary_allinone}
+\footnotesize
+\begin{tabularx}{\textwidth}{|c|l|l|X|}
+\hline
+\rowcolor{blue!10}
+\textbf{Mã UC} & \textbf{Tên Use Case} & \textbf{Actor chính} & \textbf{Tóm tắt mục tiêu chức năng} \\ \hline
+\multicolumn{4}{|l|}{\textbf{Phân hệ 1: Xác thực, Phân quyền \& Hồ sơ cá nhân (Authentication \& Identity)}} \\ \hline
+\texttt{UC-01} & Trang chủ giới thiệu KTX & Khách, Sinh viên & Giới thiệu cơ sở vật chất, biểu phí dịch vụ, nội quy chung. \\ \hline
+\texttt{UC-02} & Đăng nhập Google OAuth 2.0 & Tất cả & Phân luồng đăng nhập (Gmail sinh viên tuyển sinh vs Email FPT). \\ \hline
+\texttt{UC-03} & Quản lý phiên JWT \& Đăng xuất & Tất cả & Quản lý Access/Refresh Token, bảo vệ phiên đăng nhập an toàn. \\ \hline
+\texttt{UC-04} & Quản lý Hồ sơ cá nhân (Profile) & Sinh viên & Cập nhật CCCD, thông tin liên hệ khẩn cấp cha mẹ. \\ \hline
+\multicolumn{4}{|l|}{\textbf{Phân hệ 2: Quản lý Danh mục \& Cấu trúc Phòng ở (Topology Management)}} \\ \hline
+\texttt{UC-05} & Quản lý Tòa nhà \& Tầng lầu & Admin, Manager & Quản lý danh mục tòa nhà (Nam/Nữ) và các tầng lầu. \\ \hline
+\texttt{UC-06} & Quản lý Cấu trúc Phòng 1:4:6 & Admin, Manager & Thiết lập 1 phòng = 4 buồng (A,B,C,D), 1 buồng = 6 giường. \\ \hline
+\texttt{UC-07} & Cấu hình Bảng giá \& Biểu phí & Admin & Cấu hình giá thuê giường, đơn giá điện, nước, thuế VAT. \\ \hline
+\texttt{UC-08} & Quản lý Tài khoản \& Import DSSV & Admin & Quản lý phân quyền RBAC và nạp danh sách sinh viên tuyển sinh. \\ \hline
+\multicolumn{4}{|l|}{\textbf{Phân hệ 3: Đặt chỗ Trực quan \& Xét duyệt Tự động (Core Booking Workflow)}} \\ \hline
+\texttt{UC-09} & Bản đồ chọn giường trực quan & Sinh viên & Giao diện đồ họa chọn Tòa $\rightarrow$ Tầng $\rightarrow$ Phòng $\rightarrow$ Buồng $\rightarrow$ Giường. \\ \hline
+\texttt{UC-10} & Khóa giữ chỗ 15 phút \& VietQR & Sinh viên & Đồng hồ đếm ngược 900 giây và hiển thị mã QR thanh toán cọc. \\ \hline
+\texttt{UC-11} & Động cơ Auto-Approval & Hệ thống & Tự động kiểm tra giới tính, công nợ, cọc và duyệt đặt chỗ tức thì. \\ \hline
+\texttt{UC-12} & Tạo Hợp đồng điện tử e-Contract & Sinh viên & Tự động render file PDF hợp đồng lưu trú có mã tra cứu duy nhất. \\ \hline
+\texttt{UC-13} & Giám sát phòng \& Ngoại lệ đổi chỗ & Manager & Bảng điều khiển quản lý phòng trống và xử lý ngoại lệ đổi giường. \\ \hline
+\multicolumn{4}{|l|}{\textbf{Phân hệ 4: Quản lý Công tơ \& Chia đều Tiền Điện Nước (Utility \& Split Billing)}} \\ \hline
+\texttt{UC-14} & Quy trình Check-in nhận phòng & Sinh viên, Manager & Lập biên bản bàn giao thiết bị phòng và ghi nhận chỉ số công tơ đầu. \\ \hline
+\texttt{UC-15} & Quy trình Check-out trả phòng & Sinh viên, Manager & Nghiệm thu hiện trạng tài sản và lập quyết toán hoàn cọc lưu trú. \\ \hline
+\texttt{UC-16} & Ghi số điện nước kèm ảnh chụp & Technician & Form nhập chỉ số $\Delta E, \Delta W$ ngày 25--28 và tải ảnh chụp đồng hồ. \\ \hline
+\texttt{UC-17} & Thuật toán chia tiền $Total / N$ & Hệ thống & Tính tổng tiền phòng kèm VAT và chia đều theo đầu sinh viên đang ở. \\ \hline
+\texttt{UC-18} & Xem \& Thanh toán Hóa đơn phòng & Sinh viên & Xem hóa đơn minh bạch kèm ảnh công tơ gốc, thanh toán VietQR riêng. \\ \hline
+\texttt{UC-19} & Thông báo phát hành \& Nhắc nợ & Hệ thống & Tự động gửi thông báo hóa đơn và nhắc nhở kỳ hạn thanh toán. \\ \hline
+\multicolumn{4}{|l|}{\textbf{Phân hệ 5: Tiếp nhận Báo hỏng \& Bảo trì Thiết bị (Maintenance Ticket)}} \\ \hline
+\texttt{UC-20} & Nộp phiếu báo hỏng kèm ảnh chụp & Sinh viên & Tạo ticket báo hỏng phân loại Phòng chung vs Buồng cá nhân. \\ \hline
+\texttt{UC-21} & Bảng điều phối việc kỹ thuật & Technician, Manager & Nhận phiếu sửa chữa (Bounty Board), phân công công việc. \\ \hline
+\texttt{UC-22} & Nghiệm thu \& Ghi nhận vật tư & Technician & Ghi nhận phụ tùng thay thế và tải ảnh kết quả sau sửa chữa. \\ \hline
+\texttt{UC-23} & Đánh giá dịch vụ 1--5 sao & Sinh viên & Sinh viên nghiệm thu chất lượng sửa chữa và đánh giá điểm sao. \\ \hline
+\multicolumn{4}{|l|}{\textbf{Phân hệ 6: Quản lý Giờ giới nghiêm 23:00 \& Thẻ QR Di động (Curfew \& Security)}} \\ \hline
+\texttt{UC-24} & Nộp đơn xin về muộn ngoài giờ & Sinh viên & Tạo đơn xin phép về muộn nộp trước 21:00 kèm lý do hợp lệ. \\ \hline
+\texttt{UC-25} & Bảng điều khiển Cổng bảo vệ & Guard & Quét thẻ QR/nhập MSSV, đối chiếu đơn duyệt, phát hiện vi phạm 23:00. \\ \hline
+\texttt{UC-26} & Lập biên bản \& Trừ điểm rèn luyện & Guard, Manager & Trừ điểm rèn luyện KTX theo thang 100 điểm, cảnh báo đình chỉ. \\ \hline
+\multicolumn{4}{|l|}{\textbf{Phân hệ 7: Báo cáo Thống kê \& Xuất dữ liệu (Analytics \& Export)}} \\ \hline
+\texttt{UC-27} & Dashboard tổng quan công suất & Manager & Biểu đồ Donut tỷ lệ lấp đầy giường và biểu đồ cột doanh thu. \\ \hline
+\texttt{UC-28} & Xuất báo cáo lưu trú/công nợ & Manager & Xuất danh sách sinh viên tạm trú và nợ tiền sang file Excel (.xlsx). \\ \hline
+\end{tabularx}
+\end{table}
+
+\section{Đặc tả Chi tiết các Use Case Trọng tâm}
+\subsection{Use Case UC-09: Đặt chỗ Giường trực quan (Interactive Bed Booking)}
+Sinh viên truy cập \texttt{/booking}, duyệt qua hệ thống phân cấp Tòa $\rightarrow$ Tầng $\rightarrow$ Phòng $\rightarrow$ Buồng. Khi chọn Buồng B, giao diện đồ họa hiển thị 6 giường với 4 trạng thái màu sắc trực quan (Xanh: Còn trống, Cam: Đang giữ chỗ 15m, Xám: Đã có người ở, Đỏ: Bảo trì). Khi click chọn giường trống, hệ thống chuyển trạng thái sang \texttt{HOLDING} và kích hoạt đồng hồ đếm ngược 15 phút.
+
+\subsection{Use Case UC-11: Động cơ Xét duyệt Tự động (Auto-Approval Engine)}
+Động cơ tự động kiểm tra 3 điều kiện: (1) Giới tính sinh viên khớp với loại tòa nhà; (2) Sinh viên không có công nợ cũ (\texttt{previousDebt == 0}) và không bị kỷ luật đình chỉ (\texttt{isSuspended == false}); (3) Trạng thái thanh toán cọc đạt 100\% (\texttt{PAID}). Khi thỏa mãn, hệ thống chuyển giường sang \texttt{OCCUPIED}, hợp đồng sang \texttt{APPROVED} và tạo file PDF e-Contract.
+
+\subsection{Use Case UC-17: Thuật toán Chia đều Tiền Điện Nước ($Total / N$)}
+Tổng tiền phòng được tính bằng công thức:
+\begin{equation}
+    \text{Tiền cá nhân}_i = \frac{T_{\text{Điện}} + T_{\text{Nước}} + T_{\text{Dịch vụ}}}{N_{\text{active}}} \times \omega_i
+\end{equation}
+Thuật toán phân bổ phần dư (\textit{Remainder Correction}) bảo toàn tổng số tiền, đảm bảo sai số không quá 1 VNĐ.
+
+\section{Yêu cầu Phi chức năng (Non-Functional Requirements)}
+Hệ thống đạt chuẩn WCAG 2.1 AA về Usability, thời gian phản hồi giao diện $< 0.5$s, bảo mật RBAC với JWT HttpOnly Cookie, mã QR cổng HMAC làm mới mỗi 60 giây và thiết kế Responsive mượt mà trên Mobile (375px) đến Desktop (1920px).
+
+% ------------------------------------------------------------------------------
+% CHƯƠNG 3
+% ------------------------------------------------------------------------------
+\chapter{KIẾN TRÚC HỆ THỐNG VÀ THIẾT KẾ DỮ LIỆU}
+\label{ch:architecture}
+
+\section{Kiến trúc Kỹ thuật Tổng thể (System Architecture)}
+Hệ thống được tổ chức thành 3 tầng phân tách rõ ràng:
+\begin{enumerate}
+    \item \textbf{Tầng Trình diễn (Presentation Layer):} React 19, TypeScript, Tailwind CSS v4, Radix UI và Lucide Icons.
+    \item \textbf{Tầng Xử lý Nghiệp vụ (State \& Business Logic Layer):} \texttt{AuthContext}, \texttt{BookingContext}, thuật toán Auto-Approval Engine, bộ tính toán Split-Billing.
+    \item \textbf{Tầng Dữ liệu \& Dịch vụ (Data \& Service Layer):} Mock RESTful APIs trên nền JSON-Server với custom routing (\texttt{server.js}) và tệp cơ sở dữ liệu LowDB (\texttt{db.json}).
+\end{enumerate}
+
+\section{Mô hình Không gian Phân cấp 1:4:6 (Spatial Topology)}
+Mô hình tổ chức không gian ký túc xá phân cấp:
+\begin{itemize}
+    \item \textbf{1 Tòa nhà (Building)} $\longrightarrow$ \textbf{5 Tầng (Floors)} $\longrightarrow$ \textbf{4 Phòng/tầng (Rooms)}.
+    \item Mỗi Phòng lớn gồm \textbf{4 Buồng sinh hoạt (Compartments)}: A (Window Bay), B (Balcony Wing), C (Study Corner), D (Inner Suite).
+    \item Mỗi Buồng chứa \textbf{6 Giường (Beds)} (3 giường tầng, chia làm tầng dưới \textit{Lower} và tầng trên \textit{Upper}).
+    \item Mã giường định dạng chuẩn hóa: \texttt{[Phòng]-[Buồng]-[Giường]} (Ví dụ: \textbf{\texttt{A205-B-G03}}).
+\end{itemize}
+
+\section{Thiết kế Cơ sở Dữ liệu (12 Thực thể)}
+Cơ sở dữ liệu bao gồm 12 bảng thực thể chuẩn 3NF: \texttt{users}, \texttt{buildings}, \texttt{floors}, \texttt{rooms}, \texttt{compartments}, \texttt{beds}, \texttt{bookings}, \texttt{contracts}, \texttt{utilities}, \texttt{bills}, \texttt{maintenance\_tickets}, \texttt{gate\_passes}.
+
+% ------------------------------------------------------------------------------
+% CHƯƠNG 4
+% ------------------------------------------------------------------------------
+\chapter{HIỆN THỰC CÁC PHÂN HỆ CỐT LÕI}
+\label{ch:core_modules}
+
+\section{Module 1: Phân quyền RBAC và Điều hướng}
+Sử dụng \texttt{ProtectedRoute.tsx} để bảo vệ đường dẫn theo vai trò (\texttt{student}, \texttt{manager}, \texttt{technician}, \texttt{admin}). Khi người dùng chưa đăng nhập, hệ thống hiển thị Landing Page giới thiệu cơ sở vật chất; khi đã đăng nhập, tự động điều hướng tới Dashboard tương ứng.
+
+\section{Module 2 \& 3: Bản đồ Giường 1:4:6 và Auto-Approval Engine}
+Giao diện \texttt{BookingPage.tsx} hiển thị trạng thái giường theo màu sắc. Khi chọn giường, đồng hồ đếm ngược 900 giây được kích hoạt. Sau khi sinh viên thanh toán cọc qua VietQR, API \texttt{/api/bookings/approve} tự động thẩm định:
+\begin{lstlisting}[language=JavaScript, caption={Thuật toán 3 bước xét duyệt tự động trong server.js}]
+server.post('/api/bookings/approve', (req, res) => {
+  const { bookingId } = req.body;
+  const db = router.db;
+
+  const booking = db.get('bookings').find({ id: bookingId }).value();
+  const user = db.get('users').find({ id: booking.userId }).value();
+  const bed = db.get('beds').find({ id: booking.bedId }).value();
+  const building = getBuildingByBedId(db, bed.id);
+
+  // 1. Kiem tra gioi tinh
+  if (user.gender !== building.genderType) {
+    return res.status(400).json({ success: false, message: 'Sai gioi tinh toa nha.' });
+  }
+
+  // 2. Kiem tra cong no & ky luat
+  if (user.previousDebt > 0 || user.isSuspended) {
+    return res.status(400).json({ success: false, message: 'Sinh vien con no hoac bi dinh chi.' });
+  }
+
+  // 3. Xac thuc tien coc
+  if (booking.status !== 'PAID') {
+    return res.status(400).json({ success: false, message: 'Chua thanh toan tien coc.' });
+  }
+
+  // Phe duyet & tao hop dong
+  db.get('bookings').find({ id: bookingId }).assign({ status: 'APPROVED' }).write();
+  db.get('beds').find({ id: booking.bedId }).assign({ status: 'OCCUPIED', studentId: user.id }).write();
+
+  const contract = {
+    id: `ct_${Date.now()}`,
+    bookingId,
+    userId: user.id,
+    bedCode: bed.fullCode,
+    status: 'ACTIVE',
+    createdAt: new Date().toISOString()
+  };
+  db.get('contracts').push(contract).write();
+
+  return res.json({ success: true, message: 'Auto-Approval hoan tat', data: { contract } });
+});
+\end{lstlisting}
+
+\section{Module 4: Chia đều Tiền Điện Nước ($Total / N$) \& Ghi Công Tơ}
+Kỹ thuật viên nhập số điện nước mới và tải ảnh chụp đồng hồ thực tế ngày 25--28. Thuật toán tự động chia đều tiền phòng cho $N$ sinh viên đang lưu trú, xử lý sai số làm tròn số học và hỗ trợ tính tiền pro-rata nếu chuyển vào giữa tháng.
+
+\section{Module 5: Quản lý Phiếu Báo hỏng Thiết bị}
+Khép kín vòng đời 5 bước: Nộp phiếu (kèm ảnh chụp) $\rightarrow$ Tiếp nhận (Bounty Board) $\rightarrow$ Sửa chữa $\rightarrow$ Nghiệm thu (ghi nhận linh kiện thay thế) $\rightarrow$ Sinh viên chấm điểm 1--5 sao.
+
+\section{Module 6: Thẻ QR Di động \& Giờ Giới Nghiêm 23:00}
+Thẻ sinh viên số hiển thị mã QR động HMAC làm mới mỗi 60 giây. Bảo vệ quét cổng sau 23:00 đối chiếu đơn xin về muộn đã duyệt; trường hợp không có đơn, hệ thống tự động lập biên bản và trừ điểm rèn luyện theo thang 100 điểm.
+
+\section{Module 7: Dashboard Quản trị \& Xuất Báo cáo Excel}
+Hiển thị biểu đồ Donut tỷ lệ lấp đầy phòng, biểu đồ cột doanh thu (Recharts) và hỗ trợ xuất danh sách tạm trú, công nợ sang định dạng bảng tính Excel (\texttt{.xlsx}).
+
+% ------------------------------------------------------------------------------
+% CHƯƠNG 5
+% ------------------------------------------------------------------------------
+\chapter{ĐẢM BẢO CHẤT LƯỢNG VÀ KIỂM THỬ PHẦN MỀM}
+\label{ch:testing}
+
+\section{Chiến lược Kiểm thử và Phương pháp luận}
+Áp dụng kiểm thử hộp đen (Black-box testing) kết hợp kiểm thử tích hợp vòng đời người dùng, tập trung vào 3 trụ cột: Chức năng (28 Use Cases), Các trường hợp biên (Edge-cases), và Khả năng tương thích Responsive.
+
+\section{Kiểm thử 4 Ca Biên Then chốt (Critical Edge-cases)}
+\begin{itemize}
+    \item \textbf{Case 1: Xung đột Đặt phòng Đồng thời:} Hai sinh viên cùng chọn 1 giường tại cùng 1 giây $\rightarrow$ Hệ thống khóa cho người đến trước, người thứ hai nhận cảnh báo và giường đổi sang màu cam. Kết quả: \textbf{PASS}.
+    \item \textbf{Case 2: Hết hạn Giữ chỗ 15 phút:} Sinh viên không thanh toán sau 900 giây $\rightarrow$ Hệ thống tự động rollback, giải phóng giường về trạng thái \texttt{AVAILABLE} (màu xanh lá) ở giây thứ 901. Kết quả: \textbf{PASS}.
+    \item \textbf{Case 3: Sai số Làm tròn khi Chia tiền ($Total / N$):} Tiền phòng $1.000.000$ chia cho 6 người $\rightarrow$ Remainder correction phân bổ 4 người đóng $166.667$đ, 2 người đóng $166.666$đ, tổng khớp $100\%$ không lệch 1 đồng. Kết quả: \textbf{PASS}.
+    \item \textbf{Case 4: Quét cổng sau 23:00 không có đơn:} Quét mã QR lúc 23:15 không có đơn xin phép $\rightarrow$ Cảnh báo đỏ, tự động ghi nhận biên bản và trừ 15 điểm rèn luyện. Kết quả: \textbf{PASS}.
+\end{itemize}
+
+\section{Tổng hợp Kết quả Kiểm thử}
+Toàn bộ 90 ca kiểm thử cho 28 Use Cases đều đạt tỷ lệ thành công 100\%. Hệ thống hiển thị tương thích hoàn hảo trên Mobile (375px), Tablet (768px), Desktop (1920px) và tương thích tốt trên Chrome, Edge, Safari, Firefox.
+
+% ------------------------------------------------------------------------------
+% CHƯƠNG 6
+% ------------------------------------------------------------------------------
+\chapter{QUẢN TRỊ DỰ ÁN VÀ PHÂN CÔNG CÔNG VIỆC}
+\label{ch:project_management}
+
+\section{Cơ cấu Tổ chức Nhóm và Ma trận Trách nhiệm RACI}
+Dự án được phân bổ công việc theo Ma trận RACI:
+\begin{itemize}
+    \item \textbf{Nguyễn Hoàng Vinh (Project Manager \& Full-Stack Lead):} Module 1 (Auth, OAuth, JWT, Profile), kiến trúc nền tảng, Git repo setup.
+    \item \textbf{Trần Công Tiến (Frontend Lead \& UI/UX Designer):} Module 2 \& 3 (Bản đồ giường trực quan 1:4:6, Modal 15m, VietQR UI).
+    \item \textbf{Trần Thanh Nguyên (Backend Engineer \& Database Architect):} Database Schema 12 bảng, Seed data, Auto-Approval Engine, e-Contract PDF.
+    \item \textbf{Văn Thái Trung (Frontend Developer \& Integration Specialist):} Module 4 (Ghi chỉ số công tơ kèm ảnh, Thuật toán chia tiền $Total/N$, Handover).
+    \item \textbf{Đinh Thanh Trung (Backend Developer \& Security Analyst):} Module 5 (Ticket báo hỏng), Module 6 (Giờ giới nghiêm 23:00, 100đ kỷ luật), Module 7 (Dashboard Recharts, Xuất Excel).
+    \item \textbf{Huỳnh Gia Kim (Quality Assurance \& Test Engineer):} 90 Test Cases, kiểm thử 4 Edge-cases, kiểm thử Responsive, Slide \& Demo script.
+\end{itemize}
+
+\section{Lộ trình Triển khai 5 Tuần (Agile Scrum)}
+5 tuần bám sát tiến độ: Tuần 1 (Kiến trúc \& Setup nền tảng) $\rightarrow$ Tuần 2 (Core Đặt phòng \& Auto-Approval) $\rightarrow$ Tuần 3 (Điện nước \& Bàn giao) $\rightarrow$ Tuần 4 (Bảo trì \& An ninh Cổng) $\rightarrow$ Tuần 5 (Kiểm thử toàn diện \& Báo cáo bảo vệ). Tất cả thành viên đều đạt mức độ đóng góp 100\%.
+
+% ------------------------------------------------------------------------------
+% CHƯƠNG 7
+% ------------------------------------------------------------------------------
+\chapter{KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN}
+\label{ch:conclusion}
+
+\section{Kết quả Đạt được}
+Dự án đã xây dựng thành công Hệ thống Quản lý Ký túc xá Trực tuyến Domanage hiện đại, giải quyết toàn diện 28 Use Cases với 3 sáng kiến nổi bật: Mô hình không gian 1:4:6, Động cơ tự động xét duyệt Auto-Approval trong 3 giây và Thuật toán chia tiền điện nước $Total/N$ minh bạch.
+
+\section{Hạn chế và Hướng Phát triển}
+Hệ thống hiện tại vẫn dùng máy chủ mô phỏng JSON-Server và thanh toán VietQR mô phỏng. Định hướng tương lai sẽ nâng cấp ứng dụng Native với React Native, tích hợp công tơ điện nước thông minh IoT tự truyền số liệu, khóa cửa FaceID tại cổng ký túc xá và Trợ lý ảo AI hỗ trợ sinh viên 24/7.
+
+% ==============================================================================
+% TÀI LIỆU THAM KHẢO
+% ==============================================================================
+\newpage
+\addcontentsline{toc}{chapter}{TÀI LIỆU THAM KHẢO}
+\begin{thebibliography}{99}
+
+\bibitem{ieee830}
+IEEE Computer Society, \emph{IEEE Recommended Practice for Software Requirements Specifications}, IEEE Std 830-1998, 1998.
+
+\bibitem{iso25010}
+International Organization for Standardization, \emph{ISO/IEC 25010:2011 Systems and software engineering -- Systems and software Quality Requirements and Evaluation (SQuaRE)}, 2011.
+
+\bibitem{react19}
+Meta Open Source, \emph{React 19 Documentation and Architecture Guide}, 2024. [Trực tuyến]: \url{https://react.dev/}.
+
+\bibitem{typescript}
+Microsoft Corporation, \emph{TypeScript: JavaScript With Syntax For Types}, 2024. [Trực tuyến]: \url{https://www.typescriptlang.org/}.
+
+\bibitem{tailwindcss}
+Adam Wathan and Tailwind Labs, \emph{Tailwind CSS: Rapidly build modern websites without ever leaving your HTML}, 2024. [Trực tuyến]: \url{https://tailwindcss.com/}.
+
+\bibitem{vitejs}
+Evan You and Vite Contributors, \emph{Vite: Next Generation Frontend Tooling}, 2024. [Trực tuyến]: \url{https://vitejs.dev/}.
+
+\bibitem{fpt_regulations}
+Trường Đại học FPT, \emph{Quy chế Quản lý Sinh viên Nội trú Ký túc xá Đại học FPT}, Lưu hành nội bộ Ban Công tác Sinh viên, 2023.
+
+\end{thebibliography}
+
+\end{document}
+

@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import { createPortal } from "react-dom"
 import {
   CalendarCheck2,
   X,
@@ -49,9 +50,9 @@ export const ContractRenewalModal: React.FC<ContractRenewalModalProps> = ({
     }
   }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
-      <div className="relative w-full max-w-lg rounded-3xl border border-border bg-card p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+  const modalContent = (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 sm:p-6 overflow-y-auto animate-in fade-in">
+      <div className="relative my-auto w-full max-w-lg rounded-3xl border border-border bg-card p-6 shadow-2xl space-y-5 max-h-[calc(100vh-3rem)] overflow-y-auto">
         {/* Header */}
         <div className="flex items-start justify-between border-b border-border pb-4">
           <div className="flex items-center gap-3">
@@ -315,4 +316,10 @@ export const ContractRenewalModal: React.FC<ContractRenewalModalProps> = ({
       </div>
     </div>
   )
+
+  if (typeof document !== "undefined") {
+    return createPortal(modalContent, document.body)
+  }
+
+  return modalContent
 }

@@ -14,6 +14,7 @@ import { BillingPage } from "@/pages/billing/BillingPage"
 import { MyRoomPage } from "@/pages/room/MyRoomPage"
 import { MaintenancePage } from "@/pages/maintenance/MaintenancePage"
 import { ManagerDashboardPage } from "@/pages/manager/ManagerDashboardPage"
+import { SupabaseManagerPage } from "@/pages/supabase/SupabaseManagerPage"
 import { UnauthorizedPage } from "@/pages/errors/UnauthorizedPage"
 import { NotFoundPage } from "@/pages/errors/NotFoundPage"
 import { MobileAppPage } from "@/pages/mobile/MobileAppPage"
@@ -142,6 +143,15 @@ export function App() {
                 element={
                   <ProtectedRoute allowedRoles={["manager", "admin"]}>
                     <ManagerDashboardPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/supabase"
+                element={
+                  <ProtectedRoute allowedRoles={["manager", "admin"]}>
+                    <SupabaseManagerPage />
                   </ProtectedRoute>
                 }
               />
