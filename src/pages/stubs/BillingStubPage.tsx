@@ -1,10 +1,12 @@
 import React from "react"
+import { ScrollReveal } from "@/components/ui/scroll-reveal"
 import { Receipt, Camera, Calculator, QrCode } from "lucide-react"
 
 export const BillingStubPage: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-12">
-      <div className="rounded-3xl border border-blue-500/20 bg-gradient-to-br from-card to-blue-500/5 p-8 shadow-sm">
+      <ScrollReveal direction="up" distance={16}>
+      <div className="rounded-3xl border ui-card-interactive border-blue-500/20 bg-gradient-to-br from-card to-blue-500/5 p-8 shadow-sm">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border pb-6">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-600">
@@ -26,7 +28,7 @@ export const BillingStubPage: React.FC = () => {
         </div>
 
         <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-          <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
+          <div className="rounded-2xl border border-border bg-card p-5 space-y-2 ui-card-interactive">
             <Camera className="h-5 w-5 text-blue-600" />
             <h3 className="font-bold text-foreground">1. Nhập Số Công Tơ Kèm Ảnh</h3>
             <p className="text-muted-foreground leading-relaxed">
@@ -34,7 +36,7 @@ export const BillingStubPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
+          <div className="rounded-2xl border border-border bg-card p-5 space-y-2 ui-card-interactive">
             <Calculator className="h-5 w-5 text-emerald-600" />
             <h3 className="font-bold text-foreground">2. Thuật Toán Chia Tiền Phòng</h3>
             <p className="text-muted-foreground leading-relaxed">
@@ -42,7 +44,7 @@ export const BillingStubPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
+          <div className="rounded-2xl border border-border bg-card p-5 space-y-2 ui-card-interactive">
             <QrCode className="h-5 w-5 text-purple-600" />
             <h3 className="font-bold text-foreground">3. Thanh Toán VietQR Cá Nhân</h3>
             <p className="text-muted-foreground leading-relaxed">
@@ -79,6 +81,7 @@ export const BillingStubPage: React.FC = () => {
           </div>
         </div>
       </div>
+      </ScrollReveal>
     </div>
   )
 }

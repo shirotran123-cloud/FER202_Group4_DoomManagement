@@ -7,8 +7,9 @@ const Card = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
+    data-slot="card"
     className={cn(
-      "rounded-xl border border-border bg-card text-card-foreground shadow-[0_1px_3px_0_rgba(58,80,91,0.04)]",
+      "ui-card-interactive rounded-2xl border border-border bg-card text-card-foreground shadow-[0_2px_8px_-2px_rgba(15,23,42,0.05)] transition-all duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-1 hover:rounded-[20px] hover:border-secondary/25 hover:shadow-[0_14px_28px_-6px_rgba(15,23,42,0.10),0_6px_12px_-4px_rgba(15,23,42,0.06)]",
       className
     )}
     {...props}
@@ -22,7 +23,7 @@ const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-col space-y-1.5 p-5", className)}
+    className={cn("flex flex-col space-y-2 p-6", className)}
     {...props}
   />
 ))
@@ -35,7 +36,7 @@ const CardTitle = React.forwardRef<
   <h3
     ref={ref}
     className={cn(
-      "min-w-0 text-lg leading-snug font-semibold tracking-tight text-balance text-foreground",
+      "min-w-0 text-lg sm:text-xl leading-snug font-bold tracking-tight text-balance text-foreground",
       className
     )}
     {...props}
@@ -49,7 +50,7 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn("text-xs text-muted-foreground", className)}
+    className={cn("text-sm leading-relaxed font-normal text-muted-foreground", className)}
     {...props}
   />
 ))
@@ -59,7 +60,7 @@ const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("p-5 pt-0", className)} {...props} />
+  <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
 ))
 CardContent.displayName = "CardContent"
 
@@ -70,7 +71,7 @@ const CardFooter = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "mt-4 flex items-center border-t border-border p-5 pt-0",
+      "mt-4 flex items-center border-t border-border p-6 pt-4",
       className
     )}
     {...props}

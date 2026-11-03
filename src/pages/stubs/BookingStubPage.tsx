@@ -1,10 +1,12 @@
 import React from "react"
+import { ScrollReveal } from "@/components/ui/scroll-reveal"
 import { BedDouble } from "lucide-react"
 
 export const BookingStubPage: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-12">
-      <div className="rounded-3xl border border-sky-500/20 bg-gradient-to-br from-card to-sky-500/5 p-8 shadow-sm">
+      <ScrollReveal direction="up" distance={16}>
+      <div className="rounded-3xl border ui-card-interactive border-sky-500/20 bg-gradient-to-br from-card to-sky-500/5 p-8 shadow-sm">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border pb-6">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-500/10 text-sky-600">
@@ -26,7 +28,7 @@ export const BookingStubPage: React.FC = () => {
         </div>
 
         <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-          <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
+          <div className="rounded-2xl border border-border bg-card p-5 space-y-2 ui-card-interactive">
             <h3 className="font-bold text-foreground flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
               <span>1. Cấu trúc 1 Phòng = 4 Buồng = 24 Giường</span>
@@ -36,7 +38,7 @@ export const BookingStubPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
+          <div className="rounded-2xl border border-border bg-card p-5 space-y-2 ui-card-interactive">
             <h3 className="font-bold text-foreground flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-sky-500"></span>
               <span>2. Khóa giữ chỗ 15 Phút</span>
@@ -46,7 +48,7 @@ export const BookingStubPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
+          <div className="rounded-2xl border border-border bg-card p-5 space-y-2 ui-card-interactive">
             <h3 className="font-bold text-foreground flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-blue-500"></span>
               <span>3. Auto-Approval Engine</span>
@@ -107,6 +109,7 @@ export const BookingStubPage: React.FC = () => {
           ))}
         </div>
       </div>
+      </ScrollReveal>
     </div>
   )
 }

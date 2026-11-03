@@ -1,10 +1,12 @@
  import React from "react"
+import { ScrollReveal } from "@/components/ui/scroll-reveal"
 import { LayoutDashboard, FileSpreadsheet, PieChart } from "lucide-react"
 
 export const ManagerDashboardStubPage: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-12">
-      <div className="rounded-3xl border border-purple-500/20 bg-gradient-to-br from-card to-purple-500/5 p-8 shadow-sm">
+      <ScrollReveal direction="up" distance={16}>
+      <div className="rounded-3xl border ui-card-interactive border-purple-500/20 bg-gradient-to-br from-card to-purple-500/5 p-8 shadow-sm">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border pb-6">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-500/10 text-purple-600">
@@ -26,14 +28,14 @@ export const ManagerDashboardStubPage: React.FC = () => {
         </div>
 
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-          <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
+          <div className="rounded-2xl border border-border bg-card p-5 space-y-2 ui-card-interactive">
             <PieChart className="h-5 w-5 text-purple-600" />
             <h3 className="font-bold text-foreground">1. Dashboard CÃ´ng Suáº¥t PhÃ²ng</h3>
             <p className="text-muted-foreground leading-relaxed">
               Biá»ƒu Ä‘á»“ trá»±c quan tá»· lá»‡ láº¥p Ä‘áº§y giÆ°á»ng (Occupancy Rate), tráº¡ng thÃ¡i báº£o trÃ¬ vÃ  doanh thu tiá»n phÃ²ng thá»i gian thá»±c.
             </p>
           </div>
-          <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
+          <div className="rounded-2xl border border-border bg-card p-5 space-y-2 ui-card-interactive">
             <FileSpreadsheet className="h-5 w-5 text-emerald-600" />
             <h3 className="font-bold text-foreground">2. Xuáº¥t BÃ¡o CÃ¡o Excel (.xlsx)</h3>
             <p className="text-muted-foreground leading-relaxed">
@@ -42,6 +44,7 @@ export const ManagerDashboardStubPage: React.FC = () => {
           </div>
         </div>
       </div>
+      </ScrollReveal>
     </div>
   )
 }

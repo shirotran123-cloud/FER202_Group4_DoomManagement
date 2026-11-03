@@ -1,6 +1,15 @@
-import React from "react"
-import { NavLink, useLocation } from "react-router-dom"
+import React, { useMemo } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
+import {
+  BottomNavigation,
+  BottomNavigationHighlight,
+  BottomNavigationHighlightItem,
+  BottomNavigationAccessory,
+  BottomNavigationItem,
+  BottomNavigationLabel,
+} from "@animate-ui/react/primitives/bottom-navigation"
+import { Button as AnimateButton } from "@animate-ui/react/primitives/buttons/button"
 import {
   LayoutDashboard,
   DoorClosed,
@@ -15,138 +24,168 @@ import {
 export const MobileBottomNav: React.FC = () => {
   const { user, isAuthenticated } = useAuth()
   const location = useLocation()
+  const navigate = useNavigate()
 
-  // If not authenticated or on /login or on /welcome, do not show
-  if (!isAuthenticated || !user) return null
+  // Không hiển thị nếu chưa đăng nhập hoặc đang ở trang login
+  if (!isAuthenticated || !user || location.pathname === "/login") return null
 
   const isStudent = user.role === "student"
 
-  // Base navigation items tailored to role
-  const navItems = isStudent
-    ? [
+  // Danh sách mục điều hướng phân theo vai trò
+  const navItems = useMemo(() => {
+    if (isStudent) {
+      return [
         {
+          value: "/overview",
           label: "Tổng quan",
-          to: "/overview",
           icon: LayoutDashboard,
         },
         {
+          value: "/my-room",
           label: "Phòng",
-          to: "/my-room",
           icon: DoorClosed,
         },
         {
-          label: "Mã QR",
-          to: "/mobile",
-          icon: QrCode,
-          highlight: true,
-          badge: "Cổng",
-        },
-        {
+          value: "/billing",
           label: "Điện nước",
-          to: "/billing",
           icon: Receipt,
         },
         {
+          value: "/maintenance",
           label: "Báo hỏng",
-          to: "/maintenance",
-          icon: Wrench,
-        },
-      ]
-    : [
-        {
-          label: "Quản lý",
-          to: "/manager",
-          icon: ShieldCheck,
-        },
-        {
-          label: "Quét QR",
-          to: "/mobile",
-          icon: QrCode,
-          highlight: true,
-          badge: "Cổng",
-        },
-        {
-          label: "Điện nước",
-          to: "/billing",
-          icon: Zap,
-        },
-        {
-          label: "Bảo trì",
-          to: "/maintenance",
           icon: Wrench,
         },
         {
+          value: "/profile",
           label: "Hồ sơ",
-          to: "/profile",
           icon: User,
         },
       ]
+    }
+
+    return [
+      {
+        value: "/manager",
+        label: "Quản lý",
+        icon: ShieldCheck,
+      },
+      {
+        value: "/my-room",
+        label: "Phòng",
+        icon: DoorClosed,
+      },
+      {
+        value: "/billing",
+        label: "Điện nước",
+        icon: Zap,
+      },
+      {
+        value: "/maintenance",
+        label: "Bảo trì",
+        icon: Wrench,
+      },
+      {
+        value: "/profile",
+        label: "Hồ sơ",
+        icon: User,
+      },
+    ]
+  }, [isStudent])
+
+  // Xác định tab đang active dựa theo đường dẫn hiện tại
+  const activeValue = useMemo(() => {
+    const currentPath = location.pathname
+    const matched = navItems.find((item) =>
+      currentPath === item.value || (item.value !== "/" && currentPath.startsWith(item.value))
+    )
+    return matched ? matched.value : ""
+  }, [location.pathname, navItems])
+
+  const isQrActive = location.pathname === "/mobile" || location.pathname === "/gate-pass"
 
   return (
-    <nav
-      aria-label="Mobile Navigation"
-      className="fixed bottom-0 right-0 left-0 z-40 border-t border-slate-200/80 bg-white/95 px-2 py-1.5 shadow-[0_-4px_16px_rgba(0,0,0,0.06)] backdrop-blur-lg lg:hidden dark:border-slate-800/80 dark:bg-[#111827]/95"
-      style={{ paddingBottom: "max(0.375rem, env(safe-area-inset-bottom))" }}
-    >
-      <div className="mx-auto flex max-w-lg items-center justify-around">
-        {navItems.map((item) => {
-          const isActive = location.pathname === item.to
-          const Icon = item.icon
+    <>
+      {/* Lớp gradient mờ bảo vệ nội dung khi cuộn ở đáy màn hình di động */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-x-0 bottom-0 z-40 h-24 bg-gradient-to-t from-background via-background/80 to-transparent lg:hidden"
+      />
 
-          return (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={`relative flex flex-1 flex-col items-center justify-center py-1 transition-all duration-150 ${
-                isActive
-                  ? "text-primary font-semibold dark:text-emerald-400"
-                  : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
+      {/* Floating Bottom Navigation Bar với animate-ui primitives */}
+      <div className="pointer-events-none fixed inset-x-0 bottom-4 z-50 flex justify-center px-3 lg:hidden">
+        <BottomNavigation
+          value={activeValue}
+          onValueChange={(val) => {
+            if (val && val !== location.pathname) {
+              navigate(val)
+            }
+          }}
+          scrollBehavior="minimize"
+          aria-label="Thanh điều hướng di động"
+          className="pointer-events-auto flex items-center gap-2 max-w-full"
+        >
+          {/* Highlight trượt mượt mà theo spring physics */}
+          <BottomNavigationHighlight className="absolute inset-x-0 inset-y-1 z-0 rounded-full bg-primary/15 dark:bg-emerald-500/25">
+            <ul className="flex items-center rounded-full border border-border/80 bg-card/90 px-1.5 py-1 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:bg-[#111827]/90 dark:shadow-black/40">
+              {navItems.map(({ value, label, icon: Icon }) => {
+                const isActive = activeValue === value
+
+                return (
+                  <li key={value}>
+                    <BottomNavigationHighlightItem value={value}>
+                      <BottomNavigationItem value={value} asChild>
+                        <button
+                          type="button"
+                          aria-label={label}
+                          onClick={() => navigate(value)}
+                          className="relative z-10 flex h-[3.5rem] items-center justify-center overflow-hidden rounded-full px-3.5 text-muted-foreground outline-none transition-colors duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[minimized]:h-11 data-[minimized]:w-11 data-[minimized]:px-0 data-[state=active]:font-bold data-[state=active]:text-primary dark:data-[state=active]:text-emerald-400"
+                        >
+                          <Icon
+                            className={`h-5 w-5 shrink-0 transition-transform duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                              isActive ? "scale-110 text-primary dark:text-emerald-400" : ""
+                            }`}
+                          />
+                          <BottomNavigationLabel
+                            show="active"
+                            className="pl-2 text-xs font-bold tracking-tight whitespace-nowrap"
+                          >
+                            {label}
+                          </BottomNavigationLabel>
+                        </button>
+                      </BottomNavigationItem>
+                    </BottomNavigationHighlightItem>
+                  </li>
+                )
+              })}
+            </ul>
+          </BottomNavigationHighlight>
+
+          {/* Accessory Button: Quét mã QR ra vào Cổng An Ninh KTX */}
+          <BottomNavigationAccessory className="relative size-[3.5rem] rounded-full border border-border/80 bg-card/90 p-1 shadow-2xl shadow-slate-900/10 backdrop-blur-xl data-[minimized]:size-11 dark:bg-[#111827]/90 dark:shadow-black/40">
+            <AnimateButton
+              type="button"
+              aria-label="Thẻ & Mã QR Cổng"
+              onClick={() => navigate("/mobile")}
+              className={`flex size-full items-center justify-center rounded-full outline-none transition-all duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] focus-visible:ring-[3px] focus-visible:ring-ring/50 ${
+                isQrActive
+                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/30"
+                  : "bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground dark:bg-emerald-500/20 dark:text-emerald-300 dark:hover:bg-emerald-500 dark:hover:text-white"
               }`}
             >
-              <div className="relative">
-                {item.highlight ? (
-                  <div
-                    className={`flex h-8 w-8 items-center justify-center rounded-xl shadow-xs transition-transform ${
-                      isActive
-                        ? "bg-primary text-white scale-110 shadow-primary/30 shadow-md dark:bg-emerald-500"
-                        : "bg-emerald-500/15 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300"
-                    }`}
-                  >
-                    <Icon className="h-4 w-4" />
-                  </div>
-                ) : (
-                  <div
-                    className={`flex h-7 w-7 items-center justify-center rounded-lg transition-transform ${
-                      isActive ? "scale-110" : ""
-                    }`}
-                  >
-                    <Icon className="h-5 w-5" />
-                  </div>
-                )}
-
-                {item.badge && !isActive && (
-                  <span className="absolute -top-1 -right-2 flex h-3.5 items-center justify-center rounded-full bg-rose-500 px-1 text-[9px] font-bold text-white shadow-xs">
-                    {item.badge}
-                  </span>
-                )}
-              </div>
-
-              <span
-                className={`mt-1 text-[11px] tracking-tight leading-none ${
-                  isActive ? "font-bold" : "font-medium"
-                }`}
-              >
-                {item.label}
+              <QrCode className="h-5 w-5 shrink-0 transition-transform duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] hover:scale-110" />
+            </AnimateButton>
+            {/* Nhãn chấm thông báo cổng an ninh */}
+            {!isQrActive && (
+              <span className="absolute -top-0.5 -right-0.5 flex h-3 w-3">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex h-3 w-3 rounded-full bg-emerald-500" />
               </span>
-
-              {isActive && (
-                <span className="absolute bottom-0 h-0.5 w-6 rounded-full bg-primary dark:bg-emerald-400" />
-              )}
-            </NavLink>
-          )
-        })}
+            )}
+          </BottomNavigationAccessory>
+        </BottomNavigation>
       </div>
-    </nav>
+    </>
   )
 }
+
 export default MobileBottomNav

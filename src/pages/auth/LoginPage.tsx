@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react"
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
 import type { UserRole, UserProfile } from "@/types/auth"
+import { ScrollReveal } from "@/components/ui/scroll-reveal"
 import {
   Building2,
   ShieldCheck,
@@ -236,7 +237,7 @@ export const LoginPage: React.FC = () => {
     <div className="relative isolate min-h-[85vh]">
       <div aria-hidden="true" className="nature-backdrop" />
       <div className="page-content relative z-10 flex min-h-[85vh] items-center justify-center py-8">
-        <div className="w-full max-w-xl">
+        <ScrollReveal direction="up" distance={20} className="w-full max-w-xl">
           <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-xl">
             <div className="space-y-2 bg-gradient-to-r from-sky-600 via-cyan-500 to-teal-500 p-8 text-center text-white">
               <div className="mb-1 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 shadow-inner backdrop-blur-md">
@@ -417,7 +418,7 @@ export const LoginPage: React.FC = () => {
                         type="button"
                         onClick={handleConfirmPayment}
                         disabled={isProcessingPayment}
-                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 py-3 text-xs font-bold text-white shadow-sm transition-all hover:opacity-95 disabled:opacity-70"
+                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 py-3 text-xs font-bold text-white shadow-sm transition-all hover:opacity-95 ui-btn-interactive disabled:opacity-70"
                       >
                         {isProcessingPayment ? (
                           <>
@@ -672,7 +673,7 @@ export const LoginPage: React.FC = () => {
 
                     <button
                       type="submit"
-                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 py-3 text-xs font-bold text-white shadow-sm transition-all hover:opacity-95"
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 py-3 text-xs font-bold text-white shadow-sm transition-all hover:opacity-95 ui-btn-interactive"
                     >
                       <Send className="h-4 w-4" />
                       <span>Tiếp Tục Chuyển Khoản & Nhận Phòng (15 Phút)</span>
@@ -754,7 +755,7 @@ export const LoginPage: React.FC = () => {
                           type="button"
                           onClick={() => handleQuickDemo("student")}
                           disabled={isLoading}
-                          className="flex w-full items-center justify-between rounded-xl border border-border bg-muted/40 p-3.5 text-left transition-all hover:border-emerald-500/50 hover:bg-emerald-500/5"
+                          className="flex w-full items-center justify-between rounded-xl border border-border bg-muted/40 p-3.5 text-left transition-all hover:border-emerald-500/50 hover:bg-emerald-500/5 ui-card-interactive"
                         >
                           <div className="flex items-center gap-3">
                             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/15 text-sm font-bold text-emerald-600">
@@ -802,7 +803,7 @@ export const LoginPage: React.FC = () => {
                             type="button"
                             onClick={() => handleQuickDemo("manager")}
                             disabled={isLoading}
-                            className="flex w-full items-center justify-between rounded-xl border border-border bg-muted/40 p-3 text-left transition-all hover:border-blue-500/50 hover:bg-blue-500/5"
+                            className="flex w-full items-center justify-between rounded-xl border border-border bg-muted/40 p-3 text-left transition-all hover:border-blue-500/50 hover:bg-blue-500/5 ui-card-interactive"
                           >
                             <div className="flex items-center gap-2.5">
                               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/15 text-xs font-bold text-blue-600">
@@ -826,7 +827,7 @@ export const LoginPage: React.FC = () => {
                             type="button"
                             onClick={() => handleQuickDemo("technician")}
                             disabled={isLoading}
-                            className="flex w-full items-center justify-between rounded-xl border border-border bg-muted/40 p-3 text-left transition-all hover:border-cyan-500/50 hover:bg-cyan-500/5"
+                            className="flex w-full items-center justify-between rounded-xl border border-border bg-muted/40 p-3 text-left transition-all hover:border-cyan-500/50 hover:bg-cyan-500/5 ui-card-interactive"
                           >
                             <div className="flex items-center gap-2.5">
                               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500/15 text-xs font-bold text-cyan-600">
@@ -850,7 +851,7 @@ export const LoginPage: React.FC = () => {
                             type="button"
                             onClick={() => handleQuickDemo("admin")}
                             disabled={isLoading}
-                            className="flex w-full items-center justify-between rounded-xl border border-border bg-muted/40 p-3 text-left transition-all hover:border-purple-500/50 hover:bg-purple-500/5"
+                            className="flex w-full items-center justify-between rounded-xl border border-border bg-muted/40 p-3 text-left transition-all hover:border-purple-500/50 hover:bg-purple-500/5 ui-card-interactive"
                           >
                             <div className="flex items-center gap-2.5">
                               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-500/15 text-xs font-bold text-purple-600">
@@ -954,7 +955,7 @@ export const LoginPage: React.FC = () => {
                         <button
                           type="submit"
                           disabled={isLoading}
-                          className="flex w-full items-center justify-center gap-2 rounded-xl bg-sky-600 py-2.5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-sky-700 disabled:opacity-50"
+                          className="flex w-full items-center justify-center gap-2 rounded-xl bg-sky-600 py-2.5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-sky-700 disabled:opacity-50 ui-btn-interactive"
                         >
                           {isLoading
                             ? "Đang xác thực Google OAuth..."
@@ -981,7 +982,7 @@ export const LoginPage: React.FC = () => {
               )}
             </div>
           </div>
-        </div>
+        </ScrollReveal>
       </div>
     </div>
   )

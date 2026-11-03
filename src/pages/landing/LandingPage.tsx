@@ -3,6 +3,11 @@ import { Link } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
 import { DormitoryGallerySlider } from "@/components/landing/DormitoryGallerySlider"
 import {
+  ScrollReveal,
+  StaggerContainer,
+  StaggerItem,
+} from "@/components/ui/scroll-reveal"
+import {
   Building2,
   BedDouble,
   ShieldCheck,
@@ -69,74 +74,79 @@ const FaqSection: React.FC = () => {
   }
 
   return (
-    <section id="faq" className="scroll-mt-24 space-y-6">
-      <div className="max-w-2xl space-y-1">
-        
-        <h2 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
-          Câu Hỏi Thường Gặp Của Sinh Viên
-        </h2>
-        <p className="pt-1 text-sm text-muted-foreground">
-          Giải đáp mọi thắc mắc của tân sinh viên và phụ huynh về quy chế sinh
-          hoạt tại KTX FPT.
-        </p>
-      </div>
+    <ScrollReveal>
+      <section id="faq" className="scroll-mt-24 space-y-8">
+        <div className="max-w-2xl space-y-2">
+          <span className="inline-block rounded-lg bg-secondary/10 px-3 py-1 text-xs font-bold tracking-wider text-secondary uppercase">
+            Hỗ trợ thông tin 24/7
+          </span>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+            Câu Hỏi Thường Gặp Của Sinh Viên
+          </h2>
+          <p className="text-sm leading-relaxed font-normal text-muted-foreground sm:text-base">
+            Giải đáp mọi thắc mắc của tân sinh viên và phụ huynh về quy chế sinh
+            hoạt tại KTX FPT.
+          </p>
+        </div>
 
-      <div className="space-y-3">
-        {FAQ_ITEMS.map((item, idx) => {
-          const isOpen = openIndex === idx
-          return (
-            <div
-              key={idx}
-              className={`overflow-hidden rounded-2xl border transition-all duration-200 ${
-                isOpen
-                  ? "border-[#233944]/30 bg-[#f0f5f7] shadow-sm"
-                  : "border-border bg-card hover:border-[#233944]/20 hover:shadow-sm"
-              }`}
-            >
-              <button
-                type="button"
-                onClick={() => toggle(idx)}
-                className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
-                aria-expanded={isOpen}
-              >
-                <span className="flex items-center gap-3 text-sm font-semibold text-foreground">
-                  <span
-                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors ${
+        <StaggerContainer staggerDelay={0.1} className="space-y-4">
+          {FAQ_ITEMS.map((item, idx) => {
+            const isOpen = openIndex === idx
+            return (
+              <StaggerItem key={idx}>
+                <div
+                  className={`ui-card-interactive overflow-hidden rounded-2xl border ${
+                    isOpen
+                      ? "border-secondary/40 bg-muted/50 shadow-md"
+                      : "border-border bg-card"
+                  }`}
+                >
+                  <button
+                    type="button"
+                    onClick={() => toggle(idx)}
+                    className="flex w-full cursor-pointer items-center justify-between gap-4 p-6 text-left"
+                    aria-expanded={isOpen}
+                  >
+                    <span className="flex items-center gap-4 text-base font-semibold text-foreground">
+                      <span
+                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                          isOpen
+                            ? "bg-secondary text-secondary-foreground"
+                            : "bg-secondary/10 text-secondary"
+                        }`}
+                      >
+                        {idx + 1}
+                      </span>
+                      {item.question}
+                    </span>
+                    <ChevronDown
+                      className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                        isOpen ? "rotate-180 text-secondary" : ""
+                      }`}
+                    />
+                  </button>
+
+                  {/* Animated slide-down answer */}
+                  <div
+                    className={`grid transition-all duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] ${
                       isOpen
-                        ? "bg-[#233944] text-white"
-                        : "bg-sky-500/10 text-sky-600"
+                        ? "grid-rows-[1fr] opacity-100"
+                        : "grid-rows-[0fr] opacity-0"
                     }`}
                   >
-                    {idx + 1}
-                  </span>
-                  {item.question}
-                </span>
-                <ChevronDown
-                  className={`h-4 w-4 shrink-0 text-[#73787b] transition-transform duration-200 ${
-                    isOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-
-              {/* Animated slide-down answer */}
-              <div
-                className={`grid transition-all duration-300 ease-in-out ${
-                  isOpen
-                    ? "grid-rows-[1fr] opacity-100"
-                    : "grid-rows-[0fr] opacity-0"
-                }`}
-              >
-                <div className="overflow-hidden">
-                  <p className="px-5 pb-4 pl-14 text-sm leading-relaxed text-muted-foreground">
-                    {item.answer}
-                  </p>
+                    <div className="overflow-hidden">
+                      <p className="px-6 pb-6 pl-18 text-sm leading-relaxed font-normal text-muted-foreground sm:text-base">
+                        {item.answer}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    </section>
+              </StaggerItem>
+            )
+          })}
+        </StaggerContainer>
+      </section>
+    </ScrollReveal>
   )
 }
 
@@ -153,17 +163,17 @@ export const LandingPage: React.FC = () => {
       icon: Receipt,
       title: "Minh bạch Điện Nước",
       desc: "Tự động tính thuế VAT và chia đều chính xác cho số lượng sinh viên đang ở kèm mã VietQR.",
-          },
+    },
     {
       icon: ShieldCheck,
       title: "An ninh 24/7 & Giờ giới nghiêm",
       desc: "Cổng kiểm soát quét thẻ thông minh. Đơn xin về muộn ngoài giờ nộp online.",
-          },
+    },
     {
       icon: FileCheck,
       title: "Biên bản Bàn giao Số hóa",
       desc: "Checklist điện tử khi Check-in và Check-out với ảnh hiện trạng, tự động quyết toán hoàn cọc.",
-          },
+    },
   ]
 
   const feeTable = [
@@ -229,441 +239,514 @@ export const LandingPage: React.FC = () => {
   ]
 
   return (
-    <div className="space-y-16 pb-12">
-      <section id="dat-phong" className="scroll-mt-24 relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-card via-card to-sky-500/5 p-8 shadow-sm sm:p-12 lg:p-16">
-        <div className="relative z-10 max-w-3xl space-y-6">
-                    <h1 className="text-3xl leading-[1.15] font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-            Không Gian Sống Chuẩn Mực,{" "}
-            <span className="bg-gradient-to-r from-sky-600 via-cyan-500 to-teal-500 bg-clip-text text-transparent">
-              Trải Nghiệm Đại Học Trọn Vẹn
-            </span>
-          </h1>
+    <div className="space-y-16 pb-16 lg:space-y-24">
+      {/* HERO SECTION: 60% Dominant White Card, 30% Secondary Navy Accents, 10% High-Contrast Primary CTA */}
+      <ScrollReveal>
+        <section
+          id="dat-phong"
+          className="relative scroll-mt-24 overflow-hidden rounded-3xl border border-border bg-card p-8 shadow-sm sm:p-12 lg:p-16"
+        >
+          <div className="relative z-10 max-w-3xl space-y-8">
+            <div className="space-y-4">
+              <span className="inline-flex items-center gap-2 rounded-xl bg-secondary/10 px-4 py-2 text-xs font-bold tracking-wider text-secondary uppercase">
+                <Sparkles className="h-4 w-4 text-primary" />
+                Ký Túc Xá Đại Học FPT Quy Nhơn · Học Kỳ 2026–2027
+              </span>
+              <h1 className="text-3xl leading-[1.15] font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+                Không Gian Sống Chuẩn Mực,{" "}
+                <span className="text-secondary">
+                  Trải Nghiệm Đại Học Trọn Vẹn
+                </span>
+              </h1>
+              <p className="max-w-2xl text-base leading-relaxed font-normal text-muted-foreground sm:text-lg">
+                Hệ thống quản lý lưu trú số hóa toàn diện với mô hình buồng riêng
+                tư, tự động hóa công tơ điện nước VietQR và kiểm soát an ninh thông
+                minh 24/7.
+              </p>
+            </div>
 
-          <div className="flex flex-wrap items-center gap-3 pt-2">
-            <Link
-              to="/booking"
-              className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:bg-[#3a505b]"
-            >
-              <BedDouble className="h-4 w-4" />
-              <span>Đặt Phòng</span>
-              <ArrowRight className="h-4 w-4" />
-            </Link>
+            <div className="flex flex-wrap items-center gap-4 pt-2">
+              {/* 10% Accent CTA Button (WCAG 2.1 AA Contrast 6.42:1) */}
+              <Link
+                to="/booking"
+                className="ui-btn-interactive inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-4 text-sm font-bold text-primary-foreground shadow-md hover:bg-[#235330] hover:shadow-lg"
+              >
+                <BedDouble className="h-5 w-5" />
+                <span>Đặt Phòng Ngay</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
 
-            {isAuthenticated && (
-              <div className="flex flex-wrap items-center gap-2.5">
-                <Link
-                  to={
-                    user?.role === "student"
-                      ? "/overview"
-                      : user?.role === "manager"
-                        ? "/manager"
-                        : user?.role === "technician"
-                          ? "/maintenance"
-                          : "/overview"
-                  }
-                  className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-3.5 text-sm font-bold text-white shadow-md shadow-emerald-600/20 transition-all hover:bg-emerald-700"
-                >
-                  <Sparkles className="h-4 w-4" />
-                  <span>Vào Bảng Điều Khiển ({user?.roleTitle})</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-                {user?.role === "student" && (
+              {isAuthenticated && (
+                <div className="flex flex-wrap items-center gap-4">
                   <Link
-                    to="/my-room"
-                    className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-3.5 text-sm font-semibold text-foreground shadow-xs transition-colors hover:bg-muted"
+                    to={
+                      user?.role === "student"
+                        ? "/overview"
+                        : user?.role === "manager"
+                          ? "/manager"
+                          : user?.role === "technician"
+                            ? "/maintenance"
+                            : "/overview"
+                    }
+                    className="ui-btn-interactive inline-flex items-center gap-2 rounded-xl bg-secondary px-6 py-4 text-sm font-bold text-secondary-foreground shadow-sm hover:bg-[#162c49]"
                   >
-                    <span>Phòng Của Tôi (A205)</span>
+                    <Sparkles className="h-4 w-4" />
+                    <span>Vào Bảng Điều Khiển ({user?.roleTitle})</span>
+                    <ArrowRight className="h-4 w-4" />
                   </Link>
-                )}
-              </div>
-            )}
+                  {user?.role === "student" && (
+                    <Link
+                      to="/my-room"
+                      className="ui-btn-interactive inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-4 text-sm font-semibold text-foreground shadow-xs hover:bg-muted"
+                    >
+                      <span>Phòng Của Tôi (A205)</span>
+                    </Link>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <StaggerContainer
+              staggerDelay={0.1}
+              className="grid grid-cols-2 gap-6 border-t border-border pt-8 sm:grid-cols-4"
+            >
+              <StaggerItem>
+                <p className="text-2xl font-extrabold text-foreground sm:text-3xl">
+                  500+
+                </p>
+                <p className="mt-1 text-xs font-medium text-muted-foreground sm:text-sm">
+                  Giường tiêu chuẩn hiện đại
+                </p>
+              </StaggerItem>
+              <StaggerItem>
+                <p className="text-2xl font-extrabold text-secondary sm:text-3xl">
+                  15 Phút
+                </p>
+                <p className="mt-1 text-xs font-medium text-muted-foreground sm:text-sm">
+                  Khóa giữ chỗ thanh toán
+                </p>
+              </StaggerItem>
+              <StaggerItem>
+                <p className="text-2xl font-extrabold text-primary sm:text-3xl">
+                  100%
+                </p>
+                <p className="mt-1 text-xs font-medium text-muted-foreground sm:text-sm">
+                  Tự động xét duyệt 0-chạm
+                </p>
+              </StaggerItem>
+              <StaggerItem>
+                <p className="text-2xl font-extrabold text-foreground sm:text-3xl">
+                  24/7
+                </p>
+                <p className="mt-1 text-xs font-medium text-muted-foreground sm:text-sm">
+                  An ninh bảo vệ & Kỹ thuật
+                </p>
+              </StaggerItem>
+            </StaggerContainer>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 border-t border-border/60 pt-6 sm:grid-cols-4">
-            <div>
-              <p className="text-2xl font-black text-foreground">500+</p>
-              <p className="text-xs text-muted-foreground">
-                Giường tiêu chuẩn hiện đại
-              </p>
-            </div>
-            <div>
-              <p className="text-2xl font-black text-sky-600">15 Phút</p>
-              <p className="text-xs text-muted-foreground">
-                Khóa giữ chỗ thanh toán
-              </p>
-            </div>
-            <div>
-              <p className="text-2xl font-black text-emerald-600">100%</p>
-              <p className="text-xs text-muted-foreground">
-                Tự động xét duyệt 0-chạm
-              </p>
-            </div>
-            <div>
-              <p className="text-2xl font-black text-foreground">24/7</p>
-              <p className="text-xs text-muted-foreground">
-                An ninh bảo vệ & Kỹ thuật
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="pointer-events-none absolute top-0 right-0 -mt-20 -mr-20 h-96 w-96 rounded-full bg-sky-500/10 blur-3xl" />
-      </section>
+          <div className="pointer-events-none absolute top-0 right-0 -mt-24 -mr-24 h-96 w-96 rounded-full bg-secondary/5 blur-3xl" />
+        </section>
+      </ScrollReveal>
 
       {/* Slide giới thiệu không gian KTX */}
-      <section className="space-y-4">
-        <DormitoryGallerySlider />
-      </section>
+      <ScrollReveal>
+        <section className="space-y-6">
+          <DormitoryGallerySlider />
+        </section>
+      </ScrollReveal>
 
-      <section id="tinh-nang" className="scroll-mt-24 space-y-6">
-        <div className="mx-auto max-w-2xl space-y-2 text-center">
-          <h2 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
-            Tính Năng Nổi Bật Của Hệ Thống
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 max-w-5xl mx-auto">
-          {highlights.map((h, i) => {
-            const Icon = h.icon
-            return (
-              <div
-                key={i}
-                className="group relative rounded-2xl border border-border bg-card p-6 shadow-xs transition-all hover:border-sky-500/40 hover:shadow-md"
-              >
-                <div className="mb-4 flex items-center justify-between">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500/10 text-sky-600 transition-transform group-hover:scale-110">
-                    <Icon className="h-6 w-6" />
-                  </div>
-                  
-                </div>
-                <h3 className="mb-2 text-base font-bold text-foreground">
-                  {h.title}
-                </h3>
-                <p className="text-xs leading-relaxed text-muted-foreground">
-                  {h.desc}
-                </p>
-              </div>
-            )
-          })}
-        </div>
-      </section>
-
-      <section id="bieu-phi" className="scroll-mt-24 space-y-6">
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-          <div>
-            
-            <h2 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
-              Biểu Phí Lưu Trú & Dịch Vụ
+      {/* TÍNH NĂNG NỔI BẬT (Staggered 100ms Card Grid) */}
+      <ScrollReveal>
+        <section id="tinh-nang" className="scroll-mt-24 space-y-8">
+          <div className="mx-auto max-w-2xl space-y-2 text-center">
+            <span className="inline-block rounded-lg bg-secondary/10 px-3 py-1 text-xs font-bold tracking-wider text-secondary uppercase">
+              Hệ sinh thái số hóa
+            </span>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+              Tính Năng Nổi Bật Của Hệ Thống
             </h2>
-            <p className="text-sm text-muted-foreground">
-              Áp dụng thống nhất cho năm học
-              2026-2027.
+            <p className="text-sm leading-relaxed font-normal text-muted-foreground sm:text-base">
+              Trải nghiệm quản lý lưu trú thông minh, minh bạch và tiện lợi dành
+              riêng cho sinh viên FPT.
             </p>
           </div>
-          <Link
-            to="/billing"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-600 hover:text-sky-700"
+
+          <StaggerContainer
+            staggerDelay={0.1}
+            className="mx-auto grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2 lg:gap-8"
           >
-            <span>Tra cứu chi tiết hóa đơn mẫu </span>
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
+            {highlights.map((h, i) => {
+              const Icon = h.icon
+              return (
+                <StaggerItem key={i}>
+                  <div className="ui-card-interactive group relative h-full rounded-2xl border border-border bg-card p-6 sm:p-8">
+                    <div className="mb-6 flex items-center justify-between">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary/10 text-secondary transition-transform duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground">
+                        <Icon className="h-6 w-6" />
+                      </div>
+                    </div>
+                    <h3 className="mb-2 text-lg font-bold tracking-tight text-foreground sm:text-xl">
+                      {h.title}
+                    </h3>
+                    <p className="text-sm leading-relaxed font-normal text-muted-foreground sm:text-base">
+                      {h.desc}
+                    </p>
+                  </div>
+                </StaggerItem>
+              )
+            })}
+          </StaggerContainer>
+        </section>
+      </ScrollReveal>
 
-        <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-xs">
-          <table className="w-full text-left text-xs sm:text-sm">
-            <thead className="border-b border-border bg-muted/50 text-xs font-bold text-muted-foreground uppercase">
-              <tr>
-                <th className="px-5 py-3.5">Hạng mục dịch vụ</th>
-                <th className="px-5 py-3.5">Đơn giá quy định</th>
-                <th className="px-5 py-3.5">Đơn vị tính</th>
-                <th className="hidden px-5 py-3.5 md:table-cell">
-                  Ghi chú & Chính sách
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {feeTable.map((f, i) => (
-                <tr key={i} className="transition-colors hover:bg-muted/30">
-                  <td className="flex items-center gap-2 px-5 py-4 font-semibold text-foreground">
-                    <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-500" />
-                    <span>{f.item}</span>
-                  </td>
-                  <td className="px-5 py-4 font-mono font-bold text-sky-600 dark:text-sky-400">
-                    {f.price}
-                  </td>
-                  <td className="px-5 py-4 text-muted-foreground">{f.unit}</td>
-                  <td className="hidden px-5 py-4 text-xs text-muted-foreground md:table-cell">
-                    {f.note}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section id="noi-quy" className="scroll-mt-24 space-y-6">
-        <div>
-          
-          <h2 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
-            Quy Định Chung & Kỷ Luật Lưu Trú
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Sinh viên cam kết thực hiện nghiêm túc khi ký hợp đồng lưu trú điện
-            tử.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {rules.map((r, i) => (
-            <div
-              key={i}
-              className="space-y-2 rounded-2xl border border-border bg-card p-5"
-            >
-              <h3 className="flex items-center gap-2 text-sm font-bold text-foreground">
-                <ShieldCheck className="h-4 w-4 text-sky-600" />
-                <span>{r.title}</span>
-              </h3>
-              <p className="text-xs leading-relaxed text-muted-foreground">
-                {r.content}
+      {/* BIỂU PHÍ LƯU TRÚ & DỊCH VỤ */}
+      <ScrollReveal>
+        <section id="bieu-phi" className="scroll-mt-24 space-y-8">
+          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+            <div className="space-y-2">
+              <span className="inline-block rounded-lg bg-secondary/10 px-3 py-1 text-xs font-bold tracking-wider text-secondary uppercase">
+                Minh bạch tài chính
+              </span>
+              <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+                Biểu Phí Lưu Trú & Dịch Vụ
+              </h2>
+              <p className="text-sm leading-relaxed font-normal text-muted-foreground sm:text-base">
+                Áp dụng thống nhất cho năm học 2026–2027.
               </p>
             </div>
-          ))}
-        </div>
-      </section>
+            <Link
+              to="/billing"
+              className="ui-btn-interactive inline-flex items-center gap-2 rounded-xl bg-secondary/10 px-4 py-2 text-xs font-bold text-secondary hover:bg-secondary hover:text-secondary-foreground sm:text-sm"
+            >
+              <span>Tra cứu chi tiết hóa đơn mẫu</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
 
-      <section
-        id="tien-ich"
-        className="space-y-6 rounded-3xl border border-border bg-muted/20 p-8 sm:p-10"
-      >
-        <div className="mx-auto max-w-xl space-y-2 text-center">
-          <h2 className="text-xl font-extrabold text-foreground sm:text-2xl">
-            Tiện Ích & Không Gian Chung Hiện Đại
-          </h2>
-          <p className="text-xs text-muted-foreground">
-            Môi trường sinh hoạt an toàn, tiện nghi giúp sinh viên tập trung tối
-            đa cho việc học.
-          </p>
-        </div>
+          <div className="ui-card-interactive overflow-hidden rounded-2xl border border-border bg-card shadow-xs">
+            <table className="w-full text-left text-xs sm:text-sm">
+              <thead className="border-b border-border bg-muted/60 text-xs font-bold tracking-wider text-foreground uppercase">
+                <tr>
+                  <th className="px-6 py-4">Hạng mục dịch vụ</th>
+                  <th className="px-6 py-4">Đơn giá quy định</th>
+                  <th className="px-6 py-4">Đơn vị tính</th>
+                  <th className="hidden px-6 py-4 md:table-cell">
+                    Ghi chú & Chính sách
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {feeTable.map((f, i) => (
+                  <tr
+                    key={i}
+                    className="transition-colors duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-muted/40"
+                  >
+                    <td className="flex items-center gap-2 px-6 py-4 font-semibold text-foreground">
+                      <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
+                      <span>{f.item}</span>
+                    </td>
+                    <td className="px-6 py-4 font-mono font-bold text-secondary">
+                      {f.price}
+                    </td>
+                    <td className="px-6 py-4 font-normal text-muted-foreground">
+                      {f.unit}
+                    </td>
+                    <td className="hidden px-6 py-4 text-xs font-normal text-muted-foreground md:table-cell">
+                      {f.note}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </ScrollReveal>
 
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div className="space-y-2 rounded-xl border border-border bg-card p-4 text-center">
-            <Wifi className="mx-auto h-6 w-6 text-sky-600" />
-            <h4 className="text-xs font-bold text-foreground">
-              Wi-Fi 6 Băng Thông Rộng
-            </h4>
-            <p className="text-[11px] text-muted-foreground">
-              Phủ sóng toàn bộ phòng ngủ & sảnh
+      {/* QUY ĐỊNH CHUNG & KỶ LUẬT (Staggered 100ms Card Grid) */}
+      <ScrollReveal>
+        <section id="noi-quy" className="scroll-mt-24 space-y-8">
+          <div className="space-y-2">
+            <span className="inline-block rounded-lg bg-secondary/10 px-3 py-1 text-xs font-bold tracking-wider text-secondary uppercase">
+              Văn hóa nội trú
+            </span>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+              Quy Định Chung & Kỷ Luật Lưu Trú
+            </h2>
+            <p className="text-sm leading-relaxed font-normal text-muted-foreground sm:text-base">
+              Sinh viên cam kết thực hiện nghiêm túc khi ký hợp đồng lưu trú điện
+              tử.
             </p>
           </div>
-          <div className="space-y-2 rounded-xl border border-border bg-card p-4 text-center">
-            <Coffee className="mx-auto h-6 w-6 text-sky-600" />
-            <h4 className="text-xs font-bold text-foreground">
-              Phòng Tự Học 24/7
-            </h4>
-            <p className="text-[11px] text-muted-foreground">
-              Máy lạnh, bàn học nhóm yên tĩnh
+
+          <StaggerContainer
+            staggerDelay={0.1}
+            className="grid grid-cols-1 gap-6 md:grid-cols-2"
+          >
+            {rules.map((r, i) => (
+              <StaggerItem key={i}>
+                <div className="ui-card-interactive h-full space-y-2 rounded-2xl border border-border bg-card p-6 sm:p-8">
+                  <h3 className="flex items-center gap-2 text-base font-bold tracking-tight text-foreground sm:text-lg">
+                    <ShieldCheck className="h-5 w-5 shrink-0 text-primary" />
+                    <span>{r.title}</span>
+                  </h3>
+                  <p className="text-sm leading-relaxed font-normal text-muted-foreground sm:text-base">
+                    {r.content}
+                  </p>
+                </div>
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
+        </section>
+      </ScrollReveal>
+
+      {/* TIỆN ÍCH & KHÔNG GIAN CHUNG (30% Secondary Container + Staggered Cards) */}
+      <ScrollReveal>
+        <section
+          id="tien-ich"
+          className="space-y-8 rounded-3xl border border-border bg-muted/50 p-8 sm:p-12"
+        >
+          <div className="mx-auto max-w-xl space-y-2 text-center">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+              Tiện Ích & Không Gian Chung Hiện Đại
+            </h2>
+            <p className="text-sm leading-relaxed font-normal text-muted-foreground sm:text-base">
+              Môi trường sinh hoạt an toàn, tiện nghi giúp sinh viên tập trung tối
+              đa cho việc học.
             </p>
           </div>
-          <div className="space-y-2 rounded-xl border border-border bg-card p-4 text-center">
-            <Flame className="mx-auto h-6 w-6 text-sky-600" />
-            <h4 className="text-xs font-bold text-foreground">
-              Bếp Ăn Chung Tầng 1
-            </h4>
-            <p className="text-[11px] text-muted-foreground">
-              Khu vực nấu nướng an toàn PCCC
-            </p>
-          </div>
-          <div className="space-y-2 rounded-xl border border-border bg-card p-4 text-center">
-            <ShieldCheck className="mx-auto h-6 w-6 text-sky-600" />
-            <h4 className="text-xs font-bold text-foreground">
-              Bảo Vệ & Camera AI 24/7
-            </h4>
-            <p className="text-[11px] text-muted-foreground">
-              Kiểm soát ra vào thông minh
-            </p>
-          </div>
-        </div>
-      </section>
+
+          <StaggerContainer
+            staggerDelay={0.1}
+            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+          >
+            <StaggerItem>
+              <div className="ui-card-interactive h-full space-y-2 rounded-2xl border border-border bg-card p-6 text-center">
+                <Wifi className="mx-auto h-8 w-8 text-secondary" />
+                <h4 className="text-sm font-bold text-foreground sm:text-base">
+                  Wi-Fi 6 Băng Thông Rộng
+                </h4>
+                <p className="text-xs leading-relaxed font-normal text-muted-foreground">
+                  Phủ sóng toàn bộ phòng ngủ & sảnh
+                </p>
+              </div>
+            </StaggerItem>
+            <StaggerItem>
+              <div className="ui-card-interactive h-full space-y-2 rounded-2xl border border-border bg-card p-6 text-center">
+                <Coffee className="mx-auto h-8 w-8 text-secondary" />
+                <h4 className="text-sm font-bold text-foreground sm:text-base">
+                  Phòng Tự Học 24/7
+                </h4>
+                <p className="text-xs leading-relaxed font-normal text-muted-foreground">
+                  Máy lạnh, bàn học nhóm yên tĩnh
+                </p>
+              </div>
+            </StaggerItem>
+            <StaggerItem>
+              <div className="ui-card-interactive h-full space-y-2 rounded-2xl border border-border bg-card p-6 text-center">
+                <Flame className="mx-auto h-8 w-8 text-secondary" />
+                <h4 className="text-sm font-bold text-foreground sm:text-base">
+                  Bếp Ăn Chung Tầng 1
+                </h4>
+                <p className="text-xs leading-relaxed font-normal text-muted-foreground">
+                  Khu vực nấu nướng an toàn PCCC
+                </p>
+              </div>
+            </StaggerItem>
+            <StaggerItem>
+              <div className="ui-card-interactive h-full space-y-2 rounded-2xl border border-border bg-card p-6 text-center">
+                <ShieldCheck className="mx-auto h-8 w-8 text-secondary" />
+                <h4 className="text-sm font-bold text-foreground sm:text-base">
+                  Bảo Vệ & Camera AI 24/7
+                </h4>
+                <p className="text-xs leading-relaxed font-normal text-muted-foreground">
+                  Kiểm soát ra vào thông minh
+                </p>
+              </div>
+            </StaggerItem>
+          </StaggerContainer>
+        </section>
+      </ScrollReveal>
 
       {/* FAQ Accordion Section */}
       <FaqSection />
 
-      {/* ── FOOTER ── */}
-      <footer className="mt-4">
-        {/* Top dark band */}
-        <div className="overflow-hidden rounded-3xl bg-[#1a2c38] text-white">
-          {/* Cool accent stripe */}
-          <div className="h-1 w-full bg-gradient-to-r from-sky-500 via-sky-400 to-sky-600" />
+      {/* ── FOOTER (30% Secondary Brand Deep Navy #1e3a5f with WCAG AAA White Text) ── */}
+      <ScrollReveal>
+        <footer className="mt-8">
+          <div className="overflow-hidden rounded-3xl bg-secondary text-secondary-foreground shadow-lg">
+            {/* Accent stripe */}
+            <div className="h-2 w-full bg-gradient-to-r from-primary via-accent to-primary" />
 
-          <div className="grid grid-cols-1 gap-10 px-8 py-10 sm:grid-cols-2 lg:grid-cols-4">
-            {/* Col 1 – Brand */}
-            <div className="space-y-4 lg:col-span-1">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-500">
-                  <Building2 className="h-5 w-5 text-white" />
+            <div className="grid grid-cols-1 gap-10 p-8 sm:grid-cols-2 sm:p-12 lg:grid-cols-4">
+              {/* Col 1 – Brand */}
+              <div className="space-y-4 lg:col-span-1">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+                    <Building2 className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-base leading-tight font-extrabold text-white">
+                      Ký Túc Xá
+                    </p>
+                    <p className="text-xs font-semibold text-sky-200">
+                      Đại Học FPT Quy Nhơn
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm leading-tight font-extrabold">
-                    Ký Túc Xá
-                  </p>
-                  <p className="text-[11px] font-semibold text-sky-300">
-                    Đại Học FPT Quy Nhơn
-                  </p>
+                <p className="text-xs leading-relaxed font-normal text-slate-200 sm:text-sm">
+                  Hệ thống quản lý KTX thông minh – minh bạch, tiện lợi và an toàn
+                  cho toàn thể sinh viên FPT.
+                </p>
+                <div className="flex gap-2 pt-2">
+                  <a
+                    href="https://daihocfpt.edu.vn"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-white transition-colors duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-primary"
+                    aria-label="Website FPT"
+                  >
+                    <Globe className="h-4 w-4" />
+                  </a>
                 </div>
               </div>
-              <p className="text-xs leading-relaxed text-slate-300">
-                Hệ thống quản lý KTX thông minh – minh bạch, tiện lợi và an toàn
-                cho toàn thể sinh viên FPT.
-              </p>
-              <div className="flex gap-2 pt-1">
-                <a
-                  href="https://daihocfpt.edu.vn"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 transition-colors hover:bg-sky-500"
-                  aria-label="Website FPT"
-                >
-                  <Globe className="h-4 w-4" />
-                </a>
-              </div>
-            </div>
 
-            {/* Col 2 – Quick links */}
-            <div className="space-y-4">
-              <h4 className="text-xs font-bold tracking-widest text-sky-400 uppercase">
-                Truy cập nhanh
-              </h4>
-              <ul className="space-y-2">
-                {[
-                  { label: "Trang chủ KTX", href: "/" },
-                  {
-                    label: "Đặt phòng / Giữ chỗ",
-                    href: "/login?mode=register",
-                  },
-                  { label: "Đăng nhập hệ thống", href: "/login" },
-                  { label: "Câu hỏi thường gặp", href: "/#faq" },
-                  { label: "Tiện ích & Không gian", href: "/#tien-ich" },
-                ].map((l) => (
-                  <li key={l.label}>
-                    <Link
-                      to={l.href}
-                      className="flex items-center gap-1.5 text-xs text-slate-300 transition-colors hover:text-sky-400"
-                    >
-                      <ArrowRight className="h-3 w-3 shrink-0" />
-                      {l.label}
-                    </Link>
+              {/* Col 2 – Quick links */}
+              <div className="space-y-4">
+                <h4 className="text-xs font-bold tracking-widest text-sky-200 uppercase">
+                  Truy cập nhanh
+                </h4>
+                <ul className="space-y-2">
+                  {[
+                    { label: "Trang chủ KTX", href: "/" },
+                    {
+                      label: "Đặt phòng / Giữ chỗ",
+                      href: "/login?mode=register",
+                    },
+                    { label: "Đăng nhập hệ thống", href: "/login" },
+                    { label: "Câu hỏi thường gặp", href: "/#faq" },
+                    { label: "Tiện ích & Không gian", href: "/#tien-ich" },
+                  ].map((l) => (
+                    <li key={l.label}>
+                      <Link
+                        to={l.href}
+                        className="ui-btn-interactive flex items-center gap-2 py-1 text-xs font-medium text-slate-200 hover:text-white sm:text-sm"
+                      >
+                        <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                        <span>{l.label}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Col 3 – FPT links */}
+              <div className="space-y-4">
+                <h4 className="text-xs font-bold tracking-widest text-sky-200 uppercase">
+                  Về Đại Học FPT
+                </h4>
+                <ul className="space-y-2">
+                  {[
+                    {
+                      label: "Trang chủ FPT Quy Nhơn",
+                      href: "https://daihoc.fpt.edu.vn/quy-nhon",
+                    },
+                    {
+                      label: "Cổng sinh viên FAP",
+                      href: "https://fap.fpt.edu.vn",
+                    },
+                    {
+                      label: "Phòng Công tác Sinh viên",
+                      href: "https://daihocfpt.edu.vn",
+                    },
+                    {
+                      label: "Học bổng & Hỗ trợ",
+                      href: "https://daihocfpt.edu.vn",
+                    },
+                    {
+                      label: "Lịch học & Thời khóa biểu",
+                      href: "https://fap.fpt.edu.vn",
+                    },
+                  ].map((l) => (
+                    <li key={l.label}>
+                      <a
+                        href={l.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="ui-btn-interactive flex items-center gap-2 py-1 text-xs font-medium text-slate-200 hover:text-white sm:text-sm"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+                        <span>{l.label}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Col 4 – Contact */}
+              <div className="space-y-4">
+                <h4 className="text-xs font-bold tracking-widest text-sky-200 uppercase">
+                  Liên hệ & Hỗ trợ
+                </h4>
+                <ul className="space-y-4">
+                  <li className="flex items-start gap-2">
+                    <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-sky-200" />
+                    <span className="text-xs leading-relaxed font-normal text-slate-200 sm:text-sm">
+                      Khu Đô thị An Phú Thịnh,
+                      <br />
+                      Phường Quy Nhơn Đông, Gia Lai
+                    </span>
                   </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Col 3 – FPT links */}
-            <div className="space-y-4">
-              <h4 className="text-xs font-bold tracking-widest text-sky-400 uppercase">
-                Về Đại Học FPT
-              </h4>
-              <ul className="space-y-2">
-                {[
-                  {
-                    label: "Trang chủ FPT Quy Nhơn",
-                    href: "https://daihoc.fpt.edu.vn/quy-nhon",
-                  },
-                  {
-                    label: "Cổng sinh viên FAP",
-                    href: "https://fap.fpt.edu.vn",
-                  },
-                  {
-                    label: "Phòng Công tác Sinh viên",
-                    href: "https://daihocfpt.edu.vn",
-                  },
-                  {
-                    label: "Học bổng & Hỗ trợ",
-                    href: "https://daihocfpt.edu.vn",
-                  },
-                  {
-                    label: "Lịch học & Thời khóa biểu",
-                    href: "https://fap.fpt.edu.vn",
-                  },
-                ].map((l) => (
-                  <li key={l.label}>
+                  <li className="flex items-center gap-2">
+                    <PhoneCall className="h-4 w-4 shrink-0 text-sky-200" />
+                    <span className="text-xs text-slate-200 sm:text-sm">
+                      Hotline BQL KTX:{" "}
+                      <span className="font-bold text-white">0987 807 074</span>
+                    </span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Mail className="h-4 w-4 shrink-0 text-sky-200" />
                     <a
-                      href={l.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center gap-1.5 text-xs text-slate-300 transition-colors hover:text-sky-400"
+                      href="mailto:ktx.quynhon@fpt.edu.vn"
+                      className="text-xs text-slate-200 transition-colors hover:text-white sm:text-sm"
                     >
-                      <ExternalLink className="h-3 w-3 shrink-0" />
-                      {l.label}
+                      ktx.quynhon@fpt.edu.vn
                     </a>
                   </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Col 4 – Contact */}
-            <div className="space-y-4">
-              <h4 className="text-xs font-bold tracking-widest text-sky-400 uppercase">
-                Liên hệ & Hỗ trợ
-              </h4>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-2.5">
-                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-sky-400" />
-                  <span className="text-xs leading-relaxed text-slate-300">
-                    Khu Đô thị An Phú Thịnh,
-                    <br />
-                    Phường Quy Nhơn Đông, Gia Lai
-                  </span>
-                </li>
-                <li className="flex items-center gap-2.5">
-                  <PhoneCall className="h-4 w-4 shrink-0 text-sky-400" />
-                  <span className="text-xs text-slate-300">
-                    Hotline BQL KTX:{" "}
-                    <span className="font-bold text-white">0987 807 074</span>
-                  </span>
-                </li>
-                <li className="flex items-center gap-2.5">
-                  <Mail className="h-4 w-4 shrink-0 text-sky-400" />
-                  <a
-                    href="mailto:ktx.quynhon@fpt.edu.vn"
-                    className="text-xs text-slate-300 transition-colors hover:text-sky-400"
+                  <li className="flex items-center gap-2">
+                    <GraduationCap className="h-4 w-4 shrink-0 text-sky-200" />
+                    <span className="text-xs text-slate-200 sm:text-sm">
+                      Hỗ trợ học vụ:{" "}
+                      <span className="font-bold text-white">1900 6868</span>
+                    </span>
+                  </li>
+                </ul>
+                <div className="pt-2">
+                  <Link
+                    to="/login?mode=register"
+                    className="ui-btn-interactive inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-primary-foreground shadow-sm hover:bg-[#235330] sm:text-sm"
                   >
-                    ktx.quynhon@fpt.edu.vn
-                  </a>
-                </li>
-                <li className="flex items-center gap-2.5">
-                  <GraduationCap className="h-4 w-4 shrink-0 text-sky-400" />
-                  <span className="text-xs text-slate-300">
-                    Hỗ trợ học vụ:{" "}
-                    <span className="font-bold text-white">1900 6868</span>
-                  </span>
-                </li>
-              </ul>
-              <div className="pt-2">
-                <Link
-                  to="/login?mode=register"
-                  className="inline-flex items-center gap-2 rounded-xl bg-sky-500 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-sky-600"
-                >
-                  Đăng ký lưu trú ngay
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
+                    <span>Đăng ký lưu trú ngay</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Bottom bar */}
-          <div className="flex flex-col items-center justify-between gap-2 border-t border-white/10 px-8 py-4 text-[11px] text-slate-400 sm:flex-row">
-            <span>
-              © 2026 Ban Quản Lý Ký Túc Xá – Đại Học FPT Quy Nhơn. Bảo lưu mọi
-              quyền.
-            </span>
-            <span className="text-slate-500">
-              Đồ án FER202 – Group 4 &nbsp;·&nbsp; Front-End Web Development
-              with React
-            </span>
+            {/* Bottom bar */}
+            <div className="flex flex-col items-center justify-between gap-2 border-t border-white/15 px-8 py-4 text-xs text-slate-200 sm:flex-row">
+              <span>
+                © 2026 Ban Quản Lý Ký Túc Xá – Đại Học FPT Quy Nhơn. Bảo lưu mọi
+                quyền.
+              </span>
+              <span className="text-slate-300">
+                Đồ án FER202 – Group 4 &nbsp;·&nbsp; Front-End Web Development
+                with React
+              </span>
+            </div>
           </div>
-        </div>
-      </footer>
+        </footer>
+      </ScrollReveal>
     </div>
   )
 }

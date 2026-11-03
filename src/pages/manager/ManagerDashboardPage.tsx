@@ -18,6 +18,11 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
+  ScrollReveal,
+  StaggerContainer,
+  StaggerItem,
+} from "@/components/ui/scroll-reveal"
+import {
   FileSpreadsheet,
   PieChart,
   Download,
@@ -26,6 +31,7 @@ import {
   Filter,
   Users,
   DollarSign,
+  ArrowRight,
 } from "lucide-react"
 
 // Decomposed components
@@ -112,9 +118,6 @@ export const ManagerDashboardPage: React.FC = () => {
     showToast("📊 Đã xuất file Excel Tạm Trú thành công!")
   }
 
-  // Export 2: CSV
-  
-
   // Export 3: Overdue Debts (Excel XML)
   const handleExportOverdueDebtsExcel = () => {
     const columns: ExportColumn<OverdueDebtRecord>[] = [
@@ -149,179 +152,199 @@ export const ManagerDashboardPage: React.FC = () => {
   const stats = MOCK_OCCUPANCY_STATS
 
   return (
-    <div className="space-y-6 pb-12">
+    <div className="space-y-8 pb-16">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed right-6 bottom-6 z-50 flex animate-in items-center gap-2.5 rounded-xl border border-border bg-foreground px-4 py-3 text-sm font-medium text-background shadow-xl slide-in-from-bottom-5 fade-in">
-          <CheckCircle2 className="h-5 w-5 shrink-0 text-primary" />
+        <div className="fixed right-6 bottom-6 z-50 flex animate-in items-center gap-3 rounded-2xl border border-border bg-secondary px-4 py-3 text-sm font-semibold text-secondary-foreground shadow-xl slide-in-from-bottom-5 fade-in">
+          <CheckCircle2 className="h-5 w-5 shrink-0 text-white" />
           <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Hero Header */}
-      <Card className="p-6">
-        <div className="flex flex-col gap-6">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              Bàn Làm Việc Quản Lý Ký Túc Xá
-            </h1>
-            <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-              Hệ thống giám sát chỉ số lấp đầy buồng giường, kiểm soát tiêu thụ
-              điện nước.
-            </p>
+      {/* Hero Header (8pt Grid: p-8 = 32px) */}
+      <ScrollReveal>
+        <Card className="p-6 sm:p-8">
+          <div className="flex flex-col gap-6">
+            <div className="space-y-2">
+              <span className="inline-block rounded-lg bg-secondary/10 px-3 py-1 text-xs font-bold tracking-wider text-secondary uppercase">
+                Trung Tâm Điều Hành Quản Lý
+              </span>
+              <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+                Bàn Làm Việc Quản Lý Ký Túc Xá
+              </h1>
+              <p className="max-w-2xl text-sm leading-relaxed font-normal text-muted-foreground sm:text-base">
+                Hệ thống giám sát chỉ số lấp đầy buồng giường, kiểm soát tiêu thụ
+                điện nước và xuất báo cáo nghiệp vụ.
+              </p>
+            </div>
+
+            <ManagerHeaderStats stats={stats} />
           </div>
+        </Card>
+      </ScrollReveal>
 
-          <ManagerHeaderStats stats={stats} />
+      {/* Main Tabs Navigation (8pt Grid: p-2 = 8px, gap-2 = 8px) */}
+      <ScrollReveal delay={0.05}>
+        <div className="flex min-w-0 flex-col gap-2 rounded-2xl border border-border bg-muted/70 p-2 sm:flex-row">
+          <Button
+            variant={activeTab === "OVERVIEW" ? "secondary" : "ghost"}
+            size="default"
+            onClick={() => setActiveTab("OVERVIEW")}
+            className="min-w-0 flex-1 gap-2 font-bold whitespace-normal"
+          >
+            <PieChart className="h-4 w-4" />
+            <span className="min-w-0 text-center">
+              Dashboard Trực Quan Công Suất & Năng Lượng
+            </span>
+          </Button>
+
+          <Button
+            variant={activeTab === "REPORTS" ? "secondary" : "ghost"}
+            size="default"
+            onClick={() => setActiveTab("REPORTS")}
+            className="min-w-0 flex-1 gap-2 font-bold whitespace-normal"
+          >
+            <FileSpreadsheet className="h-4 w-4" />
+            <span className="min-w-0 text-center">
+              Báo Cáo Nghiệp Vụ & Dữ Liệu Tạm Trú / Công Nợ (.xlsx)
+            </span>
+          </Button>
         </div>
-      </Card>
-
-      {/* Main Tabs Navigation */}
-      <div className="flex min-w-0 flex-col gap-1 rounded-2xl border border-border bg-muted/60 p-1 sm:flex-row">
-        <Button
-          variant={activeTab === "OVERVIEW" ? "default" : "ghost"}
-          size="default"
-          onClick={() => setActiveTab("OVERVIEW")}
-          className="min-w-0 flex-1 gap-2 font-bold whitespace-normal"
-        >
-          <PieChart className="h-4 w-4" />
-          <span className="min-w-0 text-center">
-            Dashboard Trực Quan Công Suất & Năng Lượng
-          </span>
-        </Button>
-
-        <Button
-          variant={activeTab === "REPORTS" ? "default" : "ghost"}
-          size="default"
-          onClick={() => setActiveTab("REPORTS")}
-          className="min-w-0 flex-1 gap-2 font-bold whitespace-normal"
-        >
-          <FileSpreadsheet className="h-4 w-4" />
-          <span className="min-w-0 text-center">
-            Báo Cáo Nghiệp Vụ & Dữ Liệu Tạm Trú / Công Nợ (.xlsx)
-          </span>
-        </Button>
-      </div>
+      </ScrollReveal>
 
       {/* ========================================================= */}
-      {/* TAB 1: VISUAL DASHBOARDS & CHARTS                         */}
+      {/* TAB 1: VISUAL DASHBOARDS & CHARTS (Staggered 100ms)       */}
       {/* ========================================================= */}
       {activeTab === "OVERVIEW" && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <StaggerContainer
+          staggerDelay={0.1}
+          className="grid grid-cols-1 gap-6 lg:grid-cols-3"
+        >
+          <StaggerItem className="lg:col-span-1">
             <OccupancyDonutChart stats={stats} />
+          </StaggerItem>
+          <StaggerItem className="lg:col-span-2">
             <RevenueTrendChart monthlyRevenue={MOCK_MONTHLY_REVENUE} />
-          </div>
-        </div>
+          </StaggerItem>
+        </StaggerContainer>
       )}
 
       {/* ========================================================= */}
-      {/* TAB 2: EXCEL REPORTS EXPORT & DATA TABLE (TÍCH HỢP 1 BẢNG)*/}
+      {/* TAB 2: EXCEL REPORTS EXPORT & DATA TABLE                  */}
       {/* ========================================================= */}
       {activeTab === "REPORTS" && (
-        <Card className="space-y-4 p-5 sm:p-6 shadow-xs">
-          {/* Header Toolbar: Tabs, Bộ lọc theo kỳ, Tra cứu, Nút xuất Excel/CSV */}
-          <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between border-b border-border pb-4">
-            {/* Sub-Tabs: Tạm trú vs Công nợ & Bộ lọc theo kỳ */}
-            <div className="flex flex-wrap items-center gap-2.5">
-              <div className="flex rounded-xl border border-border bg-muted/60 p-1 text-xs">
-                <Button
-                  variant={
-                    reportSubTab === "TEMPORARY_RESIDENCE" ? "default" : "ghost"
-                  }
-                  size="sm"
-                  onClick={() => setReportSubTab("TEMPORARY_RESIDENCE")}
-                  className="text-xs font-bold gap-1.5"
-                >
-                  <Users className="h-3.5 w-3.5" />
-                  <span>1. Danh Sách Tạm Trú ({filteredResidents.length})</span>
-                </Button>
-                <Button
-                  variant={
-                    reportSubTab === "OVERDUE_DEBTS" ? "default" : "ghost"
-                  }
-                  size="sm"
-                  onClick={() => setReportSubTab("OVERDUE_DEBTS")}
-                  className="text-xs font-bold gap-1.5"
-                >
-                  <DollarSign className="h-3.5 w-3.5" />
-                  <span>2. Danh Sách Công Nợ Quá Hạn ({filteredDebts.length})</span>
-                </Button>
+        <ScrollReveal>
+          <Card className="space-y-6 p-6 sm:p-8 shadow-xs">
+            {/* Header Toolbar: Tabs, Bộ lọc theo kỳ, Tra cứu, Nút xuất Excel/CSV */}
+            <div className="flex flex-col gap-4 border-b border-border pb-6 xl:flex-row xl:items-center xl:justify-between">
+              {/* Sub-Tabs: Tạm trú vs Công nợ & Bộ lọc theo kỳ */}
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="flex gap-2 rounded-xl border border-border bg-muted/60 p-1.5 text-xs">
+                  <Button
+                    variant={
+                      reportSubTab === "TEMPORARY_RESIDENCE"
+                        ? "secondary"
+                        : "ghost"
+                    }
+                    size="sm"
+                    onClick={() => setReportSubTab("TEMPORARY_RESIDENCE")}
+                    className="gap-2 text-xs font-bold"
+                  >
+                    <Users className="h-3.5 w-3.5" />
+                    <span>1. Danh Sách Tạm Trú ({filteredResidents.length})</span>
+                  </Button>
+                  <Button
+                    variant={
+                      reportSubTab === "OVERDUE_DEBTS" ? "secondary" : "ghost"
+                    }
+                    size="sm"
+                    onClick={() => setReportSubTab("OVERDUE_DEBTS")}
+                    className="gap-2 text-xs font-bold"
+                  >
+                    <DollarSign className="h-3.5 w-3.5" />
+                    <span>
+                      2. Danh Sách Công Nợ Quá Hạn ({filteredDebts.length})
+                    </span>
+                  </Button>
+                </div>
+
+                {/* Bộ lọc theo kỳ */}
+                <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-xs shadow-2xs">
+                  <Filter className="h-4 w-4 shrink-0 text-primary" />
+                  <span className="font-semibold text-muted-foreground">
+                    Học kỳ:
+                  </span>
+                  <select
+                    value={selectedSemester}
+                    onChange={(e) => setSelectedSemester(e.target.value)}
+                    className="cursor-pointer bg-transparent text-xs font-bold text-foreground focus:outline-none"
+                  >
+                    <option value="ALL">Tất cả học kỳ</option>
+                    <option value="Fall 2026">Học kỳ Fall 2026</option>
+                    <option value="Summer 2026">Học kỳ Summer 2026</option>
+                    <option value="Spring 2026">Học kỳ Spring 2026</option>
+                    <option value="Fall 2025">Học kỳ Fall 2025</option>
+                  </select>
+                </div>
               </div>
 
-              {/* Bộ lọc theo kỳ */}
-              <div className="flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-1.5 text-xs shadow-2xs">
-                <Filter className="h-3.5 w-3.5 text-primary shrink-0" />
-                <span className="text-muted-foreground font-semibold">Học kỳ:</span>
-                <select
-                  value={selectedSemester}
-                  onChange={(e) => setSelectedSemester(e.target.value)}
-                  className="bg-transparent font-bold text-foreground focus:outline-none cursor-pointer text-xs"
-                >
-                  <option value="ALL">Tất cả học kỳ</option>
-                  <option value="Fall 2026">Học kỳ Fall 2026</option>
-                  <option value="Summer 2026">Học kỳ Summer 2026</option>
-                  <option value="Spring 2026">Học kỳ Spring 2026</option>
-                  <option value="Fall 2025">Học kỳ Fall 2025</option>
-                </select>
+              {/* Tra cứu & Nút xuất file Excel/CSV */}
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="relative w-full sm:w-64">
+                  <Input
+                    icon={<Search className="h-4 w-4" />}
+                    value={searchReportQuery}
+                    onChange={(e) => setSearchReportQuery(e.target.value)}
+                    placeholder="Tra cứu MSSV, họ tên, phòng..."
+                  />
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="default"
+                    size="default"
+                    onClick={
+                      reportSubTab === "TEMPORARY_RESIDENCE"
+                        ? handleExportResidenceExcel
+                        : handleExportOverdueDebtsExcel
+                    }
+                    className="gap-2 text-xs font-bold shadow-xs"
+                  >
+                    <Download className="h-4 w-4" />
+                    <span>Xuất Excel (.xlsx)</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
               </div>
             </div>
 
-            {/* Tra cứu & Nút xuất file Excel/CSV */}
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="relative w-full sm:w-56">
-                <Input
-                  icon={<Search className="h-3.5 w-3.5" />}
-                  value={searchReportQuery}
-                  onChange={(e) => setSearchReportQuery(e.target.value)}
-                  placeholder="Tra cứu MSSV, họ tên, phòng..."
-                />
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="default"
-                  size="sm"
-                  onClick={
-                    reportSubTab === "TEMPORARY_RESIDENCE"
-                      ? handleExportResidenceExcel
-                      : handleExportOverdueDebtsExcel
-                  }
-                  className="gap-1.5 font-bold shadow-xs text-xs"
-                >
-                  <Download className="h-3.5 w-3.5" />
-                  <span>Xuất Excel (.xlsx)</span>
-                </Button>
-
-                
-              </div>
+            {/* Table Container với Chế Độ Cuộn Dọc */}
+            <div className="relative max-h-[480px] overflow-x-auto overflow-y-auto rounded-2xl border border-border">
+              {reportSubTab === "TEMPORARY_RESIDENCE" ? (
+                <ResidentRegistryTable residents={filteredResidents} />
+              ) : (
+                <OverdueDebtsTable debts={filteredDebts} />
+              )}
             </div>
-          </div>
 
-          {/* Table Container với Chế Độ Cuộn Dọc */}
-          <div className="relative overflow-x-auto overflow-y-auto max-h-[460px] rounded-xl border border-border">
-            {reportSubTab === "TEMPORARY_RESIDENCE" ? (
-              <ResidentRegistryTable residents={filteredResidents} />
-            ) : (
-              <OverdueDebtsTable debts={filteredDebts} />
-            )}
-          </div>
-
-          {/* Footer thông tin và chế độ cuộn */}
-          <div className="flex flex-wrap items-center justify-between text-xs text-muted-foreground pt-1 gap-2">
-            <span>
-              Hiển thị{" "}
-              <strong className="text-foreground">
-                {reportSubTab === "TEMPORARY_RESIDENCE"
-                  ? filteredResidents.length
-                  : filteredDebts.length}
-              </strong>{" "}
-              sinh viên phù hợp
-            </span>
-            <span className="text-[11px] text-muted-foreground/80 italic">
-              * Bảng có chế độ cuộn dọc để duyệt danh sách mà không chiếm diện tích trang
-            </span>
-          </div>
-        </Card>
+            {/* Footer thông tin và chế độ cuộn */}
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-2 text-xs text-muted-foreground sm:text-sm">
+              <span>
+                Hiển thị{" "}
+                <strong className="text-foreground">
+                  {reportSubTab === "TEMPORARY_RESIDENCE"
+                    ? filteredResidents.length
+                    : filteredDebts.length}
+                </strong>{" "}
+                sinh viên phù hợp
+              </span>
+              <span className="text-xs italic text-muted-foreground">
+                * Bảng có chế độ cuộn dọc để duyệt danh sách mà không chiếm diện
+                tích trang
+              </span>
+            </div>
+          </Card>
+        </ScrollReveal>
       )}
     </div>
   )

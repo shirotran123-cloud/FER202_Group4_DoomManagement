@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import { ContractRenewalModal } from "@/components/contract/ContractRenewalModal"
 import { useAuth } from "@/contexts/useAuth"
+import { ScrollReveal } from "@/components/ui/scroll-reveal"
 import {
   User,
   Phone,
@@ -80,7 +81,8 @@ export const ProfilePage: React.FC = () => {
       {/* ========================================================================= */}
       {/* TOP PROFILE HEADER BANNER (CHUNG CHO CẢ CÁN BỘ & SINH VIÊN)                */}
       {/* ========================================================================= */}
-      <div className="rounded-3xl border border-border bg-card p-6 sm:p-8 shadow-xs">
+      <ScrollReveal direction="up" distance={16}>
+        <div className="rounded-3xl border border-border bg-card p-6 sm:p-8 shadow-xs ui-card-interactive">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div className="flex items-center gap-5">
             <div className="relative">
@@ -174,14 +176,16 @@ export const ProfilePage: React.FC = () => {
       </div>
 
       {/* ========================================================================= */}
+      </ScrollReveal>
       {/* GIAO DIỆN CÁN BỘ QUẢN LÝ / NHÂN SỰ KTX (MANAGER / ADMIN / TECHNICIAN)     */}
       {/* ========================================================================= */}
       {isManagerOrStaff ? (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <ScrollReveal direction="up" delay={0.08} distance={20}>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* CỘT TRÁI (7 COLS): HỒ SƠ NHÂN SỰ & LIÊN HỆ */}
           <div className="lg:col-span-7 space-y-6">
             {/* Card 1: Thông tin nhân sự cán bộ */}
-            <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4">
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4 ui-card-interactive">
               <div className="flex items-center gap-2 font-bold text-sm text-foreground border-b border-border pb-3">
                 {isTechnician ? (
                   <Wrench className="h-4 w-4 text-primary" />
@@ -259,7 +263,7 @@ export const ProfilePage: React.FC = () => {
             </div>
 
             {/* Card 2: Thông tin liên hệ khẩn cấp & gia đình */}
-            <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4">
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4 ui-card-interactive">
               <div className="flex items-center justify-between border-b border-border pb-3">
                 <div className="flex items-center gap-2 font-bold text-sm text-foreground">
                   <Phone className="h-4 w-4 text-primary" />
@@ -385,7 +389,7 @@ export const ProfilePage: React.FC = () => {
           <div className="lg:col-span-5 space-y-6">
             {isTechnician ? (
               /* GIAO DIỆN KHU VỰC PHỤ TRÁCH KỸ THUẬT (TECHNICIAN) */
-              <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-5">
+              <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-5 ui-card-interactive">
                 <div className="flex items-center justify-between border-b border-border pb-3">
                   <div className="flex items-center gap-2 font-bold text-sm text-foreground">
                     <Wrench className="h-4 w-4 text-primary" />
@@ -460,7 +464,7 @@ export const ProfilePage: React.FC = () => {
               </div>
             ) : (
               /* GIAO DIỆN PHẠM VI QUẢN LÝ KTX (MANAGER / ADMIN) */
-              <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-5">
+              <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-5 ui-card-interactive">
                 <div className="flex items-center justify-between border-b border-border pb-3">
                   <div className="flex items-center gap-2 font-bold text-sm text-foreground">
                     <Building2 className="h-4 w-4 text-primary" />
@@ -533,13 +537,15 @@ export const ProfilePage: React.FC = () => {
             )}
           </div>
         </div>
+        </ScrollReveal>
       ) : (
         /* ========================================================================= */
         /* GIAO DIỆN HỒ SƠ SINH VIÊN (STUDENT)                                       */
         /* ========================================================================= */
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <ScrollReveal direction="up" delay={0.08} distance={20}>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4">
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4 ui-card-interactive">
               <div className="flex items-center gap-2 font-bold text-sm text-foreground border-b border-border pb-3">
                 <User className="h-4 w-4 text-primary" />
                 <span>Thông tin Cá nhân & Học vụ (Hồ sơ Tuyển sinh)</span>
@@ -594,7 +600,7 @@ export const ProfilePage: React.FC = () => {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4">
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4 ui-card-interactive">
               <div className="flex items-center justify-between border-b border-border pb-3">
                 <div className="flex items-center gap-2 font-bold text-sm text-foreground">
                   <HeartHandshake className="h-4 w-4 text-primary" />
@@ -727,7 +733,7 @@ export const ProfilePage: React.FC = () => {
 
           <div className="space-y-6">
             {user.dormitoryStatus ? (
-              <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4">
+              <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4 ui-card-interactive">
                 <div className="flex items-center justify-between border-b border-border pb-3">
                   <div className="flex items-center gap-2 font-bold text-sm text-foreground">
                     <BedDouble className="h-4 w-4 text-primary" />
@@ -815,6 +821,7 @@ export const ProfilePage: React.FC = () => {
             ) : null}
           </div>
         </div>
+        </ScrollReveal>
       )}
 
       <ContractRenewalModal

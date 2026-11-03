@@ -20,6 +20,7 @@ import {
   ChevronUp,
   Terminal,
 } from "lucide-react"
+import { ScrollReveal } from "@/components/ui/scroll-reveal"
 import {
   getSupabaseConfig,
   saveSupabaseConfig,
@@ -246,7 +247,8 @@ export const SupabaseManagerPage: React.FC = () => {
   return (
     <div className="space-y-6 pb-16">
       {/* Top Banner & Header */}
-      <div className="rounded-2xl border border-border bg-card p-6 shadow-xs">
+      <ScrollReveal direction="up" distance={16}>
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-xs ui-card-interactive">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
@@ -326,6 +328,7 @@ export const SupabaseManagerPage: React.FC = () => {
           </div>
         </div>
       </div>
+      </ScrollReveal>
 
       {/* Navigation Tabs */}
       <div className="flex border-b border-border overflow-x-auto gap-2">

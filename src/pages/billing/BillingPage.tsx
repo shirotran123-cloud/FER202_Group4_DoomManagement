@@ -26,6 +26,7 @@ import {
   generatePaymentReceiptPDF,
   generateBuildingUtilityReportPDF,
 } from "@/lib/pdfGenerator"
+import { ScrollReveal, StaggerContainer, StaggerItem } from "@/components/ui/scroll-reveal"
 
 export const BillingPage: React.FC = () => {
   const { user } = useAuth()
@@ -158,8 +159,10 @@ export const BillingPage: React.FC = () => {
   const perStudentUtility = Math.round(totalBill / numStudents)
   const netDue = hasPaid ? 0 : perStudentUtility
 
+  const vietQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=2|99|09182391024|KY_TUC_XA_FPT|${netDue}|DIENNUOC_${currentRoom}_${user?.studentId || "SE182049"}`
+
   const handleDownloadQr = () => {
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=2|99|09182391024|KY_TUC_XA_FPT|${netDue}|DIENNUOC_${currentRoom}_${user?.studentId || "SE182049"}`
+    const qrUrl = vietQrUrl
     fetch(qrUrl)
       .then((res) => res.blob())
       .then((blob) => {
@@ -262,40 +265,42 @@ export const BillingPage: React.FC = () => {
     return (
       <div className="max-w-[1600px] mx-auto space-y-6 pb-12">
         {/* Header Technician Tòa A */}
-        <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-xs">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/25">
-                  <Building2 className="h-3.5 w-3.5" />
-                  <span>Kỹ Thuật Viên Phụ Trách: TÒA A</span>
-                </span>
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                  <CheckCircle2 className="h-3.5 w-3.5" />
-                  <span>Kỳ chốt số tháng 09/2026</span>
-                </span>
+        <ScrollReveal direction="up" distance={16}>
+          <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/25">
+                    <Building2 className="h-3.5 w-3.5" />
+                    <span>Kỹ Thuật Viên Phụ Trách: TÒA A</span>
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    <span>Kỳ chốt số tháng 09/2026</span>
+                  </span>
+                </div>
+                <h1 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
+                  Ghi Chỉ Số & Chụp Ảnh Đối Soát Công Tơ
+                </h1>
+                <p className="text-xs text-muted-foreground">
+                  Kỹ thuật viên: <strong className="text-foreground">{user?.fullName || "Đỗ Mạnh Hùng"}</strong> • Tòa nhà: <strong className="text-foreground">Tòa A</strong> (Nhập số điện, số nước và tải ảnh đối soát)
+                </p>
               </div>
-              <h1 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
-                Ghi Chỉ Số & Chụp Ảnh Đối Soát Công Tơ
-              </h1>
-              <p className="text-xs text-muted-foreground">
-                Kỹ thuật viên: <strong className="text-foreground">{user?.fullName || "Đỗ Mạnh Hùng"}</strong> • Tòa nhà: <strong className="text-foreground">Tòa A</strong> (Nhập số điện, số nước và tải ảnh đối soát)
-              </p>
-            </div>
 
-            {techSavedMessage && (
-              <div className="p-3 bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 rounded-xl text-xs font-bold flex items-center gap-2 animate-in fade-in">
-                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                <span>Đã lưu thành công dữ liệu chốt số phòng {selectedRoom}!</span>
-              </div>
-            )}
+              {techSavedMessage && (
+                <div className="p-3 bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 rounded-xl text-xs font-bold flex items-center gap-2 animate-in fade-in">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                  <span>Đã lưu thành công dữ liệu chốt số phòng {selectedRoom}!</span>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        </ScrollReveal>
 
         {/* Form Chốt Số & Chụp Ảnh Điện Nước */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Cột Trái: Form Nhập Số */}
-          <div className="lg:col-span-5 bg-card rounded-2xl border border-border p-6 shadow-xs space-y-5">
+          <div className="lg:col-span-5 bg-card rounded-2xl border border-border p-6 shadow-xs space-y-5 ui-card-interactive">
             <div className="flex items-center justify-between pb-3 border-b border-border">
               <div className="flex items-center gap-2 font-bold text-sm text-foreground">
                 <Zap className="h-4 w-4 text-primary" />
@@ -597,169 +602,187 @@ export const BillingPage: React.FC = () => {
       )}
 
       {/* 01. PAGE ACTION HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-black text-foreground tracking-tight">
+      <ScrollReveal direction="up" distance={16}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
+                {isTechnicianOrManager
+                  ? "Chốt Sổ & Chia Điện Nước • Tòa A"
+                  : "Điện Nước & Hóa Đơn (VietQR)"}
+              </h1>
+              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                Chu kỳ T09/2026
+              </span>
+            </div>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">
               {isTechnicianOrManager
-                ? "Chốt Sổ & Chia Điện Nước • Tòa A"
-                : "Điện Nước & Hóa Đơn (VietQR)"}
-            </h1>
-            <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-              Chu kỳ T09/2026
-            </span>
+                ? "Theo dõi tiến độ chốt số công tơ, lập hóa đơn chia tiền tự động và kiểm soát công nợ tòa nhà."
+                : "Tra cứu chỉ số tiêu thụ, đối soát ảnh công tơ điện nước và thanh toán tự động qua VietQR 24/7."}
+            </p>
           </div>
-          
-        </div>
 
-        {!isTechnicianOrManager && (
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={handleDownloadStudentInvoice}
-              className="text-xs h-9 gap-1.5 bg-primary text-white whitespace-nowrap shrink-0 hover:opacity-95 shadow-xs cursor-pointer"
-              title="Tải hóa đơn tiền điện nước phòng hiện tại (PDF)"
-            >
-              <Download className="h-4 w-4 shrink-0" />
-              <span>Tải Hóa Đơn (PDF)</span>
-            </Button>
-          </div>
-        )}
-      </div>
+          {!isTechnicianOrManager && (
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={handleDownloadStudentInvoice}
+                className="text-xs h-10 gap-2 bg-primary text-white whitespace-nowrap shrink-0 hover:bg-primary/95 shadow-xs cursor-pointer ui-btn-interactive rounded-xl px-4"
+                title="Tải hóa đơn tiền điện nước phòng hiện tại (PDF)"
+              >
+                <Download className="h-4 w-4 shrink-0" />
+                <span>Tải Hóa Đơn (PDF)</span>
+              </Button>
+            </div>
+          )}
+        </div>
+      </ScrollReveal>
 
       {/* 02. TOP KPI CARDS */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6" staggerChildren={0.1}>
         {isTechnicianOrManager ? (
           <>
             {/* Manager Metric 1 */}
-            <div className="p-4 rounded-xl bg-white dark:bg-[#161e23] border border-border shadow-xs flex flex-col justify-between">
-              <div className="flex items-start justify-between">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                  Tổng Thu Điện Nước Tòa A (T09)
-                </span>
-                <span className="p-1.5 rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300">
-                  <Receipt className="h-4 w-4" />
-                </span>
-              </div>
-              <div className="mt-3">
-                <div className="text-2xl font-black font-mono tracking-tight text-primary dark:text-[#cee6ef]">
-                  ₫32,766,800
+            <StaggerItem>
+              <div className="p-6 rounded-2xl bg-white dark:bg-[#161e23] border border-border shadow-xs flex flex-col justify-between ui-card-interactive h-full">
+                <div className="flex items-start justify-between">
+                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    Tổng Thu Điện Nước Tòa A (T09)
+                  </span>
+                  <span className="p-2.5 rounded-xl bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300">
+                    <Receipt className="h-5 w-5" />
+                  </span>
                 </div>
-                <div className="flex items-center gap-1.5 mt-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                  <span>178 / 192 SV đã nộp (92.7%)</span>
+                <div className="mt-4">
+                  <div className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-primary dark:text-[#cee6ef]">
+                    ₫32,766,800
+                  </div>
+                  <div className="flex items-center gap-2 mt-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>178 / 192 SV đã nộp (92.7%)</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            </StaggerItem>
 
             {/* Manager Metric 2 */}
-            <div className="p-4 rounded-xl bg-white dark:bg-[#161e23] border border-border shadow-xs flex flex-col justify-between">
-              <div className="flex items-start justify-between">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                  Tiến Độ Chốt Số Công Tơ
-                </span>
-                <span className="p-1.5 rounded-lg bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300">
-                  <CheckCircle2 className="h-4 w-4" />
-                </span>
-              </div>
-              <div className="mt-3">
-                <div className="text-2xl font-black font-mono tracking-tight text-foreground">
-                  44 / 44 Phòng
+            <StaggerItem>
+              <div className="p-6 rounded-2xl bg-white dark:bg-[#161e23] border border-border shadow-xs flex flex-col justify-between ui-card-interactive h-full">
+                <div className="flex items-start justify-between">
+                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    Tiến Độ Chốt Số Công Tơ
+                  </span>
+                  <span className="p-2.5 rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300">
+                    <CheckCircle2 className="h-5 w-5" />
+                  </span>
                 </div>
-                <div className="flex items-center gap-1.5 mt-1 text-xs text-muted-foreground">
-                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
-                  <span>100% phòng đã có ảnh đối soát</span>
+                <div className="mt-4">
+                  <div className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-foreground">
+                    44 / 44 Phòng
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-2 text-xs text-muted-foreground">
+                    <ShieldCheck className="h-4 w-4 text-emerald-500" />
+                    <span>100% phòng đã có ảnh đối soát</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            </StaggerItem>
 
             {/* Manager Metric 3 */}
-            <div className="p-4 rounded-xl bg-white dark:bg-[#161e23] border border-border shadow-xs flex flex-col justify-between">
-              <div className="flex items-start justify-between">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                  Kỳ Chốt Số Tiếp Theo
-                </span>
-                <span className="p-1.5 rounded-lg bg-[#d6e5e9] text-[#101e21]">
-                  <Calendar className="h-4 w-4" />
-                </span>
-              </div>
-              <div className="mt-3">
-                <div className="text-2xl font-black font-mono tracking-tight text-foreground">
-                  31/10/2026
+            <StaggerItem>
+              <div className="p-6 rounded-2xl bg-white dark:bg-[#161e23] border border-border shadow-xs flex flex-col justify-between ui-card-interactive h-full">
+                <div className="flex items-start justify-between">
+                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    Kỳ Chốt Số Tiếp Theo
+                  </span>
+                  <span className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-foreground">
+                    <Calendar className="h-5 w-5" />
+                  </span>
                 </div>
-                <div className="flex items-center gap-1.5 mt-1 text-xs text-muted-foreground">
-                  <Clock className="h-3.5 w-3.5" />
-                  <span>Định kỳ chốt ngày cuối tháng (30 - 31)</span>
+                <div className="mt-4">
+                  <div className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-foreground">
+                    31/10/2026
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-2 text-xs text-muted-foreground">
+                    <Clock className="h-4 w-4" />
+                    <span>Định kỳ chốt ngày cuối tháng (30 - 31)</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            </StaggerItem>
           </>
         ) : (
           <>
             {/* Student Metric 1 */}
-            <div className="p-4 rounded-xl bg-white dark:bg-[#161e23] border border-border shadow-xs flex flex-col justify-between">
-              <div className="flex items-start justify-between">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                  Tổng Cần Thanh Toán (T09/2026)
-                </span>
-                <span className={`p-1.5 rounded-lg ${hasPaid ? "bg-emerald-100 text-emerald-600" : "bg-blue-100 text-blue-600"}`}>
-                  <Receipt className="h-4 w-4" />
-                </span>
-              </div>
-              <div className="mt-3">
-                <div className="text-2xl font-black font-mono tracking-tight text-primary dark:text-[#cee6ef]">
-                  {hasPaid ? "₫0" : `₫${netDue.toLocaleString()}`}
+            <StaggerItem>
+              <div className="p-6 rounded-2xl bg-white dark:bg-[#161e23] border border-border shadow-xs flex flex-col justify-between ui-card-interactive h-full">
+                <div className="flex items-start justify-between">
+                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    Tổng Cần Thanh Toán (T09/2026)
+                  </span>
+                  <span className={`p-2.5 rounded-xl ${hasPaid ? "bg-emerald-100 text-emerald-600" : "bg-blue-100 text-blue-600"}`}>
+                    <Receipt className="h-5 w-5" />
+                  </span>
                 </div>
-                <div className={`flex items-center gap-1.5 mt-1 text-xs font-semibold ${hasPaid ? "text-emerald-600" : "text-blue-600"}`}>
-                  <span className={`w-2 h-2 rounded-full ${hasPaid ? "bg-emerald-500" : "bg-blue-500"}`}></span>
-                  <span>{hasPaid ? "Đã tất toán toàn bộ" : "Hạn nộp trong 3 ngày (05/10)"}</span>
+                <div className="mt-4">
+                  <div className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-primary dark:text-[#cee6ef]">
+                    {hasPaid ? "₫0" : `₫${netDue.toLocaleString()}`}
+                  </div>
+                  <div className={`flex items-center gap-2 mt-2 text-xs font-semibold ${hasPaid ? "text-emerald-600" : "text-blue-600"}`}>
+                    <span className={`w-2 h-2 rounded-full ${hasPaid ? "bg-emerald-500" : "bg-blue-500 animate-pulse"}`}></span>
+                    <span>{hasPaid ? "Đã tất toán toàn bộ" : "Hạn nộp trong 3 ngày (05/10)"}</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            </StaggerItem>
 
             {/* Student Metric 2 */}
-            <div className="p-4 rounded-xl bg-white dark:bg-[#161e23] border border-border shadow-xs flex flex-col justify-between">
-              <div className="flex items-start justify-between">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                  Đã Nộp Đầu Kỳ (Fall 2026)
-                </span>
-                <span className="p-1.5 rounded-lg bg-[#cee6ef] text-[#233944] dark:bg-[#233944] dark:text-[#cee6ef]">
-                  <CheckCircle2 className="h-4 w-4" />
-                </span>
-              </div>
-              <div className="mt-3">
-                <div className="text-2xl font-black font-mono tracking-tight text-foreground">
-                  ₫4,200,000
+            <StaggerItem>
+              <div className="p-6 rounded-2xl bg-white dark:bg-[#161e23] border border-border shadow-xs flex flex-col justify-between ui-card-interactive h-full">
+                <div className="flex items-start justify-between">
+                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    Đã Nộp Đầu Kỳ (Fall 2026)
+                  </span>
+                  <span className="p-2.5 rounded-xl bg-sky-100 text-sky-700 dark:bg-sky-950/40 dark:text-sky-300">
+                    <CheckCircle2 className="h-5 w-5" />
+                  </span>
                 </div>
-                <div className="flex items-center gap-1.5 mt-1 text-xs text-muted-foreground">
-                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
-                  <span>Đã hoàn tất tiền lưu trú Học kỳ 1 & Cọc</span>
+                <div className="mt-4">
+                  <div className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-foreground">
+                    ₫4,200,000
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-2 text-xs text-muted-foreground">
+                    <ShieldCheck className="h-4 w-4 text-emerald-500" />
+                    <span>Đã hoàn tất tiền lưu trú Học kỳ 1 &amp; Cọc</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            </StaggerItem>
 
             {/* Student Metric 3 */}
-            <div className="p-4 rounded-xl bg-white dark:bg-[#161e23] border border-border shadow-xs flex flex-col justify-between">
-              <div className="flex items-start justify-between">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                  Kỳ Chốt Số Kế Tiếp
-                </span>
-                <span className="p-1.5 rounded-lg bg-[#d6e5e9] text-[#101e21]">
-                  <Calendar className="h-4 w-4" />
-                </span>
-              </div>
-              <div className="mt-3">
-                <div className="text-2xl font-black font-mono tracking-tight text-foreground">
-                  31/10/2026
+            <StaggerItem>
+              <div className="p-6 rounded-2xl bg-white dark:bg-[#161e23] border border-border shadow-xs flex flex-col justify-between ui-card-interactive h-full">
+                <div className="flex items-start justify-between">
+                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    Kỳ Chốt Số Kế Tiếp
+                  </span>
+                  <span className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-foreground">
+                    <Calendar className="h-5 w-5" />
+                  </span>
                 </div>
-                <div className="flex items-center gap-1.5 mt-1 text-xs text-muted-foreground">
-                  <Clock className="h-3.5 w-3.5" />
-                  <span>Định kỳ chốt ngày cuối tháng (30 - 31)</span>
+                <div className="mt-4">
+                  <div className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-foreground">
+                    31/10/2026
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-2 text-xs text-muted-foreground">
+                    <Clock className="h-4 w-4" />
+                    <span>Định kỳ chốt ngày cuối tháng (30 - 31)</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            </StaggerItem>
           </>
         )}
-      </div>
+      </StaggerContainer>
 
       {/* 03. TWO-COLUMN SPLIT */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -1183,24 +1206,24 @@ export const BillingPage: React.FC = () => {
             /* SINH VIÊN: THANH TOÁN NHANH VIETQR & LỊCH SỬ HÓA ĐƠN CỦA PHÒNG            */
             /* ========================================================================= */
             <div className="space-y-6">
-              <div className="bg-white dark:bg-[#161e23] border border-border rounded-xl shadow-md p-5 space-y-4">
-                <div className="flex items-center gap-2.5 pb-2 border-b border-border">
-                  <span className="p-2 rounded-lg bg-primary text-white">
+              <div className="bg-white dark:bg-[#161e23] border border-border rounded-2xl shadow-sm p-6 space-y-5 ui-card-interactive">
+                <div className="flex items-center gap-3 pb-3 border-b border-border">
+                  <span className="p-2.5 rounded-xl bg-primary text-white">
                     <QrCode className="h-5 w-5" />
                   </span>
                   <div>
                     <h2 className="font-bold text-base text-foreground leading-tight">
                       Thanh Toán Nhanh VietQR 24/7
                     </h2>
-                    <span className="text-[11px] text-muted-foreground">
+                    <span className="text-xs text-muted-foreground">
                       NAPAS Liên Ngân Hàng Không Cần Nhập Số Tài Khoản
                     </span>
                   </div>
                 </div>
 
                 {hasPaid ? (
-                  <div className="py-8 text-center space-y-3 bg-[#ECFDF5] dark:bg-[#065F46]/10 rounded-xl p-6 border border-[#A7F3D0]">
-                    <div className="w-14 h-14 mx-auto rounded-full bg-emerald-500 text-white flex items-center justify-center">
+                  <div className="py-8 text-center space-y-3 bg-emerald-50 dark:bg-emerald-950/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-800">
+                    <div className="w-14 h-14 mx-auto rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm">
                       <CheckCircle2 className="h-8 w-8" />
                     </div>
                     <h3 className="font-black text-lg text-emerald-800 dark:text-emerald-300">
@@ -1213,50 +1236,44 @@ export const BillingPage: React.FC = () => {
                     <Button
                       variant="outline"
                       onClick={() => setHasPaid(false)}
-                      className="text-xs"
+                      className="text-xs h-9 rounded-xl ui-btn-interactive"
                     >
                       Mô phỏng chưa thanh toán
                     </Button>
                   </div>
                 ) : (
                   <>
-                    <div className="flex flex-col items-center justify-center p-4 bg-white dark:bg-[#161e23] rounded-xl border border-border shadow-2xs">
-                      <div className="flex items-center justify-between w-full mb-2.5 px-1">
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                          Mã Quét VietQR
+                    <div className="flex flex-col items-center justify-center p-5 bg-slate-50 dark:bg-[#1c262c] rounded-2xl border border-border shadow-2xs">
+                      <div className="flex items-center justify-between w-full mb-3 px-1">
+                        <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                          Mã Quét VietQR Tự Động
                         </span>
                         <Button
                           type="button"
-                          variant="outline"
+                          variant="ghost"
                           size="sm"
                           onClick={handleDownloadQr}
-                          className="h-7 px-2.5 text-[11px] gap-1.5 font-bold bg-primary/10 text-primary border-primary/20 hover:bg-primary hover:text-white transition-all shadow-2xs"
-                          title="Tải ảnh mã QR về máy để mở quét trong ứng dụng ngân hàng"
+                          className="h-7 text-xs font-semibold gap-1 text-primary hover:text-primary/80 ui-btn-interactive cursor-pointer"
                         >
                           <Download className="h-3.5 w-3.5" />
                           <span>Tải ảnh QR</span>
                         </Button>
                       </div>
 
-                      <div className="relative p-2 bg-white rounded-xl shadow-xs border border-gray-100">
+                      <div className="relative mx-auto rounded-2xl border-2 border-primary/20 bg-white p-3 shadow-sm">
                         <img
-                          src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=2|99|09182391024|KY_TUC_XA_FPT|${netDue}|DIENNUOC_${currentRoom}_${user?.studentId || "SE182049"}`}
-                          alt="VietQR Bill Payment"
-                          className="w-52 h-52 rounded-lg"
+                          src={vietQrUrl}
+                          alt="VietQR T09"
+                          className="w-48 h-48 sm:w-52 sm:h-52 object-contain rounded-xl"
                         />
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                          <div className="w-9 h-9 rounded-full bg-white shadow-md flex items-center justify-center p-1 border">
-                            <span className="font-black text-[8px] text-primary">VIETQR</span>
-                          </div>
-                        </div>
                       </div>
 
-                      <p className="text-xs font-bold text-slate-900 dark:text-sky-300 mt-2">
-                        Mở App Ngân Hàng Hoặc Ví Để Quét Mã
+                      <p className="mt-3 text-xs text-muted-foreground text-center">
+                        Quét mã bằng app ngân hàng bất kỳ (Vietcombank, MB, Techcombank, TPBank,...)
                       </p>
                     </div>
 
-                    <div className="bg-[#eff6ff] dark:bg-[#1c262c] p-3.5 rounded-xl text-xs space-y-2 font-mono">
+                    <div className="bg-slate-50 dark:bg-[#1c262c] p-4 rounded-2xl text-xs space-y-2.5 font-mono border border-border/60">
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-muted-foreground font-sans whitespace-nowrap">Ngân hàng:</span>
                         <span className="font-bold text-foreground truncate text-right">TPBank (Tiên Phong)</span>
@@ -1271,11 +1288,11 @@ export const BillingPage: React.FC = () => {
                       </div>
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-muted-foreground font-sans whitespace-nowrap">Số tiền:</span>
-                        <span className="font-black text-blue-600 text-sm whitespace-nowrap">₫{netDue.toLocaleString()}</span>
+                        <span className="font-black text-primary dark:text-sky-400 text-sm whitespace-nowrap">₫{netDue.toLocaleString()}</span>
                       </div>
-                      <div className="flex items-center justify-between gap-2 border-t border-border pt-1.5 font-sans">
+                      <div className="flex items-center justify-between gap-2 border-t border-border pt-2 font-sans">
                         <span className="text-muted-foreground whitespace-nowrap">Nội dung:</span>
-                        <span className="font-mono font-bold text-primary dark:text-[#cee6ef] bg-white dark:bg-[#161e23] px-1.5 py-0.5 rounded border whitespace-nowrap truncate text-right">
+                        <span className="font-mono font-bold text-primary dark:text-[#cee6ef] bg-white dark:bg-[#161e23] px-2 py-0.5 rounded border whitespace-nowrap truncate text-right">
                           DIENNUOC {currentRoom} {user?.studentId || "SE182049"}
                         </span>
                       </div>
@@ -1283,7 +1300,7 @@ export const BillingPage: React.FC = () => {
 
                     <Button
                       onClick={() => setHasPaid(true)}
-                      className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm rounded-lg"
+                      className="w-full h-12 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm rounded-xl ui-btn-interactive"
                     >
                       <CheckCircle2 className="h-4 w-4" />
                       <span>Xác Nhận Đã Chuyển Khoản Thành Công</span>
@@ -1293,41 +1310,41 @@ export const BillingPage: React.FC = () => {
               </div>
 
               {/* Student Historical Table */}
-              <div className="bg-white dark:bg-[#161e23] rounded-xl border border-border p-5 shadow-xs space-y-3">
-                <div className="flex items-center justify-between pb-2 border-b border-border">
+              <div className="bg-white dark:bg-[#161e23] rounded-2xl border border-border p-6 shadow-xs space-y-4 ui-card-interactive">
+                <div className="flex items-center justify-between pb-3 border-b border-border">
                   <h3 className="font-bold text-sm text-foreground">
                     Lịch Sử Hóa Đơn Các Kỳ Trước (Học kỳ 1)
                   </h3>
-                  <span className="text-[11px] text-muted-foreground font-mono">Năm học 2026-2027</span>
+                  <span className="text-xs text-muted-foreground font-mono">Năm học 2026-2027</span>
                 </div>
 
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
                     <thead>
                       <tr className="text-muted-foreground text-[10px] uppercase font-bold tracking-wider">
-                        <th className="py-2 px-2">Kỳ Hóa Đơn</th>
-                        <th className="py-2 px-2">Số Tiền</th>
-                        <th className="py-2 px-2">Trạng Thái</th>
-                        <th className="py-2 px-2 text-right">Biên Lai PDF</th>
+                        <th className="py-2.5 px-3">Kỳ Hóa Đơn</th>
+                        <th className="py-2.5 px-3">Số Tiền</th>
+                        <th className="py-2.5 px-3">Trạng Thái</th>
+                        <th className="py-2.5 px-3 text-right">Biên Lai PDF</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y border-border">
+                    <tbody className="divide-y divide-border">
                       {[
                         { month: "Tháng 08/2026", amount: "₫148,500", date: "03/08/2026" },
                         { month: "Tháng 07/2026", amount: "₫139,000", date: "04/07/2026" },
                         { month: "Tháng 06/2026", amount: "₫152,000", date: "02/06/2026" },
                         { month: "Tháng 05/2026", amount: "₫145,000", date: "05/05/2026" },
                       ].map((inv, idx) => (
-                        <tr key={idx} className="hover:bg-[#eff6ff] dark:hover:bg-[#1c262c] transition-colors">
-                          <td className="py-2.5 px-2 font-semibold text-foreground">{inv.month}</td>
-                          <td className="py-2.5 px-2 font-mono text-foreground">{inv.amount}</td>
-                          <td className="py-2.5 px-2">
+                        <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-[#1c262c] transition-colors">
+                          <td className="py-3 px-3 font-semibold text-foreground">{inv.month}</td>
+                          <td className="py-3 px-3 font-mono text-foreground">{inv.amount}</td>
+                          <td className="py-3 px-3">
                             <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
                               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                               <span>Đã thanh toán ({inv.date})</span>
                             </span>
                           </td>
-                          <td className="py-2.5 px-2 text-right">
+                          <td className="py-2.5 px-3 text-right">
                             <button
                               onClick={() => handleDownloadReceipt(inv)}
                               className="p-1 rounded text-primary hover:bg-[#eff6ff] dark:hover:bg-[#1c262c] cursor-pointer"

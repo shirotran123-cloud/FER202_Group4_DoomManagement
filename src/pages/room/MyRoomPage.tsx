@@ -3,6 +3,11 @@ import { useAuth } from "@/contexts/useAuth"
 import { ContractRenewalModal } from "@/components/contract/ContractRenewalModal"
 import { StudentContractModal } from "@/components/contract/StudentContractModal"
 import { Button } from "@/components/ui/button"
+import {
+  ScrollReveal,
+  StaggerContainer,
+  StaggerItem,
+} from "@/components/ui/scroll-reveal"
 import { Link } from "react-router-dom"
 import {
   DoorClosed,
@@ -21,50 +26,62 @@ import {
 // ─── Compartment Slide Carousel ───────────────────────────────────────────────
 const COMPARTMENTS = [
   {
-    id: "A", label: "Buồng A", subtitle: "Window Bay · Hướng Đông",
-    occupancy: "5/6", myComp: false,
+    id: "A",
+    label: "Buồng A",
+    subtitle: "Window Bay · Hướng Đông",
+    occupancy: "5/6",
+    myComp: false,
     beds: [
-      { g: 1, tier: "Dưới", name: "H. Long",   status: "occupied" },
-      { g: 2, tier: "Trên", name: "T. Tuấn",  status: "occupied" },
-      { g: 3, tier: "Dưới", name: null,        status: "available" },
+      { g: 1, tier: "Dưới", name: "H. Long", status: "occupied" },
+      { g: 2, tier: "Trên", name: "T. Tuấn", status: "occupied" },
+      { g: 3, tier: "Dưới", name: null, status: "available" },
       { g: 4, tier: "Trên", name: "P. Quang", status: "occupied" },
-      { g: 5, tier: "Dưới", name: "Đ. Khoa",  status: "occupied" },
-      { g: 6, tier: "Trên", name: "M. Đức",   status: "occupied" },
+      { g: 5, tier: "Dưới", name: "Đ. Khoa", status: "occupied" },
+      { g: 6, tier: "Trên", name: "M. Đức", status: "occupied" },
     ],
   },
   {
-    id: "B", label: "Buồng B", subtitle: "Balcony Wing · Ban Công",
-    occupancy: "5/6", myComp: true,
+    id: "B",
+    label: "Buồng B",
+    subtitle: "Balcony Wing · Ban Công",
+    occupancy: "5/6",
+    myComp: true,
     beds: [
-      { g: 1, tier: "Dưới", name: "B. Trần",  status: "occupied" },
-      { g: 2, tier: "Trên", name: "L. Nam",   status: "occupied" },
-      { g: 3, tier: "Dưới", name: "Vinh",     status: "mine" },
+      { g: 1, tier: "Dưới", name: "B. Trần", status: "occupied" },
+      { g: 2, tier: "Trên", name: "L. Nam", status: "occupied" },
+      { g: 3, tier: "Dưới", name: "Vinh", status: "mine" },
       { g: 4, tier: "Trên", name: "V. Thanh", status: "occupied" },
-      { g: 5, tier: "Dưới", name: "N. Huy",   status: "occupied" },
-      { g: 6, tier: "Trên", name: null,        status: "available" },
+      { g: 5, tier: "Dưới", name: "N. Huy", status: "occupied" },
+      { g: 6, tier: "Trên", name: null, status: "available" },
     ],
   },
   {
-    id: "C", label: "Buồng C", subtitle: "Study Hub · Góc Tự Học",
-    occupancy: "4/6", myComp: false,
+    id: "C",
+    label: "Buồng C",
+    subtitle: "Study Hub · Góc Tự Học",
+    occupancy: "4/6",
+    myComp: false,
     beds: [
-      { g: 1, tier: "Dưới", name: "K. Minh",  status: "occupied" },
-      { g: 2, tier: "Trên", name: null,        status: "available" },
-      { g: 3, tier: "Dưới", name: "P. Linh",  status: "occupied" },
-      { g: 4, tier: "Trên", name: "T. Dung",  status: "occupied" },
-      { g: 5, tier: "Dưới", name: null,        status: "available" },
-      { g: 6, tier: "Trên", name: "S. Sơn",   status: "occupied" },
+      { g: 1, tier: "Dưới", name: "K. Minh", status: "occupied" },
+      { g: 2, tier: "Trên", name: null, status: "available" },
+      { g: 3, tier: "Dưới", name: "P. Linh", status: "occupied" },
+      { g: 4, tier: "Trên", name: "T. Dung", status: "occupied" },
+      { g: 5, tier: "Dưới", name: null, status: "available" },
+      { g: 6, tier: "Trên", name: "S. Sơn", status: "occupied" },
     ],
   },
   {
-    id: "D", label: "Buồng D", subtitle: "Main Hall Door · Cửa Ra Vào & WC",
-    occupancy: "4/6", myComp: false,
+    id: "D",
+    label: "Buồng D",
+    subtitle: "Main Hall Door · Cửa Ra Vào & WC",
+    occupancy: "4/6",
+    myComp: false,
     beds: [
-      { g: 1, tier: "Dưới", name: "A. Hiến",  status: "occupied" },
-      { g: 2, tier: "Trên", name: "V. Khôi",  status: "occupied" },
-      { g: 3, tier: "Dưới", name: null,        status: "available" },
-      { g: 4, tier: "Trên", name: null,        status: "available" },
-      { g: 5, tier: "Dưới", name: "H. Phúc",  status: "occupied" },
+      { g: 1, tier: "Dưới", name: "A. Hiến", status: "occupied" },
+      { g: 2, tier: "Trên", name: "V. Khôi", status: "occupied" },
+      { g: 3, tier: "Dưới", name: null, status: "available" },
+      { g: 4, tier: "Trên", name: null, status: "available" },
+      { g: 5, tier: "Dưới", name: "H. Phúc", status: "occupied" },
       { g: 6, tier: "Trên", name: "Q. Thắng", status: "occupied" },
     ],
   },
@@ -74,106 +91,131 @@ const CompartmentSlide: React.FC = () => {
   const [current, setCurrent] = useState(1) // default: Buồng B (index 1)
 
   const comp = COMPARTMENTS[current]
-  const prev = () => setCurrent((c) => (c - 1 + COMPARTMENTS.length) % COMPARTMENTS.length)
+  const prev = () =>
+    setCurrent((c) => (c - 1 + COMPARTMENTS.length) % COMPARTMENTS.length)
   const next = () => setCurrent((c) => (c + 1) % COMPARTMENTS.length)
 
   return (
-    <div className="bg-white dark:bg-[#161e23] border border-border rounded-xl shadow-xs overflow-hidden">
+    <div className="ui-card-interactive overflow-hidden rounded-2xl border border-border bg-card shadow-xs">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-border">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-4">
         <div>
-          <h2 className="font-bold text-sm text-foreground">Sơ Đồ Phân Bổ Giường Phòng A205</h2>
+          <h2 className="text-base font-bold text-foreground sm:text-lg">
+            Sơ Đồ Phân Bổ Giường Phòng A205
+          </h2>
         </div>
-        <div className="flex items-center gap-3 text-[11px]">
+        <div className="flex items-center gap-4 text-xs">
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-sm bg-primary"></span>
-            <strong className="text-primary dark:text-[#cee6ef]">Giường bạn</strong>
+            <span className="h-3 w-3 rounded bg-primary" />
+            <strong className="text-primary">Giường bạn</strong>
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-sm bg-slate-300 dark:bg-slate-600"></span>
-            <span>Đã ở</span>
+            <span className="h-3 w-3 rounded bg-secondary/40" />
+            <span className="text-muted-foreground">Đã ở</span>
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-sm bg-emerald-400"></span>
-            <span>Trống</span>
+            <span className="h-3 w-3 rounded border border-accent bg-accent/20" />
+            <span className="font-semibold text-foreground">Trống</span>
           </span>
         </div>
       </div>
 
       {/* Slide body */}
-      <div className="relative px-5 py-5">
+      <div className="relative p-6">
         {/* Nav buttons */}
         <button
           onClick={prev}
-          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white dark:bg-[#1c262c] border border-border shadow-sm flex items-center justify-center hover:bg-[#eff6ff] dark:hover:bg-[#283740] transition-colors"
+          className="ui-btn-interactive absolute top-1/2 left-2 z-10 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-border bg-card shadow-sm hover:bg-muted"
         >
           <ChevronLeft className="h-4 w-4 text-muted-foreground" />
         </button>
         <button
           onClick={next}
-          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white dark:bg-[#1c262c] border border-border shadow-sm flex items-center justify-center hover:bg-[#eff6ff] dark:hover:bg-[#283740] transition-colors"
+          className="ui-btn-interactive absolute top-1/2 right-2 z-10 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-border bg-card shadow-sm hover:bg-muted"
         >
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </button>
 
         {/* Card */}
-        <div className={`mx-8 rounded-xl border p-4 space-y-4 transition-all ${
-          comp.myComp
-            ? "bg-primary/5 border-primary ring-1 ring-primary"
-            : "bg-[#eff6ff] dark:bg-[#1c262c] border-border"
-        }`}>
+        <div
+          className={`mx-8 space-y-4 rounded-2xl border p-6 transition-all duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+            comp.myComp
+              ? "border-primary bg-primary/5 ring-1 ring-primary"
+              : "border-border bg-muted/40"
+          }`}
+        >
           {/* Compartment header */}
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-black text-base text-foreground">{comp.label}</span>
+                <span className="text-base font-extrabold text-foreground sm:text-lg">
+                  {comp.label}
+                </span>
                 {comp.myComp && (
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary text-white">BUỒNG CỦA BẠN</span>
+                  <span className="rounded-full bg-primary px-2.5 py-0.5 text-[10px] font-bold text-primary-foreground">
+                    BUỒNG CỦA BẠN
+                  </span>
                 )}
               </div>
-              <p className="text-[11px] text-muted-foreground mt-0.5">{comp.subtitle}</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {comp.subtitle}
+              </p>
             </div>
             <div className="text-right">
-              <span className="text-xs font-bold text-foreground">{comp.occupancy} Giường</span>
+              <span className="text-xs font-bold text-foreground sm:text-sm">
+                {comp.occupancy} Giường
+              </span>
             </div>
           </div>
 
           {/* Beds grid */}
-          <div className="grid grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-3 gap-4">
             {comp.beds.map((bed) => {
               const isMine = bed.status === "mine"
               const isAvail = bed.status === "available"
               return (
                 <div
                   key={bed.g}
-                  className={`rounded-xl p-3 text-center border transition-all ${
+                  className={`rounded-2xl border p-4 text-center transition-all duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] ${
                     isMine
-                      ? "bg-primary text-white border-primary shadow-md"
+                      ? "border-primary bg-primary text-primary-foreground shadow-md"
                       : isAvail
-                      ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-700"
-                      : "bg-white dark:bg-[#161e23] border-border"
+                        ? "border-primary/40 bg-primary/10 text-foreground"
+                        : "border-border bg-card"
                   }`}
                 >
-                  <div className={`text-[10px] font-bold mb-1.5 ${
-                    isMine ? "text-white/80" : "text-muted-foreground"
-                  }`}>
+                  <div
+                    className={`mb-2 text-xs font-bold ${
+                      isMine
+                        ? "text-primary-foreground/90"
+                        : "text-muted-foreground"
+                    }`}
+                  >
                     G0{bed.g} · {bed.tier}
                   </div>
                   {isAvail ? (
                     <>
-                      <BedDouble className="h-5 w-5 mx-auto text-emerald-500 mb-0.5" />
-                      <div className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">TRỐNG</div>
+                      <BedDouble className="mx-auto mb-1 h-5 w-5 text-primary" />
+                      <div className="text-[10px] font-extrabold text-primary">
+                        TRỐNG
+                      </div>
                     </>
                   ) : (
                     <>
-                      <div className={`text-xs font-bold truncate ${
-                        isMine ? "text-white" : "text-foreground"
-                      }`}>
+                      <div
+                        className={`truncate text-xs font-bold sm:text-sm ${
+                          isMine ? "text-primary-foreground" : "text-foreground"
+                        }`}
+                      >
                         {bed.name}
                       </div>
-                      <div className={`text-[10px] mt-0.5 ${
-                        isMine ? "text-white/70" : "text-muted-foreground"
-                      }`}>
+                      <div
+                        className={`mt-1 text-[10px] font-medium ${
+                          isMine
+                            ? "text-primary-foreground/80"
+                            : "text-muted-foreground"
+                        }`}
+                      >
                         {isMine ? "Tầng dưới" : "Đã ở"}
                       </div>
                     </>
@@ -185,33 +227,33 @@ const CompartmentSlide: React.FC = () => {
         </div>
 
         {/* Dot indicators */}
-        <div className="flex items-center justify-center gap-2 mt-4">
+        <div className="mt-4 flex items-center justify-center gap-2">
           {COMPARTMENTS.map((_, i) => (
             <button
               key={i}
               onClick={() => setCurrent(i)}
-              className={`transition-all rounded-full ${
+              className={`rounded-full transition-all duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] ${
                 i === current
-                  ? "w-6 h-2 bg-primary"
-                  : "w-2 h-2 bg-border hover:bg-muted-foreground"
+                  ? "h-2 w-6 bg-primary"
+                  : "h-2 w-2 bg-border hover:bg-muted-foreground"
               }`}
             />
           ))}
         </div>
 
         {/* Compartment label row */}
-        <div className="flex justify-center gap-1.5 mt-3">
+        <div className="mt-4 flex justify-center gap-2">
           {COMPARTMENTS.map((c, i) => (
             <button
               key={i}
               onClick={() => setCurrent(i)}
-              className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all ${
+              className={`ui-btn-interactive cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold ${
                 i === current
-                  ? "bg-primary text-white"
-                  : "bg-[#eff6ff] dark:bg-[#1c262c] text-muted-foreground hover:text-foreground"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:text-foreground"
               }`}
             >
-              {c.id}
+              <span>{c.id}</span>
             </button>
           ))}
         </div>
@@ -236,7 +278,8 @@ export const MyRoomPage: React.FC = () => {
       phone: "0912 345 678",
       dutyDay: "Thứ Hai & Thứ Năm",
       isMe: true,
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
+      avatar:
+        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
     },
     {
       name: "Trần Công Tiến",
@@ -246,7 +289,8 @@ export const MyRoomPage: React.FC = () => {
       phone: "0934 112 233",
       dutyDay: "Thứ Ba & Thứ Sáu",
       isMe: false,
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
+      avatar:
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
     },
     {
       name: "Văn Thái Trung",
@@ -256,7 +300,8 @@ export const MyRoomPage: React.FC = () => {
       phone: "0977 445 566",
       dutyDay: "Thứ Tư & Thứ Bảy",
       isMe: false,
-      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
+      avatar:
+        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
     },
     {
       name: "Đinh Thanh Trung",
@@ -266,181 +311,207 @@ export const MyRoomPage: React.FC = () => {
       phone: "0988 990 011",
       dutyDay: "Chủ Nhật (Tổng vệ sinh)",
       isMe: false,
-      avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=200&q=80",
+      avatar:
+        "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=200&q=80",
     },
   ]
 
   return (
-    <div className="max-w-[1440px] mx-auto space-y-6 pb-12">
+    <div className="mx-auto max-w-[1440px] space-y-8 pb-16">
       {/* 01. TOP UNIT SUMMARY & OPERATIONAL ACTION BAR */}
-      <div className="bg-white dark:bg-[#161e23] border border-border rounded-xl p-6 shadow-xs flex flex-col xl:flex-row xl:items-center justify-between gap-6">
-        <div className="flex items-start gap-4">
-          <div className="w-16 h-16 rounded-xl bg-primary text-white flex items-center justify-center shrink-0 shadow-xs">
-            <DoorClosed className="h-8 w-8" />
-          </div>
-          <div className="space-y-1.5">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-black text-primary dark:text-[#cee6ef] tracking-tight">
-                Phòng A205
-              </h1>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground px-2 py-0.5 rounded bg-[#eff6ff] dark:bg-[#1c262c]">
-                Khu A · Tầng 2
-              </span>
+      <ScrollReveal className={showActionsDropdown ? "relative z-30" : "relative z-10"}>
+        <div
+          className={`ui-card-interactive relative flex flex-col justify-between gap-6 rounded-2xl border border-border bg-card p-6 shadow-xs sm:p-8 xl:flex-row xl:items-center ${
+            showActionsDropdown ? "z-30" : "z-10"
+          }`}
+        >
+          <div className="flex items-start gap-4">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-secondary text-secondary-foreground shadow-xs">
+              <DoorClosed className="h-8 w-8" />
             </div>
-            <p className="text-xs text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1">
-              <span className="font-semibold text-foreground">Buồng B (Balcony Wing)</span>
-              <span>•</span>
-              <span className="font-semibold text-primary dark:text-[#cee6ef]">Giường G03 (Tầng dưới)</span>
-              <span>•</span>
-              <span>Học kỳ 1 Năm học 2026–2027 (Hết hạn: 15/01/2027)</span>
-            </p>
+            <div className="space-y-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
+                  Phòng A205
+                </h1>
+                <span className="rounded-lg bg-secondary/10 px-2.5 py-1 text-xs font-bold tracking-wider text-secondary uppercase">
+                  Khu A · Tầng 2
+                </span>
+              </div>
+              <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground sm:text-sm">
+                <span className="font-bold text-foreground">
+                  Buồng B (Balcony Wing)
+                </span>
+                <span>•</span>
+                <span className="font-bold text-primary">
+                  Giường G03 (Tầng dưới)
+                </span>
+                <span>•</span>
+                <span>Học kỳ 1 Năm học 2026–2027 (Hết hạn: 15/01/2027)</span>
+              </p>
+            </div>
+          </div>
+
+          {/* Quick Action Dropdown Menu */}
+          <div className="relative z-30">
+            <Button
+              variant="secondary"
+              onClick={() => setShowActionsDropdown(!showActionsDropdown)}
+              className="gap-2 font-bold"
+            >
+              <span>Thao tác & Tiện ích phòng</span>
+              <ChevronDown
+                className={`h-4 w-4 transition-transform duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                  showActionsDropdown ? "rotate-180" : ""
+                }`}
+              />
+            </Button>
+
+            {showActionsDropdown && (
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setShowActionsDropdown(false)}
+                />
+                <div className="absolute right-0 z-50 mt-2 w-60 rounded-2xl border border-border bg-card p-2 shadow-2xl">
+                  <button
+                    onClick={() => {
+                      setShowActionsDropdown(false)
+                      setShowContractModal(true)
+                    }}
+                    className="flex w-full items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold text-foreground transition-colors duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-muted"
+                  >
+                    <FileText className="h-4 w-4 shrink-0 text-primary" />
+                    <span>Hợp Đồng (PDF)</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setShowActionsDropdown(false)
+                      setShowRenewModal(true)
+                    }}
+                    className="flex w-full items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold text-foreground transition-colors duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-muted"
+                  >
+                    <CalendarCheck2 className="h-4 w-4 shrink-0 text-primary" />
+                    <span>Gia Hạn Hợp Đồng</span>
+                  </button>
+
+                  <Link
+                    to="/billing"
+                    onClick={() => setShowActionsDropdown(false)}
+                    className="flex w-full items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold text-foreground transition-colors duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-muted"
+                  >
+                    <Receipt className="h-4 w-4 shrink-0 text-secondary" />
+                    <span>Hóa Đơn Điện Nước</span>
+                  </Link>
+
+                  <Link
+                    to="/maintenance"
+                    onClick={() => setShowActionsDropdown(false)}
+                    className="flex w-full items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold text-foreground transition-colors duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-muted"
+                  >
+                    <Wrench className="h-4 w-4 shrink-0 text-primary" />
+                    <span>Báo Hỏng / Sửa Chữa</span>
+                  </Link>
+
+                  <div className="my-2 border-t border-border" />
+
+                  <button
+                    onClick={() => {
+                      setShowActionsDropdown(false)
+                      setShowCheckoutModal(true)
+                    }}
+                    className="flex w-full items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold text-destructive transition-colors duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-destructive/10"
+                  >
+                    <LogOut className="h-4 w-4 shrink-0" />
+                    <span>Yêu Cầu Trả Phòng</span>
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
-
-        {/* Quick Action Dropdown Menu */}
-        <div className="relative">
-          <Button
-            variant="outline"
-            onClick={() => setShowActionsDropdown(!showActionsDropdown)}
-            className="text-xs h-9 gap-2 font-semibold bg-[#eff6ff] dark:bg-[#1c262c] text-primary dark:text-[#cee6ef] border-border hover:bg-primary/10 transition-colors"
-          >
-            <span>Thao tác & Tiện ích phòng</span>
-            <ChevronDown
-              className={`h-3.5 w-3.5 transition-transform duration-200 ${
-                showActionsDropdown ? "rotate-180" : ""
-              }`}
-            />
-          </Button>
-
-          {showActionsDropdown && (
-            <>
-              <div
-                className="fixed inset-0 z-40"
-                onClick={() => setShowActionsDropdown(false)}
-              />
-              <div className="absolute right-0 z-50 mt-2 w-56 rounded-xl border border-border bg-white p-1.5 shadow-xl dark:bg-[#1c262c]">
-                <button
-                  onClick={() => {
-                    setShowActionsDropdown(false)
-                    setShowContractModal(true)
-                  }}
-                  className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs text-foreground transition-colors hover:bg-slate-100 dark:hover:bg-[#283740]"
-                >
-                  <FileText className="h-4 w-4 text-primary shrink-0" />
-                  <span>Hợp Đồng (PDF)</span>
-                </button>
-
-                <button
-                  onClick={() => {
-                    setShowActionsDropdown(false)
-                    setShowRenewModal(true)
-                  }}
-                  className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs text-foreground transition-colors hover:bg-slate-100 dark:hover:bg-[#283740]"
-                >
-                  <CalendarCheck2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                  <span>Gia Hạn Hợp Đồng</span>
-                </button>
-
-                <Link
-                  to="/billing"
-                  onClick={() => setShowActionsDropdown(false)}
-                  className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs text-foreground transition-colors hover:bg-slate-100 dark:hover:bg-[#283740]"
-                >
-                  <Receipt className="h-4 w-4 text-primary shrink-0" />
-                  <span>Hóa Đơn Điện Nước</span>
-                </Link>
-
-                <Link
-                  to="/maintenance"
-                  onClick={() => setShowActionsDropdown(false)}
-                  className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs text-foreground transition-colors hover:bg-slate-100 dark:hover:bg-[#283740]"
-                >
-                  <Wrench className="h-4 w-4 text-emerald-600 shrink-0" />
-                  <span>Báo Hỏng / Sửa Chữa</span>
-                </Link>
-
-                <div className="my-1 border-t border-border" />
-
-                <button
-                  onClick={() => {
-                    setShowActionsDropdown(false)
-                    setShowCheckoutModal(true)
-                  }}
-                  className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs text-blue-600 dark:text-blue-400 transition-colors hover:bg-blue-50 dark:hover:bg-blue-950/30"
-                >
-                  <LogOut className="h-4 w-4 shrink-0" />
-                  <span>Yêu Cầu Trả Phòng</span>
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
+      </ScrollReveal>
 
       {/* 02. ARCHITECTURAL BLUEPRINT — SLIDE CAROUSEL VISUALIZER */}
-      <CompartmentSlide />
+      <ScrollReveal delay={0.05} className="relative z-0">
+        <CompartmentSlide />
+      </ScrollReveal>
 
       {/* 03. ROOMMATES ROSTER */}
-      <div className="bg-white dark:bg-[#161e23] border border-border rounded-xl p-6 shadow-xs space-y-5">
-        <div className="flex items-center justify-between pb-3 border-b border-border">
-          <div className="flex items-center gap-2.5">
-            <span className="p-2 rounded-xl bg-primary/10 text-primary">
-              <Users className="h-5 w-5" />
+      <ScrollReveal className="relative z-0">
+        <div className="ui-card-interactive space-y-6 rounded-2xl border border-border bg-card p-6 shadow-xs sm:p-8">
+          <div className="flex items-center justify-between border-b border-border pb-4">
+            <div className="flex items-center gap-4">
+              <span className="rounded-xl bg-secondary/10 p-2.5 text-secondary">
+                <Users className="h-5 w-5" />
+              </span>
+              <div>
+                <h3 className="text-lg font-bold text-foreground sm:text-xl">
+                  Danh Sách Bạn Cùng Buồng B
+                </h3>
+              </div>
+            </div>
+            <span className="text-xs font-bold text-muted-foreground sm:text-sm">
+              4 Thành Viên
             </span>
-            <div>
-              <h3 className="font-bold text-base text-foreground">
-                Danh Sách Bạn Cùng Buồng B
-              </h3>
-            </div>
           </div>
-          <span className="text-xs font-semibold text-muted-foreground">4 Thành Viên</span>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {roommates.map((rm, idx) => (
-            <div
-              key={idx}
-              className={`p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 transition-all ${
-                rm.isMe
-                  ? "bg-primary/5 border-primary/40 ring-1 ring-primary/20 shadow-xs"
-                  : "bg-[#eff6ff] dark:bg-[#1c262c] border-border hover:border-primary/30"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <img
-                  src={rm.avatar}
-                  alt={rm.name}
-                  className="w-11 h-11 rounded-full object-cover border border-border shrink-0"
-                />
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-xs text-foreground">{rm.name}</span>
-                    {rm.isMe && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary text-white font-semibold">
-                        Bạn
-                      </span>
-                    )}
+          <StaggerContainer
+            staggerDelay={0.1}
+            className="grid grid-cols-1 gap-6 md:grid-cols-2"
+          >
+            {roommates.map((rm, idx) => (
+              <StaggerItem key={idx}>
+                <div
+                  className={`ui-card-interactive flex h-full flex-col justify-between gap-4 rounded-2xl border p-6 sm:flex-row sm:items-center ${
+                    rm.isMe
+                      ? "border-primary/40 bg-primary/5 ring-1 ring-primary/20"
+                      : "border-border bg-muted/40"
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
+                    <img
+                      src={rm.avatar}
+                      alt={rm.name}
+                      className="h-12 w-12 shrink-0 rounded-full border border-border object-cover"
+                    />
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold text-foreground">
+                          {rm.name}
+                        </span>
+                        {rm.isMe && (
+                          <span className="rounded-md bg-primary px-2 py-0.5 text-[10px] font-bold text-primary-foreground">
+                            Bạn
+                          </span>
+                        )}
+                      </div>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        MSSV: <strong className="font-mono">{rm.mssv}</strong> •
+                        Giường:{" "}
+                        <strong className="text-primary">{rm.bed}</strong>
+                      </p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">
+                        {rm.major}
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">
-                    MSSV: <strong className="font-mono">{rm.mssv}</strong> • Giường:{" "}
-                    <strong className="text-primary dark:text-[#cee6ef]">{rm.bed}</strong>
-                  </p>
-                  <p className="text-[10px] text-muted-foreground">{rm.major}</p>
-                </div>
-              </div>
 
-              <div className="flex sm:flex-col items-start sm:items-end justify-between border-t sm:border-t-0 pt-2 sm:pt-0 border-border text-xs shrink-0">
-                <span className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/40 px-2 py-0.5 rounded whitespace-nowrap shrink-0">
-                  Trực nhật: {rm.dutyDay}
-                </span>
-                <span className="text-[11px] font-mono text-muted-foreground mt-1 whitespace-nowrap">
-                  {rm.phone}
-                </span>
-              </div>
-            </div>
-          ))}
+                  <div className="flex shrink-0 items-start justify-between border-t border-border pt-3 text-xs sm:flex-col sm:items-end sm:border-t-0 sm:pt-0">
+                    <span className="shrink-0 rounded-lg bg-primary/10 px-2.5 py-1 text-xs font-bold whitespace-nowrap text-primary">
+                      Trực nhật: {rm.dutyDay}
+                    </span>
+                    <span className="mt-1.5 font-mono text-xs whitespace-nowrap text-muted-foreground">
+                      {rm.phone}
+                    </span>
+                  </div>
+                </div>
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
         </div>
-      </div>
+      </ScrollReveal>
 
       {/* VIEW CONTRACT MODAL */}
       {user && (
@@ -462,45 +533,53 @@ export const MyRoomPage: React.FC = () => {
 
       {/* CHECKOUT MODAL */}
       {showCheckoutModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto animate-in fade-in">
-          <div className="bg-white dark:bg-[#161e23] border border-border w-full max-w-md rounded-2xl shadow-xl p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <h3 className="font-bold text-sm text-foreground">
+        <div className="fixed inset-0 z-[100] flex animate-in items-center justify-center overflow-y-auto bg-black/60 p-4 backdrop-blur-xs fade-in">
+          <div className="w-full max-w-md space-y-6 rounded-2xl border border-border bg-card p-6 shadow-xl">
+            <div className="flex items-center justify-between border-b border-border pb-4">
+              <h3 className="text-base font-bold text-foreground">
                 Quy Trình Trả Phòng & Bàn Giao Thiết Bị
               </h3>
               <button
                 onClick={() => setShowCheckoutModal(false)}
-                className="text-muted-foreground hover:text-foreground text-sm"
+                className="text-sm text-muted-foreground hover:text-foreground"
               >
                 ✕
               </button>
             </div>
 
-            <div className="space-y-3 text-xs">
-              <p className="text-muted-foreground leading-relaxed">
+            <div className="space-y-4 text-xs sm:text-sm">
+              <p className="leading-relaxed text-muted-foreground">
                 Khi sinh viên gửi yêu cầu trả phòng:
               </p>
-              <ul className="list-disc pl-4 space-y-1 text-muted-foreground text-[11px]">
-                <li>Cán bộ KTX sẽ kiểm tra hiện trạng thiết bị và chỉ số công tơ cuối cùng.</li>
-                <li>Ký túc xá không thu tiền đặt cọc. Thủ tục trả phòng hoàn tất ngay sau khi bạn bàn giao chìa khóa và buồng phòng nguyên trạng cho BQL KTX.</li>
+              <ul className="list-disc space-y-2 pl-4 text-xs text-muted-foreground">
+                <li>
+                  Cán bộ KTX sẽ kiểm tra hiện trạng thiết bị và chỉ số công tơ
+                  cuối cùng.
+                </li>
+                <li>
+                  Ký túc xá không thu tiền đặt cọc. Thủ tục trả phòng hoàn tất
+                  ngay sau khi bạn bàn giao chìa khóa và buồng phòng nguyên
+                  trạng cho BQL KTX.
+                </li>
               </ul>
 
-              <div className="flex gap-2 pt-2">
+              <div className="flex gap-4 pt-2">
                 <Button
                   variant="outline"
                   onClick={() => setShowCheckoutModal(false)}
                   className="flex-1 text-xs"
                 >
-                  Hủy
+                  <span>Hủy</span>
                 </Button>
                 <Button
+                  variant="default"
                   onClick={() => {
                     alert("Yêu cầu trả phòng đã được gửi tới Ban Quản lý KTX!")
                     setShowCheckoutModal(false)
                   }}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold"
+                  className="flex-1 text-xs font-bold"
                 >
-                  Gửi Yêu Cầu Trả Phòng
+                  <span>Gửi Yêu Cầu Trả Phòng</span>
                 </Button>
               </div>
             </div>

@@ -12,7 +12,20 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
 import { Card } from "@/components/ui/card"
-import { Wrench, Plus, Search, Info, CheckCircle2, X } from "lucide-react"
+import {
+  ScrollReveal,
+  StaggerContainer,
+  StaggerItem,
+} from "@/components/ui/scroll-reveal"
+import {
+  Wrench,
+  Plus,
+  Search,
+  Info,
+  CheckCircle2,
+  X,
+  ArrowRight,
+} from "lucide-react"
 
 // Decomposed components
 import { MaintenanceTicketCard } from "./components/MaintenanceTicketCard"
@@ -59,8 +72,12 @@ export const MaintenancePage: React.FC = () => {
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false)
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false)
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
-  const [deleteConfirmTicketId, setDeleteConfirmTicketId] = useState<string | null>(null)
-  const [activeTicket, setActiveTicket] = useState<MaintenanceTicket | null>(null)
+  const [deleteConfirmTicketId, setDeleteConfirmTicketId] = useState<
+    string | null
+  >(null)
+  const [activeTicket, setActiveTicket] = useState<MaintenanceTicket | null>(
+    null
+  )
 
   // Toast feedback
   const [toastMessage, setToastMessage] = useState<string | null>(null)
@@ -164,7 +181,6 @@ export const MaintenancePage: React.FC = () => {
     showToast(`Đã phân công ${data.techName} xử lý phiếu ${activeTicket.id}!`)
   }
 
-  
   const handleTechAccept = (ticket: MaintenanceTicket) => {
     const now = new Date()
     const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(
@@ -190,7 +206,9 @@ export const MaintenancePage: React.FC = () => {
       return t
     })
     setTickets(updatedTickets)
-    showToast(`⚔️ Đã tiếp nhận nhiệm vụ ${ticket.id}! Đang di chuyển tới Phòng ${ticket.room}.`)
+    showToast(
+      `⚔️ Đã tiếp nhận nhiệm vụ ${ticket.id}! Đang di chuyển tới Phòng ${ticket.room}.`
+    )
   }
 
   const handleCompleteSubmit = (data: {
@@ -222,7 +240,9 @@ export const MaintenancePage: React.FC = () => {
               technicianNotes: data.notes,
               materials: data.materials,
               totalMaterialCost: totalCost,
-              completionImages: data.completionImage ? [data.completionImage] : [],
+              completionImages: data.completionImage
+                ? [data.completionImage]
+                : [],
             },
           }
         }
@@ -269,39 +289,42 @@ export const MaintenancePage: React.FC = () => {
       ticket.room.toLowerCase().includes(searchQuery.toLowerCase()) ||
       ticket.studentName.toLowerCase().includes(searchQuery.toLowerCase())
 
-    const matchesStatus = filterStatus === "ALL" || ticket.status === filterStatus
-    const matchesUrgency = filterUrgency === "ALL" || ticket.urgency === filterUrgency
+    const matchesStatus =
+      filterStatus === "ALL" || ticket.status === filterStatus
+    const matchesUrgency =
+      filterUrgency === "ALL" || ticket.urgency === filterUrgency
     const matchesScope = filterScope === "ALL" || ticket.scope === filterScope
 
     return matchesSearch && matchesStatus && matchesUrgency && matchesScope
   })
 
-
-    // Giao diện riêng cho Kỹ thuật viên Tòa A: Bounty Hunter Quest Board
+  // Giao diện riêng cho Kỹ thuật viên Tòa A: Bounty Hunter Quest Board
   if (user?.role === "technician") {
     return (
-      <div className="space-y-6">
+      <div className="space-y-8 pb-16">
         {toastMessage && (
-          <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 rounded-xl bg-foreground text-background px-4 py-3 text-sm font-medium shadow-xl border border-border animate-in fade-in slide-in-from-bottom-5">
-            <CheckCircle2 className="h-5 w-5 text-primary shrink-0" />
+          <div className="fixed right-6 bottom-6 z-50 flex animate-in items-center gap-3 rounded-2xl border border-border bg-secondary px-4 py-3 text-sm font-semibold text-secondary-foreground shadow-xl slide-in-from-bottom-5 fade-in">
+            <CheckCircle2 className="h-5 w-5 shrink-0 text-white" />
             <span>{toastMessage}</span>
           </div>
         )}
 
-        <TechnicianBountyBoard
-          tickets={tickets}
-          technicianName={user?.fullName || "Đỗ Mạnh Hùng"}
-          building="Tòa A"
-          onAccept={handleTechAccept}
-          onComplete={(t) => {
-            setActiveTicket(t)
-            setIsCompleteModalOpen(true)
-          }}
-          onView={(t) => {
-            setActiveTicket(t)
-            setIsViewModalOpen(true)
-          }}
-        />
+        <ScrollReveal>
+          <TechnicianBountyBoard
+            tickets={tickets}
+            technicianName={user?.fullName || "Đỗ Mạnh Hùng"}
+            building="Tòa A"
+            onAccept={handleTechAccept}
+            onComplete={(t) => {
+              setActiveTicket(t)
+              setIsCompleteModalOpen(true)
+            }}
+            onView={(t) => {
+              setActiveTicket(t)
+              setIsViewModalOpen(true)
+            }}
+          />
+        </ScrollReveal>
 
         <CompleteTicketModal
           isOpen={isCompleteModalOpen}
@@ -326,180 +349,187 @@ export const MaintenancePage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 pb-16">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 rounded-xl bg-foreground text-background px-4 py-3 text-sm font-medium shadow-xl border border-border animate-in fade-in slide-in-from-bottom-5">
-          <CheckCircle2 className="h-5 w-5 text-primary shrink-0" />
+        <div className="fixed right-6 bottom-6 z-50 flex animate-in items-center gap-3 rounded-2xl border border-border bg-secondary px-4 py-3 text-sm font-semibold text-secondary-foreground shadow-xl slide-in-from-bottom-5 fade-in">
+          <CheckCircle2 className="h-5 w-5 shrink-0 text-white" />
           <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Header & Quick Action */}
-      <Card className="p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2.5">
-              <div className="h-9 w-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
-                <Wrench className="h-5 w-5" />
+      {/* Header & Quick Action (8pt Grid: p-6 sm:p-8) */}
+      <ScrollReveal>
+        <Card className="p-6 sm:p-8">
+          <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-secondary/20 bg-secondary/10 text-secondary">
+                <Wrench className="h-6 w-6" />
               </div>
-              <div className="flex flex-col">
-                <h1 className="text-xl sm:text-2xl font-bold text-foreground">
+              <div className="space-y-1">
+                <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
                   {user?.role === "manager" || user?.role === "admin"
-                    ? "Điều phối Báo hỏng & Bảo trì Tòa A"
-                    : "Báo hỏng & Yêu cầu sửa chữa thiết bị"}
+                    ? "Điều Phối Báo Hỏng & Bảo Trì Tòa A"
+                    : "Báo Hỏng & Yêu Cầu Sửa Chữa Thiết Bị"}
                 </h1>
-                <span className="text-xs text-muted-foreground mt-0.5">
+                <p className="text-sm leading-relaxed font-normal text-muted-foreground sm:text-base">
                   {user?.role === "manager" || user?.role === "admin"
                     ? "Theo dõi tiến độ, phân công kỹ thuật viên Tòa A xử lý sự cố cơ sở vật chất"
                     : "Gửi yêu cầu sửa chữa thiết bị buồng & theo dõi tiến độ nghiệm thu"}
-                </span>
+                </p>
               </div>
+            </div>
+
+            {user?.role === "student" && (
+              <Button
+                onClick={() => setIsCreateModalOpen(true)}
+                size="lg"
+                className="shrink-0 gap-2 font-bold shadow-xs"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Tạo phiếu báo hỏng mới</span>
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+        </Card>
+      </ScrollReveal>
+
+      {/* Filters & Search Control Bar */}
+      <ScrollReveal delay={0.05}>
+        <Card className="space-y-4 p-6">
+          <div className="flex flex-col items-stretch justify-between gap-4 md:flex-row md:items-center">
+            {/* Search Bar */}
+            <div className="relative flex-1">
+              <Input
+                icon={<Search className="h-4 w-4" />}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Tìm theo mã phiếu, phòng, tên sinh viên hoặc sự cố..."
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute top-1/2 right-4 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+
+            {/* Quick Urgency & Scope Selects */}
+            <div className="flex items-center gap-4">
+              <Select
+                value={filterUrgency}
+                onChange={(e) => setFilterUrgency(e.target.value)}
+                className="w-44"
+              >
+                <option value="ALL">Mức độ: Tất cả</option>
+                <option value="NORMAL">Bình thường</option>
+                <option value="EMERGENCY">Khẩn cấp</option>
+              </Select>
+
+              <Select
+                value={filterScope}
+                onChange={(e) => setFilterScope(e.target.value)}
+                className="w-44"
+              >
+                <option value="ALL">Phạm vi: Tất cả</option>
+                <option value="ROOM_SHARED">Phòng chung</option>
+                <option value="COMPARTMENT_PRIVATE">Buồng cá nhân</option>
+              </Select>
             </div>
           </div>
 
-          {user?.role === "student" && (
-            <Button
-              onClick={() => setIsCreateModalOpen(true)}
-              size="lg"
-              className="gap-2 font-bold shadow-xs shrink-0"
-            >
-              <Plus className="h-4 w-4" />
-              <span>Tạo phiếu báo hỏng mới</span>
-            </Button>
-          )}
-        </div>
-      </Card>
-
-
-
-      {/* Filters & Search Control Bar */}
-      <Card className="p-4 space-y-3">
-        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-          {/* Search Bar */}
-          <div className="relative flex-1">
-            <Input
-              icon={<Search className="h-4 w-4" />}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Tìm theo mã phiếu, phòng, tên sinh viên hoặc sự cố..."
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
+          {/* Status Filter Tabs */}
+          <div className="flex items-center gap-2 overflow-x-auto border-t border-border pt-4">
+            {[
+              { id: "ALL", label: "Tất cả phiếu" },
+              { id: "PENDING", label: "Chờ tiếp nhận" },
+              { id: "IN_PROGRESS", label: "Đang sửa chữa" },
+              { id: "RESOLVED", label: "Chờ nghiệm thu" },
+              { id: "CLOSED", label: "Đã hoàn thành" },
+            ].map((tab) => {
+              const isActive = filterStatus === tab.id
+              return (
+                <Button
+                  key={tab.id}
+                  variant={isActive ? "secondary" : "ghost"}
+                  size="sm"
+                  onClick={() => setFilterStatus(tab.id)}
+                  className="font-semibold whitespace-nowrap"
+                >
+                  <span>{tab.label}</span>
+                </Button>
+              )
+            })}
           </div>
-
-          {/* Quick Urgency & Scope Selects */}
-          <div className="flex items-center gap-2">
-            <Select
-              value={filterUrgency}
-              onChange={(e) => setFilterUrgency(e.target.value)}
-              className="w-44"
-            >
-              <option value="ALL">Mức độ: Tất cả</option>
-              <option value="NORMAL">Bình thường</option>
-              <option value="EMERGENCY">Khẩn cấp</option>
-            </Select>
-
-            <Select
-              value={filterScope}
-              onChange={(e) => setFilterScope(e.target.value)}
-              className="w-44"
-            >
-              <option value="ALL">Phạm vi: Tất cả</option>
-              <option value="ROOM_SHARED">Phòng chung</option>
-              <option value="COMPARTMENT_PRIVATE">Buồng cá nhân</option>
-            </Select>
-          </div>
-        </div>
-
-        {/* Status Filter Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pt-1 border-t border-border">
-          {[
-            { id: "ALL", label: "Tất cả phiếu" },
-            { id: "PENDING", label: "Chờ tiếp nhận" },
-            { id: "IN_PROGRESS", label: "Đang sửa chữa" },
-            { id: "RESOLVED", label: "Chờ nghiệm thu" },
-            { id: "CLOSED", label: "Đã hoàn thành" },
-          ].map((tab) => {
-            const isActive = filterStatus === tab.id
-            return (
-              <Button
-                key={tab.id}
-                variant={isActive ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setFilterStatus(tab.id)}
-                className="whitespace-nowrap font-semibold"
-              >
-                {tab.label}
-              </Button>
-            )
-          })}
-        </div>
-      </Card>
-
-      {/* Tickets List View */}
-      {filteredTickets.length === 0 ? (
-        <Card className="p-12 text-center">
-          <div className="h-12 w-12 rounded-full bg-muted text-muted-foreground mx-auto flex items-center justify-center mb-3">
-            <Info className="h-6 w-6" />
-          </div>
-          <h3 className="font-bold text-foreground text-base">Không tìm thấy phiếu yêu cầu nào</h3>
-          <p className="text-sm text-muted-foreground mt-1">
-            Hãy thử tìm kiếm với từ khóa khác hoặc điều chỉnh bộ lọc trạng thái.
-          </p>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              setSearchQuery("")
-              setFilterStatus("ALL")
-              setFilterUrgency("ALL")
-              setFilterScope("ALL")
-            }}
-            className="mt-4"
-          >
-            Đặt lại bộ lọc
-          </Button>
         </Card>
+      </ScrollReveal>
+
+      {/* Tickets List View (Staggered 100ms) */}
+      {filteredTickets.length === 0 ? (
+        <ScrollReveal>
+          <Card className="p-12 text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
+              <Info className="h-6 w-6" />
+            </div>
+            <h3 className="text-lg font-bold text-foreground">
+              Không tìm thấy phiếu yêu cầu nào
+            </h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Hãy thử tìm kiếm với từ khóa khác hoặc điều chỉnh bộ lọc trạng
+              thái.
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setSearchQuery("")
+                setFilterStatus("ALL")
+                setFilterUrgency("ALL")
+                setFilterScope("ALL")
+              }}
+              className="mt-6"
+            >
+              <span>Đặt lại bộ lọc</span>
+            </Button>
+          </Card>
+        </ScrollReveal>
       ) : (
-        <div className="flex flex-col gap-3.5">
+        <StaggerContainer staggerDelay={0.1} className="flex flex-col gap-4">
           {filteredTickets.map((ticket) => (
-            <MaintenanceTicketCard
-              key={ticket.id}
-              ticket={ticket}
-              currentUser={user}
-              isManagerOrAdmin={isManagerOrAdmin}
-              isTechnician={isTechnician}
-              onView={(t) => {
-                setActiveTicket(t)
-                setIsViewModalOpen(true)
-              }}
-              onEdit={(t) => {
-                setActiveTicket(t)
-                setIsEditModalOpen(true)
-              }}
-              onDelete={(id) => setDeleteConfirmTicketId(id)}
-              onAssign={(t) => {
-                setActiveTicket(t)
-                setIsAssignModalOpen(true)
-              }}
-              onComplete={(t) => {
-                setActiveTicket(t)
-                setIsCompleteModalOpen(true)
-              }}
-              onReview={(t) => {
-                setActiveTicket(t)
-                setIsReviewModalOpen(true)
-              }}
-            />
+            <StaggerItem key={ticket.id}>
+              <MaintenanceTicketCard
+                ticket={ticket}
+                currentUser={user}
+                isManagerOrAdmin={isManagerOrAdmin}
+                isTechnician={isTechnician}
+                onView={(t) => {
+                  setActiveTicket(t)
+                  setIsViewModalOpen(true)
+                }}
+                onEdit={(t) => {
+                  setActiveTicket(t)
+                  setIsEditModalOpen(true)
+                }}
+                onDelete={(id) => setDeleteConfirmTicketId(id)}
+                onAssign={(t) => {
+                  setActiveTicket(t)
+                  setIsAssignModalOpen(true)
+                }}
+                onComplete={(t) => {
+                  setActiveTicket(t)
+                  setIsCompleteModalOpen(true)
+                }}
+                onReview={(t) => {
+                  setActiveTicket(t)
+                  setIsReviewModalOpen(true)
+                }}
+              />
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       )}
 
       {/* Modals */}

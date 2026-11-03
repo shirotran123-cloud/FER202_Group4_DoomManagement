@@ -1,0 +1,2023 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Báo Cáo Thuyết Trình Đồ Án FER202 - Domanage (Group 4)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #F97316;
+      --primary-light: #FFEDD5;
+      --primary-dark: #C2410C;
+      --secondary: #2563EB;
+      --secondary-light: #DBEAFE;
+      --dark-bg: #0F172A;
+      --card-bg: #1E293B;
+      --card-border: #334155;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --accent-green: #10B981;
+      --accent-red: #EF4444;
+      --accent-amber: #F59E0B;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--dark-bg);
+      color: var(--text-main);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      user-select: none;
+    }
+
+    /* Top Progress Bar */
+    #progress-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.1);
+      z-index: 1000;
+    }
+
+    #progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), #EC4899, var(--secondary));
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Presentation Header */
+    header {
+      position: fixed;
+      top: 5px;
+      left: 0;
+      width: 100vw;
+      padding: 12px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      z-index: 900;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      background: linear-gradient(135deg, var(--primary), #EA580C);
+      color: white;
+      font-weight: 800;
+      font-size: 16px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.35);
+    }
+
+    .brand-text h1 {
+      font-size: 15px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .brand-text p {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .badge-role {
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(37, 99, 235, 0.2);
+      color: #93C5FD;
+      border: 1px solid rgba(37, 99, 235, 0.4);
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .btn-icon {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-icon:hover {
+      background: #334155;
+      border-color: #64748B;
+      transform: translateY(-1px);
+    }
+
+    /* Main Slides Viewport */
+    #deck-viewport {
+      position: absolute;
+      top: 60px;
+      bottom: 60px;
+      left: 0;
+      right: 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 40px;
+    }
+
+    .slide {
+      position: absolute;
+      width: 100%;
+      max-width: 1360px;
+      height: 100%;
+      max-height: 760px;
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 36px 48px;
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(0.96) translateX(40px);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1) translateX(0);
+      z-index: 10;
+    }
+
+    .slide.prev {
+      transform: scale(0.96) translateX(-40px);
+    }
+
+    /* Slide Header */
+    .slide-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 16px;
+    }
+
+    .slide-tag {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    .slide-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: -0.5px;
+    }
+
+    .slide-number {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: rgba(0, 0, 0, 0.3);
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* Content Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .card.highlight {
+      border-color: rgba(249, 115, 22, 0.5);
+      background: linear-gradient(180deg, rgba(249, 115, 22, 0.08) 0%, rgba(15, 23, 42, 0.7) 100%);
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #FFFFFF;
+    }
+
+    .card-body {
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: #CBD5E1;
+      flex: 1;
+    }
+
+    /* Screenshot showcase */
+    .screenshot-container {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+      background: #000;
+      cursor: zoom-in;
+      transition: transform 0.2s, box-shadow 0.2s;
+      height: 100%;
+      min-height: 380px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .screenshot-container:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 40px rgba(249, 115, 22, 0.25);
+      border-color: var(--primary);
+    }
+
+    .screenshot-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+      display: block;
+    }
+
+    .screenshot-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      color: #38BDF8;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Workflow steps */
+    .flow-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .flow-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 12px 16px;
+      border-radius: 10px;
+      transition: all 0.2s;
+    }
+
+    .flow-step:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(249, 115, 22, 0.4);
+    }
+
+    .step-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      font-weight: 800;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-content h4 {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #F1F5F9;
+      margin-bottom: 2px;
+    }
+
+    .step-content p {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Table styles */
+    .table-container {
+      overflow-x: auto;
+      max-height: 520px;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.5);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 12.5px;
+    }
+
+    th {
+      background: rgba(30, 41, 59, 0.9);
+      color: #F8FAFC;
+      font-weight: 700;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--card-border);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: #CBD5E1;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .badge-uc {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(249, 115, 22, 0.15);
+      color: #FB923C;
+      border: 1px solid rgba(249, 115, 22, 0.3);
+      display: inline-block;
+    }
+
+    .badge-core {
+      background: rgba(239, 68, 68, 0.2);
+      color: #FCA5A5;
+      border-color: rgba(239, 68, 68, 0.5);
+    }
+
+    /* Bottom Control Bar */
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100vw;
+      height: 55px;
+      padding: 0 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      z-index: 900;
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .footer-center {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-nav {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 8px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-nav:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+      transform: translateY(-1px);
+    }
+
+    .footer-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Modal Image Lightbox */
+    #image-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.92);
+      backdrop-filter: blur(10px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 40px;
+    }
+
+    #image-modal.active {
+      display: flex;
+    }
+
+    #image-modal img {
+      max-width: 92vw;
+      max-height: 82vh;
+      border-radius: 12px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      object-fit: contain;
+    }
+
+    #modal-caption {
+      margin-top: 16px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #E2E8F0;
+    }
+
+    .close-modal-btn {
+      position: absolute;
+      top: 24px;
+      right: 30px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* Code snippet styling */
+    pre {
+      background: #090D16;
+      border: 1px solid #1E293B;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #38BDF8;
+      overflow-x: auto;
+      margin-top: 8px;
+    }
+
+    /* Key indicator pills */
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+    .pill-green { background: rgba(16, 185, 129, 0.15); color: #34D399; }
+    .pill-orange { background: rgba(249, 115, 22, 0.15); color: #FB923C; }
+    .pill-blue { background: rgba(37, 99, 235, 0.15); color: #60A5FA; }
+    .pill-red { background: rgba(239, 68, 68, 0.15); color: #F87171; }
+
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Progress Bar -->
+  <div id="progress-container">
+    <div id="progress-bar"></div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-logo">DOMANAGE</div>
+      <div class="brand-text">
+        <h1>FER202 - DỰ ÁN HỆ THỐNG QUẢN LÝ KÝ TÚC XÁ (DMS)</h1>
+        <p>Báo Cáo Thuyết Trình Bảo Vệ Đồ Án • Nhóm FER202_Group4</p>
+      </div>
+    </div>
+    <div class="header-controls">
+      <span class="badge-role">React 19 • TypeScript • Tailwind v4</span>
+      <button class="btn-icon" onclick="toggleFullscreen()" title="Toàn màn hình">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+        Toàn màn hình
+      </button>
+      <button class="btn-icon" onclick="openJumpModal()" title="Danh sách Slide">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+        Mục lục
+      </button>
+    </div>
+  </header>
+
+  <!-- Viewport for Slides -->
+  <div id="deck-viewport">
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 1: COVER & TITLE -->
+    <!-- ============================================================== -->
+    <div class="slide active" data-title="Trang bìa & Giới thiệu">
+      <div class="slide-meta">
+        <div>
+          <div class="slide-tag">Đồ Án Môn Học FER202</div>
+          <div class="slide-title">DOMANAGE - HỆ THỐNG QUẢN LÝ KÝ TÚC XÁ TRỰC TUYẾN</div>
+        </div>
+        <div class="slide-number">01 / 18</div>
+      </div>
+      <div class="grid-2">
+        <div class="card highlight" style="justify-content: center;">
+          <div style="font-size: 13px; color: var(--primary); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">
+            TRƯỜNG ĐẠI HỌC FPT • KHOA CNTT
+          </div>
+          <h2 style="font-size: 28px; line-height: 1.25; margin-bottom: 16px; color: white;">
+            Nền Tảng Quản Lý Ký Túc Xá Toàn Diện Với Trải Nghiệm Người Dùng Đột Phá
+          </h2>
+          <p style="font-size: 14.5px; color: #CBD5E1; line-height: 1.6; margin-bottom: 24px;">
+            Giải quyết triệt để 3 bài toán nhức nhối trong vận hành KTX đại học: Đặt giường trực quan 1:4:6, Tự động xét duyệt hợp đồng trong 3 giây và Thuật toán chia tiền điện nước Total/N minh bạch kèm ảnh đối soát thực tế.
+          </p>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <span class="pill pill-orange">28 Use Cases Hoàn Chỉnh</span>
+            <span class="pill pill-green">90/90 Test Cases Passed</span>
+            <span class="pill pill-blue">3 Điểm Đột Phá Sáng Tạo</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            Nhóm Thực Hiện: FER202_Group4
+          </div>
+          <div class="card-body">
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(255,255,255,0.03); border-radius: 6px;">
+                <span><strong>1. Nguyễn Hoàng Vinh</strong> (SE170001)</span>
+                <span class="pill pill-blue">Team Lead & Auth</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(255,255,255,0.03); border-radius: 6px;">
+                <span><strong>2. Trần Công Tiến</strong> (SE170002)</span>
+                <span class="pill pill-orange">Frontend & 1:4:6 Map</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(255,255,255,0.03); border-radius: 6px;">
+                <span><strong>3. Trần Thanh Nguyên</strong> (SE170003)</span>
+                <span class="pill pill-green">Backend & Auto-Approval</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(255,255,255,0.03); border-radius: 6px;">
+                <span><strong>4. Vấn Thái Trung</strong> (SE170004)</span>
+                <span class="pill pill-orange">Utility & Split-Billing</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(255,255,255,0.03); border-radius: 6px;">
+                <span><strong>5. Đinh Thanh Trung</strong> (SE170005)</span>
+                <span class="pill pill-blue">Maintenance & Curfew</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(255,255,255,0.03); border-radius: 6px;">
+                <span><strong>6. Huỳnh Gia Kim</strong> (SE170006)</span>
+                <span class="pill pill-green">QA & Test Engineering</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 2: PROBLEM STATEMENT & GOALS -->
+    <!-- ============================================================== -->
+    <div class="slide" data-title="Bối cảnh & Mục tiêu dự án">
+      <div class="slide-meta">
+        <div>
+          <div class="slide-tag">Tổng Quan Dự Án</div>
+          <div class="slide-title">Bối Cảnh & Các Bài Toán Cốt Lõi Của KTX Đại Học</div>
+        </div>
+        <div class="slide-number">02 / 18</div>
+      </div>
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title" style="color: #F87171;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+            Bất Cập Thực Tế (Pain Points)
+          </div>
+          <div class="card-body">
+            <ul style="padding-left: 18px; display: flex; flex-direction: column; gap: 8px;">
+              <li><strong>Tranh giành giường mù mờ:</strong> Sinh viên chỉ thấy mã phòng (A205), không biết vị trí tầng trên/dưới, gần cửa sổ hay nhà vệ sinh.</li>
+              <li><strong>Xét duyệt thủ công chậm trễ:</strong> Hàng ngàn đơn đăng ký đầu kỳ gây quá tải, mất 3 - 5 ngày làm việc để đối soát chuyển khoản.</li>
+              <li><strong>Tranh cãi tiền điện nước:</strong> Thiếu ảnh chụp công tơ làm chứng, chia tiền lẻ sai lệch, sinh viên nghi ngờ bị gian lận.</li>
+              <li><strong>Gian lận giờ giới nghiêm:</strong> Chụp ảnh thẻ gửi nhau quét hộ sau 23:00, không kiểm soát được đơn về muộn.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card highlight">
+          <div class="card-title" style="color: var(--primary);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            3 Đột Phá Công Nghệ Của Domanage
+          </div>
+          <div class="card-body">
+            <div class="flow-steps">
+              <div class="flow-step">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                  <h4>Mô hình Topology 1:4:6</h4>
+                  <p>Trực quan hóa không gian: 1 Phòng = 4 Buồng (A,B,C,D); 1 Buồng = 6 Giường. Chọn giường kèm đếm ngược 15 phút.</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                  <h4>Động cơ Auto-Approval 3s</h4>
+                  <p>Tự động kiểm tra 3 điều kiện (Giới tính, Lịch sử nợ/kỷ luật, VietQR cọc) & xuất e-Contract PDF tức thì.</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                  <h4>Chia điện nước Total / N</h4>
+                  <p>Bắt buộc upload ảnh chụp công tơ ngày 25-28, chia đều bảo toàn tổng và xuất mã VietQR riêng cho từng cá nhân.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color: #34D399;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Hiệu Quả Thực Tế Đạt Được
+          </div>
+          <div class="card-body">
+            <ul style="padding-left: 18px; display: flex; flex-direction: column; gap: 8px;">
+              <li><strong>Thời gian xử lý:</strong> Giảm thời gian đăng ký phòng từ 3 ngày xuống dưới <strong>3 phút</strong>.</li>
+              <li><strong>Độ chính xác tài chính:</strong> Sai số chia tiền điện nước = <strong>0 VNĐ</strong> (thuật toán phân bổ số dư chính xác).</li>
+              <li><strong>Minh bạch 100%:</strong> Sinh viên xem trực tiếp ảnh chụp công tơ phòng mình trước khi bấm thanh toán.</li>
+              <li><strong>An ninh tuyệt đối:</strong> Mã QR ra vào động thay đổi mỗi 60 giây, chặn đứng 100% việc mượn thẻ vào cổng.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 3: SYSTEM ARCHITECTURE -->
+    <!-- ============================================================== -->
+    <div class="slide" data-title="Kiến trúc hệ thống & Công nghệ">
+      <div class="slide-meta">
+        <div>
+          <div class="slide-tag">Kiến Trúc Kỹ Thuật</div>
+          <div class="slide-title">Kiến Trúc Frontend Single Page Application & Data Layer</div>
+        </div>
+        <div class="slide-number">03 / 18</div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+            Tech Stack Cốt Lõi (Front-End & Backend)
+          </div>
+          <div class="card-body">
+            <table style="width: 100%;">
+              <tr>
+                <td><strong>Framework / Core</strong></td>
+                <td><span class="pill pill-blue">React 19</span> + <span class="pill pill-blue">TypeScript</span></td>
+              </tr>
+              <tr>
+                <td><strong>Styling & Design System</strong></td>
+                <td><span class="pill pill-green">Tailwind CSS v4</span> + <span class="pill pill-green">ShadCN UI</span></td>
+              </tr>
+              <tr>
+                <td><strong>Routing & RBAC</strong></td>
+                <td><span class="pill pill-orange">React Router DOM v7</span> (4 Roles Guard)</td>
+              </tr>
+              <tr>
+                <td><strong>State & Session</strong></td>
+                <td>React Context API (AuthContext, BookingContext)</td>
+              </tr>
+              <tr>
+                <td><strong>Document Rendering</strong></td>
+                <td><span class="pill pill-orange">jsPDF</span> + <span class="pill pill-blue">html2canvas</span> (e-Contract, Invoice)</td>
+              </tr>
+              <tr>
+                <td><strong>Data Visualization</strong></td>
+                <td>Recharts / SVG Donut & Trend Bar Charts</td>
+              </tr>
+              <tr>
+                <td><strong>Data Layer & DB</strong></td>
+                <td>Supabase PostgreSQL (12 Entities) + Mock JSON Server</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div class="card highlight">
+          <div class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            Phân Quyền 4 Tác Nhân RBAC (Role-Based Access Control)
+          </div>
+          <div class="card-body">
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div style="padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; border-left: 4px solid #60A5FA;">
+                <strong style="color: #60A5FA;">1. Sinh viên (Student):</strong> Đặt giường 1:4:6, thanh toán VietQR, nhận PDF hợp đồng, xem hóa đơn chia tiền, nộp báo hỏng, xuất thẻ QR ra vào cổng.
+              </div>
+              <div style="padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; border-left: 4px solid #F59E0B;">
+                <strong style="color: #F59E0B;">2. Quản lý KTX (Manager):</strong> Giám sát tỷ lệ lấp đầy, duyệt ngoại lệ đổi giường, phát hành hóa đơn phòng, duyệt đơn về muộn, xuất báo cáo Excel tạm trú & nợ.
+              </div>
+              <div style="padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; border-left: 4px solid #10B981;">
+                <strong style="color: #10B981;">3. Kỹ thuật viên (Technician):</strong> Ghi số công tơ điện nước ngày 25-28 kèm ảnh chụp, nhận việc sửa chữa Bounty Board, nghiệm thu linh kiện.
+              </div>
+              <div style="padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; border-left: 4px solid #EF4444;">
+                <strong style="color: #EF4444;">4. Bảo vệ trực cổng (Security Guard):</strong> Quét mã QR ra vào, đối chiếu đơn về muộn ngoài giờ, xử lý biên bản vi phạm giới nghiêm 23:00 và trừ điểm KTX.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 4: USER STORIES MATRIX (1/2) -->
+    <!-- ============================================================== -->
+    <div class="slide" data-title="Danh mục User Story (Phần 1)">
+      <div class="slide-meta">
+        <div>
+          <div class="slide-tag">Đặc Tả Yêu Cầu Người Dùng</div>
+          <div class="slide-title">Danh Mục User Stories & Use Cases (Phần 1: Module 1 - 3)</div>
+        </div>
+        <div class="slide-number">04 / 18</div>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 80px;">Mã UC</th>
+              <th style="width: 140px;">Epic / Phân hệ</th>
+              <th style="width: 110px;">Vai trò</th>
+              <th>Đặc tả User Story (As a... I want to... So that...)</th>
+              <th style="width: 130px;">Tiêu chí chấp nhận (AC)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge-uc">UC-01</span></td>
+              <td>Phân hệ 1: Auth & Profile</td>
+              <td>Khách / Sinh viên</td>
+              <td>Là người dùng, tôi muốn xem trang giới thiệu KTX, biểu phí và nội quy chung để nắm bắt thông tin cơ sở vật chất trước khi đăng ký.</td>
+              <td>Hiển thị ảnh KTX, bảng giá thuê giường, hotline hỗ trợ.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-uc">UC-02</span></td>
+              <td>Phân hệ 1: Auth & Profile</td>
+              <td>Tất cả người dùng</td>
+              <td>Là sinh viên/cán bộ, tôi muốn đăng nhập phân luồng Google OAuth để truy cập đúng quyền hạn tài khoản.</td>
+              <td>Gmail cá nhân cho SV tuyển sinh; Email @fpt.edu.vn cho BQL/Kỹ thuật.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-uc">UC-03</span></td>
+              <td>Phân hệ 1: Auth & Profile</td>
+              <td>Tất cả người dùng</td>
+              <td>Là người dùng, tôi muốn phiên đăng nhập duy trì an toàn và tự động refresh token để không bị gián đoạn thao tác.</td>
+              <td>JWT lưu trong session an toàn; Đăng xuất dọn sạch session.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-uc">UC-04</span></td>
+              <td>Phân hệ 1: Auth & Profile</td>
+              <td>Sinh viên</td>
+              <td>Là sinh viên, tôi muốn cập nhật CCCD, quê quán và số điện thoại phụ huynh để nhà trường liên hệ khẩn cấp khi cần.</td>
+              <td>Form cập nhật Profile, lưu số điện thoại bố/mẹ, địa chỉ thường trú.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-uc">UC-05</span></td>
+              <td>Phân hệ 2: Topology</td>
+              <td>Admin / Manager</td>
+              <td>Là Quản lý, tôi muốn quản lý danh mục Tòa nhà và Tầng lầu (Nam/Nữ) để phân bổ sức chứa hợp lý.</td>
+              <td>Phân tách Tòa A (Nam) và Tòa B (Nữ), quản lý danh sách tầng.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-uc">UC-06</span></td>
+              <td>Phân hệ 2: Topology</td>
+              <td>Admin / Manager</td>
+              <td>Là Quản trị viên, tôi muốn thiết lập cấu trúc phòng 1:4:6 chuẩn hóa để đảm bảo sức chứa 24 giường/phòng.</td>
+              <td>1 Phòng = 4 Buồng (A, B, C, D); 1 Buồng = 6 Giường (G01 - G06).</td>
+            </tr>
+            <tr>
+              <td><span class="badge-uc">UC-07</span></td>
+              <td>Phân hệ 2: Topology</td>
+              <td>Admin</td>
+              <td>Là Quản trị viên, tôi muốn cấu hình biểu phí tiền thuê giường, đơn giá điện (3.200 đ/kWh) và nước (18.000 đ/m³).</td>
+              <td>Áp dụng thuế VAT 10% chuẩn quy định kế toán.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-uc">UC-08</span></td>
+              <td>Phân hệ 2: Topology</td>
+              <td>Admin</td>
+              <td>Là Quản trị viên, tôi muốn import danh sách thí sinh trúng tuyển vào hệ thống để cấp quyền đặt chỗ online.</td>
+              <td>Import CSV/Excel danh sách sinh viên kèm MSSV và giới tính.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-uc">UC-09</span></td>
+              <td>Phân hệ 3: Visual Booking</td>
+              <td>Sinh viên</td>
+              <td>Là sinh viên, tôi muốn xem sơ đồ trực quan 1:4:6 với 4 màu trạng thái để tự chọn vị trí giường ưa thích.</td>
+              <td>Xanh (Trống), Cam (Đang giữ chỗ), Xám (Đã ở), Đỏ (Bảo trì).</td>
+            </tr>
+            <tr>
+              <td><span class="badge-uc">UC-10</span></td>
+              <td>Phân hệ 3: Visual Booking</td>
+              <td>Sinh viên</td>
+              <td>Là sinh viên, tôi muốn giường được khóa giữ chỗ 15 phút khi bấm chọn để an tâm chuyển khoản cọc qua VietQR.</td>
+              <td>Đồng hồ đếm ngược 900s; Hết giờ tự động nhả về Xanh lá.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-uc">UC-11</span></td>
+              <td>Phân hệ 3: Visual Booking</td>
+              <td>Hệ thống (Auto)</td>
+              <td>Là hệ thống, tôi tự động xét duyệt đăng ký khi thỏa 3 điều kiện (Giới tính, Sạch nợ/kỷ luật, Thanh toán cọc) trong 3s.</td>
+              <td>Duyệt tự động tức thì không cần cán bộ duyệt tay.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-uc">UC-12</span></td>
+              <td>Phân hệ 3: Visual Booking</td>
+              <td>Sinh viên</td>
+              <td>Là sinh viên, tôi muốn nhận file Hợp đồng điện tử e-Contract PDF kèm mã tra cứu duy nhất ngay sau khi thanh toán cọc.</td>
+              <td>Render PDF tức thì có điều khoản KTX, mã hợp đồng và chữ ký số.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-uc">UC-13</span></td>
+              <td>Phân hệ 3: Visual Booking</td>
+              <td>Manager</td>
+              <td>Là Quản lý, tôi muốn xem bảng giám sát công suất phòng và can thiệp giải quyết các trường hợp đổi giường đặc biệt.</td>
+              <td>Thao tác đổi giường, mở khóa giường bảo trì.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 5: USER STORIES MATRIX (2/2) -->
+    <!-- ============================================================== -->
+    <div class="slide" data-title="Danh mục User Story (Phần 2)">
+      <div class="slide-meta">
+        <div>
+          <div class="slide-tag">Đặc Tả Yêu Cầu Người Dùng</div>
+          <div class="slide-title">Danh Mục User Stories & Use Cases (Phần 2: Module 4 - 7)</div>
+        </div>
+        <div class="slide-number">05 / 18</div>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 80px;">Mã UC</th>
+              <th style="width: 140px;">Epic / Phân hệ</th>
+              <th style="width: 110px;">Vai trò</th>
+              <th>Đặc tả User Story (As a... I want to... So that...)</th>
+              <th style="width: 130px;">Tiêu chí chấp nhận (AC)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge-uc">UC-14</span></td>
+              <td>Phân hệ 4: Điện Nước & Hóa Đơn</td>
+              <td>Sinh viên / Manager</td>
+              <td>Là SV mới đến, tôi muốn ký biên bản bàn giao thiết bị phòng và ghi nhận chỉ số công tơ ban đầu lúc nhận phòng.</td>
+              <td>Checklist tài sản phòng chung/buồng riêng, lưu chỉ số ban đầu.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-uc">UC-15</span></td>
+              <td>Phân hệ 4: Điện Nước & Hóa Đơn</td>
+              <td>Sinh viên / Manager</td>
+              <td>Là SV trả phòng, tôi muốn làm thủ tục check-out, nghiệm thu tài sản và quyết toán tiền cọc lưu trú.</td>
+              <td>Biên bản nghiệm thu hư hại, hoàn cọc theo hợp đồng.</td>
+            </tr>
+            <tr style="background: rgba(249, 115, 22, 0.08);">
+              <td><span class="badge-uc badge-core">UC-16</span></td>
+              <td>Phân hệ 4: Điện Nước & Hóa Đơn</td>
+              <td>Technician</td>
+              <td><strong>[CORE UC-16]</strong> Là Kỹ thuật viên, tôi muốn ghi chỉ số điện nước ngày 25-28 kèm upload ảnh chụp công tơ thực tế để làm bằng chứng đối soát minh bạch.</td>
+              <td>Validate E_new ≥ E_old; Bắt buộc có ảnh chụp công tơ cửa phòng.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-uc">UC-17</span></td>
+              <td>Phân hệ 4: Điện Nước & Hóa Đơn</td>
+              <td>Hệ thống (Auto)</td>
+              <td>Là hệ thống, tôi tự động tính tổng tiền phòng (Điện + Nước có VAT 10% + Vệ sinh) và chia đều Total/N cho sinh viên.</td>
+              <td>Thuật toán bảo toàn tổng tiền (sai số 0đ); Hỗ trợ tính Pro-rata ngày ở.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-uc">UC-18</span></td>
+              <td>Phân hệ 4: Điện Nước & Hóa Đơn</td>
+              <td>Sinh viên</td>
+              <td>Là sinh viên, tôi muốn xem hóa đơn cá nhân minh bạch kèm ảnh công tơ gốc và quét VietQR riêng để thanh toán.</td>
+              <td>Nội dung chuyển khoản chuẩn: DMS [MÃ_HĐ] [MSSV].</td>
+            </tr>
+            <tr>
+              <td><span class="badge-uc">UC-19</span></td>
+              <td>Phân hệ 4: Điện Nước & Hóa Đơn</td>
+              <td>Hệ thống (Auto)</td>
+              <td>Là hệ thống, tôi gửi thông báo phát hành hóa đơn và nhắc nhở kỳ hạn thanh toán trước ngày 05 hàng tháng.</td>
+              <td>Gửi Notification trong app và cảnh báo nợ quá hạn.</td>
+            </tr>
+            <tr style="background: rgba(249, 115, 22, 0.08);">
+              <td><span class="badge-uc badge-core">UC-20</span></td>
+              <td>Phân hệ 5: Báo Hỏng & Sửa Chữa</td>
+              <td>Sinh viên</td>
+              <td><strong>[CORE UC-20]</strong> Là sinh viên, tôi muốn nộp phiếu báo hỏng thiết bị, phân loại phòng chung vs buồng riêng kèm ảnh chụp để kỹ thuật đến sửa.</td>
+              <td>Phân loại phạm vi hỏng, chọn mức độ khẩn cấp, upload ảnh hỏng.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-uc">UC-21</span></td>
+              <td>Phân hệ 5: Báo Hỏng & Sửa Chữa</td>
+              <td>Technician</td>
+              <td>Là Kỹ thuật viên, tôi muốn xem bảng điều phối Bounty Board để chủ động nhận phiếu sửa chữa theo khu vực phụ trách.</td>
+              <td>Bộ lọc trạng thái Submitted/In Progress, nút Tiếp nhận phiếu.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-uc">UC-22</span></td>
+              <td>Phân hệ 5: Báo Hỏng & Sửa Chữa</td>
+              <td>Technician</td>
+              <td>Là Kỹ thuật viên, tôi muốn ghi nhận linh kiện thay thế và tải ảnh kết quả sau sửa chữa để hoàn thành phiếu.</td>
+              <td>Ghi nhận vật tư phụ tùng, upload ảnh đã sửa hoàn tất.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-uc">UC-23</span></td>
+              <td>Phân hệ 5: Báo Hỏng & Sửa Chữa</td>
+              <td>Sinh viên</td>
+              <td>Là sinh viên, tôi muốn nghiệm thu chất lượng sửa chữa và đánh giá dịch vụ 1 - 5 sao để nâng cao chất lượng KTX.</td>
+              <td>Modal xác nhận hoàn thành, chấm điểm sao và gửi nhận xét.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-uc">UC-24</span></td>
+              <td>Phân hệ 6: Giới Nghiêm & QR Pass</td>
+              <td>Sinh viên</td>
+              <td>Là sinh viên có việc đột xuất, tôi muốn nộp đơn xin về muộn trước 21:00 kèm lý do hợp lý để được duyệt về sau 23:00.</td>
+              <td>Form nộp đơn xin về muộn, lưu trữ trạng thái duyệt của BQL.</td>
+            </tr>
+            <tr style="background: rgba(249, 115, 22, 0.08);">
+              <td><span class="badge-uc badge-core">UC-25</span></td>
+              <td>Phân hệ 6: Giới Nghiêm & QR Pass</td>
+              <td>Bảo vệ (Guard)</td>
+              <td><strong>[CORE UC-25]</strong> Là Bảo vệ cổng, tôi muốn quét thẻ QR động 60s/nhập MSSV, đối chiếu đơn duyệt và phát hiện vi phạm giới nghiêm sau 23:00.</td>
+              <td>Cảnh báo đỏ nếu về muộn không đơn; Log thời gian thực qua cổng.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-uc">UC-26</span></td>
+              <td>Phân hệ 6: Giới Nghiêm & QR Pass</td>
+              <td>Bảo vệ / Manager</td>
+              <td>Là Bảo vệ/BQL, tôi muốn tự động lập biên bản và trừ 15 điểm rèn luyện KTX khi sinh viên vi phạm giới nghiêm.</td>
+              <td>Trừ điểm rèn luyện KTX; Cảnh báo đình chỉ nếu điểm &lt; 50.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-uc">UC-27</span></td>
+              <td>Phân hệ 7: Analytics & Export</td>
+              <td>Manager</td>
+              <td>Là Quản lý KTX, tôi muốn xem biểu đồ Donut tỷ lệ lấp đầy và biểu đồ cột doanh thu để đánh giá hiệu quả vận hành.</td>
+              <td>Biểu đồ Occupancy Rate theo tầng/tòa, xu hướng thu chi.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-uc">UC-28</span></td>
+              <td>Phân hệ 7: Analytics & Export</td>
+              <td>Manager</td>
+              <td>Là Quản lý, tôi muốn xuất báo cáo danh sách sinh viên tạm trú và danh sách công nợ quá hạn ra file Excel (.xlsx).</td>
+              <td>Xuất file Excel đúng định dạng báo cáo công an và kế toán.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 6: CORE USE CASE 1: UC-16 DEEP-DIVE -->
+    <!-- ============================================================== -->
+    <div class="slide" data-title="Use Case 1: UC-16 Ghi số điện nước">
+      <div class="slide-meta">
+        <div>
+          <div class="slide-tag">3 Use Case Trọng Tâm • Use Case 1</div>
+          <div class="slide-title">UC-16: Record Room Electricity & Water Meter Readings</div>
+        </div>
+        <div class="slide-number">06 / 18</div>
+      </div>
+      <div class="grid-2">
+        <div class="card highlight">
+          <div class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            Đặc Tả Chi Tiết Nghiệp Vụ UC-16
+          </div>
+          <div class="card-body">
+            <div style="margin-bottom: 12px;">
+              <strong>Tác nhân chính (Actor):</strong> <span class="pill pill-green">Kỹ thuật viên Tòa nhà (Technician)</span><br>
+              <strong>Thời gian kích hoạt:</strong> Ngày 25 - 28 hàng tháng (Kỳ chốt sổ định kỳ).<br>
+              <strong>Tiền điều kiện:</strong> Kỹ thuật viên đăng nhập; danh sách phòng của Tòa A đã sẵn sàng.
+            </div>
+            <div class="flow-steps">
+              <div class="flow-step">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                  <h4>Chọn Phòng & Load Chỉ Số Cũ</h4>
+                  <p>Kỹ thuật viên chọn phòng A205. Hệ thống hiển thị chỉ số cũ: $E_{old} = 12.350$ kWh, $W_{old} = 812$ m³.</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                  <h4>Nhập Chỉ Số Mới & Validate Logic</h4>
+                  <p>Nhập $E_{new} = 12.620$ kWh ($\Delta E = 270$ kWh) và $W_{new} = 854$ m³ ($\Delta W = 42$ m³). Kiểm tra ràng buộc $E_{new} \ge E_{old}$.</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                  <h4>Bắt Buộc Chụp Ảnh Công Tơ Thực Tế</h4>
+                  <p>Tải lên ảnh chụp thực tế đồng hồ điện & đồng hồ nước tại cửa phòng. Đây là bằng chứng không thể chối cãi khi đối soát.</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">4</div>
+                <div class="step-content">
+                  <h4>Kích Hoạt Thuật Toán Chia Tiền (UC-17)</h4>
+                  <p>Hệ thống tự động tính tổng tiền phòng và phân bổ $Total / N$ cho 6 sinh viên phòng A205.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+            Thuật Toán Tính & Chia Tiền Total / N Triệt Tiêu Sai Số
+          </div>
+          <div class="card-body">
+            <div style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; font-size: 13px; margin-bottom: 12px;">
+              <strong>Công thức chi phí phòng:</strong><br>
+              $$\text{Total} = (\Delta E \times 3.200 \times 1.1) + (\Delta W \times 18.000 \times 1.1) + \text{Phí vệ sinh}$$
+              $$\text{Phòng A205}: 950.400 + 831.600 + 120.000 = \mathbf{1.902.000 \text{ VNĐ}}$$
+              $$\text{Tiền mỗi SV} = \frac{1.902.000}{6 \text{ SV}} = \mathbf{317.000 \text{ VNĐ/người}}$$
+            </div>
+            <pre><code>// Bảo toàn tổng tiền phòng tuyệt đối (sai số 0 VNĐ)
+const basePerStudent = Math.floor(totalRoomBill / residentsCount);
+const remainder = totalRoomBill - (basePerStudent * residentsCount);
+// remainder được phân bổ vào sinh viên đầu tiên để bù số lẻ làm tròn</code></pre>
+            <div style="margin-top: 14px; font-size: 12.5px; color: #94A3B8;">
+              <span class="pill pill-green">Bằng chứng minh bạch:</span> Sinh viên khi mở hóa đơn cá nhân sẽ nhìn thấy trực tiếp ảnh chụp công tơ do Kỹ thuật viên chụp tại cửa phòng.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 7: SCREENSHOT UC-16 (TECHNICIAN METER INPUT) -->
+    <!-- ============================================================== -->
+    <div class="slide" data-title="Ảnh chụp màn hình: UC-16 Ghi công tơ">
+      <div class="slide-meta">
+        <div>
+          <div class="slide-tag">Ảnh Chụp Màn Hình Minh Họa • Giao Diện Kỹ Thuật Viên</div>
+          <div class="slide-title">Giao Diện Ghi Số Công Tơ Điện Nước Kèm Upload Ảnh (UC-16)</div>
+        </div>
+        <div class="slide-number">07 / 18</div>
+      </div>
+      <div class="grid-2">
+        <div class="screenshot-container" onclick="openLightbox('screenshots/06_billing_technician_uc16.png', 'Giao diện Kỹ thuật viên ghi chỉ số công tơ điện nước phòng A205 kèm upload ảnh chụp thực tế')">
+          <img src="screenshots/06_billing_technician_uc16.png" class="screenshot-img" alt="Ghi số điện nước UC-16">
+          <div class="screenshot-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            Click để phóng to ảnh
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><check-circle></check-circle><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+            Phân Tích Các Yếu Tố Giao Diện Cốt Lõi
+          </div>
+          <div class="card-body">
+            <div class="flow-steps">
+              <div class="flow-step">
+                <div class="step-num" style="background: #3B82F6;">A</div>
+                <div class="step-content">
+                  <h4>Form Nhập Chỉ Số Thông Minh (Smart Input)</h4>
+                  <p>Tự động load chỉ số kỳ trước ($E_{old}, W_{old}$). Khi nhập chỉ số mới, hệ thống tự tính lượng tiêu thụ $\Delta E = 270$ kWh và $\Delta W = 42$ m³.</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num" style="background: #10B981;">B</div>
+                <div class="step-content">
+                  <h4>Khu Vực Bắt Buộc Upload Ảnh Chụp Thực Tế</h4>
+                  <p>2 khung tải ảnh riêng cho Công tơ Điện và Đồng hồ Nước. Xem trước ảnh (Preview) sắc nét, chống gian lận số liệu.</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num" style="background: #F59E0B;">C</div>
+                <div class="step-content">
+                  <h4>Danh Sách Phòng Chốt Sổ Toàn Tòa A</h4>
+                  <p>Bảng theo dõi trạng thái chốt sổ từng phòng: <span class="pill pill-green">Đã chốt sổ (A201-A205)</span> vs <span class="pill pill-orange">Chờ chốt sổ (A206, A207)</span>.</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num" style="background: #EC4899;">D</div>
+                <div class="step-content">
+                  <h4>Lưu & Đồng Bộ Tức Thì Sang Hóa Đơn Sinh Viên</h4>
+                  <p>Bấm "Lưu chỉ số & Tính hóa đơn" ngay lập tức cập nhật dữ liệu vào bảng hóa đơn của 6 sinh viên phòng A205.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 8: SCREENSHOT UC-17/18 (STUDENT INVOICE WITH PHOTO) -->
+    <!-- ============================================================== -->
+    <div class="slide" data-title="Ảnh chụp màn hình: Hóa đơn điện nước SV">
+      <div class="slide-meta">
+        <div>
+          <div class="slide-tag">Ảnh Chụp Màn Hình Minh Họa • Giao Diện Sinh Viên</div>
+          <div class="slide-title">Hóa Đơn Điện Nước Cá Nhân Minh Bạch Kèm Ảnh Gốc & VietQR (UC-18)</div>
+        </div>
+        <div class="slide-number">08 / 18</div>
+      </div>
+      <div class="grid-2">
+        <div class="screenshot-container" onclick="openLightbox('screenshots/07_billing_student_invoice.png', 'Giao diện Sinh viên xem hóa đơn cá nhân 317.000 VNĐ kèm ảnh gốc công tơ và mã VietQR thanh toán độc lập')">
+          <img src="screenshots/07_billing_student_invoice.png" class="screenshot-img" alt="Hóa đơn sinh viên">
+          <div class="screenshot-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            Click để phóng to ảnh
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+            Minh Bạch Hóa Trải Nghiệm Sinh Viên
+          </div>
+          <div class="card-body">
+            <div class="flow-steps">
+              <div class="flow-step">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                  <h4>Giải Trình Công Thức Chia Đều Total / N</h4>
+                  <p>Hiển thị chi tiết: Tổng phòng = 1.902.000 đ chia cho 6 sinh viên = <strong>317.000 đ/người</strong>. Không có chi phí ẩn.</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                  <h4>Click Mở Ảnh Gốc Công Tơ Đối Soát</h4>
+                  <p>Sinh viên click nút "Xem ảnh công tơ thực tế" để mở modal ảnh độ phân giải cao do Kỹ thuật viên chụp cửa phòng.</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                  <h4>Cổng Thanh Toán VietQR Tự Động Điền Cú Pháp</h4>
+                  <p>Mã QR chứa cú pháp chuẩn: <code>DMS HD-A205-1026 SE182049</code>, tự động gạch nợ sau khi chuyển khoản thành công.</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">4</div>
+                <div class="step-content">
+                  <h4>Xuất Hóa Đơn VAT / Biên Nhận Thu Tiền PDF</h4>
+                  <p>Nút "Tải hóa đơn PDF" render ngay biên lai thanh toán có mã tra cứu và dấu mộc điện tử KTX.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 9: CORE USE CASE 2: UC-20 DEEP-DIVE -->
+    <!-- ============================================================== -->
+    <div class="slide" data-title="Use Case 2: UC-20 Báo hỏng thiết bị">
+      <div class="slide-meta">
+        <div>
+          <div class="slide-tag">3 Use Case Trọng Tâm • Use Case 2</div>
+          <div class="slide-title">UC-20: Submit Repair Ticket (Khép Kín Vòng Đời Bảo Trì)</div>
+        </div>
+        <div class="slide-number">09 / 18</div>
+      </div>
+      <div class="grid-2">
+        <div class="card highlight">
+          <div class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+            Đặc Tả Chi Tiết Nghiệp Vụ UC-20
+          </div>
+          <div class="card-body">
+            <div style="margin-bottom: 12px;">
+              <strong>Tác nhân chính (Actor):</strong> <span class="pill pill-blue">Sinh viên lưu trú (Student)</span><br>
+              <strong>Tiền điều kiện:</strong> Sinh viên đang có phòng hoạt động (Phòng A205 - Buồng B).<br>
+              <strong>Phạm vi hỏng hóc:</strong> Phân biệt rõ Phòng chung (Điều hòa, Nước) vs Buồng riêng (Bóng đèn, Ổ cắm).
+            </div>
+            <div class="flow-steps">
+              <div class="flow-step">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                  <h4>Tạo Phiếu & Phân Loại Phạm Vi</h4>
+                  <p>Sinh viên chọn danh mục sự cố (Điện, Nước, Điều hòa, Nội thất) và phân loại phạm vi: "Thiết bị phòng chung" hoặc "Buồng cá nhân B".</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                  <h4>Mức Độ Ưu Tiên & Upload Ảnh Hiện Trạng</h4>
+                  <p>Chọn độ khẩn cấp (Thường / Gấp / Khẩn cấp). Tải lên ảnh chụp thực tế sự cố (ví dụ: máy lạnh rò rỉ nước).</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                  <h4>Khởi Tạo Ticket Trạng Thái SUBMITTED</h4>
+                  <p>Phiếu được sinh mã tra cứu (ví dụ: <code>TK-8024</code>) và đẩy ngay lên Bounty Board của Kỹ thuật viên tòa nhà.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Vòng Đời Khép Kín 5 Trạng Thái (Ticket Lifecycle)
+          </div>
+          <div class="card-body">
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <div style="padding: 8px 12px; background: rgba(59, 130, 246, 0.1); border-left: 3px solid #3B82F6; border-radius: 4px;">
+                <strong style="color: #60A5FA;">1. SUBMITTED (Đã nộp):</strong> Sinh viên vừa tạo phiếu; đang chờ kỹ thuật tiếp nhận.
+              </div>
+              <div style="padding: 8px 12px; background: rgba(245, 158, 11, 0.1); border-left: 3px solid #F59E0B; border-radius: 4px;">
+                <strong style="color: #F59E0B;">2. ASSIGNED / CLAIMED (Đã tiếp nhận):</strong> Kỹ thuật viên (Đỗ Mạnh Hùng) bấm nhận việc trên Bounty Board.
+              </div>
+              <div style="padding: 8px 12px; background: rgba(139, 92, 246, 0.1); border-left: 3px solid #8B5CF6; border-radius: 4px;">
+                <strong style="color: #A78BFA;">3. IN_PROGRESS (Đang sửa):</strong> Kỹ thuật viên đến phòng kiểm tra và thay thế linh kiện.
+              </div>
+              <div style="padding: 8px 12px; background: rgba(16, 185, 129, 0.1); border-left: 3px solid #10B981; border-radius: 4px;">
+                <strong style="color: #34D399;">4. COMPLETED (Đã sửa xong):</strong> Kỹ thuật viên chụp ảnh hoàn tất, ghi nhận vật tư thay thế.
+              </div>
+              <div style="padding: 8px 12px; background: rgba(236, 72, 153, 0.1); border-left: 3px solid #EC4899; border-radius: 4px;">
+                <strong style="color: #F472B6;">5. REVIEWED (Đã nghiệm thu):</strong> Sinh viên kiểm tra, xác nhận và chấm điểm hài lòng 1 - 5 sao (UC-23).
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 10: SCREENSHOT UC-20 (STUDENT CREATE TICKET) -->
+    <!-- ============================================================== -->
+    <div class="slide" data-title="Ảnh chụp màn hình: UC-20 Tạo ticket">
+      <div class="slide-meta">
+        <div>
+          <div class="slide-tag">Ảnh Chụp Màn Hình Minh Họa • Giao Diện Sinh Viên</div>
+          <div class="slide-title">Form Tạo Phiếu Báo Hỏng Thiết Bị Kèm Upload Ảnh Hiện Trạng (UC-20)</div>
+        </div>
+        <div class="slide-number">10 / 18</div>
+      </div>
+      <div class="grid-2">
+        <div class="screenshot-container" onclick="openLightbox('screenshots/08_maintenance_student_uc20.png', 'Giao diện Sinh viên nộp phiếu báo hỏng: Điều hòa phòng A205 chảy nước kèm ảnh chụp và mức độ khẩn cấp')">
+          <img src="screenshots/08_maintenance_student_uc20.png" class="screenshot-img" alt="Tạo ticket UC-20">
+          <div class="screenshot-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            Click để phóng to ảnh
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><layout></layout><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+            Điểm Nhấn Trải Nghiệm Trên Giao Diện Báo Hỏng
+          </div>
+          <div class="card-body">
+            <div class="flow-steps">
+              <div class="flow-step">
+                <div class="step-num">A</div>
+                <div class="step-content">
+                  <h4>Radio Phân Loại: Phòng Chung vs Buồng Cá Nhân</h4>
+                  <p>Giúp phân định rõ trách nhiệm tài sản: Hỏng điều hòa (Cả phòng chịu trách nhiệm chung) vs Hỏng đèn bàn học (Cá nhân sinh viên buồng B).</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">B</div>
+                <div class="step-content">
+                  <h4>Dropzone Tải Ảnh Hiện Trạng Trực Quan</h4>
+                  <p>Hỗ trợ kéo thả ảnh hoặc chụp trực tiếp từ camera điện thoại. Hiển thị ảnh thumbnail xem trước trước khi bấm gửi.</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">C</div>
+                <div class="step-content">
+                  <h4>Badge Mức Độ Khẩn Cấp Đậm Màu</h4>
+                  <p><span class="pill pill-green">Bình thường</span>, <span class="pill pill-orange">Gấp (Ưu tiên)</span>, <span class="pill pill-red">Khẩn cấp (Sự cố điện nước)</span>.</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">D</div>
+                <div class="step-content">
+                  <h4>Timeline Tiến Độ & Đánh Giá 1 - 5 Sao</h4>
+                  <p>Lịch sử các ticket đã gửi hiển thị rõ tiến độ từng bước. Khi hoàn tất, nút "Đánh giá chất lượng" bật modal chấm điểm sao.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 11: SCREENSHOT UC-21/22 (TECHNICIAN BOUNTY BOARD) -->
+    <!-- ============================================================== -->
+    <div class="slide" data-title="Ảnh chụp màn hình: Bounty Board kỹ thuật">
+      <div class="slide-meta">
+        <div>
+          <div class="slide-tag">Ảnh Chụp Màn Hình Minh Họa • Giao Diện Kỹ Thuật Viên</div>
+          <div class="slide-title">Bảng Điều Phối Kỹ Thuật (Bounty Board) & Nghiệm Thu Vật Tư (UC-21, 22)</div>
+        </div>
+        <div class="slide-number">11 / 18</div>
+      </div>
+      <div class="grid-2">
+        <div class="screenshot-container" onclick="openLightbox('screenshots/09_maintenance_technician_board.png', 'Bảng điều phối Bounty Board của Kỹ thuật viên: Tiếp nhận việc sửa chữa, cập nhật tiến độ và ghi nhận vật tư linh kiện')">
+          <img src="screenshots/09_maintenance_technician_board.png" class="screenshot-img" alt="Bounty Board Kỹ thuật">
+          <div class="screenshot-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            Click để phóng to ảnh
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><briefcase></briefcase><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+            Quy Trình Nghiệp Vụ Phía Kỹ Thuật Viên
+          </div>
+          <div class="card-body">
+            <div class="flow-steps">
+              <div class="flow-step">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                  <h4>Bảng Nhận Việc Tập Trung (Bounty Board)</h4>
+                  <p>Kỹ thuật viên duyệt danh sách phiếu hỏng của Tòa A & B. Bấm nút "Nhận xử lý" để chuyển phiếu sang trạng thái IN_PROGRESS.</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                  <h4>Ghi Nhận Linh Kiện & Vật Tư Tiêu Hao</h4>
+                  <p>Nhập danh mục phụ tùng thay thế (ví dụ: ống đồng dẫn gas, tụ ngậm kích máy lạnh, bóng LED 18W) phục vụ kế toán vật tư KTX.</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                  <h4>Upload Ảnh Nghiệm Thu Sau Khi Sửa Xong</h4>
+                  <p>Chụp ảnh thiết bị đã hoạt động ổn định làm minh chứng nghiệm thu, chuyển trạng thái sang COMPLETED.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 12: CORE USE CASE 3: UC-25 DEEP-DIVE -->
+    <!-- ============================================================== -->
+    <div class="slide" data-title="Use Case 3: UC-25 Giới nghiêm 23:00">
+      <div class="slide-meta">
+        <div>
+          <div class="slide-tag">3 Use Case Trọng Tâm • Use Case 3</div>
+          <div class="slide-title">UC-25: Record Gate Entry / Exit (Kiểm Soát Giờ Giới Nghiêm 23:00)</div>
+        </div>
+        <div class="slide-number">12 / 18</div>
+      </div>
+      <div class="grid-2">
+        <div class="card highlight">
+          <div class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><shield></shield><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            Đặc Tả Chi Tiết Nghiệp Vụ UC-25
+          </div>
+          <div class="card-body">
+            <div style="margin-bottom: 12px;">
+              <strong>Tác nhân (Actors):</strong> <span class="pill pill-blue">Bảo vệ trực cổng (Guard)</span> & <span class="pill pill-orange">Sinh viên (Student)</span><br>
+              <strong>Quy tắc giới nghiêm:</strong> Cổng đóng lúc <strong>23:00</strong> mỗi đêm.<br>
+              <strong>Đơn xin về muộn (UC-24):</strong> Phải nộp trước <strong>21:00</strong> và được Ban Quản trị phê duyệt điện tử.
+            </div>
+            <div class="flow-steps">
+              <div class="flow-step">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                  <h4>Thẻ Sinh Viên QR Động Đổi Mỗi 60 Giây</h4>
+                  <p>Mã QR trên app sinh viên tự động làm mới mỗi 60s dựa trên HMAC + timestamp, kèm đồng hồ đếm ngược, chặn đứng chụp màn hình gửi quét hộ.</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                  <h4>Bảo Vệ Quét Thẻ / Nhập Nhanh MSSV</h4>
+                  <p>Bảo vệ quét mã QR hoặc gõ MSSV (SE182049) tại bốt trực. Hệ thống tức thì đối soát thời gian thực.</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                  <h4>Logic Kiểm Tra Đơn Về Muộn Sau 23:00</h4>
+                  <p>Nếu quét sau 23:00: Hệ thống tra cứu đơn xin về muộn. Nếu <strong>Có đơn</strong> $\to$ Cổng xanh, hợp lệ. Nếu <strong>Không đơn</strong> $\to$ Cảnh báo đỏ vi phạm.</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">4</div>
+                <div class="step-content">
+                  <h4>Tự Động Lập Biên Bản & Trừ 15 Điểm Rèn Luyện</h4>
+                  <p>Tự động ghi nhận biên bản vi phạm và trừ 15 điểm rèn luyện KTX (thang 100 điểm). Điểm dưới 50 bị đình chỉ lưu trú kỳ sau.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><alert-triangle></alert-triangle><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            Cây Quyết Định Kiểm Soát Cổng (Decision Flow)
+          </div>
+          <div class="card-body">
+            <div style="background: rgba(0,0,0,0.4); padding: 14px; border-radius: 8px; font-size: 13px; line-height: 1.8;">
+              <div style="color: #60A5FA; font-weight: 700; margin-bottom: 6px;">[BƯỚC QUÉT] Sinh viên quét mã QR tại cổng:</div>
+              <div>├─ <strong>Thời gian $\le$ 23:00:</strong> <span class="pill pill-green">HỢP LỆ (MỞ CỔNG)</span> $\to$ Ghi nhận lịch sử giờ vào.</div>
+              <div>└─ <strong>Thời gian > 23:00 (Giới nghiêm):</strong></div>
+              <div style="padding-left: 24px;">├─ <strong>Có đơn về muộn đã duyệt:</strong> <span class="pill pill-blue">HỢP LỆ CÓ PHÉP</span> $\to$ Mở cổng, gắn thẻ đơn duyệt.</div>
+              <div style="padding-left: 24px;">└─ <strong>Không có đơn xin phép:</strong> <span class="pill pill-red">VI PHẠM NỘI QUY</span></div>
+              <div style="padding-left: 50px; font-size: 12px; color: #FCA5A5;">
+                • Bật còi/chuông cảnh báo đỏ trên màn hình bảo vệ.<br>
+                • Sinh biên bản kỷ luật: <code>BB-VP-2300-[TIMESTAMP]</code>.<br>
+                • Trừ 15 điểm rèn luyện (90 $\to$ 75 điểm).<br>
+                • Gửi cảnh báo tức thì về điện thoại sinh viên.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 13: SCREENSHOT UC-25 (MOBILE PASS & GATE CONSOLE) -->
+    <!-- ============================================================== -->
+    <div class="slide" data-title="Ảnh chụp màn hình: UC-25 Cổng bảo vệ">
+      <div class="slide-meta">
+        <div>
+          <div class="slide-tag">Ảnh Chụp Màn Hình Minh Họa • Ứng Dụng Di Động & Cổng Bảo Vệ</div>
+          <div class="slide-title">Thẻ Sinh Viên QR Động 60s & Bảng Điều Khiển Cổng Giới Nghiêm (UC-25)</div>
+        </div>
+        <div class="slide-number">13 / 18</div>
+      </div>
+      <div class="grid-2">
+        <div class="screenshot-container" onclick="openLightbox('screenshots/10_gate_curfew_mobile_uc25.png', 'Thẻ sinh viên điện tử QR động 60s chống gian lận và Bảng điều khiển bảo vệ phát hiện vi phạm giờ giới nghiêm 23:00')">
+          <img src="screenshots/10_gate_curfew_mobile_uc25.png" class="screenshot-img" alt="Cổng bảo vệ UC-25">
+          <div class="screenshot-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            Click để phóng to ảnh
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><smartphone></smartphone><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+            Các Thành Phần Cốt Lõi Trên Màn Hình Mobile & Console
+          </div>
+          <div class="card-body">
+            <div class="flow-steps">
+              <div class="flow-step">
+                <div class="step-num">A</div>
+                <div class="step-content">
+                  <h4>Mã QR Động Với Thanh Đếm Ngược 60s</h4>
+                  <p>Mã QR tự động làm mới liên tục. Có hiệu ứng viền sáng nhấp nháy chứng minh ứng dụng đang chạy thật, không phải ảnh chụp màn hình.</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">B</div>
+                <div class="step-content">
+                  <h4>Thẻ Thông Tin Sinh Viên & Phòng Lưu Trú</h4>
+                  <p>Hiển thị ảnh chân dung, họ tên Nguyễn Hoàng Vinh, MSSV SE182049, phòng A205 và số điểm rèn luyện hiện tại (85/100).</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">C</div>
+                <div class="step-content">
+                  <h4>Tab Nộp Đơn Xin Về Muộn Ngoại Lệ</h4>
+                  <p>Form nộp đơn tiện lợi: Chọn lý do (Học nhóm, Thí nghiệm, Đi làm thêm ca tối, Việc gia đình), giờ dự kiến về (ví dụ: 23:30).</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">D</div>
+                <div class="step-content">
+                  <h4>Bảng Điều Khiển Cổng Bảo Vệ (Security Console)</h4>
+                  <p>Ô quét mã camera trực tiếp hoặc gõ nhanh MSSV. Hiển thị banner đỏ cảnh báo vi phạm kèm nút "Lập biên bản kỷ luật".</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 14: SCREENSHOT SIGNATURE 1:4:6 BED PICKER -->
+    <!-- ============================================================== -->
+    <div class="slide" data-title="Ảnh chụp màn hình: Bản đồ chọn giường 1:4:6">
+      <div class="slide-meta">
+        <div>
+          <div class="slide-tag">Tính Năng Đột Phá • Bản Đồ Trực Quan</div>
+          <div class="slide-title">Bản Đồ Chọn Giường 1:4:6, Khóa Giữ Chỗ 15 Phút & VietQR (UC-09, 10)</div>
+        </div>
+        <div class="slide-number">14 / 18</div>
+      </div>
+      <div class="grid-2">
+        <div class="screenshot-container" onclick="openLightbox('screenshots/04_booking_146.png', 'Bản đồ trực quan chọn giường 1:4:6: Tòa -> Tầng -> Phòng -> Buồng -> Giường với 4 trạng thái màu và đếm ngược giữ chỗ 15 phút')">
+          <img src="screenshots/04_booking_146.png" class="screenshot-img" alt="Bản đồ 1:4:6">
+          <div class="screenshot-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            Click để phóng to ảnh
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><grid></grid><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            Thiết Kế Không Gian Phân Cấp 1:4:6 Đột Phá
+          </div>
+          <div class="card-body">
+            <div class="flow-steps">
+              <div class="flow-step">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                  <h4>Cấu Trúc Không Gian 1:4:6</h4>
+                  <p>1 Tòa nhà $\to$ 5 Tầng $\to$ 1 Phòng (A205) $\to$ 4 Buồng (A, B, C, D) $\to$ 6 Giường (G01 - G06). Tổng 24 giường/phòng.</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                  <h4>4 Trạng Thái Màu Sắc Rõ Ràng</h4>
+                  <p>
+                    <span class="pill pill-green">Xanh lá: Còn trống</span>
+                    <span class="pill pill-orange">Cam: Đang giữ chỗ (15m)</span>
+                    <span class="pill pill-blue">Xám: Đã có sinh viên ở</span>
+                    <span class="pill pill-red">Đỏ: Đang bảo trì</span>
+                  </p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                  <h4>Cơ Chế Khóa Giữ Chỗ 15 Phút (Countdown 900s)</h4>
+                  <p>Click chọn giường ngay lập tức khóa giường với mọi sinh viên khác. Nếu quá 15 phút không cọc, giường tự động rollback về Xanh lá.</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">4</div>
+                <div class="step-content">
+                  <h4>Động Cơ Auto-Approval & Xuất e-Contract PDF</h4>
+                  <p>Duyệt tự động 3 tiêu chí trong 3s sau khi nhận thanh toán cọc và tải về file hợp đồng PDF có mã xác thực duy nhất.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 15: SCREENSHOT MANAGEMENT DASHBOARD -->
+    <!-- ============================================================== -->
+    <div class="slide" data-title="Ảnh chụp màn hình: Dashboard Quản lý">
+      <div class="slide-meta">
+        <div>
+          <div class="slide-tag">Ảnh Chụp Màn Hình Minh Họa • Giao Diện Ban Quản Lý</div>
+          <div class="slide-title">Dashboard Tổng Quan Công Suất Phòng & Báo Cáo Excel (UC-27, 28)</div>
+        </div>
+        <div class="slide-number">15 / 18</div>
+      </div>
+      <div class="grid-2">
+        <div class="screenshot-container" onclick="openLightbox('screenshots/11_manager_dashboard.png', 'Dashboard Quản lý KTX: Biểu đồ Donut tỷ lệ lấp đầy giường, Biểu đồ cột doanh thu và Chức năng xuất báo cáo Excel')">
+          <img src="screenshots/11_manager_dashboard.png" class="screenshot-img" alt="Dashboard Quản lý">
+          <div class="screenshot-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            Click để phóng to ảnh
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><pie-chart></pie-chart><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+            Năng Lực Quản Trị Vận Hành KTX
+          </div>
+          <div class="card-body">
+            <div class="flow-steps">
+              <div class="flow-step">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                  <h4>Biểu Đồ Donut Tỷ Lệ Lấp Đầy (Occupancy Rate)</h4>
+                  <p>Trực quan hóa tỷ lệ giường: <strong>82% Đang lưu trú</strong>, <strong>15% Còn trống</strong>, <strong>3% Đang bảo trì</strong> trên tổng số 120 giường Tòa A.</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                  <h4>Biểu Đồ Cột Xu Hướng Doanh Thu Hàng Tháng</h4>
+                  <p>Theo dõi sát sao nguồn thu tiền phòng và tiền dịch vụ điện nước theo từng tháng trong học kỳ.</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                  <h4>Danh Sách Công Nợ Quá Hạn & Cảnh Báo</h4>
+                  <p>Liệt kê sinh viên chưa thanh toán tiền điện nước sau ngày 05 kèm nút "Gửi nhắc nhở hàng loạt" qua thông báo.</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">4</div>
+                <div class="step-content">
+                  <h4>Xuất Báo Cáo Excel Tạm Trú Đúng Quy Chuẩn</h4>
+                  <p>Tích hợp module <code>excelExport.ts</code> xuất file <code>.xlsx</code> phục vụ đăng ký tạm trú với Công an địa phương chỉ với 1 click.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 16: SCREENSHOT STUDENT OVERVIEW & MY ROOM -->
+    <!-- ============================================================== -->
+    <div class="slide" data-title="Ảnh chụp màn hình: Trang chủ sinh viên & Phòng ở">
+      <div class="slide-meta">
+        <div>
+          <div class="slide-tag">Ảnh Chụp Màn Hình Minh Họa • Giao Diện Sinh Viên</div>
+          <div class="slide-title">Bảng Điều Khiển Sinh Viên & Quản Lý Phòng Lưu Trú (UC-04, 14)</div>
+        </div>
+        <div class="slide-number">16 / 18</div>
+      </div>
+      <div class="grid-2">
+        <div class="screenshot-container" onclick="openLightbox('screenshots/03_student_overview.png', 'Bảng điều khiển sinh viên: Thông tin phòng A205, Giường G03, Hóa đơn điện nước tháng hiện tại và lối tắt tiện ích')">
+          <img src="screenshots/03_student_overview.png" class="screenshot-img" alt="Student Overview">
+          <div class="screenshot-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            Click để phóng to ảnh
+          </div>
+        </div>
+        <div class="screenshot-container" onclick="openLightbox('screenshots/05_my_room.png', 'Chi tiết phòng ở: Danh sách 6 bạn cùng phòng, trang thiết bị bàn giao và Hợp đồng điện tử e-Contract')">
+          <img src="screenshots/05_my_room.png" class="screenshot-img" alt="My Room">
+          <div class="screenshot-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            Click để phóng to ảnh
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 17: QUALITY ASSURANCE & TESTING -->
+    <!-- ============================================================== -->
+    <div class="slide" data-title="Kiểm thử & Đảm bảo chất lượng">
+      <div class="slide-meta">
+        <div>
+          <div class="slide-tag">Đảm Bảo Chất Lượng & QA</div>
+          <div class="slide-title">Chiến Lược Kiểm Thử 90 Test Cases & 4 Ca Biên Then Chốt</div>
+        </div>
+        <div class="slide-number">17 / 18</div>
+      </div>
+      <div class="grid-2">
+        <div class="card highlight">
+          <div class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><check-square></check-square><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+            Kết Quả Kiểm Thử 4 Ca Biên Then Chốt (Critical Edge-cases)
+          </div>
+          <div class="card-body">
+            <div class="flow-steps">
+              <div class="flow-step">
+                <div class="step-num" style="background: #10B981;">1</div>
+                <div class="step-content">
+                  <h4>Xung Đột Đặt Chỗ Đồng Thời (Concurrency Booking)</h4>
+                  <p>2 sinh viên cùng chọn giường A205-B-G03 tại đúng miligiây. Kết quả: Chỉ 1 người được giữ chỗ; người thứ 2 nhận thông báo lỗi ngay lập tức. <span class="pill pill-green">PASS</span></p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num" style="background: #10B981;">2</div>
+                <div class="step-content">
+                  <h4>Hết Giờ Giữ Chỗ Rollback (Timeout Rollback)</h4>
+                  <p>Quá 15 phút (900 giây) không hoàn tất thanh toán cọc $\to$ Hệ thống tự giải phóng giường về màu Xanh lá (AVAILABLE). <span class="pill pill-green">PASS</span></p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num" style="background: #10B981;">3</div>
+                <div class="step-content">
+                  <h4>Bảo Toàn Tổng Tiền Điện Nước (Zero Discrepancy)</h4>
+                  <p>Chia tiền phòng 1.902.000 đ cho 6 SV = 317.000 đ/người. Tổng tiền cá nhân khớp 100% hóa đơn gốc, sai số = 0 VNĐ. <span class="pill pill-green">PASS</span></p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num" style="background: #10B981;">4</div>
+                <div class="step-content">
+                  <h4>Bắt Giới Nghiêm Sau 23:00 Không Có Đơn</h4>
+                  <p>Quét cổng lúc 23:15 không có đơn về muộn $\to$ Màn hình phát cảnh báo đỏ, tự lập biên bản và trừ 15 điểm rèn luyện. <span class="pill pill-green">PASS</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><award></award><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+            Tổng Hợp Chỉ Số Kiểm Thử & Hiệu Năng
+          </div>
+          <div class="card-body">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+              <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 26px; font-weight: 800; color: #34D399;">90 / 90</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Test Cases Đạt (100% Pass)</div>
+              </div>
+              <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 26px; font-weight: 800; color: #60A5FA;">&lt; 0.5s</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Độ Trễ Phản Hồi Giao Diện</div>
+              </div>
+              <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 26px; font-weight: 800; color: #FB923C;">&lt; 3.0s</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Auto-Approval & Xuất PDF</div>
+              </div>
+              <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 26px; font-weight: 800; color: #EC4899;">100%</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Responsive Mobile/Desktop</div>
+              </div>
+            </div>
+            <div style="font-size: 13px; line-height: 1.6; color: #CBD5E1;">
+              Hệ thống được kiểm thử kỹ lưỡng trên các trình duyệt Chrome, Edge, Safari và kiểm tra hiển thị từ màn hình Mobile (375px) đến Desktop (1920px), đáp ứng trọn vẹn tiêu chuẩn phần mềm môn học FER202.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 18: CONCLUSION & Q&A -->
+    <!-- ============================================================== -->
+    <div class="slide" data-title="Kết luận & Hỏi đáp">
+      <div class="slide-meta">
+        <div>
+          <div class="slide-tag">Tổng Kết Đồ Án</div>
+          <div class="slide-title">Kết Luận, Định Hướng Phát Triển & Phiên Hỏi Đáp (Q&A)</div>
+        </div>
+        <div class="slide-number">18 / 18</div>
+      </div>
+      <div class="grid-2">
+        <div class="card highlight">
+          <div class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><check-circle2></check-circle2><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
+            Giá Trị Thực Tiễn Đồ Án Mang Lại
+          </div>
+          <div class="card-body">
+            <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 10px; font-size: 14px;">
+              <li><strong>Số hóa toàn diện:</strong> Thay thế 100% quy trình giấy tờ thủ công, xóa bỏ cảnh xếp hàng chen lấn đầu học kỳ.</li>
+              <li><strong>Trải nghiệm người dùng vượt bậc:</strong> Mô hình 1:4:6 giúp sinh viên chọn giường trực quan, không còn cảm giác mơ hồ.</li>
+              <li><strong>Tài chính minh bạch:</strong> Thuật toán chia tiền điện nước kèm ảnh chụp thực tế triệt tiêu hoàn toàn khiếu nại.</li>
+              <li><strong>Sẵn sàng triển khai:</strong> Mã nguồn React 19 + TypeScript được module hóa cao, dễ dàng tích hợp vào cổng thông tin đào tạo Đại học FPT.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card" style="justify-content: center; align-items: center; text-align: center;">
+          <div style="background: rgba(249, 115, 22, 0.15); border: 2px dashed rgba(249, 115, 22, 0.4); padding: 30px; border-radius: 20px; width: 100%; max-width: 440px;">
+            <div style="font-size: 38px; font-weight: 800; color: white; margin-bottom: 8px;">THANK YOU!</div>
+            <div style="font-size: 16px; color: var(--primary); font-weight: 700; margin-bottom: 16px;">
+              XIN CHÂN THÀNH CẢM ƠN HỘI ĐỒNG GIẢNG VIÊN!
+            </div>
+            <p style="font-size: 13.5px; color: #94A3B8; margin-bottom: 24px;">
+              Nhóm FER202_Group4 rất mong nhận được những câu hỏi và ý kiến đóng góp quý báu từ Thầy/Cô.
+            </p>
+            <div style="display: flex; justify-content: center; gap: 10px;">
+              <span class="pill pill-orange">Demo Trực Tiếp</span>
+              <span class="pill pill-blue">Hỏi Đáp Kỹ Thuật</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer Controls -->
+  <footer>
+    <div class="footer-left">
+      <span id="slide-title-indicator">01. Trang bìa & Giới thiệu</span>
+    </div>
+    <div class="footer-center">
+      <button class="btn-nav" onclick="prevSlide()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        Trang trước
+      </button>
+      <span id="counter" style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; padding: 0 10px;">1 / 18</span>
+      <button class="btn-nav" onclick="nextSlide()">
+        Trang sau
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+    </div>
+    <div class="footer-right">
+      <span style="font-size: 12px; color: var(--text-muted);">Dùng phím mũi tên [←] [→] hoặc [Space]</span>
+    </div>
+  </footer>
+
+  <!-- Modal Lightbox for Images -->
+  <div id="image-modal" onclick="closeLightbox()">
+    <button class="close-modal-btn" onclick="closeLightbox()">✕ Đóng (Esc)</button>
+    <img id="modal-img" src="" alt="Enlarged screenshot">
+    <div id="modal-caption"></div>
+  </div>
+
+  <!-- JavaScript for Navigation & Interactivity -->
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const progressBar = document.getElementById('progress-bar');
+    const counter = document.getElementById('counter');
+    const titleIndicator = document.getElementById('slide-title-indicator');
+    let currentIndex = 0;
+
+    function updateSlide(index) {
+      if (index < 0) index = 0;
+      if (index >= slides.length) index = slides.length - 1;
+      currentIndex = index;
+
+      slides.forEach((slide, i) => {
+        slide.classList.remove('active', 'prev');
+        if (i === currentIndex) {
+          slide.classList.add('active');
+        } else if (i < currentIndex) {
+          slide.classList.add('prev');
+        }
+      });
+
+      // Update progress
+      const progress = ((currentIndex + 1) / slides.length) * 100;
+      progressBar.style.width = progress + '%';
+
+      // Update counter & title
+      counter.textContent = `${currentIndex + 1} / ${slides.length}`;
+      const activeSlide = slides[currentIndex];
+      const title = activeSlide.getAttribute('data-title') || 'Slide';
+      titleIndicator.textContent = `${String(currentIndex + 1).padStart(2, '0')}. ${title}`;
+    }
+
+    function nextSlide() {
+      if (currentIndex < slides.length - 1) updateSlide(currentIndex + 1);
+    }
+
+    function prevSlide() {
+      if (currentIndex > 0) updateSlide(currentIndex - 1);
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        prevSlide();
+      } else if (e.key === 'Escape') {
+        closeLightbox();
+      } else if (e.key === 'f' || e.key === 'F') {
+        toggleFullscreen();
+      }
+    });
+
+    // Touch swipe support
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    document.addEventListener('touchend', (e) => {
+      const touchEndX = e.changedTouches[0].screenX;
+      if (touchStartX - touchEndX > 50) nextSlide();
+      if (touchEndX - touchStartX > 50) prevSlide();
+    });
+
+    // Lightbox modal
+    function openLightbox(src, caption) {
+      const modal = document.getElementById('image-modal');
+      const img = document.getElementById('modal-img');
+      const cap = document.getElementById('modal-caption');
+      img.src = src;
+      cap.textContent = caption || '';
+      modal.classList.add('active');
+    }
+
+    function closeLightbox() {
+      document.getElementById('image-modal').classList.remove('active');
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    }
+
+    function openJumpModal() {
+      const titles = Array.from(slides).map((s, i) => `${i + 1}. ${s.getAttribute('data-title')}`).join('\n');
+      const choice = prompt(`Nhập số slide bạn muốn chuyển đến (1 - ${slides.length}):\n\n${titles}`, (currentIndex + 1));
+      const target = parseInt(choice, 10);
+      if (!isNaN(target) && target >= 1 && target <= slides.length) {
+        updateSlide(target - 1);
+      }
+    }
+
+    // Initial setup
+    updateSlide(0);
+  </script>
+</body>
+</html>
+

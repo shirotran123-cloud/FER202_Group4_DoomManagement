@@ -36,6 +36,7 @@ import {
   type GateDirection,
   type GateScanStatus,
 } from "@/services/gateAccessService"
+import { ScrollReveal } from "@/components/ui/scroll-reveal"
 
 type SubTab = "vietqr" | "repair"
 
@@ -328,43 +329,45 @@ export const MobileAppPage: React.FC = () => {
   })
 
   return (
-    <div className="space-y-6 pb-12">
+    <div className="space-y-6 pb-16">
       {/* Top Page Header Banner */}
-      <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-xs sm:p-8">
-        <div className="pointer-events-none absolute -top-16 -right-16 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-20 right-40 h-60 w-60 rounded-full bg-secondary/10 blur-2xl" />
+      <ScrollReveal direction="up" distance={16}>
+        <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-xs sm:p-8">
+          <div className="pointer-events-none absolute -top-16 -right-16 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-20 right-40 h-60 w-60 rounded-full bg-secondary/10 blur-2xl" />
 
-        <div className="relative z-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary dark:text-emerald-400">
-              <QrCode className="h-3.5 w-3.5" />
-              <span>Hệ thống Kiểm Soát An Ninh Cổng 24/7 · Cửa Xoay Tự Động</span>
+          <div className="relative z-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary dark:text-emerald-400">
+                <QrCode className="h-3.5 w-3.5" />
+                <span>Hệ thống Kiểm Soát An Ninh Cổng 24/7 · Cửa Xoay Tự Động</span>
+              </div>
+              <h1 className="flex items-center gap-2 text-2xl font-black tracking-tight text-foreground sm:text-3xl">
+                {appRole === "guard"
+                  ? "Bàn Điều Phối & Quét Thẻ Cổng An Ninh (Guard Station)"
+                  : "Thẻ QR Ra Vào Cổng & Giờ Giới Nghiêm"}
+              </h1>
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                {appRole === "guard"
+                  ? "Dữ liệu quẹt thẻ được đồng bộ thời gian thực 2 chiều giữa thiết bị Sinh viên và Ban Quản lý"
+                  : "Xuất trình thẻ QR động HMAC hoặc quét mã trực tiếp tại cửa xoay turnstile để ra vào KTX"}
+              </p>
             </div>
-            <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              {appRole === "guard"
-                ? "Bàn Điều Phối & Quét Thẻ Cổng An Ninh (Guard Station)"
-                : "Thẻ QR Ra Vào Cổng & Giờ Giới Nghiêm"}
-            </h1>
-            <p className="text-xs text-muted-foreground">
-              {appRole === "guard"
-                ? "Dữ liệu quẹt thẻ được đồng bộ thời gian thực 2 chiều giữa thiết bị Sinh viên và Ban Quản lý"
-                : "Xuất trình thẻ QR động HMAC hoặc quét mã trực tiếp tại cửa xoay turnstile để ra vào KTX"}
-            </p>
-          </div>
 
-          <div className="flex shrink-0 items-center gap-2 self-start sm:self-center">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowNotificationModal(true)}
-              className="h-9 gap-1.5 rounded-xl border-border text-xs"
-            >
-              <Bell className="h-3.5 w-3.5 text-primary" />
-              <span>Thông báo</span>
-            </Button>
+            <div className="flex shrink-0 items-center gap-2 self-start sm:self-center">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowNotificationModal(true)}
+                className="h-10 gap-2 rounded-xl border-border text-xs px-4 ui-btn-interactive shadow-xs"
+              >
+                <Bell className="h-4 w-4 text-primary" />
+                <span>Thông báo</span>
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      </ScrollReveal>
 
       {/* =========================================================================
           CHẾ ĐỘ 1: GIAO DIỆN SINH VIÊN (STUDENT VIEW)
@@ -373,11 +376,12 @@ export const MobileAppPage: React.FC = () => {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           {/* CỘT TRÁI (7 COLS): THẺ QR SINH TRẮC HỌC ĐỘNG NỔI BẬT TRỰC TIẾP TRÊN NỀN */}
           <div className="space-y-6 lg:col-span-7">
-            <div
-              className={`relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-md transition-all sm:p-8 ${
-                isHighContrast ? "ring-2 ring-primary" : ""
-              }`}
-            >
+            <ScrollReveal direction="up" delay={0.08} distance={20}>
+              <div
+                className={`relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-md transition-all sm:p-8 ui-card-interactive ${
+                  isHighContrast ? "ring-2 ring-primary" : ""
+                }`}
+              >
               {/* Header Badge */}
               <div className="flex items-center justify-between border-b border-border pb-4">
                 <div className="flex items-center gap-2">
@@ -608,12 +612,14 @@ export const MobileAppPage: React.FC = () => {
                 )}
               </div>
             </div>
-          </div>
+          </ScrollReveal>
+        </div>
 
-          {/* CỘT PHẢI (5 COLS): GIỜ GIỚI NGHIÊM 23:00 & TIỆN ÍCH DI ĐỘNG */}
-          <div className="space-y-6 lg:col-span-5">
-            {/* CARD 1: ĐẾM NGƯỢC GIỚI NGHIÊM & ĐƠN XIN VỀ MUỘN */}
-            <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4">
+        {/* CỘT PHẢI (5 COLS): GIỜ GIỚI NGHIÊM 23:00 & TIỆN ÍCH DI ĐỘNG */}
+        <div className="space-y-6 lg:col-span-5">
+          {/* CARD 1: ĐẾM NGƯỢC GIỚI NGHIÊM & ĐƠN XIN VỀ MUỘN */}
+          <ScrollReveal direction="up" delay={0.12} distance={20}>
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4 ui-card-interactive">
               <div className="flex items-center justify-between border-b border-border pb-3">
                 <div className="flex items-center gap-2">
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400">
@@ -762,9 +768,11 @@ export const MobileAppPage: React.FC = () => {
                 ))}
               </div>
             </div>
+          </ScrollReveal>
 
-            {/* CARD 2: TIỆN ÍCH VIETQR ĐIỆN NƯỚC & CAMERA BÁO HỎNG */}
-            <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4">
+          {/* CARD 2: TIỆN ÍCH VIETQR ĐIỆN NƯỚC & CAMERA BÁO HỎNG */}
+          <ScrollReveal direction="up" delay={0.16} distance={20}>
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4 ui-card-interactive">
               <div className="flex items-center justify-between border-b border-border pb-3">
                 <div className="flex items-center gap-2">
                   <button
@@ -950,8 +958,9 @@ export const MobileAppPage: React.FC = () => {
                 </div>
               )}
             </div>
-          </div>
+          </ScrollReveal>
         </div>
+      </div>
       )}
 
       {/* =========================================================================
@@ -976,7 +985,8 @@ export const MobileAppPage: React.FC = () => {
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
             {/* CỘT TRÁI (7 COLS): MÀN HÌNH QUÉT CAMERA & BẢNG ĐIỀU PHỐI NGHIỆP VỤ AN NINH */}
             <div className="space-y-6 lg:col-span-7">
-              <div className="rounded-2xl border border-border bg-card p-6 shadow-md space-y-5">
+              <ScrollReveal direction="up" delay={0.05} distance={20}>
+                <div className="rounded-2xl border border-border bg-card p-6 shadow-md space-y-5 ui-card-interactive">
                 <div className="flex items-center justify-between border-b border-border pb-3">
                   <div className="flex items-center gap-2">
                     <span className="flex h-2.5 w-2.5 rounded-full bg-sky-500 animate-ping" />
@@ -1187,11 +1197,13 @@ export const MobileAppPage: React.FC = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </ScrollReveal>
+          </div>
 
-            {/* CỘT PHẢI (5 COLS): NHẬT KÝ QUẸT CỔNG THỜI GIAN THỰC & THỐNG KÊ */}
-            <div className="space-y-6 lg:col-span-5">
-              <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4">
+          {/* CỘT PHẢI (5 COLS): NHẬT KÝ QUẸT CỔNG THỜI GIAN THỰC & THỐNG KÊ */}
+          <div className="space-y-6 lg:col-span-5">
+            <ScrollReveal direction="up" delay={0.1} distance={20}>
+              <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4 ui-card-interactive">
                 <div className="flex items-center justify-between border-b border-border pb-3">
                   <div>
                     <h3 className="text-sm font-bold text-foreground">
@@ -1371,9 +1383,10 @@ export const MobileAppPage: React.FC = () => {
                   )}
                 </div>
               </div>
-            </div>
+            </ScrollReveal>
           </div>
         </div>
+      </div>
       )}
 
       {/* Push Notification Simulation Modal */}
