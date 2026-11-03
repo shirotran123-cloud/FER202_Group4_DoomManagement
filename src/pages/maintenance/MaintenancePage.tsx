@@ -358,21 +358,21 @@ export const MaintenancePage: React.FC = () => {
         </div>
       )}
 
-      {/* Header & Quick Action (8pt Grid: p-6 sm:p-8) */}
+      {/* Header & Quick Action (8pt Grid: p-4 sm:p-6 sm:p-8) */}
       <ScrollReveal>
-        <Card className="p-6 sm:p-8">
-          <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
-            <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-secondary/20 bg-secondary/10 text-secondary">
-                <Wrench className="h-6 w-6" />
+        <Card className="p-4 sm:p-6 sm:p-8">
+          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center sm:gap-6">
+            <div className="flex items-start gap-3 sm:gap-4">
+              <div className="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl border border-secondary/20 bg-secondary/10 text-secondary">
+                <Wrench className="h-5 w-5 sm:h-6 sm:w-6" />
               </div>
-              <div className="space-y-1">
-                <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
+              <div className="space-y-1 min-w-0">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-foreground">
                   {user?.role === "manager" || user?.role === "admin"
                     ? "Điều Phối Báo Hỏng & Bảo Trì Tòa A"
-                    : "Báo Hỏng & Yêu Cầu Sửa Chữa Thiết Bị"}
+                    : "Báo Hỏng & Yêu Cầu Sửa Chữa"}
                 </h1>
-                <p className="text-sm leading-relaxed font-normal text-muted-foreground sm:text-base">
+                <p className="text-xs sm:text-sm leading-relaxed font-normal text-muted-foreground line-clamp-2 sm:line-clamp-none">
                   {user?.role === "manager" || user?.role === "admin"
                     ? "Theo dõi tiến độ, phân công kỹ thuật viên Tòa A xử lý sự cố cơ sở vật chất"
                     : "Gửi yêu cầu sửa chữa thiết bị buồng & theo dõi tiến độ nghiệm thu"}
@@ -383,8 +383,8 @@ export const MaintenancePage: React.FC = () => {
             {user?.role === "student" && (
               <Button
                 onClick={() => setIsCreateModalOpen(true)}
-                size="lg"
-                className="shrink-0 gap-2 font-bold shadow-xs"
+                size="default"
+                className="w-full sm:w-auto shrink-0 justify-center gap-2 font-bold shadow-xs text-xs sm:text-sm h-10 sm:h-11"
               >
                 <Plus className="h-4 w-4" />
                 <span>Tạo phiếu báo hỏng mới</span>
@@ -397,52 +397,57 @@ export const MaintenancePage: React.FC = () => {
 
       {/* Filters & Search Control Bar */}
       <ScrollReveal delay={0.05}>
-        <Card className="space-y-4 p-6">
-          <div className="flex flex-col items-stretch justify-between gap-4 md:flex-row md:items-center">
+        <Card className="space-y-3 sm:space-y-4 p-3.5 sm:p-6">
+          <div className="flex flex-col items-stretch justify-between gap-3 md:flex-row md:items-center">
             {/* Search Bar */}
-            <div className="relative flex-1">
+            <div className="relative flex-1 min-w-0">
               <Input
                 icon={<Search className="h-4 w-4" />}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Tìm theo mã phiếu, phòng, tên sinh viên hoặc sự cố..."
+                placeholder="Tìm mã phiếu, phòng, sinh viên..."
+                className="h-9 sm:h-10 text-xs sm:text-sm"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="absolute top-1/2 right-4 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  className="absolute top-1/2 right-3 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-3.5 w-3.5" />
                 </button>
               )}
             </div>
 
-            {/* Quick Urgency & Scope Selects */}
-            <div className="flex items-center gap-4">
-              <Select
-                value={filterUrgency}
-                onChange={(e) => setFilterUrgency(e.target.value)}
-                className="w-44"
-              >
-                <option value="ALL">Mức độ: Tất cả</option>
-                <option value="NORMAL">Bình thường</option>
-                <option value="EMERGENCY">Khẩn cấp</option>
-              </Select>
+            {/* Quick Urgency & Scope Selects - Grid 2 columns on mobile */}
+            <div className="grid grid-cols-2 gap-2 w-full sm:flex sm:w-auto sm:items-center sm:gap-3">
+              <div className="w-full sm:w-44">
+                <Select
+                  value={filterUrgency}
+                  onChange={(e) => setFilterUrgency(e.target.value)}
+                  className="w-full text-xs font-semibold"
+                >
+                  <option value="ALL">Mức độ: Tất cả</option>
+                  <option value="NORMAL">Bình thường</option>
+                  <option value="EMERGENCY">Khẩn cấp</option>
+                </Select>
+              </div>
 
-              <Select
-                value={filterScope}
-                onChange={(e) => setFilterScope(e.target.value)}
-                className="w-44"
-              >
-                <option value="ALL">Phạm vi: Tất cả</option>
-                <option value="ROOM_SHARED">Phòng chung</option>
-                <option value="COMPARTMENT_PRIVATE">Buồng cá nhân</option>
-              </Select>
+              <div className="w-full sm:w-44">
+                <Select
+                  value={filterScope}
+                  onChange={(e) => setFilterScope(e.target.value)}
+                  className="w-full text-xs font-semibold"
+                >
+                  <option value="ALL">Phạm vi: Tất cả</option>
+                  <option value="ROOM_SHARED">Phòng chung</option>
+                  <option value="COMPARTMENT_PRIVATE">Buồng cá nhân</option>
+                </Select>
+              </div>
             </div>
           </div>
 
-          {/* Status Filter Tabs */}
-          <div className="flex items-center gap-2 overflow-x-auto border-t border-border pt-4">
+          {/* Status Filter Tabs - Scrollable with no-scrollbar */}
+          <div className="no-scrollbar -mx-1 flex items-center gap-1.5 overflow-x-auto px-1 pt-2.5 pb-0.5 border-t border-border">
             {[
               { id: "ALL", label: "Tất cả phiếu" },
               { id: "PENDING", label: "Chờ tiếp nhận" },
@@ -457,7 +462,9 @@ export const MaintenancePage: React.FC = () => {
                   variant={isActive ? "secondary" : "ghost"}
                   size="sm"
                   onClick={() => setFilterStatus(tab.id)}
-                  className="font-semibold whitespace-nowrap"
+                  className={`h-8 shrink-0 px-2.5 sm:px-3 text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
+                    isActive ? "shadow-xs font-bold" : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   <span>{tab.label}</span>
                 </Button>

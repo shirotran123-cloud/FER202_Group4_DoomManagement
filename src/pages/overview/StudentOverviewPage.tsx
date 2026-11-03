@@ -27,33 +27,33 @@ export const StudentOverviewPage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-8 pb-16">
-      {/* Hero Welcome Banner (8pt Grid: p-8 = 32px) */}
+    <div className="space-y-4 sm:space-y-6 lg:space-y-8 pb-16">
+      {/* Hero Welcome Banner (8pt Grid: p-4 sm:p-6 sm:p-8) */}
       <ScrollReveal>
-        <div className="ui-card-interactive relative overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-xs sm:p-8">
+        <div className="ui-card-interactive relative overflow-hidden rounded-2xl sm:rounded-3xl border border-border bg-card p-4 sm:p-6 sm:p-8 shadow-xs">
           <div className="pointer-events-none absolute -top-16 -right-16 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
           <div className="pointer-events-none absolute right-40 -bottom-20 h-60 w-60 rounded-full bg-secondary/10 blur-2xl" />
 
-          <div className="relative z-10 flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
-            <div className="space-y-2">
-              <span className="inline-block rounded-lg bg-secondary/10 px-3 py-1 text-xs font-bold tracking-wider text-secondary uppercase">
+          <div className="relative z-10 flex flex-col justify-between gap-4 sm:gap-6 lg:flex-row lg:items-center">
+            <div className="space-y-1.5 sm:space-y-2">
+              <span className="inline-block rounded-lg bg-secondary/10 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-bold tracking-wider text-secondary uppercase">
                 Cổng Thông Tin Cư Dân Nội Trú
               </span>
-              <h1 className="flex items-center gap-2 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+              <h1 className="flex items-center gap-2 text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-foreground">
                 Chào buổi sáng, {user?.fullName || "Nguyễn Hoàng Vinh"}{" "}
-                <span className="inline-block animate-bounce text-2xl">👋</span>
+                <span className="inline-block animate-bounce text-xl sm:text-2xl">👋</span>
               </h1>
-              <p className="text-sm leading-relaxed font-normal text-muted-foreground sm:text-base">
+              <p className="text-xs sm:text-sm leading-relaxed font-normal text-muted-foreground">
                 Ký túc xá FPT University · Học kỳ Fall 2026 · Tòa A (High-Rise Hall)
               </p>
             </div>
 
-            <div className="flex shrink-0 flex-wrap items-center gap-4 self-start lg:self-center">
+            <div className="flex shrink-0 w-full sm:w-auto items-center self-start lg:self-center">
               <Button
                 variant="default"
-                size="lg"
+                size="default"
                 asChild
-                className="gap-2 font-bold shadow-xs"
+                className="w-full sm:w-auto justify-center gap-2 font-bold shadow-xs h-10 sm:h-11 text-xs sm:text-sm"
               >
                 <Link to="/maintenance">
                   <Wrench className="h-4 w-4" />

@@ -266,7 +266,7 @@ export const DemoAccountSwitcher: React.FC<DemoAccountSwitcherProps> = ({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 z-50 mt-2 w-80 rounded-2xl border border-slate-200 bg-white p-2.5 shadow-2xl backdrop-blur-md dark:border-slate-800 dark:bg-[#111827] animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed inset-x-3 top-[68px] z-50 mt-1 max-w-sm mx-auto sm:max-w-none sm:mx-0 sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2 sm:w-80 rounded-2xl border border-slate-200 bg-white p-2.5 shadow-2xl backdrop-blur-md dark:border-slate-800 dark:bg-[#111827] animate-in fade-in zoom-in-95 duration-150">
           <div className="mb-2 flex items-center justify-between border-b border-slate-100 px-2 pb-2 dark:border-slate-800">
             <div className="flex items-center gap-1.5">
               <Sparkles className="h-3.5 w-3.5 text-sky-500" />

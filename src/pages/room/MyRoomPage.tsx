@@ -98,47 +98,47 @@ const CompartmentSlide: React.FC = () => {
   return (
     <div className="ui-card-interactive overflow-hidden rounded-2xl border border-border bg-card shadow-xs">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3 sm:px-6 sm:py-4">
         <div>
-          <h2 className="text-base font-bold text-foreground sm:text-lg">
+          <h2 className="text-sm sm:text-base lg:text-lg font-bold text-foreground">
             Sơ Đồ Phân Bổ Giường Phòng A205
           </h2>
         </div>
-        <div className="flex items-center gap-4 text-xs">
+        <div className="flex items-center gap-3 sm:gap-4 text-[11px] sm:text-xs">
           <span className="flex items-center gap-1.5">
-            <span className="h-3 w-3 rounded bg-primary" />
+            <span className="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded bg-primary" />
             <strong className="text-primary">Giường bạn</strong>
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="h-3 w-3 rounded bg-secondary/40" />
+            <span className="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded bg-secondary/40" />
             <span className="text-muted-foreground">Đã ở</span>
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="h-3 w-3 rounded border border-accent bg-accent/20" />
+            <span className="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded border border-accent bg-accent/20" />
             <span className="font-semibold text-foreground">Trống</span>
           </span>
         </div>
       </div>
 
       {/* Slide body */}
-      <div className="relative p-6">
+      <div className="relative p-3 sm:p-6">
         {/* Nav buttons */}
         <button
           onClick={prev}
-          className="ui-btn-interactive absolute top-1/2 left-2 z-10 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-border bg-card shadow-sm hover:bg-muted"
+          className="ui-btn-interactive absolute top-1/2 left-1 sm:left-2 z-10 flex h-7 w-7 sm:h-8 sm:w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-border bg-card shadow-sm hover:bg-muted"
         >
           <ChevronLeft className="h-4 w-4 text-muted-foreground" />
         </button>
         <button
           onClick={next}
-          className="ui-btn-interactive absolute top-1/2 right-2 z-10 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-border bg-card shadow-sm hover:bg-muted"
+          className="ui-btn-interactive absolute top-1/2 right-1 sm:right-2 z-10 flex h-7 w-7 sm:h-8 sm:w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-border bg-card shadow-sm hover:bg-muted"
         >
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </button>
 
         {/* Card */}
         <div
-          className={`mx-8 space-y-4 rounded-2xl border p-6 transition-all duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+          className={`mx-0 sm:mx-8 space-y-3 sm:space-y-4 rounded-xl sm:rounded-2xl border p-3 sm:p-6 transition-all duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] ${
             comp.myComp
               ? "border-primary bg-primary/5 ring-1 ring-primary"
               : "border-border bg-muted/40"
@@ -148,16 +148,16 @@ const CompartmentSlide: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-base font-extrabold text-foreground sm:text-lg">
+                <span className="text-sm font-extrabold text-foreground sm:text-base lg:text-lg">
                   {comp.label}
                 </span>
                 {comp.myComp && (
-                  <span className="rounded-full bg-primary px-2.5 py-0.5 text-[10px] font-bold text-primary-foreground">
+                  <span className="rounded-full bg-primary px-2 py-0.5 text-[9px] sm:text-[10px] font-bold text-primary-foreground">
                     BUỒNG CỦA BẠN
                   </span>
                 )}
               </div>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-0.5 text-[11px] sm:text-xs text-muted-foreground">
                 {comp.subtitle}
               </p>
             </div>
@@ -169,14 +169,14 @@ const CompartmentSlide: React.FC = () => {
           </div>
 
           {/* Beds grid */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4">
             {comp.beds.map((bed) => {
               const isMine = bed.status === "mine"
               const isAvail = bed.status === "available"
               return (
                 <div
                   key={bed.g}
-                  className={`rounded-2xl border p-4 text-center transition-all duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                  className={`rounded-xl sm:rounded-2xl border p-2 sm:p-4 text-center transition-all duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] ${
                     isMine
                       ? "border-primary bg-primary text-primary-foreground shadow-md"
                       : isAvail
@@ -185,7 +185,7 @@ const CompartmentSlide: React.FC = () => {
                   }`}
                 >
                   <div
-                    className={`mb-2 text-xs font-bold ${
+                    className={`mb-1 sm:mb-2 text-[10px] sm:text-xs font-bold ${
                       isMine
                         ? "text-primary-foreground/90"
                         : "text-muted-foreground"
@@ -195,22 +195,22 @@ const CompartmentSlide: React.FC = () => {
                   </div>
                   {isAvail ? (
                     <>
-                      <BedDouble className="mx-auto mb-1 h-5 w-5 text-primary" />
-                      <div className="text-[10px] font-extrabold text-primary">
+                      <BedDouble className="mx-auto mb-1 h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                      <div className="text-[9px] sm:text-[10px] font-extrabold text-primary">
                         TRỐNG
                       </div>
                     </>
                   ) : (
                     <>
                       <div
-                        className={`truncate text-xs font-bold sm:text-sm ${
+                        className={`truncate text-[11px] sm:text-xs font-bold sm:text-sm ${
                           isMine ? "text-primary-foreground" : "text-foreground"
                         }`}
                       >
                         {bed.name}
                       </div>
                       <div
-                        className={`mt-1 text-[10px] font-medium ${
+                        className={`mt-0.5 text-[9px] sm:text-[10px] font-medium ${
                           isMine
                             ? "text-primary-foreground/80"
                             : "text-muted-foreground"
@@ -317,28 +317,28 @@ export const MyRoomPage: React.FC = () => {
   ]
 
   return (
-    <div className="mx-auto max-w-[1440px] space-y-8 pb-16">
+    <div className="mx-auto max-w-[1440px] space-y-4 sm:space-y-6 lg:space-y-8 pb-16">
       {/* 01. TOP UNIT SUMMARY & OPERATIONAL ACTION BAR */}
       <ScrollReveal className={showActionsDropdown ? "relative z-30" : "relative z-10"}>
         <div
-          className={`ui-card-interactive relative flex flex-col justify-between gap-6 rounded-2xl border border-border bg-card p-6 shadow-xs sm:p-8 xl:flex-row xl:items-center ${
+          className={`ui-card-interactive relative flex flex-col justify-between gap-4 sm:gap-6 rounded-2xl border border-border bg-card p-4 sm:p-6 sm:p-8 shadow-xs xl:flex-row xl:items-center ${
             showActionsDropdown ? "z-30" : "z-10"
           }`}
         >
-          <div className="flex items-start gap-4">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-secondary text-secondary-foreground shadow-xs">
-              <DoorClosed className="h-8 w-8" />
+          <div className="flex items-start gap-3 sm:gap-4">
+            <div className="flex h-12 w-12 sm:h-16 sm:w-16 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl bg-secondary text-secondary-foreground shadow-xs">
+              <DoorClosed className="h-6 w-6 sm:h-8 sm:w-8" />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1 sm:space-y-2 min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-foreground">
                   Phòng A205
                 </h1>
-                <span className="rounded-lg bg-secondary/10 px-2.5 py-1 text-xs font-bold tracking-wider text-secondary uppercase">
+                <span className="rounded-lg bg-secondary/10 px-2 sm:px-2.5 py-0.5 sm:py-1 text-[11px] sm:text-xs font-bold tracking-wider text-secondary uppercase">
                   Khu A · Tầng 2
                 </span>
               </div>
-              <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground sm:text-sm">
+              <p className="flex flex-wrap items-center gap-x-2 sm:gap-x-3 gap-y-1 text-xs text-muted-foreground sm:text-sm">
                 <span className="font-bold text-foreground">
                   Buồng B (Balcony Wing)
                 </span>
@@ -347,17 +347,17 @@ export const MyRoomPage: React.FC = () => {
                   Giường G03 (Tầng dưới)
                 </span>
                 <span>•</span>
-                <span>Học kỳ 1 Năm học 2026–2027 (Hết hạn: 15/01/2027)</span>
+                <span>Học kỳ Fall 2026 (Hết hạn: 15/01/2027)</span>
               </p>
             </div>
           </div>
 
           {/* Quick Action Dropdown Menu */}
-          <div className="relative z-30">
+          <div className="relative z-30 w-full xl:w-auto">
             <Button
               variant="secondary"
               onClick={() => setShowActionsDropdown(!showActionsDropdown)}
-              className="gap-2 font-bold"
+              className="gap-2 font-bold w-full xl:w-auto justify-center text-xs sm:text-sm h-10 sm:h-11"
             >
               <span>Thao tác & Tiện ích phòng</span>
               <ChevronDown
@@ -373,7 +373,7 @@ export const MyRoomPage: React.FC = () => {
                   className="fixed inset-0 z-40"
                   onClick={() => setShowActionsDropdown(false)}
                 />
-                <div className="absolute right-0 z-50 mt-2 w-60 rounded-2xl border border-border bg-card p-2 shadow-2xl">
+                <div className="absolute right-0 left-0 sm:left-auto sm:right-0 z-50 mt-2 w-full sm:w-60 rounded-2xl border border-border bg-card p-2 shadow-2xl">
                   <button
                     onClick={() => {
                       setShowActionsDropdown(false)
@@ -440,14 +440,14 @@ export const MyRoomPage: React.FC = () => {
 
       {/* 03. ROOMMATES ROSTER */}
       <ScrollReveal className="relative z-0">
-        <div className="ui-card-interactive space-y-6 rounded-2xl border border-border bg-card p-6 shadow-xs sm:p-8">
-          <div className="flex items-center justify-between border-b border-border pb-4">
-            <div className="flex items-center gap-4">
-              <span className="rounded-xl bg-secondary/10 p-2.5 text-secondary">
-                <Users className="h-5 w-5" />
+        <div className="ui-card-interactive space-y-4 sm:space-y-6 rounded-2xl border border-border bg-card p-4 sm:p-6 sm:p-8 shadow-xs">
+          <div className="flex items-center justify-between border-b border-border pb-3 sm:pb-4">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <span className="rounded-xl bg-secondary/10 p-2 sm:p-2.5 text-secondary">
+                <Users className="h-4 w-4 sm:h-5 sm:w-5" />
               </span>
               <div>
-                <h3 className="text-lg font-bold text-foreground sm:text-xl">
+                <h3 className="text-base sm:text-lg font-bold text-foreground sm:text-xl">
                   Danh Sách Bạn Cùng Buồng B
                 </h3>
               </div>
@@ -459,12 +459,12 @@ export const MyRoomPage: React.FC = () => {
 
           <StaggerContainer
             staggerDelay={0.1}
-            className="grid grid-cols-1 gap-6 md:grid-cols-2"
+            className="grid grid-cols-1 gap-3 sm:gap-6 md:grid-cols-2"
           >
             {roommates.map((rm, idx) => (
               <StaggerItem key={idx}>
                 <div
-                  className={`ui-card-interactive flex h-full flex-col justify-between gap-4 rounded-2xl border p-6 sm:flex-row sm:items-center ${
+                  className={`ui-card-interactive flex h-full flex-col justify-between gap-3 sm:gap-4 rounded-xl sm:rounded-2xl border p-3.5 sm:p-6 sm:flex-row sm:items-center ${
                     rm.isMe
                       ? "border-primary/40 bg-primary/5 ring-1 ring-primary/20"
                       : "border-border bg-muted/40"

@@ -82,8 +82,8 @@ export const ProfilePage: React.FC = () => {
       {/* TOP PROFILE HEADER BANNER (CHUNG CHO CẢ CÁN BỘ & SINH VIÊN)                */}
       {/* ========================================================================= */}
       <ScrollReveal direction="up" distance={16}>
-        <div className="rounded-3xl border border-border bg-card p-6 sm:p-8 shadow-xs ui-card-interactive">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+        <div className="rounded-2xl sm:rounded-3xl border border-border bg-card p-4 sm:p-6 sm:p-8 shadow-xs ui-card-interactive">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
           <div className="flex items-center gap-5">
             <div className="relative">
               <img
@@ -134,7 +134,7 @@ export const ProfilePage: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 self-stretch sm:self-center">
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto self-stretch sm:self-center">
             {!isEditing ? (
               <button
                 onClick={() => setIsEditing(true)}

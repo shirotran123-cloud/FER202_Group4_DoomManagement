@@ -464,41 +464,50 @@ export const AdminOverviewView: React.FC = () => {
 
       {/* Main Switcher: 3 Tabs (Quản trị 4 Tòa, Cư dân toàn trường, Cấu hình web hệ thống) */}
       <ScrollReveal>
-        <div className="flex max-w-2xl gap-2 overflow-x-auto rounded-2xl border border-border bg-muted/70 p-2">
+        <div className="no-scrollbar -mx-0.5 flex max-w-2xl gap-1.5 overflow-x-auto rounded-2xl border border-border bg-card p-1.5 sm:gap-2 sm:p-2">
           <button
             onClick={() => setActiveTab("BUILDINGS")}
-            className={`ui-btn-interactive flex flex-1 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold ${
+            className={`ui-btn-interactive flex flex-1 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-xl px-2.5 py-2 text-xs font-bold sm:px-4 sm:py-2.5 ${
               activeTab === "BUILDINGS"
                 ? "bg-secondary font-extrabold text-secondary-foreground shadow-xs"
-                : "text-muted-foreground hover:bg-card hover:text-foreground"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
             }`}
           >
-            <Building2 className="h-4 w-4" />
-            <span>Quản Trị 4 Tòa KTX ({CAMPUS_BUILDINGS.length})</span>
+            <Building2 className="h-4 w-4 shrink-0" />
+            <span className="truncate">
+              <span className="sm:hidden">4 Tòa KTX</span>
+              <span className="hidden sm:inline">Quản Trị 4 Tòa KTX ({CAMPUS_BUILDINGS.length})</span>
+            </span>
           </button>
 
           <button
             onClick={() => setActiveTab("STUDENTS")}
-            className={`ui-btn-interactive flex flex-1 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold ${
+            className={`ui-btn-interactive flex flex-1 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-xl px-2.5 py-2 text-xs font-bold sm:px-4 sm:py-2.5 ${
               activeTab === "STUDENTS"
                 ? "bg-secondary font-extrabold text-secondary-foreground shadow-xs"
-                : "text-muted-foreground hover:bg-card hover:text-foreground"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
             }`}
           >
-            <Users className="h-4 w-4" />
-            <span>Cư Dân Toàn Trường ({MOCK_RESIDENTS_REGISTRY.length})</span>
+            <Users className="h-4 w-4 shrink-0" />
+            <span className="truncate">
+              <span className="sm:hidden">Cư dân ({MOCK_RESIDENTS_REGISTRY.length})</span>
+              <span className="hidden sm:inline">Cư Dân Toàn Trường ({MOCK_RESIDENTS_REGISTRY.length})</span>
+            </span>
           </button>
 
           <button
             onClick={() => setActiveTab("SYSTEM")}
-            className={`ui-btn-interactive flex flex-1 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold ${
+            className={`ui-btn-interactive flex flex-1 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-xl px-2.5 py-2 text-xs font-bold sm:px-4 sm:py-2.5 ${
               activeTab === "SYSTEM"
                 ? "bg-secondary font-extrabold text-secondary-foreground shadow-xs"
-                : "text-muted-foreground hover:bg-card hover:text-foreground"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
             }`}
           >
-            <Globe className="h-4 w-4" />
-            <span>Quản Trị Web & Hạ Tầng</span>
+            <Globe className="h-4 w-4 shrink-0" />
+            <span className="truncate">
+              <span className="sm:hidden">Hạ tầng Web</span>
+              <span className="hidden sm:inline">Quản Trị Web & Hạ Tầng</span>
+            </span>
           </button>
         </div>
       </ScrollReveal>

@@ -19,8 +19,8 @@ export const AppLayout: React.FC = () => {
         <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
         {/* Scrollable Page Body with 8pt grid spacing and >=40% breathing white space */}
-        <main className="relative w-full flex-1 bg-transparent pt-[72px] pb-24 lg:pb-12">
-          <div className="page-content mx-auto max-w-[1440px] space-y-8 p-6 sm:p-8 lg:p-10">
+        <main className="relative w-full flex-1 bg-transparent pt-[68px] sm:pt-[72px] pb-24 lg:pb-12">
+          <div className="page-content mx-auto max-w-[1440px] space-y-4 sm:space-y-6 lg:space-y-8 p-3.5 sm:p-6 lg:p-10">
             <Outlet />
           </div>
         </main>

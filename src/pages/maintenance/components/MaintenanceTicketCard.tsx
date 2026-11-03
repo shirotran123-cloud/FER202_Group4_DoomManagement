@@ -54,16 +54,16 @@ export const MaintenanceTicketCard: React.FC<MaintenanceTicketCardProps> = ({
 
   return (
     <Card
-      className={`group relative flex flex-col justify-between p-6 ${
+      className={`group relative flex flex-col justify-between p-4 sm:p-6 ${
         isEmergency ? "border-destructive/40" : ""
       }`}
     >
       <div>
         {/* Tiêu đề & Mô tả (Luôn hiển thị) */}
-        <h3 className="text-lg font-bold leading-snug text-foreground">
+        <h3 className="text-base sm:text-lg font-bold leading-snug text-foreground">
           {ticket.title}
         </h3>
-        <p className="mt-2 text-sm leading-relaxed font-normal text-muted-foreground">
+        <p className="mt-1.5 sm:mt-2 text-xs sm:text-sm leading-relaxed font-normal text-muted-foreground">
           {ticket.description}
         </p>
 

@@ -332,7 +332,7 @@ export const MobileAppPage: React.FC = () => {
     <div className="space-y-6 pb-16">
       {/* Top Page Header Banner */}
       <ScrollReveal direction="up" distance={16}>
-        <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-xs sm:p-8">
+        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-border bg-card p-4 sm:p-6 sm:p-8 shadow-xs ui-card-interactive">
           <div className="pointer-events-none absolute -top-16 -right-16 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-20 right-40 h-60 w-60 rounded-full bg-secondary/10 blur-2xl" />
 
@@ -378,7 +378,7 @@ export const MobileAppPage: React.FC = () => {
           <div className="space-y-6 lg:col-span-7">
             <ScrollReveal direction="up" delay={0.08} distance={20}>
               <div
-                className={`relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-md transition-all sm:p-8 ui-card-interactive ${
+                className={`relative overflow-hidden rounded-2xl border border-border bg-card p-4 sm:p-6 sm:p-8 shadow-md transition-all ui-card-interactive ${
                   isHighContrast ? "ring-2 ring-primary" : ""
                 }`}
               >
@@ -404,7 +404,7 @@ export const MobileAppPage: React.FC = () => {
               <div className="my-6 flex flex-col items-center justify-center">
                 <div className="relative mx-auto rounded-3xl border-4 border-primary/40 bg-white p-5 shadow-xl dark:border-emerald-500/40">
                   {/* Clean High-Resolution QR Graphic */}
-                  <div className="relative h-60 w-60 sm:h-64 sm:w-64">
+                  <div className="relative h-52 w-52 sm:h-64 sm:w-64">
                     <div className="grid h-full w-full grid-cols-7 gap-1.5 rounded-2xl bg-slate-950 p-2">
                       {Array.from({ length: 49 }).map((_, i) => (
                         <div

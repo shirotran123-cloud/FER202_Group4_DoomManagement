@@ -161,18 +161,18 @@ export const ManagerDashboardPage: React.FC = () => {
         </div>
       )}
 
-      {/* Hero Header (8pt Grid: p-8 = 32px) */}
+      {/* Hero Header (8pt Grid: p-4 sm:p-6 sm:p-8) */}
       <ScrollReveal>
-        <Card className="p-6 sm:p-8">
+        <Card className="p-4 sm:p-6 sm:p-8">
           <div className="flex flex-col gap-6">
             <div className="space-y-2">
               <span className="inline-block rounded-lg bg-secondary/10 px-3 py-1 text-xs font-bold tracking-wider text-secondary uppercase">
                 Trung Tâm Điều Hành Quản Lý
               </span>
-              <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-foreground">
                 Bàn Làm Việc Quản Lý Ký Túc Xá
               </h1>
-              <p className="max-w-2xl text-sm leading-relaxed font-normal text-muted-foreground sm:text-base">
+              <p className="max-w-2xl text-xs sm:text-sm leading-relaxed font-normal text-muted-foreground">
                 Hệ thống giám sát chỉ số lấp đầy buồng giường, kiểm soát tiêu thụ
                 điện nước và xuất báo cáo nghiệp vụ.
               </p>
@@ -183,18 +183,19 @@ export const ManagerDashboardPage: React.FC = () => {
         </Card>
       </ScrollReveal>
 
-      {/* Main Tabs Navigation (8pt Grid: p-2 = 8px, gap-2 = 8px) */}
+      {/* Main Tabs Navigation (8pt Grid: p-1.5 = 6px, gap-1.5 = 6px) */}
       <ScrollReveal delay={0.05}>
-        <div className="flex min-w-0 flex-col gap-2 rounded-2xl border border-border bg-muted/70 p-2 sm:flex-row">
+        <div className="grid grid-cols-2 gap-1.5 rounded-2xl border border-border bg-card p-1.5 sm:flex sm:gap-2 sm:p-2">
           <Button
             variant={activeTab === "OVERVIEW" ? "secondary" : "ghost"}
             size="default"
             onClick={() => setActiveTab("OVERVIEW")}
-            className="min-w-0 flex-1 gap-2 font-bold whitespace-normal"
+            className="h-10 min-w-0 flex-1 gap-1.5 px-2 py-1.5 text-xs font-bold sm:h-11 sm:gap-2 sm:px-4 sm:text-sm"
           >
-            <PieChart className="h-4 w-4" />
-            <span className="min-w-0 text-center">
-              Dashboard Trực Quan Công Suất & Năng Lượng
+            <PieChart className="h-4 w-4 shrink-0" />
+            <span className="truncate">
+              <span className="sm:hidden">Tổng quan</span>
+              <span className="hidden sm:inline">Dashboard Công Suất & Năng Lượng</span>
             </span>
           </Button>
 
@@ -202,11 +203,12 @@ export const ManagerDashboardPage: React.FC = () => {
             variant={activeTab === "REPORTS" ? "secondary" : "ghost"}
             size="default"
             onClick={() => setActiveTab("REPORTS")}
-            className="min-w-0 flex-1 gap-2 font-bold whitespace-normal"
+            className="h-10 min-w-0 flex-1 gap-1.5 px-2 py-1.5 text-xs font-bold sm:h-11 sm:gap-2 sm:px-4 sm:text-sm"
           >
-            <FileSpreadsheet className="h-4 w-4" />
-            <span className="min-w-0 text-center">
-              Báo Cáo Nghiệp Vụ & Dữ Liệu Tạm Trú / Công Nợ (.xlsx)
+            <FileSpreadsheet className="h-4 w-4 shrink-0" />
+            <span className="truncate">
+              <span className="sm:hidden">Báo cáo Excel</span>
+              <span className="hidden sm:inline">Báo Cáo Nghiệp Vụ & Dữ Liệu (.xlsx)</span>
             </span>
           </Button>
         </div>
@@ -234,12 +236,12 @@ export const ManagerDashboardPage: React.FC = () => {
       {/* ========================================================= */}
       {activeTab === "REPORTS" && (
         <ScrollReveal>
-          <Card className="space-y-6 p-6 sm:p-8 shadow-xs">
+          <Card className="space-y-4 sm:space-y-6 p-3.5 sm:p-6 lg:p-8 shadow-xs">
             {/* Header Toolbar: Tabs, Bộ lọc theo kỳ, Tra cứu, Nút xuất Excel/CSV */}
-            <div className="flex flex-col gap-4 border-b border-border pb-6 xl:flex-row xl:items-center xl:justify-between">
+            <div className="flex flex-col gap-3.5 border-b border-border pb-4 sm:pb-6 xl:flex-row xl:items-center xl:justify-between">
               {/* Sub-Tabs: Tạm trú vs Công nợ & Bộ lọc theo kỳ */}
-              <div className="flex flex-wrap items-center gap-4">
-                <div className="flex gap-2 rounded-xl border border-border bg-muted/60 p-1.5 text-xs">
+              <div className="flex flex-col gap-2.5 w-full sm:flex-row sm:flex-wrap sm:items-center sm:w-auto">
+                <div className="grid grid-cols-2 gap-1 w-full rounded-xl border border-border bg-muted/60 p-1 text-xs sm:flex sm:w-auto sm:p-1.5">
                   <Button
                     variant={
                       reportSubTab === "TEMPORARY_RESIDENCE"
@@ -248,10 +250,13 @@ export const ManagerDashboardPage: React.FC = () => {
                     }
                     size="sm"
                     onClick={() => setReportSubTab("TEMPORARY_RESIDENCE")}
-                    className="gap-2 text-xs font-bold"
+                    className="min-w-0 flex-1 justify-center gap-1.5 px-2 py-1.5 text-xs font-bold sm:px-3 h-8 sm:h-9"
                   >
-                    <Users className="h-3.5 w-3.5" />
-                    <span>1. Danh Sách Tạm Trú ({filteredResidents.length})</span>
+                    <Users className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">
+                      <span className="sm:hidden">Tạm trú ({filteredResidents.length})</span>
+                      <span className="hidden sm:inline">1. Danh Sách Tạm Trú ({filteredResidents.length})</span>
+                    </span>
                   </Button>
                   <Button
                     variant={
@@ -259,21 +264,24 @@ export const ManagerDashboardPage: React.FC = () => {
                     }
                     size="sm"
                     onClick={() => setReportSubTab("OVERDUE_DEBTS")}
-                    className="gap-2 text-xs font-bold"
+                    className="min-w-0 flex-1 justify-center gap-1.5 px-2 py-1.5 text-xs font-bold sm:px-3 h-8 sm:h-9"
                   >
-                    <DollarSign className="h-3.5 w-3.5" />
-                    <span>
-                      2. Danh Sách Công Nợ Quá Hạn ({filteredDebts.length})
+                    <DollarSign className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">
+                      <span className="sm:hidden">Công nợ ({filteredDebts.length})</span>
+                      <span className="hidden sm:inline">2. Danh Sách Công Nợ ({filteredDebts.length})</span>
                     </span>
                   </Button>
                 </div>
 
                 {/* Bộ lọc theo kỳ */}
-                <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-xs shadow-2xs">
-                  <Filter className="h-4 w-4 shrink-0 text-primary" />
-                  <span className="font-semibold text-muted-foreground">
-                    Học kỳ:
-                  </span>
+                <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-1.5 sm:px-4 sm:py-2 text-xs shadow-2xs w-full sm:w-auto justify-between sm:justify-start">
+                  <div className="flex items-center gap-1.5">
+                    <Filter className="h-3.5 w-3.5 shrink-0 text-primary" />
+                    <span className="font-semibold text-muted-foreground whitespace-nowrap">
+                      Học kỳ:
+                    </span>
+                  </div>
                   <select
                     value={selectedSemester}
                     onChange={(e) => setSelectedSemester(e.target.value)}
@@ -289,17 +297,18 @@ export const ManagerDashboardPage: React.FC = () => {
               </div>
 
               {/* Tra cứu & Nút xuất file Excel/CSV */}
-              <div className="flex flex-wrap items-center gap-4">
+              <div className="flex flex-col gap-2.5 w-full sm:flex-row sm:items-center sm:w-auto">
                 <div className="relative w-full sm:w-64">
                   <Input
                     icon={<Search className="h-4 w-4" />}
                     value={searchReportQuery}
                     onChange={(e) => setSearchReportQuery(e.target.value)}
-                    placeholder="Tra cứu MSSV, họ tên, phòng..."
+                    placeholder="Tra cứu MSSV, tên, phòng..."
+                    className="h-9 sm:h-10 text-xs"
                   />
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 w-full sm:w-auto">
                   <Button
                     variant="default"
                     size="default"
@@ -308,11 +317,11 @@ export const ManagerDashboardPage: React.FC = () => {
                         ? handleExportResidenceExcel
                         : handleExportOverdueDebtsExcel
                     }
-                    className="gap-2 text-xs font-bold shadow-xs"
+                    className="w-full sm:w-auto justify-center gap-2 text-xs font-bold shadow-xs h-9 sm:h-10"
                   >
-                    <Download className="h-4 w-4" />
+                    <Download className="h-4 w-4 shrink-0" />
                     <span>Xuất Excel (.xlsx)</span>
-                    <ArrowRight className="h-3.5 w-3.5" />
+                    <ArrowRight className="h-3.5 w-3.5 shrink-0" />
                   </Button>
                 </div>
               </div>
