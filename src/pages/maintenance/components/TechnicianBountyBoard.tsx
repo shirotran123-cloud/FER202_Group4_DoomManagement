@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import { SlidingNumberPrice } from "@/components/ui/sliding-number-price"
 import {
   Wrench,
   Zap,
@@ -338,7 +339,7 @@ export const TechnicianBountyBoard: React.FC<TechnicianBountyBoardProps> = ({
                           </span>
                           {ticket.resolution.totalMaterialCost ? (
                             <span className="font-mono font-bold text-emerald-700 dark:text-emerald-400">
-                              Tổng chi phí: ₫{ticket.resolution.totalMaterialCost.toLocaleString()}
+                              Tổng chi phí: <SlidingNumberPrice number={ticket.resolution.totalMaterialCost} />
                             </span>
                           ) : null}
                         </div>

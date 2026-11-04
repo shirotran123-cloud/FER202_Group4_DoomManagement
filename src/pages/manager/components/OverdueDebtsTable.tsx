@@ -1,5 +1,6 @@
 import React from "react"
 import { Badge } from "@/components/ui/badge"
+import { SlidingNumberPrice } from "@/components/ui/sliding-number-price"
 import {
   Table,
   TableHeader,
@@ -57,13 +58,13 @@ export const OverdueDebtsTable: React.FC<OverdueDebtsTableProps> = ({
             </TableCell>
             <TableCell className="text-muted-foreground whitespace-nowrap">{debt.billingPeriod}</TableCell>
             <TableCell className="text-right font-mono whitespace-nowrap">
-              {debt.roomDebt.toLocaleString("vi-VN")} đ
+              <SlidingNumberPrice number={debt.roomDebt} prefix="" suffix=" đ" />
             </TableCell>
             <TableCell className="text-right font-mono whitespace-nowrap">
-              {debt.utilityDebt.toLocaleString("vi-VN")} đ
+              <SlidingNumberPrice number={debt.utilityDebt} prefix="" suffix=" đ" />
             </TableCell>
             <TableCell className="text-right font-mono font-bold text-destructive whitespace-nowrap">
-              {debt.totalDebt.toLocaleString("vi-VN")} đ
+              <SlidingNumberPrice number={debt.totalDebt} prefix="" suffix=" đ" />
             </TableCell>
             <TableCell className="text-right whitespace-nowrap">
               {debt.status === "CẢNH BÁO ĐÌNH CHỈ" ? (

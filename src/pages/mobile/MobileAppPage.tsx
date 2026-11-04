@@ -28,6 +28,7 @@ import {
   ShieldCheck,
 } from "lucide-react"
 import { Bell as AnimatedBell } from "@/components/animate-ui/icons/bell"
+import { RollingText } from "@animate-ui/react/primitives/texts/rolling"
 import {
   recordGateScan,
   getGateLogs,
@@ -583,9 +584,13 @@ export const MobileAppPage: React.FC = () => {
                 <span>Hệ thống Kiểm Soát An Ninh Cổng 24/7 · Cửa Xoay Tự Động</span>
               </div>
               <h1 className="flex items-center gap-2 text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-                {appRole === "guard"
-                  ? "Bàn Điều Phối & Quét Thẻ Cổng An Ninh (Guard Station)"
-                  : "Thẻ QR Ra Vào Cổng & Giờ Giới Nghiêm"}
+                <RollingText
+                  text={
+                    appRole === "guard"
+                      ? "Bàn Điều Phối & Quét Thẻ Cổng An Ninh (Guard Station)"
+                      : "Thẻ QR Ra Vào Cổng & Giờ Giới Nghiêm"
+                  }
+                />
               </h1>
               <p className="text-xs sm:text-sm text-muted-foreground">
                 {appRole === "guard"

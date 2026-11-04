@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react"
 import { Modal } from "@/components/ui/modal"
+import { SlidingNumberPrice } from "@/components/ui/sliding-number-price"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { CheckCircle2, Plus, Trash2, Camera, X } from "lucide-react"
@@ -157,10 +158,10 @@ export const CompleteTicketModal: React.FC<CompleteTicketModalProps> = ({
                   <span className="text-foreground font-medium">
                     {m.name} x {m.quantity} ={" "}
                     <strong className="text-primary font-mono">
-                      {(m.unitCost * m.quantity).toLocaleString("vi-VN")} đ
+                      <SlidingNumberPrice number={m.unitCost * m.quantity} prefix="" suffix=" đ" />
                     </strong>{" "}
                     <span className="text-[10px] text-muted-foreground">
-                      ({m.unitCost.toLocaleString("vi-VN")} đ/cái)
+                      (<SlidingNumberPrice number={m.unitCost} prefix="" suffix=" đ/cái" />)
                     </span>
                   </span>
                   <button
@@ -176,10 +177,11 @@ export const CompleteTicketModal: React.FC<CompleteTicketModalProps> = ({
               <div className="text-right text-xs font-bold text-foreground pt-1">
                 Tổng chi phí vật tư:{" "}
                 <span className="text-primary font-mono">
-                  {materials
-                    .reduce((sum, m) => sum + m.unitCost * m.quantity, 0)
-                    .toLocaleString("vi-VN")}{" "}
-                  đ
+                  <SlidingNumberPrice
+                    number={materials.reduce((sum, m) => sum + m.unitCost * m.quantity, 0)}
+                    prefix=""
+                    suffix=" đ"
+                  />
                 </span>
               </div>
             </div>

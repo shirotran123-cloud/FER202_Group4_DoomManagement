@@ -17,6 +17,7 @@ import {
   StaggerContainer,
   StaggerItem,
 } from "@/components/ui/scroll-reveal"
+import { RollingText } from "@animate-ui/react/primitives/texts/rolling"
 import {
   Wrench,
   Plus,
@@ -376,9 +377,13 @@ export const MaintenancePage: React.FC = () => {
               </div>
               <div className="space-y-1 min-w-0">
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-foreground">
-                  {user?.role === "manager" || user?.role === "admin"
-                    ? "Điều Phối Báo Hỏng & Bảo Trì Tòa A"
-                    : "Báo Hỏng & Yêu Cầu Sửa Chữa"}
+                  <RollingText
+                    text={
+                      user?.role === "manager" || user?.role === "admin"
+                        ? "Điều Phối Báo Hỏng & Bảo Trì Tòa A"
+                        : "Báo Hỏng & Yêu Cầu Sửa Chữa"
+                    }
+                  />
                 </h1>
                 <p className="text-xs sm:text-sm leading-relaxed font-normal text-muted-foreground line-clamp-2 sm:line-clamp-none">
                   {user?.role === "manager" || user?.role === "admin"

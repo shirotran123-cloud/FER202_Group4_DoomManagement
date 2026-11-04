@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import { ContractRenewalModal } from "@/components/contract/ContractRenewalModal"
 import { useAuth } from "@/contexts/useAuth"
 import { ScrollReveal } from "@/components/ui/scroll-reveal"
+import { SlidingNumberPrice } from "@/components/ui/sliding-number-price"
 import {
   User,
   Phone,
@@ -777,9 +778,11 @@ export const ProfilePage: React.FC = () => {
                     <div>
                       <p className="text-[10px] text-muted-foreground">Tình trạng công nợ</p>
                       <p className="font-bold text-emerald-600 mt-0.5">
-                        {user.dormitoryStatus.debtStatus === 0
-                          ? "0 VNĐ (Không nợ)"
-                          : `${user.dormitoryStatus.debtStatus.toLocaleString()} VNĐ`}
+                        {user.dormitoryStatus.debtStatus === 0 ? (
+                          "0 VNĐ (Không nợ)"
+                        ) : (
+                          <SlidingNumberPrice number={user.dormitoryStatus.debtStatus} prefix="" suffix=" VNĐ" />
+                        )}
                       </p>
                     </div>
                     <CheckCircle2 className="h-5 w-5 text-emerald-500" />

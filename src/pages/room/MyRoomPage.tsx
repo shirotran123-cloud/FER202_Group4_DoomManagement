@@ -8,6 +8,7 @@ import {
   StaggerContainer,
   StaggerItem,
 } from "@/components/ui/scroll-reveal"
+import { RollingText } from "@animate-ui/react/primitives/texts/rolling"
 import { Link } from "react-router-dom"
 import {
   DoorClosed,
@@ -47,11 +48,11 @@ const COMPARTMENTS = [
     occupancy: "5/6",
     myComp: true,
     beds: [
-      { g: 1, tier: "Dưới", name: "B. Trần", status: "occupied" },
+      { g: 1, tier: "Dưới", name: "T. Tiến", status: "occupied" },
       { g: 2, tier: "Trên", name: "L. Nam", status: "occupied" },
-      { g: 3, tier: "Dưới", name: "Vinh", status: "mine" },
-      { g: 4, tier: "Trên", name: "V. Thanh", status: "occupied" },
-      { g: 5, tier: "Dưới", name: "N. Huy", status: "occupied" },
+      { g: 3, tier: "Dưới", name: "Nguyễn Hoàng Vinh", status: "mine" },
+      { g: 4, tier: "Trên", name: "T. Trung", status: "occupied" },
+      { g: 5, tier: "Dưới", name: "Đ. Trung", status: "occupied" },
       { g: 6, tier: "Trên", name: null, status: "available" },
     ],
   },
@@ -88,9 +89,51 @@ const COMPARTMENTS = [
 ]
 
 const CompartmentSlide: React.FC = () => {
-  const [current, setCurrent] = useState(1) // default: Buồng B (index 1)
+  const { user } = useAuth()
 
-  const comp = COMPARTMENTS[current]
+  const userRoom = user?.dormitoryStatus?.room || "A205"
+  const userBedCode = user?.dormitoryStatus?.bedCode || "A205-B-G03"
+  const userComp = user?.dormitoryStatus?.compartment || "Buồng B (Balcony Wing)"
+  const userCompId = userComp.includes("C")
+    ? "C"
+    : userComp.includes("A")
+      ? "A"
+      : userComp.includes("D")
+        ? "D"
+        : "B"
+
+  const userSlotMatch = userBedCode.match(/G0?(\d)/i)
+  const userSlot = userSlotMatch ? parseInt(userSlotMatch[1], 10) : 3
+
+  const defaultCompIndex = Math.max(
+    0,
+    COMPARTMENTS.findIndex((c) => c.id === userCompId)
+  )
+  const [current, setCurrent] = useState(defaultCompIndex >= 0 ? defaultCompIndex : 1)
+
+  const rawComp = COMPARTMENTS[current]
+  const isMyComp = rawComp.id === userCompId
+
+  // Dynamically update bed status and display name to match logged in student
+  const dynamicBeds = rawComp.beds.map((bed) => {
+    const isThisMine = isMyComp && bed.g === userSlot
+    return {
+      ...bed,
+      status: isThisMine
+        ? ("mine" as const)
+        : bed.status === "mine"
+          ? ("occupied" as const)
+          : bed.status,
+      name: isThisMine ? (user?.fullName || "Nguyễn Hoàng Vinh") : bed.name,
+    }
+  })
+
+  const comp = {
+    ...rawComp,
+    myComp: isMyComp,
+    beds: dynamicBeds,
+  }
+
   const prev = () =>
     setCurrent((c) => (c - 1 + COMPARTMENTS.length) % COMPARTMENTS.length)
   const next = () => setCurrent((c) => (c + 1) % COMPARTMENTS.length)
@@ -101,7 +144,7 @@ const CompartmentSlide: React.FC = () => {
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3 sm:px-6 sm:py-4">
         <div>
           <h2 className="text-sm sm:text-base lg:text-lg font-bold text-foreground">
-            Sơ Đồ Phân Bổ Giường Phòng A205
+            <RollingText text={`Sơ Đồ Phân Bổ Giường Phòng ${userRoom}`} />
           </h2>
         </div>
         <div className="flex items-center gap-3 sm:gap-4 text-[11px] sm:text-xs">
@@ -204,19 +247,20 @@ const CompartmentSlide: React.FC = () => {
                     <>
                       <div
                         className={`truncate text-[11px] sm:text-xs font-bold sm:text-sm ${
-                          isMine ? "text-primary-foreground" : "text-foreground"
+                          isMine ? "text-primary-foreground font-black" : "text-foreground"
                         }`}
+                        title={bed.name || ""}
                       >
                         {bed.name}
                       </div>
                       <div
                         className={`mt-0.5 text-[9px] sm:text-[10px] font-medium ${
                           isMine
-                            ? "text-primary-foreground/80"
+                            ? "text-primary-foreground/90 font-semibold"
                             : "text-muted-foreground"
                         }`}
                       >
-                        {isMine ? "Tầng dưới" : "Đã ở"}
+                        {isMine ? "Giường bạn · " + (bed.tier === "Dưới" ? "Tầng dưới" : "Tầng trên") : "Đã ở"}
                       </div>
                     </>
                   )}
@@ -269,16 +313,33 @@ export const MyRoomPage: React.FC = () => {
   const [showRenewModal, setShowRenewModal] = useState(false)
   const [showContractModal, setShowContractModal] = useState(false)
 
+  const userRoom = user?.dormitoryStatus?.room || "A205"
+  const userBedCode = user?.dormitoryStatus?.bedCode || "A205-B-G03"
+  const userComp = user?.dormitoryStatus?.compartment || "Buồng B (Balcony Wing)"
+  const userCompId = userComp.includes("C")
+    ? "C"
+    : userComp.includes("A")
+      ? "A"
+      : userComp.includes("D")
+        ? "D"
+        : "B"
+
+  const userSlotMatch = userBedCode.match(/G0?(\d)/i)
+  const userSlot = userSlotMatch ? parseInt(userSlotMatch[1], 10) : 3
+  const isUpper = userSlot % 2 === 0
+  const userSlotLabel = `G0${userSlot}`
+
   const roommates = [
     {
-      name: "Nguyễn Hoàng Vinh (Bạn)",
+      name: `${user?.fullName || "Nguyễn Hoàng Vinh"} (Bạn)`,
       mssv: user?.studentId || "SE182049",
-      bed: "B-G03 (Tầng dưới)",
-      major: "Kỹ thuật phần mềm",
-      phone: "0912 345 678",
+      bed: `${userCompId}-${userSlotLabel} (${isUpper ? "Tầng trên" : "Tầng dưới"})`,
+      major: user?.major || "Kỹ thuật phần mềm",
+      phone: user?.phone || "0912 345 678",
       dutyDay: "Thứ Hai & Thứ Năm",
       isMe: true,
       avatar:
+        user?.avatar ||
         "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
     },
     {
@@ -332,19 +393,19 @@ export const MyRoomPage: React.FC = () => {
             <div className="space-y-1 sm:space-y-2 min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-foreground">
-                  Phòng A205
+                  <RollingText text={`Phòng ${userRoom}`} />
                 </h1>
                 <span className="rounded-lg bg-secondary/10 px-2 sm:px-2.5 py-0.5 sm:py-1 text-[11px] sm:text-xs font-bold tracking-wider text-secondary uppercase">
-                  Khu A · Tầng 2
+                  {user?.dormitoryStatus?.building || "Khu A · Tầng 2"}
                 </span>
               </div>
               <p className="flex flex-wrap items-center gap-x-2 sm:gap-x-3 gap-y-1 text-xs text-muted-foreground sm:text-sm">
                 <span className="font-bold text-foreground">
-                  Buồng B (Balcony Wing)
+                  {userComp}
                 </span>
                 <span>•</span>
                 <span className="font-bold text-primary">
-                  Giường G03 (Tầng dưới)
+                  Giường {userSlotLabel} ({isUpper ? "Tầng trên" : "Tầng dưới"})
                 </span>
                 <span>•</span>
                 <span>Học kỳ Fall 2026 (Hết hạn: 15/01/2027)</span>

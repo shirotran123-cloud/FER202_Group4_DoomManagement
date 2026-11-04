@@ -20,6 +20,10 @@ import {
   X,
   Send,
   Building2,
+  Wrench,
+  AlertCircle,
+  ArrowRight,
+  MessageSquare,
 } from "lucide-react"
 import {
   generateStudentInvoicePDF,
@@ -33,7 +37,19 @@ import {
   subscribeNotifications,
   type SystemNotification,
 } from "@/services/notificationService"
+import {
+  getDisputes,
+  subscribeDisputes,
+  createUtilityDispute,
+  assignTechnicianToDispute,
+  resolveUtilityDispute,
+  submitTechnicianInspection,
+  type UtilityDispute,
+  type UtilityDisputeType,
+} from "@/services/utilityDisputeService"
 import { ScrollReveal, StaggerContainer, StaggerItem } from "@/components/ui/scroll-reveal"
+import { RollingText } from "@animate-ui/react/primitives/texts/rolling"
+import { SlidingNumberPrice } from "@/components/ui/sliding-number-price"
 
 export const BillingPage: React.FC = () => {
   const { user } = useAuth()
@@ -301,7 +317,91 @@ export const BillingPage: React.FC = () => {
     setTimeout(() => setDownloadSuccessToast(null), 4500)
   }
 
-    // =========================================================================
+  // Real-time utility disputes state
+  const [disputes, setDisputes] = useState<UtilityDispute[]>(() => getDisputes())
+  useEffect(() => {
+    const unsub = subscribeDisputes((list) => setDisputes(list))
+    return () => unsub()
+  }, [])
+
+  // Student dispute form state
+  const [disputeType, setDisputeType] = useState<UtilityDisputeType>("ELECTRIC")
+  const [disputeTypeLabel, setDisputeTypeLabel] = useState(
+    "Chỉ số Điện (Nghi ngờ rò rỉ hoặc ghi nhầm)"
+  )
+  const [disputeDesc, setDisputeDesc] = useState("")
+
+  // Tech inspection modal state
+  const [techInspectDispute, setTechInspectDispute] = useState<UtilityDispute | null>(null)
+  const [techInspectNote, setTechInspectNote] = useState("")
+
+  // Manager resolve modal state
+  const [managerResolveDispute, setManagerResolveDispute] = useState<{
+    dispute: UtilityDispute
+    action: "RESOLVED" | "REJECTED"
+  } | null>(null)
+  const [managerResolveNote, setManagerResolveNote] = useState("")
+  const [managerAdjustAmount, setManagerAdjustAmount] = useState(0)
+
+  const handleSendDispute = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!disputeDesc.trim()) return
+
+    createUtilityDispute({
+      room: currentRoom,
+      studentName: user?.fullName || "Trần Bảo Nam",
+      studentId: user?.studentId || "SE185240",
+      studentPhone: user?.phone || "0912 345 678",
+      utilityType: disputeType,
+      utilityTypeLabel: disputeTypeLabel,
+      description: disputeDesc,
+      month: "Tháng 09/2026",
+    })
+
+    setDisputeSent(true)
+    setDisputeDesc("")
+  }
+
+  const handleAssignTech = (id: string) => {
+    assignTechnicianToDispute(id, "Đỗ Mạnh Hùng (KTV)")
+  }
+
+  const handleConfirmTechInspect = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!techInspectDispute) return
+    submitTechnicianInspection({
+      disputeId: techInspectDispute.id,
+      technicianNote:
+        techInspectNote.trim() ||
+        "Đã kiểm tra lại đồng hồ công tơ tại tầng 2, chỉ số hiển thị khớp ảnh chụp.",
+    })
+    setTechInspectDispute(null)
+    setTechInspectNote("")
+  }
+
+  const handleConfirmManagerResolve = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!managerResolveDispute) return
+    resolveUtilityDispute({
+      disputeId: managerResolveDispute.dispute.id,
+      status: managerResolveDispute.action,
+      note:
+        managerResolveNote.trim() ||
+        (managerResolveDispute.action === "RESOLVED"
+          ? "BQL đã chấp thuận điều chỉnh chỉ số."
+          : "BQL đã kiểm tra đối chiếu, số đo hoàn toàn chính xác."),
+      adjustedAmount: managerAdjustAmount || undefined,
+      resolvedBy: user?.fullName || "Vũ Thành Nam (Trưởng BQL KTX)",
+    })
+    setManagerResolveDispute(null)
+    setManagerResolveNote("")
+    setManagerAdjustAmount(0)
+  }
+
+  const roomDispute = disputes.find((d) => d.room.toUpperCase() === currentRoom.toUpperCase())
+  const activeTechDisputes = disputes.filter((d) => d.status === "PENDING" || d.status === "INSPECTING")
+
+  // =========================================================================
   // GIAO DIỆN RIÊNG DÀNH CHO KỸ THUẬT VIÊN TÒA A:
   // CHỈ NHẬP SỐ ĐIỆN, SỐ NƯỚC CỦA PHÒNG VÀ CHỤP ẢNH ĐỐI SOÁT CÔNG TƠ LÊN
   // =========================================================================
@@ -340,6 +440,115 @@ export const BillingPage: React.FC = () => {
             </div>
           </div>
         </ScrollReveal>
+
+        {/* YÊU CẦU KHIẾU NẠI ĐỐI SOÁT CÔNG TƠ DÀNH CHO KỸ THUẬT VIÊN */}
+        {disputes.length > 0 && (
+          <ScrollReveal direction="up" distance={16}>
+            <div className="bg-card rounded-2xl border border-amber-500/40 bg-amber-500/5 p-5 shadow-xs space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-500/20 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <span className="p-2 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400">
+                    <Wrench className="h-5 w-5" />
+                  </span>
+                  <div>
+                    <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                      <span>Yêu Cầu Khiếu Nại Cần Đối Soát Lại Công Tơ</span>
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-white shadow-2xs">
+                        {activeTechDisputes.length} phòng chờ kiểm tra
+                      </span>
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      Sinh viên gửi đơn khiếu nại về số đo. KTV Tòa A vui lòng kiểm tra đối chiếu đồng hồ thực tế và gửi báo cáo xác minh.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-1">
+                {disputes.map((d) => (
+                  <div
+                    key={d.id}
+                    className={`p-4 rounded-xl border transition-all ${
+                      d.room === selectedRoom
+                        ? "border-primary bg-primary/10 ring-1 ring-primary/40 shadow-xs"
+                        : "border-border bg-card hover:border-amber-500/40"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-black text-foreground">Phòng {d.room}</span>
+                          <span className="text-[10px] font-mono text-muted-foreground">({d.id})</span>
+                        </div>
+                        <p className="text-xs font-bold text-primary mt-0.5">{d.utilityTypeLabel}</p>
+                      </div>
+                      <span
+                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${
+                          d.status === "RESOLVED"
+                            ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20"
+                            : d.status === "INSPECTING"
+                              ? "bg-sky-500/10 text-sky-600 border border-sky-500/20"
+                              : d.status === "REJECTED"
+                                ? "bg-rose-500/10 text-rose-600 border border-rose-500/20"
+                                : "bg-amber-500/10 text-amber-600 border border-amber-500/20"
+                        }`}
+                      >
+                        {d.statusLabel}
+                      </span>
+                    </div>
+
+                    <div className="mt-2.5 text-xs text-muted-foreground bg-muted/40 p-2.5 rounded-xl border border-border/40 italic">
+                      "{d.description}"
+                    </div>
+
+                    <div className="mt-2 flex flex-wrap items-center justify-between text-[11px] text-muted-foreground">
+                      <span>Sinh viên: <strong>{d.studentName}</strong> ({d.studentId})</span>
+                      <span>SĐT: <strong className="font-mono">{d.studentPhone}</strong></span>
+                    </div>
+
+                    {d.technicianNote && (
+                      <div className="mt-2 text-[11px] p-2 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-800 dark:text-sky-300">
+                        <strong>Báo cáo KTV:</strong> {d.technicianNote}
+                      </div>
+                    )}
+
+                    {d.managerNote && (
+                      <div className="mt-1 text-[11px] p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300">
+                        <strong>Kết luận BQL:</strong> {d.managerNote}
+                      </div>
+                    )}
+
+                    <div className="mt-3 flex items-center justify-between gap-2 pt-2.5 border-t border-border/50">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedRoom(d.room)
+                          setTechSavedMessage(false)
+                        }}
+                        className="text-xs font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer"
+                      >
+                        <span>Ghi lại chỉ số phòng {d.room}</span>
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setTechInspectDispute(d)
+                          setTechInspectNote(d.technicianNote || "")
+                        }}
+                        className="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-bold hover:bg-primary/90 transition-colors shadow-2xs cursor-pointer flex items-center gap-1.5"
+                      >
+                        <MessageSquare className="h-3.5 w-3.5" />
+                        <span>Báo cáo đối soát</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </ScrollReveal>
+        )}
 
         {/* Form Chốt Số & Chụp Ảnh Điện Nước */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -647,37 +856,43 @@ export const BillingPage: React.FC = () => {
 
       {/* 01. PAGE ACTION HEADER */}
       <ScrollReveal direction="up" distance={16}>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
+        <div className="ui-card-interactive rounded-2xl sm:rounded-3xl border border-border bg-card p-4 sm:p-6 sm:p-8 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
+                  <RollingText
+                    text={
+                      isTechnicianOrManager
+                        ? "Chốt Sổ & Chia Điện Nước • Tòa A"
+                        : "Điện Nước & Hóa Đơn (VietQR)"
+                    }
+                  />
+                </h1>
+                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                  Chu kỳ T09/2026
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                 {isTechnicianOrManager
-                  ? "Chốt Sổ & Chia Điện Nước • Tòa A"
-                  : "Điện Nước & Hóa Đơn (VietQR)"}
-              </h1>
-              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                Chu kỳ T09/2026
-              </span>
+                  ? "Theo dõi tiến độ chốt số công tơ, lập hóa đơn chia tiền tự động và kiểm soát công nợ tòa nhà."
+                  : "Tra cứu chỉ số tiêu thụ, đối soát ảnh công tơ điện nước và thanh toán tự động qua VietQR 24/7."}
+              </p>
             </div>
-            <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-              {isTechnicianOrManager
-                ? "Theo dõi tiến độ chốt số công tơ, lập hóa đơn chia tiền tự động và kiểm soát công nợ tòa nhà."
-                : "Tra cứu chỉ số tiêu thụ, đối soát ảnh công tơ điện nước và thanh toán tự động qua VietQR 24/7."}
-            </p>
-          </div>
 
-          {!isTechnicianOrManager && (
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={handleDownloadStudentInvoice}
-                className="text-xs h-10 gap-2 bg-primary text-white whitespace-nowrap shrink-0 hover:bg-primary/95 shadow-xs cursor-pointer ui-btn-interactive rounded-xl px-4"
-                title="Tải hóa đơn tiền điện nước phòng hiện tại (PDF)"
-              >
-                <Download className="h-4 w-4 shrink-0" />
-                <span>Tải Hóa Đơn (PDF)</span>
-              </Button>
-            </div>
-          )}
+            {!isTechnicianOrManager && (
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={handleDownloadStudentInvoice}
+                  className="text-xs h-10 gap-2 bg-primary text-white whitespace-nowrap shrink-0 hover:bg-primary/95 shadow-xs cursor-pointer ui-btn-interactive rounded-xl px-4"
+                  title="Tải hóa đơn tiền điện nước phòng hiện tại (PDF)"
+                >
+                  <Download className="h-4 w-4 shrink-0" />
+                  <span>Tải Hóa Đơn (PDF)</span>
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       </ScrollReveal>
 
@@ -698,7 +913,7 @@ export const BillingPage: React.FC = () => {
                 </div>
                 <div className="mt-4">
                   <div className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-primary dark:text-[#cee6ef]">
-                    ₫32,766,800
+                    <SlidingNumberPrice number={32766800} />
                   </div>
                   <div className="flex items-center gap-2 mt-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -769,7 +984,7 @@ export const BillingPage: React.FC = () => {
                 </div>
                 <div className="mt-4">
                   <div className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-primary dark:text-[#cee6ef]">
-                    {hasPaid ? "₫0" : `₫${netDue.toLocaleString()}`}
+                    <SlidingNumberPrice number={hasPaid ? 0 : netDue} />
                   </div>
                   <div className={`flex items-center gap-2 mt-2 text-xs font-semibold ${hasPaid ? "text-emerald-600" : "text-blue-600"}`}>
                     <span className={`w-2 h-2 rounded-full ${hasPaid ? "bg-emerald-500" : "bg-blue-500 animate-pulse"}`}></span>
@@ -792,7 +1007,7 @@ export const BillingPage: React.FC = () => {
                 </div>
                 <div className="mt-4">
                   <div className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-foreground">
-                    ₫4,200,000
+                    <SlidingNumberPrice number={4200000} />
                   </div>
                   <div className="flex items-center gap-1.5 mt-2 text-xs text-muted-foreground">
                     <ShieldCheck className="h-4 w-4 text-emerald-500" />
@@ -974,9 +1189,9 @@ export const BillingPage: React.FC = () => {
                     <td className="py-3 px-3 text-right font-mono font-bold text-foreground">
                       {Number(deltaElec.toFixed(2))} kWh
                     </td>
-                    <td className="py-3 px-3 text-right font-mono text-muted-foreground">₫2,500</td>
+                    <td className="py-3 px-3 text-right font-mono text-muted-foreground"><SlidingNumberPrice number={2500} /></td>
                     <td className="py-3 px-3 text-right font-mono font-bold text-foreground">
-                      ₫{elecCost.toLocaleString()}
+                      <SlidingNumberPrice number={elecCost} />
                     </td>
                   </tr>
 
@@ -995,9 +1210,9 @@ export const BillingPage: React.FC = () => {
                     <td className="py-3 px-3 text-right font-mono font-bold text-foreground">
                       {Number(deltaWater.toFixed(2))} m³
                     </td>
-                    <td className="py-3 px-3 text-right font-mono text-muted-foreground">₫18,000</td>
+                    <td className="py-3 px-3 text-right font-mono text-muted-foreground"><SlidingNumberPrice number={18000} /></td>
                     <td className="py-3 px-3 text-right font-mono font-bold text-foreground">
-                      ₫{waterCost.toLocaleString()}
+                      <SlidingNumberPrice number={waterCost} />
                     </td>
                   </tr>
 
@@ -1014,7 +1229,7 @@ export const BillingPage: React.FC = () => {
                     <td className="py-3 px-3 text-right font-mono font-bold text-foreground">-</td>
                     <td className="py-3 px-3 text-right font-mono text-muted-foreground">10%</td>
                     <td className="py-3 px-3 text-right font-mono font-bold text-foreground">
-                      ₫{vatCost.toLocaleString()}
+                      <SlidingNumberPrice number={vatCost} />
                     </td>
                   </tr>
                 </tbody>
@@ -1028,7 +1243,7 @@ export const BillingPage: React.FC = () => {
                   Tổng chi phí phòng {currentRoom} trong tháng này:
                 </span>
                 <span className="text-xl font-black font-mono text-primary dark:text-[#cee6ef]">
-                  ₫{totalBill.toLocaleString()}
+                  <SlidingNumberPrice number={totalBill} />
                 </span>
               </div>
               <div className="sm:text-right">
@@ -1036,22 +1251,51 @@ export const BillingPage: React.FC = () => {
                   Mỗi sinh viên đóng ({numStudents} người):
                 </span>
                 <span className="text-base font-bold font-mono text-foreground">
-                  ₫{perStudentUtility.toLocaleString()}
+                  <SlidingNumberPrice number={perStudentUtility} />
                 </span>
               </div>
             </div>
 
             {/* Dispute or Manager Verification Badge */}
-            <div className="flex justify-between items-center pt-1">
-              <div />
-              {!isTechnicianOrManager && (
-                <button
-                  onClick={() => setShowDisputeModal(true)}
-                  className="text-xs text-primary hover:underline flex items-center gap-1 font-semibold"
-                >
-                  <span>Khiếu nại số điện nước tháng này</span>
-                  <ExternalLink className="h-3 w-3" />
-                </button>
+            <div className="flex flex-col gap-2 pt-1">
+              <div className="flex justify-between items-center">
+                <div />
+                {!isTechnicianOrManager && (
+                  <button
+                    onClick={() => setShowDisputeModal(true)}
+                    className="text-xs text-primary hover:underline flex items-center gap-1 font-semibold cursor-pointer"
+                  >
+                    <span>Khiếu nại số điện nước tháng này</span>
+                    <ExternalLink className="h-3 w-3" />
+                  </button>
+                )}
+              </div>
+
+              {roomDispute && (
+                <div className="p-3 rounded-xl border border-amber-500/30 bg-amber-500/10 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+                    <span className="font-bold text-amber-900 dark:text-amber-200">
+                      Phòng {currentRoom} đã gửi khiếu nại [{roomDispute.id}]:
+                    </span>
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
+                        roomDispute.status === "RESOLVED"
+                          ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300"
+                          : roomDispute.status === "INSPECTING"
+                            ? "bg-sky-500/20 text-sky-700 dark:text-sky-300"
+                            : roomDispute.status === "REJECTED"
+                              ? "bg-rose-500/20 text-rose-700 dark:text-rose-300"
+                              : "bg-amber-500/20 text-amber-700 dark:text-amber-300"
+                      }`}
+                    >
+                      {roomDispute.statusLabel}
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-muted-foreground font-mono">
+                    {roomDispute.timeStr} • {roomDispute.dateStr}
+                  </span>
+                </div>
               )}
             </div>
           </div>
@@ -1170,6 +1414,128 @@ export const BillingPage: React.FC = () => {
             /* CÁN BỘ / QUẢN LÝ / KỸ THUẬT: BẢNG ĐIỀU HÀNH CHỐT SỔ & PHÁT HÀNH HÓA ĐƠN */
             /* ========================================================================= */
             <div className="space-y-6">
+              {/* Box 1.5: Xử lý khiếu nại số đo điện nước từ sinh viên */}
+              <div className="bg-white dark:bg-[#161e23] border border-amber-500/30 rounded-xl shadow-md p-5 space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-border">
+                  <div className="flex items-center gap-2.5">
+                    <span className="p-2 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
+                      <AlertCircle className="h-5 w-5" />
+                    </span>
+                    <div>
+                      <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                        <span>Khiếu Nại Số Đo Điện Nước</span>
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-white shadow-2xs">
+                          {disputes.filter((d) => d.status === "PENDING" || d.status === "INSPECTING").length} chờ xử lý
+                        </span>
+                      </h3>
+                      <p className="text-[11px] text-muted-foreground">
+                        Đơn phản ánh chỉ số công tơ & rò rỉ từ sinh viên
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3 max-h-[380px] overflow-y-auto pr-1">
+                  {disputes.length === 0 ? (
+                    <div className="text-center py-6 text-xs text-muted-foreground">
+                      Không có khiếu nại nào đang chờ xử lý.
+                    </div>
+                  ) : (
+                    disputes.map((d) => (
+                      <div
+                        key={d.id}
+                        className={`p-3.5 rounded-xl border transition-all text-xs space-y-2 ${
+                          d.status === "PENDING"
+                            ? "border-amber-400/50 bg-amber-500/5"
+                            : d.status === "INSPECTING"
+                              ? "border-sky-400/40 bg-sky-500/5"
+                              : "border-border bg-muted/20"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-black text-foreground">Phòng {d.room}</span>
+                            <span className="text-[10px] font-mono text-muted-foreground">({d.id})</span>
+                          </div>
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
+                              d.status === "RESOLVED"
+                                ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20"
+                                : d.status === "INSPECTING"
+                                  ? "bg-sky-500/10 text-sky-600 border border-sky-500/20"
+                                  : d.status === "REJECTED"
+                                    ? "bg-rose-500/10 text-rose-600 border border-rose-500/20"
+                                    : "bg-amber-500/10 text-amber-600 border border-amber-500/20"
+                            }`}
+                          >
+                            {d.statusLabel}
+                          </span>
+                        </div>
+
+                        <p className="text-[11px] font-bold text-primary">{d.utilityTypeLabel}</p>
+
+                        <p className="text-[11px] text-muted-foreground italic bg-muted/40 p-2 rounded-lg border border-border/40">
+                          "{d.description}"
+                        </p>
+
+                        <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                          <span>SV: <strong>{d.studentName}</strong> ({d.studentId})</span>
+                          <span>{d.timeStr} • {d.dateStr}</span>
+                        </div>
+
+                        {d.technicianNote && (
+                          <div className="p-2 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-800 dark:text-sky-300 text-[11px]">
+                            <strong>KTV đối soát:</strong> {d.technicianNote}
+                          </div>
+                        )}
+
+                        {d.managerNote && (
+                          <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 text-[11px]">
+                            <strong>Kết luận BQL:</strong> {d.managerNote}
+                          </div>
+                        )}
+
+                        {/* Các nút hành động của Quản lý */}
+                        {d.status !== "RESOLVED" && d.status !== "REJECTED" && (
+                          <div className="flex items-center gap-1.5 pt-2 border-t border-border/50">
+                            {d.status === "PENDING" && (
+                              <button
+                                type="button"
+                                onClick={() => handleAssignTech(d.id)}
+                                className="flex-1 py-1.5 px-2 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-bold text-[10px] transition-colors cursor-pointer"
+                              >
+                                Giao KTV kiểm tra
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setManagerResolveDispute({ dispute: d, action: "RESOLVED" })
+                                setManagerResolveNote("Đã đối chiếu với KTV, chấp thuận điều chỉnh giảm chỉ số phát sinh.")
+                                setManagerAdjustAmount(30000)
+                              }}
+                              className="flex-1 py-1.5 px-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] transition-colors cursor-pointer"
+                            >
+                              Duyệt giải quyết
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setManagerResolveDispute({ dispute: d, action: "REJECTED" })
+                                setManagerResolveNote("Đã kiểm tra lại đồng hồ công tơ tại tầng 2, chỉ số hiển thị khớp ảnh chụp đối soát.")
+                                setManagerAdjustAmount(0)
+                              }}
+                              className="py-1.5 px-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 font-bold text-[10px] transition-colors cursor-pointer"
+                            >
+                              Bác bỏ
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
               
 
               {/* Box 2: Tiến độ thu nợ & Hành động cán bộ */}
@@ -1398,7 +1764,9 @@ export const BillingPage: React.FC = () => {
                       </div>
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-muted-foreground font-sans whitespace-nowrap">Số tiền:</span>
-                        <span className="font-black text-primary dark:text-sky-400 text-sm whitespace-nowrap">₫{netDue.toLocaleString()}</span>
+                        <span className="font-black text-primary dark:text-sky-400 text-sm whitespace-nowrap">
+                          <SlidingNumberPrice number={netDue} />
+                        </span>
                       </div>
                       <div className="flex items-center justify-between gap-2 border-t border-border pt-2 font-sans">
                         <span className="text-muted-foreground whitespace-nowrap">Nội dung:</span>
@@ -1440,14 +1808,16 @@ export const BillingPage: React.FC = () => {
                     </thead>
                     <tbody className="divide-y divide-border">
                       {[
-                        { month: "Tháng 08/2026", amount: "₫148,500", date: "03/08/2026" },
-                        { month: "Tháng 07/2026", amount: "₫139,000", date: "04/07/2026" },
-                        { month: "Tháng 06/2026", amount: "₫152,000", date: "02/06/2026" },
-                        { month: "Tháng 05/2026", amount: "₫145,000", date: "05/05/2026" },
+                        { month: "Tháng 08/2026", amount: "₫148,500", numericAmount: 148500, date: "03/08/2026" },
+                        { month: "Tháng 07/2026", amount: "₫139,000", numericAmount: 139000, date: "04/07/2026" },
+                        { month: "Tháng 06/2026", amount: "₫152,000", numericAmount: 152000, date: "02/06/2026" },
+                        { month: "Tháng 05/2026", amount: "₫145,000", numericAmount: 145000, date: "05/05/2026" },
                       ].map((inv, idx) => (
                         <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-[#1c262c] transition-colors">
                           <td className="py-3 px-3 font-semibold text-foreground">{inv.month}</td>
-                          <td className="py-3 px-3 font-mono text-foreground">{inv.amount}</td>
+                          <td className="py-3 px-3 font-mono text-foreground">
+                            <SlidingNumberPrice number={inv.numericAmount} />
+                          </td>
                           <td className="py-3 px-3">
                             <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
                               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
@@ -1508,21 +1878,25 @@ export const BillingPage: React.FC = () => {
                 </Button>
               </div>
             ) : (
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault()
-                  setDisputeSent(true)
-                }}
-                className="space-y-3 text-xs"
-              >
+              <form onSubmit={handleSendDispute} className="space-y-3 text-xs">
                 <div>
                   <label className="text-[11px] font-bold text-foreground block mb-1">
                     Loại tiện ích cần kiểm tra lại:
                   </label>
-                  <select className="w-full p-2 rounded-lg border border-border bg-[#eff6ff] dark:bg-[#1c262c]">
-                    <option>Chỉ số Điện (Nghi ngờ rò rỉ hoặc ghi nhầm)</option>
-                    <option>Chỉ số Nước (Nghi ngờ van nước phòng hở)</option>
-                    <option>Số lượng sinh viên chia tiền (Có bạn trả phòng sớm)</option>
+                  <select
+                    value={disputeType}
+                    onChange={(e) => {
+                      const val = e.target.value as UtilityDisputeType
+                      setDisputeType(val)
+                      if (val === "ELECTRIC") setDisputeTypeLabel("Chỉ số Điện (Nghi ngờ rò rỉ hoặc ghi nhầm)")
+                      else if (val === "WATER") setDisputeTypeLabel("Chỉ số Nước (Nghi ngờ van nước phòng hở)")
+                      else setDisputeTypeLabel("Số lượng sinh viên chia tiền (Có bạn trả phòng sớm)")
+                    }}
+                    className="w-full p-2 rounded-lg border border-border bg-[#eff6ff] dark:bg-[#1c262c] text-xs font-semibold"
+                  >
+                    <option value="ELECTRIC">Chỉ số Điện (Nghi ngờ rò rỉ hoặc ghi nhầm)</option>
+                    <option value="WATER">Chỉ số Nước (Nghi ngờ van nước phòng hở)</option>
+                    <option value="OCCUPANCY">Số lượng sinh viên chia tiền (Có bạn trả phòng sớm)</option>
                   </select>
                 </div>
 
@@ -1532,6 +1906,8 @@ export const BillingPage: React.FC = () => {
                   </label>
                   <textarea
                     rows={3}
+                    value={disputeDesc}
+                    onChange={(e) => setDisputeDesc(e.target.value)}
                     placeholder="Ví dụ: Tháng này phòng em đi thực tập 2 tuần nhưng số điện lại tăng gấp đôi..."
                     className="w-full p-2.5 rounded-lg border border-border bg-[#eff6ff] dark:bg-[#1c262c] text-xs"
                     required
@@ -1553,6 +1929,169 @@ export const BillingPage: React.FC = () => {
                 </div>
               </form>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* MODAL KỸ THUẬT VIÊN BÁO CÁO KẾT QUẢ ĐỐI SOÁT CÔNG TƠ */}
+      {techInspectDispute && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
+          <div className="bg-card border border-border w-full max-w-md rounded-2xl shadow-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <div>
+                <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                  <Wrench className="h-4 w-4 text-primary" />
+                  <span>Báo Cáo Đối Soát Phòng {techInspectDispute.room}</span>
+                </h3>
+                <span className="text-[11px] text-muted-foreground">
+                  Mã khiếu nại: {techInspectDispute.id}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setTechInspectDispute(null)}
+                className="text-muted-foreground hover:text-foreground text-sm cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-3 bg-muted/40 rounded-xl text-xs space-y-1">
+              <p className="font-semibold text-primary">{techInspectDispute.utilityTypeLabel}</p>
+              <p className="text-muted-foreground italic">"{techInspectDispute.description}"</p>
+              <p className="text-[10px] text-muted-foreground">
+                Sinh viên: <strong>{techInspectDispute.studentName}</strong> • {techInspectDispute.studentPhone}
+              </p>
+            </div>
+
+            <form onSubmit={handleConfirmTechInspect} className="space-y-3 text-xs">
+              <div>
+                <label className="text-[11px] font-bold text-foreground block mb-1">
+                  Kết quả kiểm tra thực tế tại công tơ:
+                </label>
+                <textarea
+                  rows={3}
+                  value={techInspectNote}
+                  onChange={(e) => setTechInspectNote(e.target.value)}
+                  placeholder="Ví dụ: Đã kiểm tra lại đồng hồ công tơ tại tủ kỹ thuật tầng 2. Chỉ số khớp 100% với ảnh chụp đối soát, không phát hiện rò rỉ điện/nước..."
+                  className="w-full p-2.5 rounded-lg border border-border bg-background text-xs focus:ring-1 focus:ring-primary focus:outline-none"
+                  required
+                />
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setTechInspectDispute(null)}
+                  className="flex-1 text-xs"
+                >
+                  Đóng
+                </Button>
+                <Button type="submit" className="flex-1 bg-primary text-white text-xs font-bold">
+                  Gửi Báo Cáo Cho BQL &amp; SV
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL BAN QUẢN LÝ XÁC NHẬN GIẢI QUYẾT KHIẾU NẠI */}
+      {managerResolveDispute && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
+          <div className="bg-card border border-border w-full max-w-md rounded-2xl shadow-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <div>
+                <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                  <span>
+                    {managerResolveDispute.action === "RESOLVED"
+                      ? "Duyệt Giải Quyết Khiếu Nại"
+                      : "Bác Bỏ Khiếu Nại"}
+                  </span>
+                </h3>
+                <span className="text-[11px] text-muted-foreground">
+                  Phòng {managerResolveDispute.dispute.room} • {managerResolveDispute.dispute.id}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setManagerResolveDispute(null)}
+                className="text-muted-foreground hover:text-foreground text-sm cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-3 bg-muted/40 rounded-xl text-xs space-y-1">
+              <p className="font-semibold text-primary">
+                {managerResolveDispute.dispute.utilityTypeLabel}
+              </p>
+              <p className="text-muted-foreground italic">
+                "{managerResolveDispute.dispute.description}"
+              </p>
+              {managerResolveDispute.dispute.technicianNote && (
+                <p className="text-[11px] text-sky-700 dark:text-sky-300 font-medium pt-1 border-t border-border/40">
+                  <strong>KTV đã báo cáo:</strong> {managerResolveDispute.dispute.technicianNote}
+                </p>
+              )}
+            </div>
+
+            <form onSubmit={handleConfirmManagerResolve} className="space-y-3 text-xs">
+              {managerResolveDispute.action === "RESOLVED" && (
+                <div>
+                  <label className="text-[11px] font-bold text-foreground block mb-1">
+                    Số tiền điều chỉnh giảm trừ (nếu có - VNĐ):
+                  </label>
+                  <input
+                    type="number"
+                    value={managerAdjustAmount}
+                    onChange={(e) => setManagerAdjustAmount(Number(e.target.value))}
+                    step="5000"
+                    min="0"
+                    className="w-full p-2.5 rounded-lg border border-border bg-background text-xs font-mono font-bold"
+                  />
+                </div>
+              )}
+
+              <div>
+                <label className="text-[11px] font-bold text-foreground block mb-1">
+                  Kết luận &amp; phản hồi gửi tới sinh viên:
+                </label>
+                <textarea
+                  rows={3}
+                  value={managerResolveNote}
+                  onChange={(e) => setManagerResolveNote(e.target.value)}
+                  placeholder="Ghi rõ lý do điều chỉnh hoặc kết luận đối soát..."
+                  className="w-full p-2.5 rounded-lg border border-border bg-background text-xs focus:ring-1 focus:ring-primary focus:outline-none"
+                  required
+                />
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setManagerResolveDispute(null)}
+                  className="flex-1 text-xs"
+                >
+                  Hủy
+                </Button>
+                <Button
+                  type="submit"
+                  className={`flex-1 text-white text-xs font-bold ${
+                    managerResolveDispute.action === "RESOLVED"
+                      ? "bg-emerald-600 hover:bg-emerald-700"
+                      : "bg-rose-600 hover:bg-rose-700"
+                  }`}
+                >
+                  {managerResolveDispute.action === "RESOLVED"
+                    ? "Xác Nhận Giải Quyết"
+                    : "Xác Nhận Bác Bỏ"}
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
       )}

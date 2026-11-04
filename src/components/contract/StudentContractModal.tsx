@@ -26,8 +26,8 @@ export const StudentContractModal: React.FC<StudentContractModalProps> = ({
 }) => {
   if (!isOpen) return null
 
-  const studentName = user.fullName || "Trần Thanh Nguyên"
-  const studentId = user.studentId || "SE185240"
+  const studentName = user.fullName || "Nguyễn Hoàng Vinh"
+  const studentId = user.studentId || "SE182049"
   const room = user.dormitoryStatus?.room || "A205"
   const building = user.dormitoryStatus?.building || "Tòa A (Khu Nam)"
   const bedCode = user.dormitoryStatus?.bedCode || "A205-B-G03"

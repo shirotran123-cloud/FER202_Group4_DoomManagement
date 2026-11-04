@@ -1,5 +1,6 @@
 import React from "react"
 import { Modal } from "@/components/ui/modal"
+import { SlidingNumberPrice } from "@/components/ui/sliding-number-price"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import type { MaintenanceTicket } from "@/types/maintenance"
@@ -107,12 +108,12 @@ export const ViewTicketModal: React.FC<ViewTicketModalProps> = ({
                 <ul className="list-disc pl-4 space-y-0.5 text-muted-foreground">
                   {ticket.resolution.materials.map((m) => (
                     <li key={m.id}>
-                      {m.name} x {m.quantity} = {(m.unitCost * m.quantity).toLocaleString("vi-VN")} đ
+                      {m.name} x {m.quantity} = <SlidingNumberPrice number={m.unitCost * m.quantity} prefix="" suffix=" đ" />
                     </li>
                   ))}
                 </ul>
                 <div className="mt-1.5 font-bold text-foreground">
-                  Tổng chi phí: {ticket.resolution.totalMaterialCost.toLocaleString("vi-VN")} đ
+                  Tổng chi phí: <SlidingNumberPrice number={ticket.resolution.totalMaterialCost} prefix="" suffix=" đ" />
                 </div>
               </div>
             )}

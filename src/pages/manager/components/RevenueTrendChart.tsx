@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { Card } from "@/components/ui/card"
+import { SlidingNumberPrice } from "@/components/ui/sliding-number-price"
 import { TrendingUp, Zap, BedDouble, Calendar, ChevronDown, Check } from "lucide-react"
 
 interface RevenueTrendChartProps {
@@ -382,15 +383,15 @@ export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = () => {
                         <div className="mt-1.5 space-y-1">
                           <div className="flex items-center justify-between gap-3 text-amber-400 font-medium whitespace-nowrap">
                             <span className="whitespace-nowrap">⚡ Điện ({item.elecKwh.toLocaleString()} kWh):</span>
-                            <span className="font-mono font-semibold whitespace-nowrap">₫{item.elecCost.toLocaleString()}</span>
+                            <span className="font-mono font-semibold whitespace-nowrap"><SlidingNumberPrice number={item.elecCost} /></span>
                           </div>
                           <div className="flex items-center justify-between gap-3 text-sky-400 font-medium whitespace-nowrap">
                             <span className="whitespace-nowrap">💧 Nước ({item.waterM3.toLocaleString()} m³):</span>
-                            <span className="font-mono font-semibold whitespace-nowrap">₫{item.waterCost.toLocaleString()}</span>
+                            <span className="font-mono font-semibold whitespace-nowrap"><SlidingNumberPrice number={item.waterCost} /></span>
                           </div>
                           <div className="flex items-center justify-between gap-3 border-t border-slate-700/80 pt-1 font-bold text-white whitespace-nowrap">
                             <span>Tổng thu:</span>
-                            <span className="font-mono text-emerald-400 whitespace-nowrap">₫{item.totalCost.toLocaleString()}</span>
+                            <span className="font-mono text-emerald-400 whitespace-nowrap"><SlidingNumberPrice number={item.totalCost} /></span>
                           </div>
                         </div>
                       </div>

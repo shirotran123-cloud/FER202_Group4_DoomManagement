@@ -1,6 +1,7 @@
 import React from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { SlidingNumberPrice } from "@/components/ui/sliding-number-price"
 import {
   AlertTriangle,
   UserCheck,
@@ -151,9 +152,8 @@ export const MaintenanceTicketCard: React.FC<MaintenanceTicketCardProps> = ({
                         .join(", ")}
                     </span>
                     {ticket.resolution.totalMaterialCost ? (
-                      <span className="font-mono font-bold text-primary">
-                        Chi phí: ₫
-                        {ticket.resolution.totalMaterialCost.toLocaleString()}
+                      <span className="font-mono font-bold text-primary flex items-center gap-1">
+                        Chi phí: <SlidingNumberPrice number={ticket.resolution.totalMaterialCost} />
                       </span>
                     ) : null}
                   </div>

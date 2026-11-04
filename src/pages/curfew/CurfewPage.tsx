@@ -7,6 +7,7 @@ import {
   StaggerContainer,
   StaggerItem,
 } from "@/components/ui/scroll-reveal"
+import { RollingText } from "@animate-ui/react/primitives/texts/rolling"
 import {
   ShieldCheck,
   Scan,
@@ -223,7 +224,7 @@ export const CurfewPage: React.FC = () => {
               </div>
               <div className="space-y-1">
                 <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
-                  Giám Sát Ra Vào Cổng KTX
+                  <RollingText text="Giám Sát Ra Vào Cổng KTX" />
                 </h1>
                 <p className="text-sm font-normal text-muted-foreground sm:text-base">
                   Hệ thống quẹt thẻ kiểm soát an ninh ra vào cổng Tòa A thời

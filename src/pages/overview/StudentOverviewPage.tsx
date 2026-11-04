@@ -9,6 +9,8 @@ import {
   StaggerContainer,
   StaggerItem,
 } from "@/components/ui/scroll-reveal"
+import { RollingText } from "@animate-ui/react/primitives/texts/rolling"
+import { SlidingNumberPrice } from "@/components/ui/sliding-number-price"
 import {
   Building2,
   Receipt,
@@ -73,7 +75,7 @@ export const StudentOverviewPage: React.FC = () => {
                 Cổng Thông Tin Cư Dân Nội Trú
               </span>
               <h1 className="flex items-center gap-2 text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-foreground">
-                Chào buổi sáng, {user?.fullName || "Nguyễn Hoàng Vinh"}{" "}
+                <RollingText text={`Chào buổi sáng, ${user?.fullName || "Nguyễn Hoàng Vinh"}`} />{" "}
                 <span className="inline-block animate-bounce text-xl sm:text-2xl">👋</span>
               </h1>
               <p className="text-xs sm:text-sm leading-relaxed font-normal text-muted-foreground">
@@ -178,10 +180,10 @@ export const StudentOverviewPage: React.FC = () => {
                 </div>
               </div>
               <CardTitle className="text-xl font-bold">
-                Tòa A · Tầng 2 · A205
+                {user?.dormitoryStatus?.building || "Tòa A"} · Tầng 2 · {user?.dormitoryStatus?.room || "A205"}
               </CardTitle>
               <p className="mt-1 text-sm font-normal text-muted-foreground">
-                Buồng B · Giường tầng dưới G03
+                {user?.dormitoryStatus?.compartment || "Buồng B"} · Giường {user?.dormitoryStatus?.bedCode?.split("-").pop() || "G03"} ({user?.dormitoryStatus?.bedCode?.endsWith("G02") || user?.dormitoryStatus?.bedCode?.endsWith("G04") || user?.dormitoryStatus?.bedCode?.endsWith("G06") ? "tầng trên" : "tầng dưới"})
               </p>
             </CardHeader>
 
@@ -222,7 +224,7 @@ export const StudentOverviewPage: React.FC = () => {
               </div>
               <div className="flex items-baseline gap-2">
                 <div className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
-                  ₫48,706
+                  <SlidingNumberPrice number={48706} />
                 </div>
                 <span className="text-xs font-bold text-muted-foreground">
                   VND
@@ -299,7 +301,7 @@ export const StudentOverviewPage: React.FC = () => {
               <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                 <div>
                   <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-                    Sơ Đồ Phân Bổ Giường Phòng A205
+                    <RollingText text="Sơ Đồ Phân Bổ Giường Phòng A205" />
                   </h2>
                   <p className="mt-1 text-sm font-normal text-muted-foreground">
                     Trạng thái lưu trú thực tế 4 buồng A, B, C, D
@@ -444,8 +446,11 @@ export const StudentOverviewPage: React.FC = () => {
                             BẠN
                           </span>
                         </div>
-                        <span className="truncate text-xs font-bold">
-                          {user?.fullName?.split(" ").slice(-1)[0] || "Vinh"}
+                        <span
+                          className="truncate text-xs font-bold"
+                          title={user?.fullName || "Nguyễn Hoàng Vinh"}
+                        >
+                          {user?.fullName || "Nguyễn Hoàng Vinh"}
                         </span>
                         <span className="text-[10px] font-medium text-primary-foreground/90">
                           Tầng dưới
