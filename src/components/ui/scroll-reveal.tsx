@@ -76,11 +76,11 @@ export interface StaggerContainerProps extends HTMLMotionProps<"div"> {
  */
 export const StaggerContainer: React.FC<StaggerContainerProps> = ({
   children,
-  staggerDelay = 0.1,
+  staggerDelay = 0.08,
   staggerChildren,
-  delayChildren = 0.05,
+  delayChildren = 0.02,
   once = true,
-  amount = 0.1,
+  amount = 0.05,
   className,
   ...props
 }) => {
@@ -99,6 +99,7 @@ export const StaggerContainer: React.FC<StaggerContainerProps> = ({
     <motion.div
       variants={containerVariants}
       initial="hidden"
+      animate="visible"
       whileInView="visible"
       viewport={{ once, amount }}
       className={cn(className)}
@@ -121,8 +122,8 @@ export interface StaggerItemProps extends HTMLMotionProps<"div"> {
  */
 export const StaggerItem: React.FC<StaggerItemProps> = ({
   children,
-  yOffset = 18,
-  duration = 0.45,
+  yOffset = 16,
+  duration = 0.35,
   className,
   ...props
 }) => {
@@ -139,7 +140,13 @@ export const StaggerItem: React.FC<StaggerItemProps> = ({
   }
 
   return (
-    <motion.div variants={itemVariants} className={cn(className)} {...props}>
+    <motion.div
+      variants={itemVariants}
+      initial="hidden"
+      animate="visible"
+      className={cn(className)}
+      {...props}
+    >
       {children}
     </motion.div>
   )

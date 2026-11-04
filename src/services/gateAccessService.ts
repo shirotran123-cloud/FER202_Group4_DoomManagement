@@ -125,7 +125,20 @@ export function getGateLogs(): GateAccessRecord[] {
       return DEFAULT_LOGS
     }
     const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) ? parsed : DEFAULT_LOGS
+    if (!Array.isArray(parsed)) return DEFAULT_LOGS
+    return parsed.map((item: any) => ({
+      ...item,
+      id: item?.id || "GATE-" + Math.random().toString(36).substring(2, 8),
+      studentId: item?.studentId || "SE182049",
+      studentName: item?.studentName || "Sinh viên KTX",
+      room: item?.room || "A205",
+      direction: item?.direction === "OUT" ? "OUT" : "IN",
+      timeStr: item?.timeStr || "",
+      dateStr: item?.dateStr || "",
+      status: item?.status || "success",
+      message: item?.message || "HỢP LỆ",
+      gateName: item?.gateName || "Cổng chính Tòa A (Turnstile 01)",
+    }))
   } catch {
     return DEFAULT_LOGS
   }
@@ -136,7 +149,8 @@ export function getGateLogs(): GateAccessRecord[] {
  */
 export function getStudentGateLogs(studentId: string): GateAccessRecord[] {
   const all = getGateLogs()
-  return all.filter((l) => l.studentId.toLowerCase() === studentId.toLowerCase())
+  const target = (studentId || "").toLowerCase().trim()
+  return all.filter((l) => (l.studentId || "").toLowerCase().trim() === target)
 }
 
 /**

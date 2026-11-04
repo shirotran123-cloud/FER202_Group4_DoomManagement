@@ -319,10 +319,10 @@ export const MyRoomPage: React.FC = () => {
   return (
     <div className="mx-auto max-w-[1440px] space-y-4 sm:space-y-6 lg:space-y-8 pb-16">
       {/* 01. TOP UNIT SUMMARY & OPERATIONAL ACTION BAR */}
-      <ScrollReveal className={showActionsDropdown ? "relative z-30" : "relative z-10"}>
+      <ScrollReveal className={showActionsDropdown ? "relative z-50" : "relative z-20"}>
         <div
           className={`ui-card-interactive relative flex flex-col justify-between gap-4 sm:gap-6 rounded-2xl border border-border bg-card p-4 sm:p-6 sm:p-8 shadow-xs xl:flex-row xl:items-center ${
-            showActionsDropdown ? "z-30" : "z-10"
+            showActionsDropdown ? "z-50" : "z-20"
           }`}
         >
           <div className="flex items-start gap-3 sm:gap-4">

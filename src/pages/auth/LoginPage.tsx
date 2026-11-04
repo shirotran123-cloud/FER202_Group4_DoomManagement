@@ -245,15 +245,9 @@ export const LoginPage: React.FC = () => {
               </div>
               <h1 className="text-2xl font-black tracking-tight">
                 {mainMode === "login"
-                  ? "Cổng Xác Thực Google SSO"
+                  ? "Cổng đăng kí KTX Đại học FPT"
                   : "Đăng Ký Lưu Trú Ký Túc Xá"}
               </h1>
-              <div className="inline-flex flex-wrap items-center justify-center gap-1.5 rounded-full bg-white/20 px-3.5 py-1 text-xs font-semibold backdrop-blur-md">
-                <span>Phân khu lưu trú:</span>
-                <span className="font-extrabold text-amber-200">Tòa A & B (Nam)</span>
-                <span>•</span>
-                <span className="font-extrabold text-teal-100">Tòa C & D (Nữ)</span>
-              </div>
               
             </div>
 

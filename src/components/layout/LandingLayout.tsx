@@ -42,6 +42,21 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
   const [showUserDropdown, setShowUserDropdown] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
+  // Chỉ kích hoạt và mount Bottom Navigation trên màn hình responsive (< 1280px)
+  const [isMobileLanding, setIsMobileLanding] = useState(() => {
+    if (typeof window === "undefined") return false
+    return window.innerWidth < 1280
+  })
+
+  React.useEffect(() => {
+    if (typeof window === "undefined") return
+    const mql = window.matchMedia("(max-width: 1279px)")
+    const onChange = () => setIsMobileLanding(mql.matches)
+    setIsMobileLanding(mql.matches)
+    mql.addEventListener("change", onChange)
+    return () => mql.removeEventListener("change", onChange)
+  }, [])
+
   const navItems = [
     { label: "Đặt phòng", href: "#dat-phong", icon: BedDouble },
     { label: "Tính năng", href: "#tinh-nang", icon: Layers },
@@ -307,95 +322,97 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children }) => {
         )}
       </header>
 
-      {/* Main Content Area without Sidebar - 8pt grid padding (px-6=24px, py-12=48px, lg:py-16=64px), extra pb-28 on mobile for floating dock */}
-      <main className="page-content relative z-10 mx-auto w-full max-w-7xl flex-1 px-4 pt-10 pb-28 sm:px-6 sm:pt-12 sm:pb-32 lg:px-8 lg:py-16">
+      {/* Main Content Area without Sidebar */}
+      <main className="page-content relative z-10 w-full flex-1 flex flex-col">
         {children}
       </main>
 
-      {/* Lớp gradient mờ bảo vệ nội dung khi cuộn ở đáy màn hình di động */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none fixed inset-x-0 bottom-0 z-40 h-24 bg-gradient-to-t from-background via-background/80 to-transparent xl:hidden"
-      />
-
       {/* Floating Bottom Navigation Bar với animate-ui primitives trên responsive */}
-      <div className="pointer-events-none fixed inset-x-0 bottom-4 z-50 flex justify-center px-3 xl:hidden">
-        <BottomNavigation
-          value={activeNav}
-          onValueChange={(val) => {
-            if (val) {
-              const el = document.getElementById(val.replace("#", ""))
-              if (el) {
-                el.scrollIntoView({ behavior: "smooth" })
-                window.history.pushState(null, "", val)
-                setActiveNav(val)
-              }
-            }
-          }}
-          scrollBehavior="minimize"
-          aria-label="Thanh điều hướng landing mobile"
-          className="pointer-events-auto flex items-center gap-2 max-w-full"
-        >
-          {/* Highlight trượt mượt mà theo spring physics */}
-          <BottomNavigationHighlight className="absolute inset-x-0 inset-y-1 z-0 rounded-full bg-secondary/15 dark:bg-emerald-500/25">
-            <ul className="flex items-center rounded-full border border-border/80 bg-card/90 px-1.5 py-1 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:bg-[#111827]/90 dark:shadow-black/40">
-              {navItems.map(({ href, label, icon: Icon }) => {
-                const isActive = activeNav === href
-
-                return (
-                  <li key={href}>
-                    <BottomNavigationHighlightItem value={href}>
-                      <BottomNavigationItem value={href} asChild>
-                        <button
-                          type="button"
-                          aria-label={label}
-                          onClick={() => {
-                            const el = document.getElementById(href.replace("#", ""))
-                            if (el) {
-                              el.scrollIntoView({ behavior: "smooth" })
-                              window.history.pushState(null, "", href)
-                              setActiveNav(href)
-                            }
-                          }}
-                          className="relative z-10 flex h-[3.5rem] items-center justify-center overflow-hidden rounded-full px-3 text-muted-foreground outline-none transition-colors duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[minimized]:h-11 data-[minimized]:w-11 data-[minimized]:px-0 data-[state=active]:font-bold data-[state=active]:text-secondary dark:data-[state=active]:text-emerald-400"
-                        >
-                          <Icon
-                            className={`h-5 w-5 shrink-0 transition-transform duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-                              isActive ? "scale-110 text-secondary dark:text-emerald-400" : ""
-                            }`}
-                          />
-                          <BottomNavigationLabel
-                            show="active"
-                            className="pl-2 text-xs font-bold tracking-tight whitespace-nowrap"
-                          >
-                            {label}
-                          </BottomNavigationLabel>
-                        </button>
-                      </BottomNavigationItem>
-                    </BottomNavigationHighlightItem>
-                  </li>
-                )
-              })}
-            </ul>
-          </BottomNavigationHighlight>
-
-          {/* Accessory Button: Đăng nhập hoặc Vào thẳng Dashboard */}
-          <BottomNavigationAccessory className="relative size-[3.5rem] rounded-full border border-border/80 bg-card/90 p-1 shadow-2xl shadow-slate-900/10 backdrop-blur-xl data-[minimized]:size-11 dark:bg-[#111827]/90 dark:shadow-black/40">
-            <AnimateButton
-              type="button"
-              aria-label={isAuthenticated ? "Bảng điều khiển" : "Đăng nhập hệ thống"}
-              onClick={() => navigate(isAuthenticated ? getDashboardLink(user?.role) : "/login")}
-              className="flex size-full items-center justify-center rounded-full bg-secondary text-secondary-foreground shadow-md transition-all duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[#162c49] focus-visible:ring-[3px] focus-visible:ring-ring/50"
+      {isMobileLanding && (
+        <>
+          <div
+            aria-hidden="true"
+            className="pointer-events-none fixed inset-x-0 bottom-0 z-40 h-24 bg-gradient-to-t from-background via-background/80 to-transparent"
+          />
+          <div className="pointer-events-none fixed inset-x-0 bottom-4 z-50 flex justify-center px-3">
+            <BottomNavigation
+              value={activeNav}
+              onValueChange={(val) => {
+                if (val) {
+                  const el = document.getElementById(val.replace("#", ""))
+                  if (el) {
+                    el.scrollIntoView({ behavior: "smooth" })
+                    window.history.pushState(null, "", val)
+                    setActiveNav(val)
+                  }
+                }
+              }}
+              scrollBehavior="minimize"
+              aria-label="Thanh điều hướng landing mobile"
+              className="pointer-events-auto flex items-center gap-2 max-w-full"
             >
-              {isAuthenticated ? (
-                <Sparkles className="h-5 w-5 shrink-0" />
-              ) : (
-                <LogIn className="h-5 w-5 shrink-0" />
-              )}
-            </AnimateButton>
-          </BottomNavigationAccessory>
-        </BottomNavigation>
-      </div>
+              {/* Highlight trượt mượt mà theo spring physics */}
+              <BottomNavigationHighlight className="absolute inset-x-0 inset-y-1 z-0 rounded-full bg-secondary/15 dark:bg-emerald-500/25">
+                <ul className="flex items-center rounded-full border border-border/80 bg-card/90 px-1.5 py-1 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:bg-[#111827]/90 dark:shadow-black/40">
+                  {navItems.map(({ href, label, icon: Icon }) => {
+                    const isActive = activeNav === href
+
+                    return (
+                      <li key={href}>
+                        <BottomNavigationHighlightItem value={href}>
+                          <BottomNavigationItem value={href} asChild>
+                            <button
+                              type="button"
+                              aria-label={label}
+                              onClick={() => {
+                                const el = document.getElementById(href.replace("#", ""))
+                                if (el) {
+                                  el.scrollIntoView({ behavior: "smooth" })
+                                  window.history.pushState(null, "", href)
+                                  setActiveNav(href)
+                                }
+                              }}
+                              className="relative z-10 flex h-[3.5rem] items-center justify-center overflow-hidden rounded-full px-3 text-muted-foreground outline-none transition-colors duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[minimized]:h-11 data-[minimized]:w-11 data-[minimized]:px-0 data-[state=active]:font-bold data-[state=active]:text-secondary dark:data-[state=active]:text-emerald-400"
+                            >
+                              <Icon
+                                className={`h-5 w-5 shrink-0 transition-transform duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                                  isActive ? "scale-110 text-secondary dark:text-emerald-400" : ""
+                                }`}
+                              />
+                              <BottomNavigationLabel
+                                show="active"
+                                className="pl-2 text-xs font-bold tracking-tight whitespace-nowrap"
+                              >
+                                {label}
+                              </BottomNavigationLabel>
+                            </button>
+                          </BottomNavigationItem>
+                        </BottomNavigationHighlightItem>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </BottomNavigationHighlight>
+
+              {/* Accessory Button: Đăng nhập hoặc Vào thẳng Dashboard */}
+              <BottomNavigationAccessory className="relative size-[3.5rem] rounded-full border border-border/80 bg-card/90 p-1 shadow-2xl shadow-slate-900/10 backdrop-blur-xl data-[minimized]:size-11 dark:bg-[#111827]/90 dark:shadow-black/40">
+                <AnimateButton
+                  type="button"
+                  aria-label={isAuthenticated ? "Bảng điều khiển" : "Đăng nhập hệ thống"}
+                  onClick={() => navigate(isAuthenticated ? getDashboardLink(user?.role) : "/login")}
+                  className="flex size-full items-center justify-center rounded-full bg-secondary text-secondary-foreground shadow-md transition-all duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[#162c49] focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                >
+                  {isAuthenticated ? (
+                    <Sparkles className="h-5 w-5 shrink-0" />
+                  ) : (
+                    <LogIn className="h-5 w-5 shrink-0" />
+                  )}
+                </AnimateButton>
+              </BottomNavigationAccessory>
+            </BottomNavigation>
+          </div>
+        </>
+      )}
     </div>
   )
 }

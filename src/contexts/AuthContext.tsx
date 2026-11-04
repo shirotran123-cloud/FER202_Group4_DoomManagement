@@ -23,14 +23,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [tokens, setTokens] = useState<AuthTokens | null>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY_TOKENS)
-      return saved ? JSON.parse(saved) : null
+      if (!saved) return null
+      const parsed = JSON.parse(saved)
+      if (parsed && typeof parsed === "object" && typeof parsed.expiresAt === "number") {
+        return parsed
+      }
+      return null
     } catch {
       return null
     }
   })
 
   const [sessionSecondsLeft, setSessionSecondsLeft] = useState<number>(() => {
-    if (!tokens) return 0
+    if (!tokens || typeof tokens.expiresAt !== "number") return 0
     return Math.max(0, Math.floor((tokens.expiresAt - Date.now()) / 1000))
   })
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -38,41 +43,47 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const saveAuthSession = (newUser: UserProfile, newTokens: AuthTokens) => {
     setUser(newUser)
     setTokens(newTokens)
-    localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(newUser))
-    localStorage.setItem(STORAGE_KEY_TOKENS, JSON.stringify(newTokens))
+    try {
+      localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(newUser))
+      localStorage.setItem(STORAGE_KEY_TOKENS, JSON.stringify(newTokens))
+    } catch (e) {
+      console.warn("[Auth] Error saving session:", e)
+    }
     setSessionSecondsLeft(SESSION_DURATION_SECONDS)
   }
 
   const refreshSession = () => {
-    setTokens((prev) => {
-      if (!prev) return null
-      const newTokens: AuthTokens = {
-        ...prev,
-        accessToken: "refreshed_jwt_" + Date.now(),
-        expiresAt: Date.now() + SESSION_DURATION_SECONDS * 1000,
-      }
+    const newTokens: AuthTokens = {
+      accessToken: "refreshed_jwt_" + Date.now(),
+      refreshToken: tokens?.refreshToken || "refresh_token_" + Date.now(),
+      expiresAt: Date.now() + SESSION_DURATION_SECONDS * 1000,
+    }
+    try {
       localStorage.setItem(STORAGE_KEY_TOKENS, JSON.stringify(newTokens))
-      return newTokens
-    })
+    } catch (e) {
+      console.warn("[Auth] Failed to write tokens to localStorage:", e)
+    }
+    setTokens(newTokens)
     setSessionSecondsLeft(SESSION_DURATION_SECONDS)
   }
 
-  // Session timer countdown - only updates in timer callback
+  // Session timer countdown - periodically checks token freshness
   useEffect(() => {
     if (!tokens || !user) return
 
     const interval = setInterval(() => {
-      const diff = Math.max(0, Math.floor((tokens.expiresAt - Date.now()) / 1000))
+      const now = Date.now()
+      const diff = Math.max(0, Math.floor(((tokens?.expiresAt || 0) - now) / 1000))
       setSessionSecondsLeft(diff)
 
       if (diff <= 0) {
         console.warn("[Auth] Access token expired, auto-refreshing via simulated refresh token...")
         refreshSession()
       }
-    }, 1000)
+    }, 5000)
 
     return () => clearInterval(interval)
-  }, [tokens, user])
+  }, [tokens?.expiresAt, user?.id])
 
   const loginWithGoogle = async (
     email: string,
@@ -174,14 +185,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         : undefined,
     }
     setUser(updated)
-    localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(updated))
+    try {
+      localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(updated))
+    } catch (e) {
+      console.warn("[Auth] Error updating profile:", e)
+    }
   }
 
   const logout = () => {
     setUser(null)
     setTokens(null)
-    localStorage.removeItem(STORAGE_KEY_USER)
-    localStorage.removeItem(STORAGE_KEY_TOKENS)
+    try {
+      localStorage.removeItem(STORAGE_KEY_USER)
+      localStorage.removeItem(STORAGE_KEY_TOKENS)
+    } catch (e) {
+      console.warn("[Auth] Error during logout:", e)
+    }
   }
 
   return (

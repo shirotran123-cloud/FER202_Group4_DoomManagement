@@ -81,7 +81,7 @@ const FaqSection: React.FC = () => {
             Hỗ trợ thông tin 24/7
           </span>
           <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-            Câu Hỏi Thường Gặp Của Sinh Viên
+            1001 sự thật về KTX Đại học FPT
           </h2>
           <p className="text-sm leading-relaxed font-normal text-muted-foreground sm:text-base">
             Giải đáp mọi thắc mắc của tân sinh viên và phụ huynh về quy chế sinh

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import React, { useMemo, useState, useEffect } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
 import {
@@ -26,8 +26,24 @@ export const MobileBottomNav: React.FC = () => {
   const location = useLocation()
   const navigate = useNavigate()
 
-  // Không hiển thị nếu chưa đăng nhập hoặc đang ở trang login
-  if (!isAuthenticated || !user || location.pathname === "/login") return null
+  // Chỉ kích hoạt và render trên thiết bị di động / màn hình nhỏ (< 1024px)
+  // để tránh việc các animation engine (Motion/Web Animations) kích hoạt trên phần tử bị ẩn (display: none)
+  const [isMobileScreen, setIsMobileScreen] = useState(() => {
+    if (typeof window === "undefined") return false
+    return window.innerWidth < 1024
+  })
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const mql = window.matchMedia("(max-width: 1023px)")
+    const onChange = () => setIsMobileScreen(mql.matches)
+    setIsMobileScreen(mql.matches)
+    mql.addEventListener("change", onChange)
+    return () => mql.removeEventListener("change", onChange)
+  }, [])
+
+  // Không hiển thị nếu chưa đăng nhập, đang ở trang login, hoặc trên màn hình desktop
+  if (!isAuthenticated || !user || location.pathname === "/login" || !isMobileScreen) return null
 
   const isStudent = user.role === "student"
 

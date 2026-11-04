@@ -55,12 +55,18 @@ export const BookingPage: React.FC = () => {
     if (!isLocked) return
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
-        if (prev <= 1) { clearInterval(timer); setIsLocked(false); return 0 }
+        if (prev <= 1) return 0
         return prev - 1
       })
     }, 1000)
     return () => clearInterval(timer)
   }, [isLocked])
+
+  useEffect(() => {
+    if (isLocked && timeLeft === 0) {
+      setIsLocked(false)
+    }
+  }, [isLocked, timeLeft])
 
   const formatTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60).toString().padStart(2, "0")}`
 

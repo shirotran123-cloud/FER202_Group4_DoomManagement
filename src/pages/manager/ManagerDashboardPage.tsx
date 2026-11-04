@@ -1,4 +1,5 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
+import { Link } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
 import {
   MOCK_OCCUPANCY_STATS,
@@ -32,7 +33,13 @@ import {
   Users,
   DollarSign,
   ArrowRight,
+  ShieldAlert,
 } from "lucide-react"
+import {
+  getLateRequests,
+  subscribeLateRequests,
+  type LateCurfewRequest,
+} from "@/services/lateRequestService"
 
 // Decomposed components
 import { ManagerHeaderStats } from "./components/ManagerHeaderStats"
@@ -50,6 +57,16 @@ export const ManagerDashboardPage: React.FC = () => {
   const [selectedSemester, setSelectedSemester] = useState<string>("ALL")
   const [searchReportQuery, setSearchReportQuery] = useState("")
   const [toastMessage, setToastMessage] = useState<string | null>(null)
+
+  // Real-time Late Curfew Requests state for Managers
+  const [lateRequests, setLateRequests] = useState<LateCurfewRequest[]>(() =>
+    getLateRequests()
+  )
+  useEffect(() => {
+    const unsub = subscribeLateRequests((list) => setLateRequests(list))
+    return () => unsub()
+  }, [])
+  const pendingLateCount = lateRequests.filter((r) => r.status === "PENDING").length
 
   const showToast = (msg: string) => {
     setToastMessage(msg)
@@ -182,6 +199,35 @@ export const ManagerDashboardPage: React.FC = () => {
           </div>
         </Card>
       </ScrollReveal>
+
+      {/* Real-time Alert for Pending Late Curfew Requests */}
+      {pendingLateCount > 0 && (
+        <ScrollReveal delay={0.03}>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 text-amber-950 dark:text-amber-100 shadow-xs animate-in slide-in-from-top-2">
+            <div className="flex items-center gap-3">
+              <span className="flex h-3 w-3 rounded-full bg-amber-500 animate-ping shrink-0" />
+              <div>
+                <p className="text-sm font-bold flex items-center gap-2">
+                  <ShieldAlert className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                  <span>An Ninh Cổng KTX: Có {pendingLateCount} đơn xin về muộn đang chờ Ban Quản Lý phê duyệt!</span>
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Sinh viên đã gửi đơn xin phép qua ứng dụng di động. Vui lòng xét duyệt và cấp mã thông hành mở cửa xoay an ninh trước giờ giới nghiêm 23:00.
+                </p>
+              </div>
+            </div>
+            <Link to="/mobile?role=guard" className="shrink-0 self-end sm:self-center">
+              <Button
+                size="sm"
+                className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs gap-1.5 rounded-xl h-9 px-3.5 shadow-xs"
+              >
+                <span>Xem & Duyệt Đơn Tại Trạm An Ninh</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Button>
+            </Link>
+          </div>
+        </ScrollReveal>
+      )}
 
       {/* Main Tabs Navigation (8pt Grid: p-1.5 = 6px, gap-1.5 = 6px) */}
       <ScrollReveal delay={0.05}>

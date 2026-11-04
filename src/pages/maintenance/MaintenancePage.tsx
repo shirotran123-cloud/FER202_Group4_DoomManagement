@@ -25,6 +25,7 @@ import {
   CheckCircle2,
   X,
   ArrowRight,
+  RotateCcw,
 } from "lucide-react"
 
 // Decomposed components
@@ -37,6 +38,7 @@ import { AssignTechnicianModal } from "./components/AssignTechnicianModal"
 import { CompleteTicketModal } from "./components/CompleteTicketModal"
 import { ReviewTicketModal } from "./components/ReviewTicketModal"
 import { DeleteConfirmModal } from "./components/DeleteConfirmModal"
+import { TicketCreatedSuccessModal } from "./components/TicketCreatedSuccessModal"
 
 const STORAGE_KEY_TICKETS = "dms_maintenance_tickets_v2"
 
@@ -76,6 +78,9 @@ export const MaintenancePage: React.FC = () => {
     string | null
   >(null)
   const [activeTicket, setActiveTicket] = useState<MaintenanceTicket | null>(
+    null
+  )
+  const [createdTicketSuccess, setCreatedTicketSuccess] = useState<MaintenanceTicket | null>(
     null
   )
 
@@ -126,7 +131,7 @@ export const MaintenancePage: React.FC = () => {
     }
 
     setTickets([newTicket, ...tickets])
-    showToast(`Đã tạo thành công phiếu yêu cầu ${newId}!`)
+    setCreatedTicketSuccess(newTicket)
   }
 
   const handleEditSubmit = (data: {
@@ -283,17 +288,20 @@ export const MaintenancePage: React.FC = () => {
 
   // Filter Logic
   const filteredTickets = tickets.filter((ticket) => {
+    const q = searchQuery.toLowerCase().trim()
     const matchesSearch =
-      ticket.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ticket.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ticket.room.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ticket.studentName.toLowerCase().includes(searchQuery.toLowerCase())
+      !q ||
+      (ticket.id || "").toLowerCase().includes(q) ||
+      (ticket.title || "").toLowerCase().includes(q) ||
+      (ticket.room || "").toLowerCase().includes(q) ||
+      (ticket.studentName || "").toLowerCase().includes(q)
 
     const matchesStatus =
       filterStatus === "ALL" || ticket.status === filterStatus
     const matchesUrgency =
       filterUrgency === "ALL" || ticket.urgency === filterUrgency
-    const matchesScope = filterScope === "ALL" || ticket.scope === filterScope
+    const matchesScope =
+      filterScope === "ALL" || ticket.scope === filterScope
 
     return matchesSearch && matchesStatus && matchesUrgency && matchesScope
   })
@@ -443,6 +451,24 @@ export const MaintenancePage: React.FC = () => {
                   <option value="COMPARTMENT_PRIVATE">Buồng cá nhân</option>
                 </Select>
               </div>
+
+              {(filterStatus !== "ALL" || filterUrgency !== "ALL" || filterScope !== "ALL" || searchQuery) && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setSearchQuery("")
+                    setFilterStatus("ALL")
+                    setFilterUrgency("ALL")
+                    setFilterScope("ALL")
+                  }}
+                  title="Đặt lại toàn bộ bộ lọc về mặc định"
+                  className="h-9 px-2 text-xs font-semibold text-muted-foreground hover:text-foreground col-span-2 sm:col-span-1"
+                >
+                  <RotateCcw className="h-3.5 w-3.5 mr-1" />
+                  <span>Xóa lọc</span>
+                </Button>
+              )}
             </div>
           </div>
 
@@ -456,6 +482,11 @@ export const MaintenancePage: React.FC = () => {
               { id: "CLOSED", label: "Đã hoàn thành" },
             ].map((tab) => {
               const isActive = filterStatus === tab.id
+              const tabCount =
+                tab.id === "ALL"
+                  ? tickets.length
+                  : tickets.filter((t) => t.status === tab.id).length
+
               return (
                 <Button
                   key={tab.id}
@@ -467,6 +498,15 @@ export const MaintenancePage: React.FC = () => {
                   }`}
                 >
                   <span>{tab.label}</span>
+                  <span
+                    className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] font-mono font-bold ${
+                      isActive
+                        ? "bg-white/20 text-white"
+                        : "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    {tabCount}
+                  </span>
                 </Button>
               )
             })}
@@ -474,7 +514,7 @@ export const MaintenancePage: React.FC = () => {
         </Card>
       </ScrollReveal>
 
-      {/* Tickets List View (Staggered 100ms) */}
+      {/* Tickets List View (Staggered with dynamic key for clean animation) */}
       {filteredTickets.length === 0 ? (
         <ScrollReveal>
           <Card className="p-12 text-center">
@@ -488,23 +528,45 @@ export const MaintenancePage: React.FC = () => {
               Hãy thử tìm kiếm với từ khóa khác hoặc điều chỉnh bộ lọc trạng
               thái.
             </p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setSearchQuery("")
-                setFilterStatus("ALL")
-                setFilterUrgency("ALL")
-                setFilterScope("ALL")
-              }}
-              className="mt-6"
-            >
-              <span>Đặt lại bộ lọc</span>
-            </Button>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setSearchQuery("")
+                  setFilterStatus("ALL")
+                  setFilterUrgency("ALL")
+                  setFilterScope("ALL")
+                }}
+              >
+                <span>Đặt lại bộ lọc</span>
+              </Button>
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => {
+                  setTickets(INITIAL_MAINTENANCE_TICKETS)
+                  localStorage.setItem(STORAGE_KEY_TICKETS, JSON.stringify(INITIAL_MAINTENANCE_TICKETS))
+                  setSearchQuery("")
+                  setFilterStatus("ALL")
+                  setFilterUrgency("ALL")
+                  setFilterScope("ALL")
+                  showToast("Đã khôi phục toàn bộ danh sách phiếu mẫu!")
+                }}
+                className="gap-1.5"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                <span>Khôi phục dữ liệu mẫu</span>
+              </Button>
+            </div>
           </Card>
         </ScrollReveal>
       ) : (
-        <StaggerContainer staggerDelay={0.1} className="flex flex-col gap-4">
+        <StaggerContainer
+          key={`tickets-${filterStatus}-${filterUrgency}-${filterScope}-${searchQuery}`}
+          staggerDelay={0.06}
+          className="flex flex-col gap-4"
+        >
           {filteredTickets.map((ticket) => (
             <StaggerItem key={ticket.id}>
               <MaintenanceTicketCard
@@ -605,6 +667,17 @@ export const MaintenancePage: React.FC = () => {
         ticketId={deleteConfirmTicketId}
         onClose={() => setDeleteConfirmTicketId(null)}
         onConfirm={handleDeleteTicket}
+      />
+
+      {/* Màn hình nổi thông báo đã gửi yêu cầu thành công với dấu tick xanh to */}
+      <TicketCreatedSuccessModal
+        isOpen={!!createdTicketSuccess}
+        onClose={() => setCreatedTicketSuccess(null)}
+        ticket={createdTicketSuccess}
+        onViewTicket={(t) => {
+          setActiveTicket(t)
+          setIsViewModalOpen(true)
+        }}
       />
     </div>
   )

@@ -23,8 +23,35 @@
       rel="stylesheet"
     />
     <title>Domanage - Hệ thống Quản lý Ký túc xá FPT University (DMS)</title>
+    <script>
+      // Global safety patch for Web Animations API commitStyles
+      if (typeof window !== "undefined" && typeof Animation !== "undefined" && Animation.prototype && Animation.prototype.commitStyles) {
+        var _nativeCommitStyles = Animation.prototype.commitStyles;
+        Animation.prototype.commitStyles = function () {
+          try {
+            return _nativeCommitStyles.call(this);
+          } catch (e) {
+            // Silently suppress DOMException when target element is detached or display: none
+            return;
+          }
+        };
+      }
+      // Global uncaught error listener to prevent commitStyles from breaking React
+      window.addEventListener("error", function (e) {
+        if (e && e.message && (e.message.indexOf("commitStyles") !== -1 || e.message.indexOf("ResizeObserver") !== -1)) {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+        }
+      });
+      window.addEventListener("unhandledrejection", function (e) {
+        if (e && e.reason && e.reason.message && e.reason.message.indexOf("commitStyles") !== -1) {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+        }
+      });
+    </script>
   </head>
-  <body class="bg-slate-950">
+  <body class="bg-[#f4f7fb] text-slate-900 antialiased dark:bg-[#0b1520] dark:text-slate-100">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

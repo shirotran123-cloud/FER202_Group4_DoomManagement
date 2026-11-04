@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
 import { AdminOverviewView } from "./AdminOverviewView"
@@ -16,10 +16,43 @@ import {
   Wifi,
   Wrench,
   ArrowRight,
+  Bell,
+  Zap,
 } from "lucide-react"
+import {
+  getUserNotifications,
+  subscribeNotifications,
+  type SystemNotification,
+} from "@/services/notificationService"
 
 export const StudentOverviewPage: React.FC = () => {
   const { user } = useAuth()
+
+  // Real-time notifications for student
+  const [notifications, setNotifications] = useState<SystemNotification[]>(() =>
+    getUserNotifications("student", user?.dormitoryStatus?.room)
+  )
+
+  useEffect(() => {
+    const unsub = subscribeNotifications((list) => {
+      setNotifications(
+        list.filter((n) => {
+          if (n.targetRole && n.targetRole !== "all" && n.targetRole !== "student") {
+            return false
+          }
+          return true
+        })
+      )
+    })
+    return () => unsub()
+  }, [user?.dormitoryStatus?.room])
+
+  const reminderNotif = notifications.find(
+    (n) => n.type === "PAYMENT_REMINDER" && !n.isRead
+  )
+  const invoiceNotif = notifications.find(
+    (n) => n.type === "INVOICE_PUBLISHED" && !n.isRead
+  )
 
   // Nếu là Quản trị viên (Admin) hoặc Quản lý (Manager), hiển thị trang Overview Quản trị
   if (user?.role === "admin" || user?.role === "manager") {
@@ -65,6 +98,67 @@ export const StudentOverviewPage: React.FC = () => {
           </div>
         </div>
       </ScrollReveal>
+
+      {/* Real-time Notification Banner from Ban Quản Lý (Invoice / Reminder) */}
+      {reminderNotif && (
+        <ScrollReveal delay={0.05}>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-rose-500/50 bg-rose-500/15 p-4 text-rose-950 dark:text-rose-100 shadow-md animate-in slide-in-from-top-2">
+            <div className="flex items-center gap-3">
+              <span className="flex h-3 w-3 rounded-full bg-rose-500 animate-ping shrink-0" />
+              <div>
+                <p className="text-sm font-bold flex items-center gap-1.5 text-rose-700 dark:text-rose-300">
+                  <Bell className="h-4 w-4" />
+                  <span>{reminderNotif.title}</span>
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                  {reminderNotif.content}
+                </p>
+              </div>
+            </div>
+            <Button
+              size="sm"
+              asChild
+              className="bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shrink-0 h-9 px-4 shadow-xs"
+            >
+              <Link to="/billing">
+                <Receipt className="h-4 w-4" />
+                <span>Thanh Toán VietQR Ngay</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </Button>
+          </div>
+        </ScrollReveal>
+      )}
+
+      {!reminderNotif && invoiceNotif && (
+        <ScrollReveal delay={0.05}>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-sky-500/50 bg-sky-500/15 p-4 text-sky-950 dark:text-sky-100 shadow-md animate-in slide-in-from-top-2">
+            <div className="flex items-center gap-3">
+              <span className="flex h-3 w-3 rounded-full bg-sky-500 animate-ping shrink-0" />
+              <div>
+                <p className="text-sm font-bold flex items-center gap-1.5 text-sky-700 dark:text-sky-300">
+                  <Zap className="h-4 w-4" />
+                  <span>{invoiceNotif.title}</span>
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                  {invoiceNotif.content}
+                </p>
+              </div>
+            </div>
+            <Button
+              size="sm"
+              asChild
+              className="bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-xl shrink-0 h-9 px-4 shadow-xs"
+            >
+              <Link to="/billing">
+                <Receipt className="h-4 w-4" />
+                <span>Xem Hóa Đơn & Thanh Toán</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </Button>
+          </div>
+        </ScrollReveal>
+      )}
 
       {/* Top KPI 3-Card Staggered Grid (100ms delay between cards, 8pt gap-6 = 24px) */}
       <StaggerContainer

@@ -1,22 +1,33 @@
 import { DemoAccountSwitcher } from "@/components/common/DemoAccountSwitcher"
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
 import {
   Building2,
   User,
   LogOut,
-  Bell,
   ChevronDown,
-  AlertCircle,
   Menu,
   UserPlus,
   LogIn,
   Sun,
   Moon,
   Database,
+  Zap,
+  Clock,
+  Wrench,
+  Check,
+  CheckCheck,
 } from "lucide-react"
+import { Bell as AnimatedBell } from "@/components/animate-ui/icons/bell"
 import { useTheme } from "@/components/theme-provider"
+import {
+  getUserNotifications,
+  markAsRead,
+  markAllAsRead,
+  subscribeNotifications,
+  type SystemNotification,
+} from "@/services/notificationService"
 
 interface NavbarProps {
   onToggleSidebar?: () => void
@@ -28,6 +39,41 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
   const navigate = useNavigate()
   const [showUserDropdown, setShowUserDropdown] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
+
+  // Real-time notifications
+  const [notifications, setNotifications] = useState<SystemNotification[]>(() =>
+    getUserNotifications(user?.role, user?.dormitoryStatus?.room)
+  )
+
+  useEffect(() => {
+    const unsub = subscribeNotifications((list) => {
+      setNotifications(
+        list.filter((n) => {
+          if (n.targetRole && n.targetRole !== "all") {
+            if (user?.role === "student" && n.targetRole !== "student") return false
+          }
+          return true
+        })
+      )
+    })
+    return () => unsub()
+  }, [user?.role, user?.dormitoryStatus?.room])
+
+  const unreadCount = notifications.filter((n) => !n.isRead).length
+
+  const handleMarkAllAsRead = (e?: React.MouseEvent) => {
+    e?.stopPropagation()
+    markAllAsRead()
+    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })))
+  }
+
+  const handleMarkAsRead = (id: string, e?: React.MouseEvent) => {
+    e?.stopPropagation()
+    markAsRead(id)
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+    )
+  }
 
   return (
     <header className="fixed top-0 right-0 left-0 z-40 flex h-[68px] items-center justify-between border-b border-slate-200 bg-white/95 px-4 shadow-xs backdrop-blur-md sm:px-8 lg:left-[260px] dark:border-slate-800 dark:bg-[#111827]/95">
@@ -89,55 +135,207 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
               )}
             </button>
 
-            {/* Notification bell */}
+            {/* Notification bell with dynamic animated icon & real-time badge */}
             <div className="relative">
               <button
                 onClick={() => {
                   setShowNotifications(!showNotifications)
                   setShowUserDropdown(false)
                 }}
-                className="relative rounded-lg p-2 text-slate-600 transition-colors hover:bg-slate-100"
+                className="relative flex items-center justify-center rounded-xl p-2 text-slate-600 transition-colors hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
                 aria-label="Notifications"
+                title="Thông báo hệ thống"
               >
-                <Bell className="h-4 w-4" />
-                <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-rose-600"></span>
+                <AnimatedBell
+                  size={19}
+                  animate={unreadCount > 0 ? "default" : undefined}
+                  animateOnHover="default"
+                  className={unreadCount > 0 ? "text-primary" : "text-slate-600 dark:text-slate-300"}
+                />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-600 px-1 text-[9px] font-bold text-white shadow-xs animate-pulse">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
               </button>
 
               {showNotifications && (
-                <div className="fixed inset-x-3 top-[68px] z-50 mt-1 max-w-sm mx-auto sm:max-w-none sm:mx-0 sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2 sm:w-80 rounded-xl border border-slate-200 bg-white p-3 shadow-xl dark:border-slate-800 dark:bg-[#111827]">
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                    <span className="text-xs font-bold text-slate-900">
-                      Thông báo hệ thống
-                    </span>
-                    <span className="cursor-pointer text-[10px] text-slate-500 hover:text-slate-800">
-                      Đánh dấu đã đọc
-                    </span>
+                <div className="fixed inset-x-3 top-[68px] z-50 mt-1 max-w-sm mx-auto sm:max-w-none sm:mx-0 sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2 sm:w-92 rounded-2xl border border-slate-200 bg-white p-3.5 shadow-2xl dark:border-slate-800 dark:bg-[#111827] animate-in fade-in zoom-in-95">
+                  <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                        Thông báo hệ thống
+                      </span>
+                      {unreadCount > 0 ? (
+                        <span className="rounded-full bg-rose-500/15 text-rose-600 dark:text-rose-400 text-[10px] font-bold px-1.5 py-0.5">
+                          {unreadCount} mới
+                        </span>
+                      ) : (
+                        <span className="rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-medium px-1.5 py-0.5">
+                          Đã đọc tất cả
+                        </span>
+                      )}
+                    </div>
+                    {unreadCount > 0 ? (
+                      <button
+                        type="button"
+                        onClick={handleMarkAllAsRead}
+                        className="cursor-pointer text-[10px] font-semibold text-primary hover:text-primary/80 transition-colors flex items-center gap-1"
+                      >
+                        <CheckCheck className="h-3 w-3" />
+                        <span>Đánh dấu đã đọc</span>
+                      </button>
+                    ) : (
+                      <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                        <Check className="h-3 w-3 text-emerald-500" />
+                        <span>Tất cả đã đọc</span>
+                      </span>
+                    )}
                   </div>
-                  <div className="mt-2 space-y-2 text-xs">
-                    <div className="flex gap-2.5 rounded-lg border border-cyan-200 bg-cyan-50 p-2.5 text-cyan-900">
-                      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-cyan-600" />
-                      <div>
-                        <p className="text-xs font-semibold text-cyan-900">
-                          Giờ giới nghiêm 23:00
-                        </p>
-                        <p className="text-[11px] leading-relaxed text-cyan-700">
-                          Sinh viên vui lòng nộp đơn về muộn trước 21:00 nếu có
-                          lịch học hoặc công việc.
-                        </p>
+
+                  <div className="mt-2.5 space-y-2 max-h-[380px] overflow-y-auto pr-1 text-xs">
+                    {notifications.length === 0 ? (
+                      <div className="py-6 text-center text-xs text-muted-foreground italic">
+                        Không có thông báo nào.
                       </div>
-                    </div>
-                    <div className="flex gap-2.5 rounded-lg border border-slate-200 bg-slate-50 p-2.5">
-                      <Building2 className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" />
-                      <div>
-                        <p className="text-xs font-semibold text-slate-900">
-                          Hóa đơn điện nước tháng 09
-                        </p>
-                        <p className="text-[11px] leading-relaxed text-slate-600">
-                          Đã chốt chỉ số công tơ phòng A205. Vui lòng kiểm tra
-                          và thanh toán.
-                        </p>
-                      </div>
-                    </div>
+                    ) : (
+                      notifications.map((item) => {
+                        const isUnread = !item.isRead
+                        return (
+                          <div
+                            key={item.id}
+                            onClick={() => handleMarkAsRead(item.id)}
+                            className={`group relative flex gap-3 rounded-xl border p-3 transition-all cursor-pointer ${
+                              isUnread
+                                ? item.type === "PAYMENT_REMINDER"
+                                  ? "border-rose-300/80 bg-rose-50/80 dark:border-rose-900/50 dark:bg-rose-950/20 text-rose-950 dark:text-rose-100 ring-1 ring-rose-400/30 shadow-xs"
+                                  : item.type === "INVOICE_PUBLISHED"
+                                    ? "border-amber-300/80 bg-amber-50/80 dark:border-amber-900/50 dark:bg-amber-950/20 text-amber-950 dark:text-amber-100 ring-1 ring-amber-400/30 shadow-xs"
+                                    : item.type === "CURFEW"
+                                      ? "border-cyan-200 bg-cyan-50/60 dark:border-cyan-900/50 dark:bg-cyan-950/20 text-cyan-900 dark:text-cyan-100 ring-1 ring-cyan-400/30 shadow-xs"
+                                      : "border-slate-300 bg-blue-50/40 dark:border-slate-700 dark:bg-slate-900/40 text-slate-900 dark:text-slate-100 ring-1 ring-primary/30 shadow-xs"
+                                : "border-slate-200/60 bg-slate-50/50 dark:border-slate-800/60 dark:bg-slate-900/20 text-slate-600 dark:text-slate-400 opacity-65 hover:opacity-95"
+                            }`}
+                          >
+                            <div className="mt-0.5 shrink-0">
+                              {item.type === "PAYMENT_REMINDER" && (
+                                <div
+                                  className={`flex h-7 w-7 items-center justify-center rounded-lg ${
+                                    isUnread
+                                      ? "bg-rose-500 text-white shadow-xs"
+                                      : "bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                                  }`}
+                                >
+                                  <AnimatedBell
+                                    size={15}
+                                    animate={isUnread ? "default" : undefined}
+                                  />
+                                </div>
+                              )}
+                              {item.type === "INVOICE_PUBLISHED" && (
+                                <div
+                                  className={`flex h-7 w-7 items-center justify-center rounded-lg ${
+                                    isUnread
+                                      ? "bg-amber-500 text-white shadow-xs"
+                                      : "bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                                  }`}
+                                >
+                                  <Zap className="h-3.5 w-3.5" />
+                                </div>
+                              )}
+                              {item.type === "CURFEW" && (
+                                <div
+                                  className={`flex h-7 w-7 items-center justify-center rounded-lg ${
+                                    isUnread
+                                      ? "bg-cyan-600 text-white shadow-xs"
+                                      : "bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                                  }`}
+                                >
+                                  <Clock className="h-3.5 w-3.5" />
+                                </div>
+                              )}
+                              {item.type === "MAINTENANCE" && (
+                                <div
+                                  className={`flex h-7 w-7 items-center justify-center rounded-lg ${
+                                    isUnread
+                                      ? "bg-emerald-600 text-white shadow-xs"
+                                      : "bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                                  }`}
+                                >
+                                  <Wrench className="h-3.5 w-3.5" />
+                                </div>
+                              )}
+                              {item.type === "SYSTEM" && (
+                                <div
+                                  className={`flex h-7 w-7 items-center justify-center rounded-lg ${
+                                    isUnread
+                                      ? "bg-blue-600 text-white shadow-xs"
+                                      : "bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                                  }`}
+                                >
+                                  <Building2 className="h-3.5 w-3.5" />
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="flex-1 space-y-1">
+                              <div className="flex items-center justify-between gap-1">
+                                <p
+                                  className={`text-xs leading-tight line-clamp-1 ${
+                                    isUnread
+                                      ? "font-bold text-slate-900 dark:text-white"
+                                      : "font-medium text-slate-700 dark:text-slate-300"
+                                  }`}
+                                >
+                                  {item.title}
+                                </p>
+                                <span className="font-mono text-[10px] text-muted-foreground shrink-0">
+                                  {item.timeStr}
+                                </span>
+                              </div>
+                              <p className="text-[11px] leading-relaxed text-muted-foreground line-clamp-2">
+                                {item.content}
+                              </p>
+                              {item.actionUrl && (
+                                <div className="pt-1 flex items-center justify-between">
+                                  <Link
+                                    to={item.actionUrl}
+                                    onClick={() => {
+                                      handleMarkAsRead(item.id)
+                                      setShowNotifications(false)
+                                    }}
+                                    className="inline-flex items-center gap-1 text-[11px] font-bold text-primary hover:underline"
+                                  >
+                                    <span>{item.actionLabel || "Xem chi tiết →"}</span>
+                                  </Link>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Status indicator / quick mark read */}
+                            <div className="shrink-0 flex items-center">
+                              {isUnread ? (
+                                <button
+                                  type="button"
+                                  onClick={(e) => handleMarkAsRead(item.id, e)}
+                                  title="Đánh dấu đã đọc"
+                                  className="h-6 w-6 rounded-md hover:bg-slate-200/70 dark:hover:bg-slate-800 flex items-center justify-center transition-colors text-primary"
+                                >
+                                  <span className="h-2 w-2 rounded-full bg-primary" />
+                                </button>
+                              ) : (
+                                <span
+                                  className="text-[9px] text-muted-foreground font-mono flex items-center gap-0.5"
+                                  title="Đã đọc"
+                                >
+                                  <Check className="h-3 w-3 text-emerald-500" />
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      })
+                    )}
                   </div>
                 </div>
               )}

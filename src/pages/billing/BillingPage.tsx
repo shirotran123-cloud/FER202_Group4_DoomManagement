@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, useEffect } from "react"
 import { useAuth } from "@/contexts/useAuth"
 import { Button } from "@/components/ui/button"
 import {
@@ -11,7 +11,7 @@ import {
   Calendar,
   Bell,
   CheckCircle2,
-    FileText,
+  FileText,
   Clock,
   ExternalLink,
   ShieldCheck,
@@ -26,6 +26,13 @@ import {
   generatePaymentReceiptPDF,
   generateBuildingUtilityReportPDF,
 } from "@/lib/pdfGenerator"
+import {
+  publishUtilityInvoice,
+  sendPaymentReminder,
+  getUserNotifications,
+  subscribeNotifications,
+  type SystemNotification,
+} from "@/services/notificationService"
 import { ScrollReveal, StaggerContainer, StaggerItem } from "@/components/ui/scroll-reveal"
 
 export const BillingPage: React.FC = () => {
@@ -48,6 +55,25 @@ export const BillingPage: React.FC = () => {
   const [publishedBatch, setPublishedBatch] = useState(false)
   const [remindedBatch, setRemindedBatch] = useState(false)
   const [autoRemindNextWeek, setAutoRemindNextWeek] = useState(true)
+
+  // Real-time notifications state
+  const [notifications, setNotifications] = useState<SystemNotification[]>(() =>
+    getUserNotifications(user?.role, user?.dormitoryStatus?.room)
+  )
+
+  useEffect(() => {
+    const unsub = subscribeNotifications((list) => {
+      setNotifications(
+        list.filter((n) => {
+          if (n.targetRole && n.targetRole !== "all") {
+            if (user?.role === "student" && n.targetRole !== "student") return false
+          }
+          return true
+        })
+      )
+    })
+    return () => unsub()
+  }, [user?.role, user?.dormitoryStatus?.room])
 
   // =========================================================================
   // GIAO DIỆN KỸ THUẬT VIÊN TÒA A: CHỈ GHI SỐ ĐIỆN NƯỚC & CHỤP ẢNH CÔNG TƠ
@@ -182,13 +208,31 @@ export const BillingPage: React.FC = () => {
 
   
   const handlePublishBatch = () => {
+    publishUtilityInvoice({
+      period: "Tháng 09/2026",
+      room: currentRoom,
+      building: user?.dormitoryStatus?.building || "Tòa A",
+      totalBill,
+      perStudentAmount: perStudentUtility,
+      dueDate: "05/10/2026",
+      issuedBy: user?.fullName || "Vũ Thành Nam (Trưởng BQL KTX)",
+    })
     setPublishedBatch(true)
     setTimeout(() => setPublishedBatch(false), 5000)
   }
 
   const handleRemindBatch = () => {
+    sendPaymentReminder({
+      period: "Tháng 09/2026",
+      room: currentRoom,
+      building: user?.dormitoryStatus?.building || "Tòa A",
+      amount: perStudentUtility,
+      dueDate: "05/10/2026",
+      sentBy: user?.fullName || "Vũ Thành Nam (Trưởng BQL KTX)",
+      remainingCount: 14,
+    })
     setRemindedBatch(true)
-    setTimeout(() => setRemindedBatch(false), 4000)
+    setTimeout(() => setRemindedBatch(false), 5000)
   }
 
   const [downloadSuccessToast, setDownloadSuccessToast] = useState<string | null>(null)
@@ -840,9 +884,65 @@ export const BillingPage: React.FC = () => {
 
 
             {publishedBatch && (
-              <div className="p-3 bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 rounded-lg text-xs font-semibold flex items-center gap-2 animate-in fade-in">
-                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                <span>Đã phát hành hóa đơn T09 kèm mã VietQR đến toàn bộ 192 sinh viên Tòa A!</span>
+              <div className="p-3 bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 rounded-lg text-xs font-semibold flex items-center justify-between gap-2 animate-in fade-in">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                  <span>Đã phát hành hóa đơn T09 kèm mã VietQR và gửi thông báo trực tiếp đến sinh viên!</span>
+                </div>
+                <span className="text-[10px] font-bold bg-emerald-600 text-white rounded-full px-2 py-0.5">
+                  ĐÃ VÀO HÒM THƯ SV
+                </span>
+              </div>
+            )}
+
+            {/* Thông báo thời gian thực gửi đến Sinh viên khi BQL gửi nhắc nhở hoặc phát hành */}
+            {!isTechnicianOrManager && notifications.length > 0 && (
+              <div className="space-y-2">
+                {notifications
+                  .filter((n) => n.type === "PAYMENT_REMINDER" && !hasPaid)
+                  .slice(0, 1)
+                  .map((notif) => (
+                    <div
+                      key={notif.id}
+                      className="p-3.5 bg-rose-50 text-rose-900 dark:bg-rose-950/30 dark:text-rose-200 border border-rose-300/60 dark:border-rose-800/60 rounded-xl text-xs space-y-1 animate-in zoom-in-95 shadow-2xs"
+                    >
+                      <div className="flex items-center justify-between font-bold">
+                        <span className="flex items-center gap-1.5 text-rose-700 dark:text-rose-400">
+                          <Bell className="h-4 w-4 shrink-0 animate-bounce" />
+                          <span>{notif.title}</span>
+                        </span>
+                        <span className="text-[10px] bg-rose-600 text-white px-2 py-0.5 rounded-full font-bold">
+                          NHẮC NỘP TIỀN
+                        </span>
+                      </div>
+                      <p className="text-[11px] leading-relaxed opacity-95">
+                        {notif.content}
+                      </p>
+                    </div>
+                  ))}
+
+                {notifications
+                  .filter((n) => n.type === "INVOICE_PUBLISHED")
+                  .slice(0, 1)
+                  .map((notif) => (
+                    <div
+                      key={notif.id}
+                      className="p-3 bg-sky-50 text-sky-900 dark:bg-sky-950/30 dark:text-sky-200 border border-sky-300/60 dark:border-sky-800/60 rounded-xl text-xs space-y-1 animate-in zoom-in-95 shadow-2xs"
+                    >
+                      <div className="flex items-center justify-between font-bold">
+                        <span className="flex items-center gap-1.5 text-sky-700 dark:text-sky-400">
+                          <Zap className="h-4 w-4 shrink-0" />
+                          <span>{notif.title}</span>
+                        </span>
+                        <span className="text-[10px] text-muted-foreground font-mono">
+                          {notif.timeStr}
+                        </span>
+                      </div>
+                      <p className="text-[11px] leading-relaxed opacity-95">
+                        {notif.content}
+                      </p>
+                    </div>
+                  ))}
               </div>
             )}
 
@@ -1095,16 +1195,26 @@ export const BillingPage: React.FC = () => {
                 </div>
 
                 {publishedBatch && (
-                  <div className="p-3 bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 rounded-lg text-xs font-semibold flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                    <span>Đã gửi thông báo hóa đơn T09 kèm VietQR đến toàn bộ 192 sinh viên Tòa A!</span>
+                  <div className="p-3 bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 rounded-lg text-xs font-semibold flex items-center justify-between gap-2 animate-in fade-in">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                      <span>Đã phát hành hóa đơn T09 và gửi thông báo trực tiếp đến sinh viên!</span>
+                    </div>
+                    <span className="text-[10px] bg-emerald-600 text-white font-bold px-2 py-0.5 rounded-full">
+                      REALTIME SYNC
+                    </span>
                   </div>
                 )}
 
                 {remindedBatch && (
-                  <div className="p-3 bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-300 rounded-lg text-xs font-semibold flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Đã gửi tin nhắn nhắc nộp tiền đến 14 sinh viên chưa hoàn tất!</span>
+                  <div className="p-3 bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-300 rounded-lg text-xs font-semibold flex items-center justify-between gap-2 animate-in fade-in">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-blue-600 shrink-0" />
+                      <span>Đã gửi thông báo nhắc nộp tiền trực tiếp đến 14 sinh viên chưa hoàn tất!</span>
+                    </div>
+                    <span className="text-[10px] bg-blue-600 text-white font-bold px-2 py-0.5 rounded-full">
+                      ĐÃ VÀO HÒM THƯ SV
+                    </span>
                   </div>
                 )}
 
