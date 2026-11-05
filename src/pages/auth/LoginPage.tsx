@@ -639,8 +639,8 @@ export const LoginPage: React.FC = () => {
                         onChange={(e) => setCustomEmail(e.target.value)}
                         placeholder={
                           activeTab === "student"
-                            ? "Email Google / MSSV (vd: hoangvinh@gmail.com)"
-                            : "Email cán bộ (vd: namvt@fpt.edu.vn)"
+                            ? "Email Google"
+                            : "Email"
                         }
                         className="w-full rounded-2xl border border-white/25 bg-white/15 py-3 pr-4 pl-10 text-xs text-white placeholder:text-white/60 backdrop-blur-md focus:border-white focus:bg-white/25 focus:ring-2 focus:ring-white/40 focus:outline-none transition-all"
                       />
