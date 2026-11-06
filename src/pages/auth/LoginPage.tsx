@@ -3,7 +3,6 @@ import { useNavigate, useLocation, useSearchParams } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
 import { SlidingNumberPrice } from "@/components/ui/sliding-number-price"
 import { RippleButton, RippleButtonRipples } from "@/components/ui/ripple-button"
-import { FireworksBackground } from "@/components/animate-ui/backgrounds/fireworks"
 import type { UserRole, UserProfile } from "@/types/auth"
 import { motion, AnimatePresence } from "motion/react"
 import {
@@ -61,10 +60,6 @@ export const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [showHelpModal, setShowHelpModal] = useState(false)
-
-  // Fireworks celebration overlay state (3s multicolored fireworks on successful login)
-  const [showFireworks, setShowFireworks] = useState(false)
-  const [isFadingOutFireworks, setIsFadingOutFireworks] = useState(false)
 
   // Registration & 15-min Payment flow state: "FORM" -> "PAYMENT" -> "SUCCESS"
   const [regStep, setRegStep] = useState<"FORM" | "PAYMENT" | "SUCCESS">("FORM")
@@ -202,7 +197,7 @@ export const LoginPage: React.FC = () => {
     }
 
     loginWithCustomUser(newStudentUser)
-    triggerLoginSuccessWithFireworks("/overview")
+    handleLoginSuccess("/overview")
   }
 
   interface LocationState {
@@ -220,20 +215,12 @@ export const LoginPage: React.FC = () => {
     return "/overview"
   }
 
-  // Kích hoạt pháo hoa nhiều màu sắc làm mờ nền 3s, hiển thị "Welcome to DOMANAGE", sau đó mờ dần và tự chuyển vào trang
-  const triggerLoginSuccessWithFireworks = (destination: string) => {
-    setShowFireworks(true)
-    setIsFadingOutFireworks(false)
-
-    // Hiệu ứng pháo hoa chạy 3 giây
-    setTimeout(() => {
-      // Làm mờ dần (Fade out)
-      setIsFadingOutFireworks(true)
-      // Sau khi hiệu ứng mờ 500ms hoàn tất, tự động chuyển vào trang
-      setTimeout(() => {
-        navigate(destination, { replace: true })
-      }, 500)
-    }, 3000)
+  // Chuyển hướng ngay sang trang đích (/overview) và đánh dấu để hiển thị pháo hoa chào mừng tại trang đó
+  const handleLoginSuccess = (destination: string) => {
+    try {
+      sessionStorage.setItem("dms_show_welcome_fireworks", "true")
+    } catch {}
+    navigate(destination, { replace: true, state: { showWelcomeFireworks: true } })
   }
 
   const handleCustomLogin = async (e: React.FormEvent) => {
@@ -245,7 +232,7 @@ export const LoginPage: React.FC = () => {
     const result = await loginWithGoogle(targetEmail, targetRole)
 
     if (result.success) {
-      triggerLoginSuccessWithFireworks(getRoleDestination(targetRole))
+      handleLoginSuccess(getRoleDestination(targetRole))
     } else {
       setErrorMessage(result.message || "Đăng nhập không thành công.")
     }
@@ -254,7 +241,7 @@ export const LoginPage: React.FC = () => {
   const handleQuickDemo = (role: UserRole) => {
     setErrorMessage(null)
     loginAsDemoUser(role)
-    triggerLoginSuccessWithFireworks(getRoleDestination(role))
+    handleLoginSuccess(getRoleDestination(role))
   }
 
   const switchToMode = (mode: "select" | "login" | "register") => {
@@ -1181,70 +1168,6 @@ export const LoginPage: React.FC = () => {
           </motion.div>
         </div>
       )}
-
-      {/* =========================================================================
-          FIREWORKS CELEBRATION OVERLAY (3 Giây Pháo Hoa Nhiều Màu & Welcome to DOMANAGE)
-          ========================================================================= */}
-      <AnimatePresence>
-        {showFireworks && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isFadingOutFireworks ? 0 : 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
-            className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/80 dark:bg-black/90 backdrop-blur-md overflow-hidden pointer-events-none transition-opacity duration-500 ${
-              isFadingOutFireworks ? "opacity-0" : "opacity-100"
-            }`}
-          >
-            {/* Pháo hoa canvas nhiều màu sắc rực rỡ */}
-            <FireworksBackground
-              className="absolute inset-0 z-0"
-              population={3}
-            />
-
-            {/* Khung chữ Welcome to DOMANAGE ở trung tâm */}
-            <motion.div
-              initial={{ scale: 0.82, opacity: 0, y: 24 }}
-              animate={{
-                scale: isFadingOutFireworks ? 1.05 : 1,
-                opacity: isFadingOutFireworks ? 0 : 1,
-                y: 0,
-              }}
-              transition={{ duration: 0.55, ease: [0.34, 1.56, 0.64, 1] }}
-              className="relative z-10 flex flex-col items-center text-center px-6 max-w-2xl select-none"
-            >
-              {/* Quầng sáng gradient mờ huyền ảo phía sau */}
-              <div className="absolute -inset-10 bg-gradient-to-r from-emerald-500/25 via-cyan-500/30 to-amber-500/25 blur-3xl rounded-full pointer-events-none" />
-
-              {/* Tag FPT Dormitory */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-950/70 backdrop-blur-md px-4 py-1.5 text-xs font-bold text-emerald-300 shadow-xl mb-4">
-                <Sparkles className="h-4 w-4 text-emerald-400 animate-spin" />
-                <span>KÝ TÚC XÁ ĐẠI HỌC FPT</span>
-              </div>
-
-              {/* Dòng chữ chính Welcome to DOMANAGE */}
-              <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white drop-shadow-[0_4px_30px_rgba(16,185,129,0.6)] mb-3">
-                Welcome to{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
-                  DOMANAGE
-                </span>
-              </h1>
-
-              <p className="text-sm sm:text-base text-slate-200/90 font-medium drop-shadow-md max-w-md">
-                Đăng nhập thành công! Hệ thống đang khởi tạo không gian lưu trú của bạn...
-              </p>
-
-              {/* Indicator chuyển trang */}
-              <div className="flex items-center gap-2 mt-6 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
-                <span className="text-xs font-semibold text-emerald-300">
-                  Đang chuyển tới Bảng điều khiển...
-                </span>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   )
 }

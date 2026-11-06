@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom"
 import { Navbar } from "./Navbar"
 import { Sidebar } from "./Sidebar"
 import { MobileBottomNav } from "./MobileBottomNav"
+import { WelcomeFireworksOverlay } from "@/components/common/WelcomeFireworksOverlay"
 
 export const AppLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -10,6 +11,9 @@ export const AppLayout: React.FC = () => {
   return (
     <div className="relative isolate min-h-screen bg-transparent font-sans text-foreground antialiased">
       <div aria-hidden="true" className="nature-backdrop" />
+      {/* Welcome Fireworks Overlay sau khi đăng nhập thành công vào bảng điều khiển */}
+      <WelcomeFireworksOverlay />
+
       {/* Fixed Sidebar */}
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
