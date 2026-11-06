@@ -9,7 +9,7 @@ import {
   StaggerContainer,
   StaggerItem,
 } from "@/components/ui/scroll-reveal"
-import { RollingText } from "@animate-ui/react/primitives/texts/rolling"
+import { RollingText } from "@/components/ui/rolling-text"
 import { SlidingNumberPrice } from "@/components/ui/sliding-number-price"
 import {
   Building2,

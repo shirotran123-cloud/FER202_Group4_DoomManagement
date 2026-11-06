@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { AuthProvider } from "@/contexts/AuthContext"
 import { useAuth } from "@/contexts/useAuth"
@@ -44,6 +45,54 @@ function HomeRoute() {
 }
 
 export function App() {
+  // Hiệu ứng Ripple cho tất cả các nút bấm (Button / role="button") trên toàn bộ hệ thống
+  useEffect(() => {
+    const handleGlobalRipple = (e: MouseEvent | TouchEvent) => {
+      const clientX =
+        "clientX" in e ? e.clientX : e.touches && e.touches[0]?.clientX
+      const clientY =
+        "clientY" in e ? e.clientY : e.touches && e.touches[0]?.clientY
+      if (clientX === undefined || clientY === undefined) return
+
+      const target = (e.target as HTMLElement | null)?.closest(
+        'button, [role="button"], a.btn, .ui-btn-interactive'
+      ) as HTMLElement | null
+      if (!target) return
+
+      // Bỏ qua nếu đã được quản lý bởi @animate-ui RippleButton
+      if (target.getAttribute("data-slot") === "ripple-button") return
+
+      const rect = target.getBoundingClientRect()
+      const diameter = Math.max(rect.width, rect.height) * 2
+      const radius = diameter / 2
+      const x = clientX - rect.left - radius
+      const y = clientY - rect.top - radius
+
+      const ripple = document.createElement("span")
+      ripple.className = "global-btn-ripple"
+      ripple.style.width = `${diameter}px`
+      ripple.style.height = `${diameter}px`
+      ripple.style.left = `${x}px`
+      ripple.style.top = `${y}px`
+
+      const pos = window.getComputedStyle(target).position
+      if (pos === "static") {
+        target.style.position = "relative"
+      }
+      target.style.overflow = "hidden"
+
+      target.appendChild(ripple)
+      setTimeout(() => {
+        ripple.remove()
+      }, 650)
+    }
+
+    document.addEventListener("pointerdown", handleGlobalRipple)
+    return () => {
+      document.removeEventListener("pointerdown", handleGlobalRipple)
+    }
+  }, [])
+
   return (
     <BrowserRouter>
       <AuthProvider>

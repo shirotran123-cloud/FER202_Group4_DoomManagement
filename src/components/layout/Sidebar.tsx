@@ -89,7 +89,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     if (currentRole === "manager") {
       return [
         {
-          groupTitle: "Bàn Làm Việc Quản Lý ()",
+          groupTitle: "Bàn Làm Việc Quản Lý (Manager)",
           items: [
             {
               title: "Bàn làm việc Quản lý",

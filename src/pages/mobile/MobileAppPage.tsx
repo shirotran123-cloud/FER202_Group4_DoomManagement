@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { useSearchParams, Link } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
 import { Button } from "@/components/ui/button"
 import {
@@ -28,7 +28,6 @@ import {
   ShieldCheck,
 } from "lucide-react"
 import { Bell as AnimatedBell } from "@/components/animate-ui/icons/bell"
-import { RollingText } from "@animate-ui/react/primitives/texts/rolling"
 import {
   recordGateScan,
   getGateLogs,
@@ -63,22 +62,12 @@ type SubTab = "vietqr" | "repair"
 
 export const MobileAppPage: React.FC = () => {
   const { user } = useAuth()
-  const [searchParams] = useSearchParams()
 
-  // App mode determined automatically by user role or demo switch override
-  const paramRole = searchParams.get("role")
-  const initialRoleOverride =
-    paramRole === "guard"
-      ? "guard"
-      : paramRole === "student"
-        ? "student"
-        : null
-  const [roleOverride, setRoleOverride] = useState<"student" | "guard" | null>(
-    initialRoleOverride
-  )
-  const appRole =
-    roleOverride ||
-    (user?.role === "manager" || user?.role === "admin" ? "guard" : "student")
+  // Phân quyền chặt chẽ theo vai trò người dùng:
+  // - Sinh viên (Student): CHỈ hiển thị Thẻ QR cư dân, Đơn xin về muộn, Lịch sử cá nhân. KHÔNG hiển thị chức năng BQL/Bảo vệ.
+  // - Quản lý / Bảo vệ: CHỈ hiển thị Bàn điều phối quét thẻ, Nhật ký turnstile toàn tòa, Duyệt đơn về muộn. KHÔNG hiển thị thẻ cá nhân sinh viên.
+  const isStudent = user?.role === "student"
+  const appRole: "student" | "guard" = isStudent ? "student" : "guard"
 
   const [subTab, setSubTab] = useState<SubTab>("vietqr")
 
@@ -581,16 +570,18 @@ export const MobileAppPage: React.FC = () => {
             <div className="space-y-2">
               <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary dark:text-emerald-400">
                 <QrCode className="h-3.5 w-3.5" />
-                <span>Hệ thống Kiểm Soát An Ninh Cổng 24/7 · Cửa Xoay Tự Động</span>
+                <span>
+                  {appRole === "guard"
+                    ? "Hệ thống Kiểm Soát An Ninh Cổng 24/7 · Ban Quản Lý"
+                    : "Thẻ Cư Dân Điện Tử · Cổng Chính Tòa A"}
+                </span>
               </div>
               <h1 className="flex items-center gap-2 text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-                <RollingText
-                  text={
-                    appRole === "guard"
-                      ? "Bàn Điều Phối & Quét Thẻ Cổng An Ninh (Guard Station)"
-                      : "Thẻ QR Ra Vào Cổng & Giờ Giới Nghiêm"
-                  }
-                />
+                <span>
+                  {appRole === "guard"
+                    ? "Bàn Điều Phối & Quét Thẻ Cổng An Ninh (Guard Station)"
+                    : "Thẻ QR Ra Vào Cổng & Giờ Giới Nghiêm"}
+                </span>
               </h1>
               <p className="text-xs sm:text-sm text-muted-foreground">
                 {appRole === "guard"
@@ -599,39 +590,8 @@ export const MobileAppPage: React.FC = () => {
               </p>
             </div>
 
-            {/* Quick Switcher for Demo & Notification Button */}
+            {/* Notification Button */}
             <div className="flex flex-wrap shrink-0 items-center gap-2 self-start lg:self-center">
-              {/* Role Switcher Pill */}
-              <div className="flex items-center rounded-xl border border-border bg-muted/60 p-1 text-xs">
-                <button
-                  type="button"
-                  onClick={() => setRoleOverride("student")}
-                  className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-bold transition-all ${
-                    appRole === "student"
-                      ? "bg-primary text-primary-foreground shadow-xs"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <span>📱 Sinh Viên</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setRoleOverride("guard")}
-                  className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-bold transition-all relative ${
-                    appRole === "guard"
-                      ? "bg-primary text-primary-foreground shadow-xs"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <span>🛡️ Ban Quản Lý</span>
-                  {pendingLateCount > 0 && (
-                    <span className="flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-rose-600 text-[10px] font-black text-white animate-pulse">
-                      {pendingLateCount}
-                    </span>
-                  )}
-                </button>
-              </div>
-
               <Button
                 variant="outline"
                 size="sm"

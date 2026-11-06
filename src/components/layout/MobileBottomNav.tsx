@@ -86,9 +86,9 @@ export const MobileBottomNav: React.FC = () => {
         icon: ShieldCheck,
       },
       {
-        value: "/my-room",
-        label: "Phòng",
-        icon: DoorClosed,
+        value: "/mobile",
+        label: "Quét cổng",
+        icon: QrCode,
       },
       {
         value: "/billing",

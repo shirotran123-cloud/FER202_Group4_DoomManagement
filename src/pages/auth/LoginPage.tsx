@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react"
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom"
 import { useAuth } from "@/contexts/useAuth"
 import { SlidingNumberPrice } from "@/components/ui/sliding-number-price"
+import { RippleButton, RippleButtonRipples } from "@/components/ui/ripple-button"
+import { FireworksBackground } from "@/components/animate-ui/backgrounds/fireworks"
 import type { UserRole, UserProfile } from "@/types/auth"
 import { motion, AnimatePresence } from "motion/react"
 import {
@@ -55,10 +57,14 @@ export const LoginPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"student" | "staff">("student")
   const [selectedStaffRole, setSelectedStaffRole] = useState<UserRole>("manager")
   const [customEmail, setCustomEmail] = useState("")
-  const [password, setPassword] = useState("••••••••")
+  const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [showHelpModal, setShowHelpModal] = useState(false)
+
+  // Fireworks celebration overlay state (3s multicolored fireworks on successful login)
+  const [showFireworks, setShowFireworks] = useState(false)
+  const [isFadingOutFireworks, setIsFadingOutFireworks] = useState(false)
 
   // Registration & 15-min Payment flow state: "FORM" -> "PAYMENT" -> "SUCCESS"
   const [regStep, setRegStep] = useState<"FORM" | "PAYMENT" | "SUCCESS">("FORM")
@@ -196,7 +202,7 @@ export const LoginPage: React.FC = () => {
     }
 
     loginWithCustomUser(newStudentUser)
-    navigate("/overview", { replace: true })
+    triggerLoginSuccessWithFireworks("/overview")
   }
 
   interface LocationState {
@@ -214,6 +220,22 @@ export const LoginPage: React.FC = () => {
     return "/overview"
   }
 
+  // Kích hoạt pháo hoa nhiều màu sắc làm mờ nền 3s, hiển thị "Welcome to DOMANAGE", sau đó mờ dần và tự chuyển vào trang
+  const triggerLoginSuccessWithFireworks = (destination: string) => {
+    setShowFireworks(true)
+    setIsFadingOutFireworks(false)
+
+    // Hiệu ứng pháo hoa chạy 3 giây
+    setTimeout(() => {
+      // Làm mờ dần (Fade out)
+      setIsFadingOutFireworks(true)
+      // Sau khi hiệu ứng mờ 500ms hoàn tất, tự động chuyển vào trang
+      setTimeout(() => {
+        navigate(destination, { replace: true })
+      }, 500)
+    }, 3000)
+  }
+
   const handleCustomLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setErrorMessage(null)
@@ -223,7 +245,7 @@ export const LoginPage: React.FC = () => {
     const result = await loginWithGoogle(targetEmail, targetRole)
 
     if (result.success) {
-      navigate(getRoleDestination(targetRole), { replace: true })
+      triggerLoginSuccessWithFireworks(getRoleDestination(targetRole))
     } else {
       setErrorMessage(result.message || "Đăng nhập không thành công.")
     }
@@ -232,7 +254,7 @@ export const LoginPage: React.FC = () => {
   const handleQuickDemo = (role: UserRole) => {
     setErrorMessage(null)
     loginAsDemoUser(role)
-    navigate(getRoleDestination(role), { replace: true })
+    triggerLoginSuccessWithFireworks(getRoleDestination(role))
   }
 
   const switchToMode = (mode: "select" | "login" | "register") => {
@@ -368,29 +390,29 @@ export const LoginPage: React.FC = () => {
               {/* CENTER: THE TWO ICONIC DRIBBLE PILL BUTTONS */}
               <div className="space-y-4 my-2">
                 <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                  {/* BUTTON 1: SIGN UP (ĐĂNG KÝ) - Cyan/Emerald Gradient */}
-                  <motion.button
-                    whileHover={{ scale: 1.04, y: -2 }}
-                    whileTap={{ scale: 0.96 }}
+                  {/* BUTTON 1: SIGN UP (ĐĂNG KÝ) - Cyan/Emerald Gradient with Ripple */}
+                  <RippleButton
+                    tapScale={0.97}
                     type="button"
                     onClick={() => switchToMode("register")}
-                    className="flex items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-[#0ea5e9] to-[#10b981] py-3.5 px-4 text-xs font-black uppercase tracking-wider text-white shadow-lg shadow-teal-500/25 transition-shadow hover:shadow-teal-500/40 cursor-pointer"
+                    className="flex items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-[#0ea5e9] to-[#10b981] py-3.5 px-4 text-xs font-black uppercase tracking-wider text-white shadow-lg shadow-teal-500/25 transition-shadow hover:shadow-teal-500/40 cursor-pointer [--ripple-button-ripple-color:rgba(255,255,255,0.45)]"
                   >
                     <UserPlus className="h-4 w-4 shrink-0" />
                     <span>ĐĂNG KÝ</span>
-                  </motion.button>
+                    <RippleButtonRipples />
+                  </RippleButton>
 
-                  {/* BUTTON 2: SIGN IN (ĐĂNG NHẬP) - Vibrant FPT Navy/Emerald or Sunset Gradient */}
-                  <motion.button
-                    whileHover={{ scale: 1.04, y: -2 }}
-                    whileTap={{ scale: 0.96 }}
+                  {/* BUTTON 2: SIGN IN (ĐĂNG NHẬP) - Vibrant FPT Navy/Emerald with Ripple */}
+                  <RippleButton
+                    tapScale={0.97}
                     type="button"
                     onClick={() => switchToMode("login")}
-                    className="flex items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-[#1e3a5f] via-[#0f766e] to-[#10b981] py-3.5 px-4 text-xs font-black uppercase tracking-wider text-white shadow-lg shadow-blue-900/25 transition-shadow hover:shadow-emerald-500/40 cursor-pointer"
+                    className="flex items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-[#1e3a5f] via-[#0f766e] to-[#10b981] py-3.5 px-4 text-xs font-black uppercase tracking-wider text-white shadow-lg shadow-blue-900/25 transition-shadow hover:shadow-emerald-500/40 cursor-pointer [--ripple-button-ripple-color:rgba(255,255,255,0.45)]"
                   >
                     <LogIn className="h-4 w-4 shrink-0" />
                     <span>ĐĂNG NHẬP</span>
-                  </motion.button>
+                    <RippleButtonRipples />
+                  </RippleButton>
                 </div>
 
                 {/* FORGOT? link */}
@@ -502,7 +524,6 @@ export const LoginPage: React.FC = () => {
                     <ArrowLeft className="h-4 w-4" />
                   </button>
 
-                  <span className="text-xs font-semibold tracking-wide text-white/80">Ký Túc Xá FPT</span>
                 </div>
 
                 {/* BRAND HEADER: FPT University Logo & Welcome message */}
@@ -637,6 +658,7 @@ export const LoginPage: React.FC = () => {
                         type="text"
                         value={customEmail}
                         onChange={(e) => setCustomEmail(e.target.value)}
+                        autoComplete="off"
                         placeholder={
                           activeTab === "student"
                             ? "Email Google"
@@ -654,6 +676,7 @@ export const LoginPage: React.FC = () => {
                         type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        autoComplete="new-password"
                         placeholder="Mật khẩu tài khoản"
                         className="w-full rounded-2xl border border-white/25 bg-white/15 py-3 pr-10 pl-10 text-xs text-white placeholder:text-white/60 backdrop-blur-md focus:border-white focus:bg-white/25 focus:ring-2 focus:ring-white/40 focus:outline-none transition-all"
                       />
@@ -667,13 +690,12 @@ export const LoginPage: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Primary SIGN IN Button (Frosted Glass Pill from Dribbble GIF) */}
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                  {/* Primary SIGN IN Button with Ripple */}
+                  <RippleButton
+                    tapScale={0.97}
                     type="submit"
                     disabled={isLoading}
-                    className="w-full rounded-full border border-white/40 bg-white/25 hover:bg-white/35 py-3.5 text-xs font-black uppercase tracking-wider text-white shadow-xl backdrop-blur-md transition-all cursor-pointer flex items-center justify-center gap-2"
+                    className="w-full rounded-full border border-white/40 bg-white/25 hover:bg-white/35 py-3.5 text-xs font-black uppercase tracking-wider text-white shadow-xl backdrop-blur-md transition-all cursor-pointer flex items-center justify-center gap-2 [--ripple-button-ripple-color:rgba(255,255,255,0.5)]"
                   >
                     {isLoading ? (
                       <>
@@ -686,7 +708,8 @@ export const LoginPage: React.FC = () => {
                         <span>ĐĂNG NHẬP HỆ THỐNG</span>
                       </>
                     )}
-                  </motion.button>
+                    <RippleButtonRipples />
+                  </RippleButton>
                 </form>
 
                 {/* Demo 1-Click for grading directly on login screen */}
@@ -746,7 +769,6 @@ export const LoginPage: React.FC = () => {
                     <ArrowLeft className="h-4 w-4" />
                   </button>
 
-                  <span className="text-xs font-semibold tracking-wide text-white/80">Đăng Ký Lưu Trú</span>
                 </div>
 
                 <div className="pt-2 text-center space-y-1">
@@ -1159,6 +1181,70 @@ export const LoginPage: React.FC = () => {
           </motion.div>
         </div>
       )}
+
+      {/* =========================================================================
+          FIREWORKS CELEBRATION OVERLAY (3 Giây Pháo Hoa Nhiều Màu & Welcome to DOMANAGE)
+          ========================================================================= */}
+      <AnimatePresence>
+        {showFireworks && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isFadingOutFireworks ? 0 : 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+            className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/80 dark:bg-black/90 backdrop-blur-md overflow-hidden pointer-events-none transition-opacity duration-500 ${
+              isFadingOutFireworks ? "opacity-0" : "opacity-100"
+            }`}
+          >
+            {/* Pháo hoa canvas nhiều màu sắc rực rỡ */}
+            <FireworksBackground
+              className="absolute inset-0 z-0"
+              population={3}
+            />
+
+            {/* Khung chữ Welcome to DOMANAGE ở trung tâm */}
+            <motion.div
+              initial={{ scale: 0.82, opacity: 0, y: 24 }}
+              animate={{
+                scale: isFadingOutFireworks ? 1.05 : 1,
+                opacity: isFadingOutFireworks ? 0 : 1,
+                y: 0,
+              }}
+              transition={{ duration: 0.55, ease: [0.34, 1.56, 0.64, 1] }}
+              className="relative z-10 flex flex-col items-center text-center px-6 max-w-2xl select-none"
+            >
+              {/* Quầng sáng gradient mờ huyền ảo phía sau */}
+              <div className="absolute -inset-10 bg-gradient-to-r from-emerald-500/25 via-cyan-500/30 to-amber-500/25 blur-3xl rounded-full pointer-events-none" />
+
+              {/* Tag FPT Dormitory */}
+              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-950/70 backdrop-blur-md px-4 py-1.5 text-xs font-bold text-emerald-300 shadow-xl mb-4">
+                <Sparkles className="h-4 w-4 text-emerald-400 animate-spin" />
+                <span>KÝ TÚC XÁ ĐẠI HỌC FPT</span>
+              </div>
+
+              {/* Dòng chữ chính Welcome to DOMANAGE */}
+              <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white drop-shadow-[0_4px_30px_rgba(16,185,129,0.6)] mb-3">
+                Welcome to{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
+                  DOMANAGE
+                </span>
+              </h1>
+
+              <p className="text-sm sm:text-base text-slate-200/90 font-medium drop-shadow-md max-w-md">
+                Đăng nhập thành công! Hệ thống đang khởi tạo không gian lưu trú của bạn...
+              </p>
+
+              {/* Indicator chuyển trang */}
+              <div className="flex items-center gap-2 mt-6 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15">
+                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+                <span className="text-xs font-semibold text-emerald-300">
+                  Đang chuyển tới Bảng điều khiển...
+                </span>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
