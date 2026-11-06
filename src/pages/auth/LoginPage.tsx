@@ -379,7 +379,7 @@ export const LoginPage: React.FC = () => {
 
                 <div className="mt-4 space-y-1">
                   <h1 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
-                    Cổng Đăng Ký KTX Đại học FPT
+                    DOMANAGE
                   </h1>
                   <p className="text-xs text-muted-foreground">
                     Hệ thống Quản lý Ký túc xá FPT University (DMS)
