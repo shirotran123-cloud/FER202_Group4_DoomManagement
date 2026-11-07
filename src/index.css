@@ -80,6 +80,10 @@
   --status-occupied-bg: #eaf1f7;
   --status-maintenance: #4338ca;
   --status-maintenance-bg: #eef2ff;
+
+  /* Sidebar Active Tab Color Tokens */
+  --sidebar-active-bg: #ffffff;
+  --sidebar-active-text: #1b5e34;
 }
 
 .dark {
@@ -108,6 +112,10 @@
   --surface-container: #122132;
   --surface-container-high: #192d42;
   --surface-container-highest: #243e59;
+
+  /* Sidebar Active Tab Dark Tokens (Seamlessly matches dark canvas #0b1520) */
+  --sidebar-active-bg: #0b1520;
+  --sidebar-active-text: #4ade80;
 }
 
 @theme inline {
@@ -307,4 +315,13 @@
     opacity: 0;
   }
 }
+
+/* Sidebar Curved Concave Fillets (Auto adapts between Light #ffffff & Dark #0b1520) */
+.sidebar-curved-top {
+  background: radial-gradient(circle at 0 0, transparent 20px, var(--sidebar-active-bg) 20.5px);
+}
+.sidebar-curved-bottom {
+  background: radial-gradient(circle at 0 100%, transparent 20px, var(--sidebar-active-bg) 20.5px);
+}
+
 
