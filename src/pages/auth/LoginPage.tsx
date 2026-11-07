@@ -369,7 +369,7 @@ export const LoginPage: React.FC = () => {
                     DOMANAGE
                   </h1>
                   <p className="text-xs text-muted-foreground">
-                    Hệ thống Quản lý Ký túc xá FPT University (DMS)
+                    Hệ thống Quản lý Ký túc xá FPT University
                   </p>
                 </div>
               </div>
@@ -418,7 +418,7 @@ export const LoginPage: React.FC = () => {
               <div className="pt-4 border-t border-border/80 space-y-3">
                 <div className="flex items-center justify-between text-[11px]">
                   <span className="font-bold tracking-wider text-muted-foreground uppercase">
-                    Tài khoản Demo 1-Click (Chấm đồ án):
+                    Tài khoản Demo:
                   </span>
                   <span className="text-[10px] text-emerald-600 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded-full">
                     Sẵn sàng
@@ -578,22 +578,10 @@ export const LoginPage: React.FC = () => {
 
                 {/* Role specific rules / guidance */}
                 {activeTab === "student" ? (
-                  <div className="rounded-2xl border border-white/20 bg-white/10 p-3 text-[11px] leading-relaxed text-sky-100 backdrop-blur-md">
-                    <span className="font-bold text-white flex items-center gap-1">
-                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-300" />
-                      Quy định phân tòa lưu trú theo giới tính:
-                    </span>
-                    <span>Tòa A & Tòa B (Nam) • Tòa C & Tòa D (Nữ). Đăng nhập bằng Gmail (@gmail.com / @fpt.edu.vn).</span>
+                  <div className="">
                   </div>
                 ) : (
-                  <div className="rounded-2xl border border-white/20 bg-white/10 p-3 text-[11px] leading-relaxed text-sky-100 backdrop-blur-md space-y-2">
-                    <div>
-                      <span className="font-bold text-white flex items-center gap-1">
-                        <Lock className="h-3.5 w-3.5 text-amber-300" />
-                        Xác thực cán bộ KTX:
-                      </span>
-                      <span>Bắt buộc sử dụng email mang tên miền <strong>@fpt.edu.vn</strong> hoặc <strong>@fe.edu.vn</strong>.</span>
-                    </div>
+                  <div className="">
                     {/* Role selector buttons for staff demo */}
                     <div className="flex items-center gap-1.5 pt-1.5 border-t border-white/15">
                       <span className="text-white/80 font-semibold text-[10px]">Vai trò demo:</span>

@@ -865,7 +865,7 @@ export const BillingPage: React.FC = () => {
                     text={
                       isTechnicianOrManager
                         ? "Chốt Sổ & Chia Điện Nước • Tòa A"
-                        : "Điện Nước & Hóa Đơn (VietQR)"
+                        : "Điện Nước & Hóa Đơn"
                     }
                   />
                 </h1>
