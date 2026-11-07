@@ -18,7 +18,7 @@ export const AppLayout: React.FC = () => {
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main Content Area Offset for Sidebar */}
-      <div className="flex min-h-screen flex-col lg:pl-[264px]">
+      <div className="flex min-h-screen flex-col lg:pl-[260px]">
         {/* Fixed Header */}
         <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
